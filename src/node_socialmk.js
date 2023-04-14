@@ -9,13 +9,13 @@ const debug = require('debug')('se-scraper:ScrapeManager');
 const { Cluster } = require('puppeteer-cluster');
 
 const UserAgent = require('user-agents');
-const google = require('./modules/google.js');
-const bing = require('./modules/bing.js');
-const yandex = require('./modules/yandex.js');
-const infospace = require('./modules/infospace.js');
-const duckduckgo = require('./modules/duckduckgo.js');
+const facebook = require('./modules/facebook_scraper.js');
+// const bing = require('./modules/bing.js');
+// const yandex = require('./modules/yandex.js');
+// const infospace = require('./modules/infospace.js');
+// const duckduckgo = require('./modules/duckduckgo.js');
 const CustomConcurrencyImpl = require('./concurrency-implementation');
-
+const axios = require('axios');
 const MAX_ALLOWED_BROWSERS = 6;
 
 function write_results(fname, data) {
@@ -38,23 +38,16 @@ function read_keywords_from_file(fname) {
 function getScraper(search_engine, args) {
     if (typeof search_engine === 'string') {
         return new {
-            google: google.GoogleScraper,
-            google_news_old: google.GoogleNewsOldScraper,
-            google_news: google.GoogleNewsScraper,
-            google_image: google.GoogleImageScraper,
-            bing: bing.BingScraper,
-            yandex: yandex.YandexScraper,
-            bing_news: bing.BingNewsScraper,
-            duckduckgo: duckduckgo.DuckduckgoScraper,
-            infospace: infospace.InfospaceScraper,
-            webcrawler: infospace.WebcrawlerNewsScraper,
+            facebook: facebook.FacebookScraper,
+            youtube: youtube.YoutubeScraper,
         }[search_engine](args);
     } else if (typeof search_engine === 'function') {
         return new search_engine(args);
     } else {
-        throw new Error(`search_engine must either be a string of class (function)`);
+        throw new Error(`social platform must either be a string of class (function)`);
     }
 }
+
 
 
 class ScrapeManager {
@@ -65,8 +58,13 @@ class ScrapeManager {
         this.pluggable = null;
         this.scraper = null;
         this.context = context;
+       
+        // await this.getRemoteConfig(campaignId)
 
         this.config = _.defaults(config, {
+            // remote_add:endcofig.REMOTEADD,
+            // remote_username:endcofig.USERNAME,
+            // remote_password:endcofig.PASSWORD,
             // the user agent to scrape with
             user_agent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3835.0 Safari/537.36',
             // if random_user_agent is set to True, a random user agent is chosen
@@ -80,9 +78,7 @@ class ScrapeManager {
             // how long to sleep between requests. a random sleep interval within the range [a,b]
             // is drawn before every request. empty string for no sleeping.
             sleep_range: null,
-            // which search engine to scrape
-            search_engine: 'google',
-            search_engine_name: 'google',
+
             logger: createLogger({
                 level: 'info',
                 format: combine(
@@ -95,6 +91,7 @@ class ScrapeManager {
                     new transports.Console()
                 ]
             }),
+            platform:"facebook",
             keywords: ['nodejs rocks',],
             // whether to start the browser in headless mode
             headless: true,
@@ -162,6 +159,7 @@ class ScrapeManager {
             }
         });
 
+
         this.logger = this.config.logger;
 
         if (config.sleep_range) {
@@ -192,6 +190,8 @@ class ScrapeManager {
 
         debug('this.config=%O', this.config);
     }
+    
+ 
 
     /*
      * Launches the puppeteer cluster or browser.
@@ -289,109 +289,102 @@ class ScrapeManager {
     }
 
     /*
-     * Scrapes the keywords specified by the config.
+     * login the socila media platform
      */
-    async scrape(scrape_config = {}) {
+    // async ytblogin(scrape_config = {}) {
+        
 
-        if (!scrape_config.keywords && !scrape_config.keyword_file) {
-            throw new Error('Either keywords or keyword_file must be supplied to scrape()');
-        }
+    //     Object.assign(this.config, scrape_config);
 
-        Object.assign(this.config, scrape_config);
+    //     // var results = {};
+    //     // var num_requests = 0;
+    //     // var metadata = {};
+    //     // var startTime = Date.now();
 
-        var results = {};
-        var num_requests = 0;
-        var metadata = {};
-        var startTime = Date.now();
+    //     if (this.pluggable && this.pluggable.start_browser) {
+    //         // console.log(this.config.platform)
+    //         this.scraper = getScraper(this.config.platform, {
+    //             config: this.config,
+    //             context: this.context,
+    //             pluggable: this.pluggable,
+    //             page: this.page,
+    //         });
 
-        this.config.search_engine_name = typeof this.config.search_engine === 'function' ? this.config.search_engine.name : this.config.search_engine;
+    //         await this.scraper.runLogin(this.page);
 
-        this.logger.info(`scrapes ${this.config.search_engine_name} with ${this.config.keywords.length} keywords on ${this.config.num_pages} pages each.`);
+    //     } else {
+    //         // Each browser will get N/(K+1) keywords and will issue N/(K+1) * M total requests to the search engine.
+    //         // https://github.com/GoogleChrome/puppeteer/issues/678
+    //         // The question is: Is it possible to set proxies per Page? Per Browser?
+    //         // as far as I can see, puppeteer cluster uses the same puppeteerOptions
+    //         // for every browser instance. We will use our custom puppeteer-cluster version.
+    //         // https://www.npmjs.com/package/proxy-chain
+    //         // this answer looks nice: https://github.com/GoogleChrome/puppeteer/issues/678#issuecomment-389096077
+    //         let chunks = [];
+    //         for (var n = 0; n < this.numClusters; n++) {
+    //             chunks.push([]);
+    //         }
+    //         for (var k = 0; k < this.config.keywords.length; k++) {
+    //             chunks[k % this.numClusters].push(this.config.keywords[k]);
+    //         }
 
-        if (this.pluggable && this.pluggable.start_browser) {
+    //         debug('chunks=%o', chunks);
 
-            this.scraper = getScraper(this.config.search_engine, {
-                config: this.config,
-                context: this.context,
-                pluggable: this.pluggable,
-                page: this.page,
-            });
+    //         let execPromises = [];
+    //         for (var c = 0; c < chunks.length; c++) {
+    //             const config = _.clone(this.config);
+    //             config.keywords = chunks[c];
 
-            var {results, metadata, num_requests} = await this.scraper.run(this.page);
+    //             var obj = getScraper(this.config.platform, {
+    //                 config: config,
+    //                 context: {},
+    //                 pluggable: this.pluggable,
+    //             });
 
-        } else {
-            // Each browser will get N/(K+1) keywords and will issue N/(K+1) * M total requests to the search engine.
-            // https://github.com/GoogleChrome/puppeteer/issues/678
-            // The question is: Is it possible to set proxies per Page? Per Browser?
-            // as far as I can see, puppeteer cluster uses the same puppeteerOptions
-            // for every browser instance. We will use our custom puppeteer-cluster version.
-            // https://www.npmjs.com/package/proxy-chain
-            // this answer looks nice: https://github.com/GoogleChrome/puppeteer/issues/678#issuecomment-389096077
-            let chunks = [];
-            for (var n = 0; n < this.numClusters; n++) {
-                chunks.push([]);
-            }
-            for (var k = 0; k < this.config.keywords.length; k++) {
-                chunks[k % this.numClusters].push(this.config.keywords[k]);
-            }
+    //             var boundMethod = obj.runLogin.bind(obj);
+    //             execPromises.push(this.cluster.execute({}, boundMethod));
+    //         }
 
-            debug('chunks=%o', chunks);
+    //          await Promise.all(execPromises);
 
-            let execPromises = [];
-            for (var c = 0; c < chunks.length; c++) {
-                const config = _.clone(this.config);
-                config.keywords = chunks[c];
+    //         // Merge results and metadata per keyword
+    //         // for (let promiseReturn of promiseReturns) {
+    //         //     Object.assign(results, promiseReturn.results);
+    //         //     Object.assign(metadata, promiseReturn.metadata);
+    //         //     num_requests += promiseReturn.num_requests;
+    //         // }
+    //     }
 
-                var obj = getScraper(this.config.search_engine, {
-                    config: config,
-                    context: {},
-                    pluggable: this.pluggable,
-                });
+    //     // let timeDelta = Date.now() - startTime;
+    //     // let ms_per_request = timeDelta/num_requests;
 
-                var boundMethod = obj.run.bind(obj);
-                execPromises.push(this.cluster.execute({}, boundMethod));
-            }
+    //     // this.logger.info(`Scraper took ${timeDelta}ms to perform ${num_requests} requests.`);
+    //     // this.logger.info(`On average ms/request: ${ms_per_request}ms/request`);
 
-            let promiseReturns = await Promise.all(execPromises);
+    //     // if (this.pluggable && this.pluggable.handle_results) {
+    //     //     await this.pluggable.handle_results(results);
+    //     // }
 
-            // Merge results and metadata per keyword
-            for (let promiseReturn of promiseReturns) {
-                Object.assign(results, promiseReturn.results);
-                Object.assign(metadata, promiseReturn.metadata);
-                num_requests += promiseReturn.num_requests;
-            }
-        }
+    //     // metadata.elapsed_time = timeDelta.toString();
+    //     // metadata.ms_per_keyword = ms_per_request.toString();
+    //     // metadata.num_requests = num_requests;
 
-        let timeDelta = Date.now() - startTime;
-        let ms_per_request = timeDelta/num_requests;
+    //     // debug('metadata=%O', metadata);
 
-        this.logger.info(`Scraper took ${timeDelta}ms to perform ${num_requests} requests.`);
-        this.logger.info(`On average ms/request: ${ms_per_request}ms/request`);
+    //     // if (this.pluggable && this.pluggable.handle_metadata) {
+    //     //     await this.pluggable.handle_metadata(metadata);
+    //     // }
 
-        if (this.pluggable && this.pluggable.handle_results) {
-            await this.pluggable.handle_results(results);
-        }
+    //     // if (this.config.output_file) {
+    //     //     this.logger.info(`Writing results to ${this.config.output_file}`);
+    //     //     write_results(this.config.output_file, JSON.stringify(results, null, 4));
+    //     // }
 
-        metadata.elapsed_time = timeDelta.toString();
-        metadata.ms_per_keyword = ms_per_request.toString();
-        metadata.num_requests = num_requests;
-
-        debug('metadata=%O', metadata);
-
-        if (this.pluggable && this.pluggable.handle_metadata) {
-            await this.pluggable.handle_metadata(metadata);
-        }
-
-        if (this.config.output_file) {
-            this.logger.info(`Writing results to ${this.config.output_file}`);
-            write_results(this.config.output_file, JSON.stringify(results, null, 4));
-        }
-
-        return {
-            results: results,
-            metadata: metadata || {},
-        };
-    }
+    //     // return {
+    //     //     results: results,
+    //     //     metadata: metadata || {},
+    //     // };
+    // }
 
     /*
      * Quit the puppeteer cluster/browser.
