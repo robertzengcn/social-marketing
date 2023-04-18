@@ -36,6 +36,10 @@ class FacebookScraper extends Scraper {
 
         return true;
     }
+    //user login by hand
+    async userloginaction(){
+
+    }
 
 }
 

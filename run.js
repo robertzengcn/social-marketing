@@ -3,6 +3,7 @@ const se_scraper = require("./index.js");
 const { ArgumentParser } = require("argparse");
 const axios = require("axios");
 const { version } = require("./package.json");
+const fs = require('fs');
 // const { data } = require("cheerio/lib/api/attributes.js");
 
 const parser = new ArgumentParser({
@@ -108,6 +109,9 @@ async function runCommand(parearg) {
 
   let sosetting = await getRemoteConfig(campaignId);
   console.log(sosetting)
+  if(sosetting== null){
+    throw new Error("sosetting is undefined");
+  }
   scrape_config.platform = sosetting.sotype;
   scrape_config.user = sosetting.socialuser;
   scrape_config.pass = sosetting.socialpass;

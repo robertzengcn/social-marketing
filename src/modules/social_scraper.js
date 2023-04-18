@@ -131,7 +131,12 @@ module.exports = class SocialScraper {
     async load_login_page() {
 
     }
+    /**
+     * user login by their hand
+     */
+    async userloginaction() {
 
+    }
 
 }
 // This is where we'll put the code to get around the tests.

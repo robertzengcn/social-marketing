@@ -10,6 +10,7 @@ const { Cluster } = require('puppeteer-cluster');
 
 const UserAgent = require('user-agents');
 const facebook = require('./modules/facebook_scraper.js');
+const youtube = require('./modules/youtube_scraper.js');
 // const bing = require('./modules/bing.js');
 // const yandex = require('./modules/yandex.js');
 // const infospace = require('./modules/infospace.js');
@@ -26,7 +27,7 @@ function write_results(fname, data) {
 }
 
 function read_keywords_from_file(fname) {
-    let kws =  fs.readFileSync(fname).toString().split(os.EOL);
+    let kws = fs.readFileSync(fname).toString().split(os.EOL);
     // clean keywords
     kws = kws.filter((kw) => {
         return kw.trim().length > 0;
@@ -52,13 +53,13 @@ function getScraper(search_engine, args) {
 
 class ScrapeManager {
 
-    constructor(config, context={}) {
+    constructor(config, context = {}) {
 
         this.cluster = null;
         this.pluggable = null;
         this.scraper = null;
         this.context = context;
-       
+
         // await this.getRemoteConfig(campaignId)
 
         this.config = _.defaults(config, {
@@ -91,7 +92,7 @@ class ScrapeManager {
                     new transports.Console()
                 ]
             }),
-            platform:"facebook",
+            platform: "facebook",
             keywords: ['nodejs rocks',],
             // whether to start the browser in headless mode
             headless: true,
@@ -190,8 +191,8 @@ class ScrapeManager {
 
         debug('this.config=%O', this.config);
     }
-    
- 
+
+
 
     /*
      * Launches the puppeteer cluster or browser.
@@ -225,8 +226,12 @@ class ScrapeManager {
             this.browser = await this.pluggable.start_browser({
                 config: this.config,
             });
+            // console.log("229")
             this.page = await this.browser.newPage();
+
+            
         } else {
+            // console.log("241")
             // if no custom start_browser functionality was given
             // use puppeteer-cluster for scraping
 
@@ -260,7 +265,7 @@ class ScrapeManager {
 
             // Give the per browser options
             const perBrowserOptions = _.map(proxies, (proxy) => {
-                const userAgent = (this.config.random_user_agent) ? (new UserAgent({deviceCategory: 'desktop'})).toString() : this.config.user_agent;
+                const userAgent = (this.config.random_user_agent) ? (new UserAgent({ deviceCategory: 'desktop' })).toString() : this.config.user_agent;
                 let args = chrome_flags.concat([`--user-agent=${userAgent}`]);
 
                 if (proxy) {
@@ -291,100 +296,100 @@ class ScrapeManager {
     /*
      * login the socila media platform
      */
-    // async ytblogin(scrape_config = {}) {
-        
+    async login(scrape_config = {}) {
 
-    //     Object.assign(this.config, scrape_config);
 
-    //     // var results = {};
-    //     // var num_requests = 0;
-    //     // var metadata = {};
-    //     // var startTime = Date.now();
+        Object.assign(this.config, scrape_config);
 
-    //     if (this.pluggable && this.pluggable.start_browser) {
-    //         // console.log(this.config.platform)
-    //         this.scraper = getScraper(this.config.platform, {
-    //             config: this.config,
-    //             context: this.context,
-    //             pluggable: this.pluggable,
-    //             page: this.page,
-    //         });
+        // var results = {};
+        // var num_requests = 0;
+        // var metadata = {};
+        // var startTime = Date.now();
 
-    //         await this.scraper.runLogin(this.page);
+        if (this.pluggable && this.pluggable.start_browser) {
+            // console.log(this.config.platform)
+            this.scraper = getScraper(this.config.platform, {
+                config: this.config,
+                context: this.context,
+                pluggable: this.pluggable,
+                page: this.page,
+            });
 
-    //     } else {
-    //         // Each browser will get N/(K+1) keywords and will issue N/(K+1) * M total requests to the search engine.
-    //         // https://github.com/GoogleChrome/puppeteer/issues/678
-    //         // The question is: Is it possible to set proxies per Page? Per Browser?
-    //         // as far as I can see, puppeteer cluster uses the same puppeteerOptions
-    //         // for every browser instance. We will use our custom puppeteer-cluster version.
-    //         // https://www.npmjs.com/package/proxy-chain
-    //         // this answer looks nice: https://github.com/GoogleChrome/puppeteer/issues/678#issuecomment-389096077
-    //         let chunks = [];
-    //         for (var n = 0; n < this.numClusters; n++) {
-    //             chunks.push([]);
-    //         }
-    //         for (var k = 0; k < this.config.keywords.length; k++) {
-    //             chunks[k % this.numClusters].push(this.config.keywords[k]);
-    //         }
+            await this.scraper.runLogin(this.page);
 
-    //         debug('chunks=%o', chunks);
+        } else {
+            // Each browser will get N/(K+1) keywords and will issue N/(K+1) * M total requests to the search engine.
+            // https://github.com/GoogleChrome/puppeteer/issues/678
+            // The question is: Is it possible to set proxies per Page? Per Browser?
+            // as far as I can see, puppeteer cluster uses the same puppeteerOptions
+            // for every browser instance. We will use our custom puppeteer-cluster version.
+            // https://www.npmjs.com/package/proxy-chain
+            // this answer looks nice: https://github.com/GoogleChrome/puppeteer/issues/678#issuecomment-389096077
+            let chunks = [];
+            for (var n = 0; n < this.numClusters; n++) {
+                chunks.push([]);
+            }
+            for (var k = 0; k < this.config.keywords.length; k++) {
+                chunks[k % this.numClusters].push(this.config.keywords[k]);
+            }
 
-    //         let execPromises = [];
-    //         for (var c = 0; c < chunks.length; c++) {
-    //             const config = _.clone(this.config);
-    //             config.keywords = chunks[c];
+            debug('chunks=%o', chunks);
 
-    //             var obj = getScraper(this.config.platform, {
-    //                 config: config,
-    //                 context: {},
-    //                 pluggable: this.pluggable,
-    //             });
+            let execPromises = [];
+            for (var c = 0; c < chunks.length; c++) {
+                const config = _.clone(this.config);
+                config.keywords = chunks[c];
 
-    //             var boundMethod = obj.runLogin.bind(obj);
-    //             execPromises.push(this.cluster.execute({}, boundMethod));
-    //         }
+                var obj = getScraper(this.config.platform, {
+                    config: config,
+                    context: {},
+                    pluggable: this.pluggable,
+                });
 
-    //          await Promise.all(execPromises);
+                var boundMethod = obj.runLogin.bind(obj);
+                execPromises.push(this.cluster.execute({}, boundMethod));
+            }
 
-    //         // Merge results and metadata per keyword
-    //         // for (let promiseReturn of promiseReturns) {
-    //         //     Object.assign(results, promiseReturn.results);
-    //         //     Object.assign(metadata, promiseReturn.metadata);
-    //         //     num_requests += promiseReturn.num_requests;
-    //         // }
-    //     }
+            await Promise.all(execPromises);
 
-    //     // let timeDelta = Date.now() - startTime;
-    //     // let ms_per_request = timeDelta/num_requests;
+            // Merge results and metadata per keyword
+            // for (let promiseReturn of promiseReturns) {
+            //     Object.assign(results, promiseReturn.results);
+            //     Object.assign(metadata, promiseReturn.metadata);
+            //     num_requests += promiseReturn.num_requests;
+            // }
+        }
 
-    //     // this.logger.info(`Scraper took ${timeDelta}ms to perform ${num_requests} requests.`);
-    //     // this.logger.info(`On average ms/request: ${ms_per_request}ms/request`);
+        // let timeDelta = Date.now() - startTime;
+        // let ms_per_request = timeDelta/num_requests;
 
-    //     // if (this.pluggable && this.pluggable.handle_results) {
-    //     //     await this.pluggable.handle_results(results);
-    //     // }
+        // this.logger.info(`Scraper took ${timeDelta}ms to perform ${num_requests} requests.`);
+        // this.logger.info(`On average ms/request: ${ms_per_request}ms/request`);
 
-    //     // metadata.elapsed_time = timeDelta.toString();
-    //     // metadata.ms_per_keyword = ms_per_request.toString();
-    //     // metadata.num_requests = num_requests;
+        // if (this.pluggable && this.pluggable.handle_results) {
+        //     await this.pluggable.handle_results(results);
+        // }
 
-    //     // debug('metadata=%O', metadata);
+        // metadata.elapsed_time = timeDelta.toString();
+        // metadata.ms_per_keyword = ms_per_request.toString();
+        // metadata.num_requests = num_requests;
 
-    //     // if (this.pluggable && this.pluggable.handle_metadata) {
-    //     //     await this.pluggable.handle_metadata(metadata);
-    //     // }
+        // debug('metadata=%O', metadata);
 
-    //     // if (this.config.output_file) {
-    //     //     this.logger.info(`Writing results to ${this.config.output_file}`);
-    //     //     write_results(this.config.output_file, JSON.stringify(results, null, 4));
-    //     // }
+        // if (this.pluggable && this.pluggable.handle_metadata) {
+        //     await this.pluggable.handle_metadata(metadata);
+        // }
 
-    //     // return {
-    //     //     results: results,
-    //     //     metadata: metadata || {},
-    //     // };
-    // }
+        // if (this.config.output_file) {
+        //     this.logger.info(`Writing results to ${this.config.output_file}`);
+        //     write_results(this.config.output_file, JSON.stringify(results, null, 4));
+        // }
+
+        // return {
+        //     results: results,
+        //     metadata: metadata || {},
+        // };
+    }
 
     /*
      * Quit the puppeteer cluster/browser.

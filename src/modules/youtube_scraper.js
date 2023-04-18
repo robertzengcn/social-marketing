@@ -2,15 +2,26 @@
 
 const cheerio = require('cheerio');
 const Scraper = require('./social_scraper');
+const fs = require('fs');
 
 class YoutubeScraper extends Scraper {
 
     constructor(...args) {
-        super(...args);
+        super(...args);    
     }
- 
+
+
+
 
     async load_login_page() {
+        await this.page.setRequestInterception(true);
+            this.page.on('request', request => {
+                if (request.resourceType() === 'image') {
+                    request.abort();
+                } else {
+                    request.continue();
+                }
+            });
         let startUrl = 'https://www.youtube.com';
 
         if (this.config.youtube_settings) {
@@ -31,11 +42,25 @@ class YoutubeScraper extends Scraper {
         this.logger.info('Using loginUrl: ' + startUrl);
 
         this.last_response = await this.page.goto(startUrl);
+        
+        //hidden icon
+        await this.page.evaluate(_ => {
+        var icon = document.getElementById("logo-icon");
+        icon.style.display = "none";
+        });
 
         //await this.page.waitForSelector('input[name="q"]', { timeout: this.STANDARD_TIMEOUT });
-
+        //await for user to take action
+        await this.page.waitForSelector('#avatar-btn',{'timeout':0});
+        //user has success login
+        //save cookies
+        const cookies = await page.cookies();
+        await fs.writeFile('./cookies.json', JSON.stringify(cookies, null, 2));
+        await browser.close();
         return true;
     }
+
+
 
 }
 

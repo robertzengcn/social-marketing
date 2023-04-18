@@ -10,7 +10,7 @@ async function login(browser_config, scrape_config) {
     await scraper.start();
 
     var results = await scraper.login(scrape_config);
-
+    
     await scraper.quit();
 
     return results;
