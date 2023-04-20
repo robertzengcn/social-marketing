@@ -11,17 +11,17 @@ class YoutubeScraper extends Scraper {
     }
 
 
-
-
     async load_login_page() {
-        await this.page.setRequestInterception(true);
-            this.page.on('request', request => {
-                if (request.resourceType() === 'image') {
-                    request.abort();
-                } else {
-                    request.continue();
-                }
-            });
+        
+        // await this.page.setRequestInterception(true);
+        //whether to disable image loading
+            // this.page.on('request', request => {
+            //     if (request.resourceType() === 'image') {
+            //         request.abort();
+            //     } else {
+            //         request.continue();
+            //     }
+            // });
         let startUrl = 'https://www.youtube.com';
 
         if (this.config.youtube_settings) {
@@ -40,7 +40,7 @@ class YoutubeScraper extends Scraper {
         }
 
         this.logger.info('Using loginUrl: ' + startUrl);
-
+        await this.page.setBypassCSP(true);
         this.last_response = await this.page.goto(startUrl);
         
         //hidden icon
@@ -48,14 +48,15 @@ class YoutubeScraper extends Scraper {
         var icon = document.getElementById("logo-icon");
         icon.style.display = "none";
         });
-
+        console.log(this.config.tmppath)
         //await this.page.waitForSelector('input[name="q"]', { timeout: this.STANDARD_TIMEOUT });
         //await for user to take action
         await this.page.waitForSelector('#avatar-btn',{'timeout':0});
         //user has success login
-        //save cookies
+        //save cookies 
         const cookies = await page.cookies();
-        await fs.writeFile('./cookies.json', JSON.stringify(cookies, null, 2));
+        
+        await fs.writeFile(this.config.tmppath+'/cookies.json', JSON.stringify(cookies, null, 2));
         await browser.close();
         return true;
     }

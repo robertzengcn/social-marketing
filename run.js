@@ -4,6 +4,7 @@ const { ArgumentParser } = require("argparse");
 const axios = require("axios");
 const { version } = require("./package.json");
 const fs = require('fs');
+const resolve = require('path').resolve;
 // const { data } = require("cheerio/lib/api/attributes.js");
 
 const parser = new ArgumentParser({
@@ -25,7 +26,7 @@ let parearg = parser.parse_args();
 let browser_config = {
   // the user agent to scrape with
   user_agent:
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36",
   // if random_user_agent is set to True, a random user agent is chosen
   random_user_agent: false,
   // whether to start the browser in headless mode
@@ -43,7 +44,7 @@ let browser_config = {
   // get_browser, handle_metadata, close_browser
   // must be an absolute path to the module
   //custom_func: resolve('examples/pluggable.js'),
-  custom_func: "",
+  custom_func: "puppeteer-extra,puppeteer-extra-plugin-stealth,puppeteer-extra-plugin-adblocker",
   // use a proxy for all connections
   // example: 'socks5://78.94.172.42:1080'
   // example: 'http://118.174.233.10:48400'
@@ -52,6 +53,7 @@ let browser_config = {
   // socks5://78.94.172.42:1080
   // http://118.174.233.10:48400
   proxy_file: "",
+  use_cluster:false,
   puppeteer_cluster_config: {
     timeout: 10 * 60 * 1000, // max timeout set to 10 minutes
     monitor: false,
@@ -117,9 +119,9 @@ async function runCommand(parearg) {
   scrape_config.pass = sosetting.socialpass;
   console.log(sosetting);
   //create a tmp folder
-  const tmppath = "./tmp/" + scrape_config.platform + "/" + sosetting.socialuser;
+  const tmppath = resolve("./tmp/" + scrape_config.platform + "/" + sosetting.socialuser);
   await createPath(tmppath);
-
+  scrape_config.tmppath=tmppath
   switch (action) {
     case "login":
       login();

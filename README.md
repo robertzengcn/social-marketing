@@ -1,6 +1,8 @@
 # Social media marketing
 
-This project is mainly for do social marketing on some social media platform like facebook, twitter
+This project is mainly for do social marketing on some social media platform like facebook, twitter, youtube
+
+You should set up your own backgroud service
 
 #### How the program work
 
@@ -14,7 +16,12 @@ login campaign
 ```
 npm run login -c compaignid
 ```
-fblogin mean ask the program to login into facebook, the compaignid should be return from backend service
+
+For example
+```
+npm run login -c "17"
+```
+login mean ask the program to login into social media platform, the compaign id should be return from backend service
 
 
 4. The program shoud do follow job, get username credentials from backgroud service

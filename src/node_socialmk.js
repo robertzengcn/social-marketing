@@ -7,6 +7,10 @@ const { createLogger, format, transports } = require('winston');
 const { combine, timestamp, printf } = format;
 const debug = require('debug')('se-scraper:ScrapeManager');
 const { Cluster } = require('puppeteer-cluster');
+const vanillaPuppeteer = require('puppeteer');
+const { addExtra } = require('puppeteer-extra');
+const Stealth = require('puppeteer-extra-plugin-stealth');
+const AdblockerPlugin = require('puppeteer-extra-plugin-adblocker');
 
 const UserAgent = require('user-agents');
 const facebook = require('./modules/facebook_scraper.js');
@@ -18,6 +22,9 @@ const youtube = require('./modules/youtube_scraper.js');
 const CustomConcurrencyImpl = require('./concurrency-implementation');
 const axios = require('axios');
 const MAX_ALLOWED_BROWSERS = 6;
+const puppeteer = require('puppeteer-extra');
+// const _StealthPlugin = require('puppeteer-extra-plugin-stealth');
+// const _AdblockerPlugin = require('puppeteer-extra-plugin-adblocker');
 
 function write_results(fname, data) {
     fs.writeFileSync(fname, data, (err) => {
@@ -67,7 +74,7 @@ class ScrapeManager {
             // remote_username:endcofig.USERNAME,
             // remote_password:endcofig.PASSWORD,
             // the user agent to scrape with
-            user_agent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3835.0 Safari/537.36',
+            user_agent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36',
             // if random_user_agent is set to True, a random user agent is chosen
             random_user_agent: false,
             // whether to select manual settings in visible mode
@@ -113,6 +120,12 @@ class ScrapeManager {
                 '--hide-scrollbars',
                 '--disable-notifications',
             ],
+            //fix google account can not login
+            ignoreDefaultArgs: [
+            '--enable-automation', 
+            '--disable-extensions', 
+            '--disable-default-apps', 
+            '--disable-component-extensions-with-background-pages'],
             // the number of pages to scrape for each keyword
             num_pages: 1,
             // path to output file, data will be stored in JSON
@@ -281,12 +294,25 @@ class ScrapeManager {
 
             debug('perBrowserOptions=%O', perBrowserOptions)
 
+            // puppeteer.use(_StealthPlugin());
+            // puppeteer.use(_AdblockerPlugin());
+
+    const puppeteer = addExtra(vanillaPuppeteer);
+
+    // Add stealth plugin and use defaults (all tricks to hide puppeteer usage)
+    puppeteer.use(Stealth());
+
+    // Add adblocker plugin to block all ads and trackers (saves bandwidth)
+    puppeteer.use(AdblockerPlugin({ blockTrackers: true }));
+
             this.cluster = await Cluster.launch({
+                puppeteer,
                 monitor: this.config.puppeteer_cluster_config.monitor,
                 timeout: this.config.puppeteer_cluster_config.timeout, // max timeout set to 30 minutes
                 concurrency: CustomConcurrencyImpl,
                 maxConcurrency: this.numClusters,
                 puppeteerOptions: {
+                    // puppeteer:puppeteer,
                     perBrowserOptions: perBrowserOptions
                 }
             });
@@ -313,6 +339,7 @@ class ScrapeManager {
                 context: this.context,
                 pluggable: this.pluggable,
                 page: this.page,
+                tmppath:this.tmppath,
             });
 
             await this.scraper.runLogin(this.page);
