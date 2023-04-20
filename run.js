@@ -44,7 +44,7 @@ let browser_config = {
   // get_browser, handle_metadata, close_browser
   // must be an absolute path to the module
   //custom_func: resolve('examples/pluggable.js'),
-  custom_func: "puppeteer-extra,puppeteer-extra-plugin-stealth,puppeteer-extra-plugin-adblocker",
+  custom_func: "",
   // use a proxy for all connections
   // example: 'socks5://78.94.172.42:1080'
   // example: 'http://118.174.233.10:48400'

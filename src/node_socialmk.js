@@ -300,10 +300,10 @@ class ScrapeManager {
     const puppeteer = addExtra(vanillaPuppeteer);
 
     // Add stealth plugin and use defaults (all tricks to hide puppeteer usage)
-    puppeteer.use(Stealth());
+    //  puppeteer.use(Stealth());
 
     // Add adblocker plugin to block all ads and trackers (saves bandwidth)
-    puppeteer.use(AdblockerPlugin({ blockTrackers: true }));
+    // puppeteer.use(AdblockerPlugin({ blockTrackers: true }));
 
             this.cluster = await Cluster.launch({
                 puppeteer,
