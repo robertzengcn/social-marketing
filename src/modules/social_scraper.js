@@ -13,8 +13,9 @@ module.exports = class SocialScraper {
             context = {},
             pluggable = null,
             page = null,
+            // browsers=null
         } = options;
-
+        // this.browser=browser;
         this.page = page;
         this.last_response = null; // the last response object
         this.metadata = {
@@ -55,7 +56,7 @@ module.exports = class SocialScraper {
             this.page = page;
         }
 
-        await this.page.setViewport({ width: 1920, height: 1040 });
+        await this.page.setViewport({ width: 1280, height: 800 });
 
      
        await this.load_browser_engine();

@@ -54,7 +54,7 @@ class YoutubeScraper extends Scraper {
         await this.page.waitForSelector('#avatar-btn',{'timeout':0});
         //user has success login
         //save cookies 
-        const cookies = await page.cookies();
+        const cookies = await this.page.cookies();
         
         await fs.writeFile(this.config.tmppath+'/cookies.json', JSON.stringify(cookies, null, 2));
         await browser.close();

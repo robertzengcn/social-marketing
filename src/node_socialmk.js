@@ -15,6 +15,7 @@ const AdblockerPlugin = require('puppeteer-extra-plugin-adblocker');
 const UserAgent = require('user-agents');
 const facebook = require('./modules/facebook_scraper.js');
 const youtube = require('./modules/youtube_scraper.js');
+const bilibili = require('./modules/bilibili_scraper.js');
 // const bing = require('./modules/bing.js');
 // const yandex = require('./modules/yandex.js');
 // const infospace = require('./modules/infospace.js');
@@ -48,6 +49,7 @@ function getScraper(search_engine, args) {
         return new {
             facebook: facebook.FacebookScraper,
             youtube: youtube.YoutubeScraper,
+            bilibili:bilibili.BilibiliScraper
         }[search_engine](args);
     } else if (typeof search_engine === 'function') {
         return new search_engine(args);
@@ -115,7 +117,7 @@ class ScrapeManager {
                 '--disable-dev-shm-usage',
                 '--disable-accelerated-2d-canvas',
                 '--disable-gpu',
-                '--window-size=1920,1040',
+                '--window-size=1280,768',
                 '--start-fullscreen',
                 '--hide-scrollbars',
                 '--disable-notifications',
