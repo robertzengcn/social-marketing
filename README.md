@@ -10,7 +10,10 @@ You should set up your own backgroud service
 
 2. Defined the api address in local client environment file, edit the .env file
 
-3. Run the start command
+#### Some function
+## login social platform
+
+Run the start command
 
 login campaign
 ```
@@ -24,7 +27,14 @@ npm run login -c "17"
 login mean ask the program to login into social media platform, the compaign id should be return from backend service
 
 
-4. The program shoud do follow job, get username credentials from backgroud service
+The program shoud do follow job, get username credentials from backgroud service, open login page, and login, some platform may require use make some manual action
+
+#### Debug method
+debug the function, for example
+```
+DEBUG='bilibili-scraper:Scraper' npm run testdownload
+```
+
 
 
 

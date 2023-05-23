@@ -1,10 +1,11 @@
 "use strict";
 const se_scraper = require("./index.js");
 const { ArgumentParser } = require("argparse");
-const axios = require("axios");
+const {RemoteSource} = require("./src/remotesource.js");
 const { version } = require("./package.json");
 const fs = require('fs');
 const resolve = require('path').resolve;
+const debug = require('debug')('runjs');
 // const { data } = require("cheerio/lib/api/attributes.js");
 
 const parser = new ArgumentParser({
@@ -107,10 +108,19 @@ async function runCommand(parearg) {
   if (!action) {
     console.log("no parameter action been passed");
   }
+ 
+  switch (action) {
+    case "login":
+      login();
+      break;
+  }
+}
+//login to facebook
+async function login() {
   let campaignId = get(parearg, "campaign", false);
-
-  let sosetting = await getRemoteConfig(campaignId);
-  console.log(sosetting)
+  var remotesource =new RemoteSource();
+  let sosetting = await remotesource.getRemoteConfig(campaignId);
+  debug(sosetting)
   if(sosetting== null){
     throw new Error("sosetting is undefined");
   }
@@ -122,88 +132,39 @@ async function runCommand(parearg) {
   const tmppath = resolve("./tmp/" + scrape_config.platform + "/" + sosetting.socialuser);
   await createPath(tmppath);
   scrape_config.tmppath=tmppath
-  switch (action) {
-    case "login":
-      login();
-      break;
-  }
-}
-//login to facebook
-async function login() {
+
   await se_scraper.login(browser_config, scrape_config);
 }
 
-async function readenv() {
-  //read config from .env file
-  let envcofig = readConfig();
-  //check key exist in object
-  if (!envcofig.hasOwnProperty("REMOTEADD")) {
-    throw new Error(`REMOTEADD not found in .env file`);
-  }
-  if (!envcofig.hasOwnProperty("REMOTEUSERNAME")) {
-    throw new Error(`USERNAME not found in .env file`);
-  }
-  if (!envcofig.hasOwnProperty("REMOTEPASSWORD")) {
-    throw new Error(`PASSWORD not found in .env file`);
-  }
-  return envcofig;
-}
+// async function readenv() {
+//   //read config from .env file
+//   let envcofig = readConfig();
+//   //check key exist in object
+//   if (!envcofig.hasOwnProperty("REMOTEADD")) {
+//     throw new Error(`REMOTEADD not found in .env file`);
+//   }
+//   if (!envcofig.hasOwnProperty("REMOTEUSERNAME")) {
+//     throw new Error(`USERNAME not found in .env file`);
+//   }
+//   if (!envcofig.hasOwnProperty("REMOTEPASSWORD")) {
+//     throw new Error(`PASSWORD not found in .env file`);
+//   }
+//   return envcofig;
+// }
 /**
  * read config from .env File
  *
  * @returns {object} config
  * */
-function readConfig() {
-  const result = require("dotenv").config();
-  if (result.error) {
-    throw result.error;
-  }
-  return result.parsed;
-}
+// function readConfig() {
+//   const result = require("dotenv").config();
+//   if (result.error) {
+//     throw result.error;
+//   }
+//   return result.parsed;
+// }
 
-/**
- * get response from remote servive
- * @return object
- */
-async function getRemoteConfig(campaignId) {
-  let envconfig = await readenv();
 
-  let sosetvar=await axios
-    .get(envconfig.REMOTEADD + "/api/getsobyCam/?campaign_id=" + campaignId, {
-      auth: {
-        username: envconfig.REMOTEUSERNAME,
-        password: envconfig.REMOTEPASSWORD,
-      },
-    })
-    .then(function (res) {
-      if (parseInt(res.status)!=200) {
-        throw new Error("code not equal 200");
-      }
-      if (!res.data.status) {
-        throw new Error("code not equal 200");
-      }
-      // console.log(res.status)
-      // console.log(res.data.data.user)
-      // console.log(res.data.data.pass)
-      // console.log(res.data.data.proxy)
-      const sosetting = {
-        sotype: res.data.data.sotype,
-        socialuser: res.data.data.user,
-        socialpass: res.data.data.pass,
-        proxy: {
-          proxy: res.data.data.proxy.url,
-          user: res.data.data.proxy.user,
-          pass: res.data.data.proxy.pass,
-        },
-      };
-      return sosetting;
-    })
-    .catch(function (error) {
-      console.error(error);
-    });
-    
-    return sosetvar;
-}
 
 function createPath(path) {
   path.split("/").reduce((directories, directory) => {
@@ -216,8 +177,5 @@ function createPath(path) {
     return directories;
   }, "");
 }
-//login to youtube
-// async function youtubelogin() {
-//     await se_scraper.ytblogin(browser_config, scrape_config);
-//   }
+
 runCommand(parearg);
