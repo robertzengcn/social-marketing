@@ -8,10 +8,7 @@ class RemoteSource {
     this.REMOTEUSERNAME = config.REMOTEUSERNAME;
     this.REMOTEPASSWORD = config.REMOTEPASSWORD;
   }
-  static async build () {
-    
-    // return new RemoteSource(config);
-  }
+ 
 
   readenv() {
     //read config from .env file
@@ -86,7 +83,39 @@ class RemoteSource {
 
     return sosetvar;
   }
+  /**
+   * get campaign from remote servive
+   */
+  async getCampaignlist() {
+    const campignlist = await axios
+      .get(this.REMOTEADD + "/api/listsotask", {
+        auth: {
+          username: this.REMOTEUSERNAME,
+          password: this.REMOTEPASSWORD,
+        },
+      })
+      .then(function (res) {
+        if (parseInt(res.status) != 200) {
+          throw new Error("code not equal 200");
+        } 
+        return res.data.data;
+      })
+      .catch(function (error) {
+        console.error(error);
+      });
+    return campignlist;
+  }
+  async saveLinkremote({data}) {
+    axios.post(this.REMOTEADD + "/api/savelink",data)
+    .then(function (response) {
+      console.log(response);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+  }
 }
+
 module.exports = {
     RemoteSource: RemoteSource,
 };

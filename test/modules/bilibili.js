@@ -52,7 +52,7 @@ describe('Module Bilibili', function(){
             // timeout: 120000,
             //dumpio: true,
            //executablePath:'/usr/bin/google-chrome-stable',
-            headless: false,
+            // headless: false,
             //slowMo: 250,
             ignoreHTTPSErrors: true,
             args: [

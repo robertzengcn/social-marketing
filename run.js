@@ -5,7 +5,7 @@ const {RemoteSource} = require("./src/remotesource.js");
 const { version } = require("./package.json");
 const fs = require('fs');
 const resolve = require('path').resolve;
-const debug = require('debug')('runjs');
+const debug = require('debug')('runjs:runjs');
 // const { data } = require("cheerio/lib/api/attributes.js");
 
 const parser = new ArgumentParser({
@@ -113,7 +113,28 @@ async function runCommand(parearg) {
     case "login":
       login();
       break;
+    case "task":
+      getcampaign();
+      break; 
   }
+}
+//get campaign
+async function getcampaign() {
+  var remotesource =new RemoteSource();
+  const campaignlist=await remotesource.getCampaignlist()
+  debug(campaignlist)
+  if(campaignlist.length==0){
+    console.log("not campaign need to run")
+  }
+  for (const campaign of campaignlist) {
+    switch (campaign.type) {
+      case "bilibilidownload":
+        scrape_config.platform="bilibili"
+        scrape_config.keywords=campaign.keywords
+        se_scraper.searchdata(browser_config, scrape_config);
+        break;
+    }
+  }  
 }
 //login to facebook
 async function login() {
@@ -135,36 +156,6 @@ async function login() {
 
   await se_scraper.login(browser_config, scrape_config);
 }
-
-// async function readenv() {
-//   //read config from .env file
-//   let envcofig = readConfig();
-//   //check key exist in object
-//   if (!envcofig.hasOwnProperty("REMOTEADD")) {
-//     throw new Error(`REMOTEADD not found in .env file`);
-//   }
-//   if (!envcofig.hasOwnProperty("REMOTEUSERNAME")) {
-//     throw new Error(`USERNAME not found in .env file`);
-//   }
-//   if (!envcofig.hasOwnProperty("REMOTEPASSWORD")) {
-//     throw new Error(`PASSWORD not found in .env file`);
-//   }
-//   return envcofig;
-// }
-/**
- * read config from .env File
- *
- * @returns {object} config
- * */
-// function readConfig() {
-//   const result = require("dotenv").config();
-//   if (result.error) {
-//     throw result.error;
-//   }
-//   return result.parsed;
-// }
-
-
 
 function createPath(path) {
   path.split("/").reduce((directories, directory) => {

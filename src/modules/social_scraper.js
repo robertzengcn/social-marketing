@@ -59,7 +59,8 @@ module.exports = class SocialScraper {
         await this.page.setViewport({ width: 1280, height: 800 });
 
      
-       await this.load_browser_engine();
+        await this.load_browser_engine();
+        await this.makeloginaction()
        
     }
 
@@ -123,7 +124,7 @@ module.exports = class SocialScraper {
 
         }
 
-        return await this.load_login_page();
+        return await this.load_start_page();
     }
     /**
   *
@@ -132,11 +133,44 @@ module.exports = class SocialScraper {
     async load_login_page() {
 
     }
+     /**
+     *
+     * @returns true if startpage was loaded correctly.
+     */
+     async load_start_page() {
+
+     }
+    /**
+     * make login action
+     */
+    async makeloginaction(){
+
+    }
     /**
      * user login by their hand
      */
     async userloginaction() {
 
+    }
+
+    async searchdata() {
+
+    }
+    /**
+     * use worker to search data
+     * @param array keyword 
+     */
+    async workersearchdata({page,worker}) {
+         debug('worker=%o', worker, this.config.keywords);
+
+        if (page) {
+            this.page = page;
+        }
+
+        await this.page.setViewport({ width: 1280, height: 800 });
+        await this.load_browser_engine()
+        const links=await this.searchdata({keyword:this.config.keywords})
+        debug(links)
     }
 
 }

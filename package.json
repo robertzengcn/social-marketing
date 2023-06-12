@@ -6,6 +6,7 @@
   "scripts": {
     "test": "mocha test test/modules",
     "login": "node run.js -a login -c",
+    "task": "node run.js -a task",
     "testdownload": "mocha test test/modules --grep download download single video",
     "testgetlinks": "mocha test test/modules --grep get video play link",
     "testgetalllinks": "mocha test test/modules --grep video-url-list"
@@ -60,6 +61,7 @@
     "key-cert": "^1.0.1",
     "mocha": "^6.1.4",
     "prettier": "2.8.4",
+    "typescript": "^5.1.3",
     "ua-parser-js": "^0.7.21"
   }
 }
