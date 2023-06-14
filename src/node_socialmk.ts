@@ -1,5 +1,6 @@
 "use strict";
-
+// Use TypeScript modules https://stackoverflow.com/questions/35758584/cannot-redeclare-block-scoped-variable
+export {};
 const fs = require("fs");
 const os = require("os");
 const _ = require("lodash");
@@ -9,8 +10,8 @@ const debug = require("debug")("se-scraper:ScrapeManager");
 const { Cluster } = require("puppeteer-cluster");
 const vanillaPuppeteer = require("puppeteer");
 const { addExtra } = require("puppeteer-extra");
-const Stealth = require("puppeteer-extra-plugin-stealth");
-const AdblockerPlugin = require("puppeteer-extra-plugin-adblocker");
+// const Stealth = require("puppeteer-extra-plugin-stealth");
+// const AdblockerPlugin = require("puppeteer-extra-plugin-adblocker");
 
 const UserAgent = require("user-agents");
 const facebook = require("./modules/facebook_scraper.js");
@@ -21,9 +22,9 @@ const bilibili = require("./modules/bilibili_scraper.js");
 // const infospace = require('./modules/infospace.js');
 // const duckduckgo = require('./modules/duckduckgo.js');
 const CustomConcurrencyImpl = require("./concurrency-implementation");
-const axios = require("axios");
+// const axios = require("axios");
 const MAX_ALLOWED_BROWSERS = 6;
-const puppeteer = require("puppeteer-extra");
+// const puppeteer = require("puppeteer-extra");
 // const _StealthPlugin = require('puppeteer-extra-plugin-stealth');
 // const _AdblockerPlugin = require('puppeteer-extra-plugin-adblocker');
 
@@ -43,29 +44,61 @@ function read_keywords_from_file(fname) {
   return kws;
 }
 
-function getScraper(search_engine, args) {
+
+function getScraper(search_engine:string, args:any) {
   if (typeof search_engine === "string") {
     return new {
       facebook: facebook.FacebookScraper,
       youtube: youtube.YoutubeScraper,
       bilibili: bilibili.BilibiliScraper,
     }[search_engine](args);
-  } else if (typeof search_engine === "function") {
-    return new search_engine(args);
-  } else {
+  } 
+  // else if (typeof search_engine === "function") {
+  //   return new search_engine(args);
+  // } 
+  else {
     throw new Error(
       `social platform must either be a string of class (function)`
     );
   }
 }
-
+type SMconfig ={
+  logger:{info:Function};
+  keywords:Array<string>;
+  proxies:Array<string>;
+  keyword_file:string;
+  proxy_file:string;
+  use_proxies_only:boolean;
+  custom_func:string;
+  chrome_flags:Array<string>;
+  puppeteer_cluster_config:{
+    maxConcurrency:number;
+    monitor:boolean;
+    timeout:number;
+  }
+  random_user_agent:boolean;
+  user_agent:string;
+  headless:boolean;
+  platform:string;
+}
 class ScrapeManager {
+  cluster:{execute:Function;idle:Function;close:Function};
+  pluggable:{start_browser?:Function,close_browser?:Function,handle_results?:Function,handle_metadata?:Function};
+  scraper:{runLogin:Function;workersearchdata:Function};
+  context:object;
+  config:SMconfig;
+  logger:{info:Function};
+  browser:{newPage:Function};
+  page:object;
+  numClusters:number;
+  tmppath:string;
+  runLogin:Function;
   constructor(config, context = {}) {
     this.cluster = null;
     this.pluggable = null;
     this.scraper = null;
     this.context = context;
-
+    
     // await this.getRemoteConfig(campaignId)
 
     this.config = _.defaults(config, {
@@ -171,7 +204,7 @@ class ScrapeManager {
         maxConcurrency: 1,
       },
     });
-
+    
     this.logger = this.config.logger;
 
     if (config.sleep_range) {
@@ -179,9 +212,7 @@ class ScrapeManager {
       config.sleep_range = eval(config.sleep_range);
 
       if (
-        config.sleep_range.length !== 2 &&
-        typeof i[0] !== "number" &&
-        typeof i[1] !== "number"
+        config.sleep_range.length !== 2 
       ) {
         throw "sleep_range is not a valid array of two integers.";
       }
@@ -238,14 +269,14 @@ class ScrapeManager {
     const chrome_flags = _.clone(this.config.chrome_flags);
 
     if (this.pluggable && this.pluggable.start_browser) {
-      launch_args.config = this.config;
+      // launch_args.config = this.config;
       this.browser = await this.pluggable.start_browser({
         config: this.config,
       });
       // console.log("229")
       this.page = await this.browser.newPage();
     } else {
-      // console.log("241")
+      
       // if no custom start_browser functionality was given
       // use puppeteer-cluster for scraping
 

@@ -1,7 +1,8 @@
 "use strict";
-const se_scraper = require("./index.js");
+export {};
+const se_scraper = require("./index");
 const { ArgumentParser } = require("argparse");
-const {RemoteSource} = require("./src/remotesource.js");
+const {RemoteSource} = require("./src/remotesource");
 const { version } = require("./package.json");
 const fs = require('fs');
 const resolve = require('path').resolve;
@@ -96,6 +97,7 @@ let scrape_config = {
   log_ip_address: false,
   // log http headers
   log_http_headers: false,
+  platform: "facebook",
 };
 
 function get(object, key, default_value) {

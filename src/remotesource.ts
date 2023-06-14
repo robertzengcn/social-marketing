@@ -1,7 +1,20 @@
+export {};
 const axios = require("axios");
 const debug = require('debug')('RemoteSource:RemoteSource');
-
+type sosetting = {
+  sotype: string;
+  socialuser: string;
+  socialpass: string;
+          proxy: {
+            proxy: string;
+            user: string;
+            pass: string;
+          },
+}
 class RemoteSource {
+  REMOTEADD: string;
+  REMOTEUSERNAME: string;
+  REMOTEPASSWORD: string;
   constructor() {
     const config = this.readenv();
     this.REMOTEADD = config.REMOTEADD;
@@ -44,7 +57,7 @@ class RemoteSource {
    * get response from remote servive
    * @return object
    */
-  async getRemoteConfig(campaignId) {
+  async getRemoteConfig(campaignId): Promise<sosetting> {
     // let envconfig = await readenv();
 
     let sosetvar = await axios

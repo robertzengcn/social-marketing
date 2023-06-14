@@ -1,4 +1,4 @@
-const se_scraper = require("./src/node_socialmk.js");
+const se_scraper = require("./src/node_socialmk");
 var Scraper = require("./src/modules/social_scraper");
 
 async function login(browser_config, scrape_config) {
