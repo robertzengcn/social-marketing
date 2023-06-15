@@ -98,9 +98,12 @@ let scrape_config = {
   // log http headers
   log_http_headers: false,
   platform: "facebook",
+  user: "",
+  pass: "",
+  tmppath:"",
 };
 
-function get(object, key, default_value) {
+function get(object:Array<string>, key:string, default_value) {
   var result = object[key];
   return typeof result !== "undefined" ? result : default_value;
 }

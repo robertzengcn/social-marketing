@@ -1,7 +1,7 @@
 const se_scraper = require("./src/node_socialmk");
 var Scraper = require("./src/modules/social_scraper");
 
-async function login(browser_config, scrape_config) {
+async function login(browser_config:object, scrape_config:object) {
   // scrape config overwrites the browser_config
   Object.assign(browser_config, scrape_config);
 

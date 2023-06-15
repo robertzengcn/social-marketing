@@ -4,6 +4,7 @@
     //   "noEmitOnError": true,
       "removeComments": false,
       "sourceMap": true,
+    "inlineSources": true,
       "target": "es5",
     "outDir": "dist",
     // "noEmit":true

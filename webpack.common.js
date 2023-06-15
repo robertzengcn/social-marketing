@@ -5,7 +5,7 @@
 // var CopyWebpackPlugin = require("copy-webpack-plugin");
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 // var HtmlWebpackPlugin = require("html-webpack-plugin");
-var LiveReloadPlugin = require("webpack-livereload-plugin");
+// var LiveReloadPlugin = require("webpack-livereload-plugin");
 var webpack = require("webpack");
 const path = require('path');
 const nodeExternals = require('webpack-node-externals');
@@ -16,6 +16,7 @@ module.exports = {
     run:'./run.ts',
     index:'./index.ts'
   },
+  stats: 'minimal',
   externalsPresets: { node: true },
   externals: [nodeExternals()],
   module: {
@@ -27,11 +28,11 @@ module.exports = {
       },
     ],
   },
-  devtool: "source-map",
+  // devtool: "inline-source-map",
   output: {
     path: __dirname + "/dist/", //打包后的文件存放的地方
     filename: "./[name].js", //打包后输出文件的文件名  
-    sourceMapFilename: "[file].map", // Default
+    // sourceMapFilename: "[file].map", // Default
   },
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
