@@ -1,15 +1,28 @@
-export {};
+export { };
 const axios = require("axios");
 const debug = require('debug')('RemoteSource:RemoteSource');
 type sosetting = {
   sotype: string;
   socialuser: string;
   socialpass: string;
-          proxy: {
-            proxy: string;
-            user: string;
-            pass: string;
-          },
+  proxy: {
+    proxy: string;
+    user: string;
+    pass: string;
+  },
+}
+type socialTask = {
+  id: string,
+  campaign_id: string,
+  campaign_name: string,
+  tag: string,
+  type: string,
+  keywords: Array<string>,
+}
+type configType={
+  REMOTEADD: string,
+  REMOTEUSERNAME: string,
+  REMOTEPASSWORD:string,
 }
 class RemoteSource {
   REMOTEADD: string;
@@ -21,9 +34,9 @@ class RemoteSource {
     this.REMOTEUSERNAME = config.REMOTEUSERNAME;
     this.REMOTEPASSWORD = config.REMOTEPASSWORD;
   }
- 
 
-  readenv() {
+
+  readenv():configType {
     //read config from .env file
     let envcofig = this.readConfig();
     debug(envcofig)
@@ -37,7 +50,7 @@ class RemoteSource {
     if (!envcofig.hasOwnProperty("REMOTEPASSWORD")) {
       throw new Error(`PASSWORD not found in .env file`);
     }
-    return envcofig;
+    return envcofig as configType;
   }
 
   /**
@@ -45,7 +58,7 @@ class RemoteSource {
    *
    * @returns {object} config
    * */
-  readConfig() {
+  readConfig(): object {
     const result = require("dotenv").config();
     if (result.error) {
       throw result.error;
@@ -96,10 +109,11 @@ class RemoteSource {
 
     return sosetvar;
   }
+
   /**
    * get campaign from remote servive
    */
-  async getCampaignlist() {
+  async getCampaignlist(): Promise<Array<socialTask>> {
     const campignlist = await axios
       .get(this.REMOTEADD + "/api/listsotask", {
         auth: {
@@ -110,25 +124,30 @@ class RemoteSource {
       .then(function (res) {
         if (parseInt(res.status) != 200) {
           throw new Error("code not equal 200");
-        } 
-        return res.data.data;
+        }
+        if (!res.data.data) {
+          throw new Error("data not exist");
+        }
+        return res.data.data as Array<socialTask>;
+        
       })
       .catch(function (error) {
-        console.error(error);
+        throw new Error("code not equal 200");
+        // console.error(error);
       });
     return campignlist;
   }
-  async saveLinkremote({data}) {
-    axios.post(this.REMOTEADD + "/api/savelink",data)
-    .then(function (response) {
-      console.log(response);
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
+  async saveLinkremote({ data }) {
+    axios.post(this.REMOTEADD + "/api/savelink", data)
+      .then(function (response) {
+        console.log(response);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
   }
 }
 
 module.exports = {
-    RemoteSource: RemoteSource,
+  RemoteSource: RemoteSource,
 };

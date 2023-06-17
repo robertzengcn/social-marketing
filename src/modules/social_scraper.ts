@@ -2,32 +2,81 @@
 
 const meta = require('./metadata.js');
 const debug = require('debug')('se-scraper:Scraper');
+interface ScrapeOptionsPage {
+    setViewport: Function,
+    setRequestInterception: Function,
+    on: Function,
+    goto: Function,
+    screenshot: Function,
+}
+interface ScrapeOptions {
+    config: {
+        logger: logType,
+        search_engine: string, keywords: Array<string>, proxy: string, apply_evasion_techniques: boolean, block_assets: boolean, test_evasion: boolean, log_http_headers: boolean, log_ip_address: boolean
+    },
+    context?: object,
+    pluggable?: object,
+    page: ScrapeOptionsPage,
+}
+
+interface runParameter {
+    page?: ScrapeOptionsPage,
+    data?: object,
+    worker?: object
+}
+interface logType {
+    info: Function,
+    error: Function
+}
+
+interface wosearchObj {
+    page?: ScrapeOptionsPage,
+    worker:object
+}
 /**
  * this is parent class for social scrapyer node
- *  */ 
+ *  */
 module.exports = class SocialScraper {
-    constructor(options = {}) {
+    config: {
+        logger: logType,
+        search_engine: string, keywords: Array<string>, proxy: string, apply_evasion_techniques: boolean, block_assets: boolean, test_evasion: boolean, log_http_headers: boolean, log_ip_address: boolean
+    };
+    page: ScrapeOptionsPage;
+    last_response: object | null;
+    metadata: { http_headers?: object, ipinfo?: { ip: string }, scraping_detected?: boolean };
+    pluggable?: object;
+    context?: object;
+    logger: logType;
+    proxy: string;
+    keywords: Array<string>;
+    STANDARD_TIMEOUT: number;
+    SOLVE_CAPTCHA_TIME: number;
+    results: object;
+    result_rank: number;
+    num_requests: number;
+    num_keywords: number;
+    constructor(options: ScrapeOptions) {
         debug('constructor');
-        const {
-            config = {},
-            context = {},
-            pluggable = null,
-            page = null,
-            // browsers=null
-        } = options;
+        // const {
+        //     // config = {},
+        //     context = {},
+        //     // pluggable = null,
+        //     page = null,
+        //     // browsers=null
+        // } = options;
         // this.browser=browser;
-        this.page = page;
+        this.page = options.page;
         this.last_response = null; // the last response object
         this.metadata = {
             scraping_detected: false,
         };
-        this.pluggable = pluggable;
-        this.config = config;
+        this.pluggable = options.pluggable;
+        this.config = options.config;
         this.logger = this.config.logger;
-        this.context = context;
+        this.context = options.context;
 
-        this.proxy = config.proxy;
-        this.keywords = config.keywords;
+        this.proxy = options.config.proxy;
+        this.keywords = options.config.keywords;
 
         this.STANDARD_TIMEOUT = 10000;
         this.SOLVE_CAPTCHA_TIME = 45000;
@@ -47,21 +96,25 @@ module.exports = class SocialScraper {
             }
         }
     }
-    //start to login social media platform
-    async runLogin({ page, data, worker }) {
+    /**
+     * login social media platform
+     * @param runobj 
+     * 
+     */
+    async runLogin(runobj: runParameter) {
 
-        debug('worker=%o', worker, this.config.keywords);
+        debug('worker=%o', runobj.worker, this.config.keywords);
 
-        if (page) {
-            this.page = page;
+        if (runobj.page) {
+            this.page = runobj.page;
         }
 
-        await this.page.setViewport({ width: 1280, height: 800 });
+        await this.page?.setViewport({ width: 1280, height: 800 });
 
-     
+
         await this.load_browser_engine();
         await this.makeloginaction()
-       
+
     }
 
     /**
@@ -70,7 +123,7 @@ module.exports = class SocialScraper {
      *
      * @returns {Promise<void>} true if everything is correct.
      */
-    async load_browser_engine() {
+    async load_browser_engine(): Promise<void> {
 
         if (this.config.apply_evasion_techniques === true) {
             // prevent detection by evading common detection techniques
@@ -113,10 +166,10 @@ module.exports = class SocialScraper {
         // check that our proxy is working by confirming
         // that ipinfo.io sees the proxy IP address
         if (this.proxy && this.config.log_ip_address === true) {
-            debug(`${this.metadata.ipinfo.ip} vs ${this.proxy}`);
+            debug(`${this.metadata.ipinfo?.ip} vs ${this.proxy}`);
 
             // if the ip returned by ipinfo is not a substring of our proxystring, get the heck outta here
-            if (!this.proxy.includes(this.metadata.ipinfo.ip)) {
+            if (this.metadata.ipinfo?.ip && (!this.proxy.includes(this.metadata.ipinfo?.ip))) {
                 throw new Error(`Proxy output ip ${this.proxy} does not match with provided one`);
             } else {
                 this.logger.info(`Using valid Proxy: ${this.proxy}`);
@@ -133,17 +186,17 @@ module.exports = class SocialScraper {
     async load_login_page() {
 
     }
-     /**
-     *
-     * @returns true if startpage was loaded correctly.
-     */
-     async load_start_page() {
+    /**
+    *
+    * @returns true if startpage was loaded correctly.
+    */
+    async load_start_page() {
 
-     }
+    }
     /**
      * make login action
      */
-    async makeloginaction(){
+    async makeloginaction() {
 
     }
     /**
@@ -153,25 +206,28 @@ module.exports = class SocialScraper {
 
     }
 
-    async searchdata() {
+    async searchdata(seachobj: { keyword: Array<string> }) {
 
     }
+
+
     /**
      * use worker to search data
-     * @param array keyword 
+     * @param object keyword 
      */
-    async workersearchdata({page,worker}) {
-         debug('worker=%o', worker, this.config.keywords);
+    async workersearchdata(workerseach:wosearchObj) {
+    debug('worker=%o',workerseach.worker, this.config.keywords);
 
-        if (page) {
-            this.page = page;
-        }
-
-        await this.page.setViewport({ width: 1280, height: 800 });
-        await this.load_browser_engine()
-        const links=await this.searchdata({keyword:this.config.keywords})
-        debug(links)
+    if (workerseach.page) {
+        this.page = workerseach.page;
     }
+
+    await this.page.setViewport({ width: 1280, height: 800 });
+    await this.load_browser_engine()
+    const links = await this.searchdata({ keyword: this.config.keywords })
+    debug(links)
+    //handle the links
+}
 
 }
 // This is where we'll put the code to get around the tests.
@@ -179,13 +235,18 @@ async function evadeChromeHeadlessDetection(page) {
 
     // Pass the Webdriver Test.
     await page.evaluateOnNewDocument(() => {
-        const newProto = navigator.__proto__;
+        // const newProto = navigator.__proto__;
+        const newProto =Object.getPrototypeOf(navigator);
         delete newProto.webdriver;
-        navigator.__proto__ = newProto;
+        // navigator.__proto__ = newProto;
+        Object.setPrototypeOf(navigator,newProto);
     });
 
     // Pass the Chrome Test.
     await page.evaluateOnNewDocument(() => {
+        // interface mockObjType extends typeof chrome {
+        //     chrome: object,
+        // }
         // We can mock this in as much depth as we need for the test.
         const mockObj = {
             app: {
@@ -232,17 +293,20 @@ async function evadeChromeHeadlessDetection(page) {
                 },
             },
         };
-
-        window.navigator.chrome = mockObj;
-        window.chrome = mockObj;
+        // if(window.navigator.chrome){
+        // window.navigator.chrome = mockObj;
+        // }
+        // window.chrome = mockObj;
     });
 
     // Pass the Permissions Test.
     await page.evaluateOnNewDocument(() => {
         const originalQuery = window.navigator.permissions.query;
-        window.navigator.permissions.__proto__.query = parameters =>
-            parameters.name === 'notifications'
-                ? Promise.resolve({state: Notification.permission})
+        // window.navigator.permissions.__proto__.query = parameters =>
+        Object.getPrototypeOf(window.navigator.permissions).query = parameters =>
+            
+        parameters.name === 'notifications'
+                ? Promise.resolve({ state: Notification.permission })
                 : originalQuery(parameters);
 
         // Inspired by: https://github.com/ikarienator/phantomjs_hide_and_seek/blob/master/5.spoofFunctionBind.js

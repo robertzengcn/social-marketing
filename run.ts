@@ -128,7 +128,11 @@ async function getcampaign() {
   var remotesource =new RemoteSource();
   const campaignlist=await remotesource.getCampaignlist()
   debug(campaignlist)
-  if(campaignlist.length==0){
+  if(!campaignlist){
+    throw new Error("campaignlist is undefined");
+  }
+  const arrLength = campaignlist?.length ?? 0;
+  if(arrLength==0){
     console.log("not campaign need to run")
   }
   for (const campaign of campaignlist) {

@@ -83,4 +83,5 @@ GoogleScraperPup.iml
 .http-mitm-proxy
 tmp/
 .history/
+dist/
 
