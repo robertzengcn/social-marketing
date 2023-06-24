@@ -1,38 +1,38 @@
 "use strict";
 
 const cheerio = require("cheerio");
-const Scraper = require("./social_scraper");
+import { SocialScraper as Scraper, Linkurl, ScrapeOptions, Searchobject} from "./social_scraper";
 const fs = require("fs");
 const { Downloader } = require("./bilibili/downloader.js");
 const path = require("path");
 const sanitize = require("filenamify");
 const debug = require("debug")("bilibili-scraper:Scraper");
 const { autoScroll, delay } = require("./lib/function.js");
+import {ElementHandle,Page} from 'puppeteer';
+
+
+type clickbtnserobj = {
+  page: Page,
+  keyword: string
+}
 // import filenamify from 'filenamify';
 // const { launch, getStream } = require("puppeteer-stream");
 // const PuppeteerVideoRecorder = require('puppeteer-video-recorder');
-class BilibiliScraper extends Scraper {
-  constructor(...args) {
-    super(...args);
+export class BilibiliScraper extends Scraper {
+  startUrl: string;
+  
+  constructor(args: ScrapeOptions) {
+    super(args);
     this.startUrl = "https://www.bilibili.com";
+    // console.log(this.taskid)
+    // debug(self.taskid)
   }
-  async load_start_page() {
+  async load_start_page(): Promise<void> {
     debug("load start page")
-    if (this.config.bilibili_settings) {
-      this.startUrl = `https://www.${this.config.bilibili_settings.bilibili_domain}`;
-      if (this.config.bilibili_settings.bilibili_domain) {
-        this.startUrl = `https://www.${this.config.bilibili_settings.bilibili_domain}`;
-      }
 
-      for (var key in this.config.bilibili_settings) {
-        if (key !== "bilibili_domain") {
-          this.startUrl += `${key}=${this.config.bilibili_settings[key]}&`;
-        }
-      }
-    }
   }
   //login into bilibili
-  async makeloginaction() {
+  async makeloginaction(): Promise<boolean> {
     // let startUrl = "https://www.bilibili.com";
 
     this.logger.info("Using loginUrl: " + this.startUrl);
@@ -55,7 +55,7 @@ class BilibiliScraper extends Scraper {
     //click login by sms
     const [button] = await this.page.$x("//div[contains(., ' 短信登录 ')]");
     if (button) {
-      await button.click();
+      await (button as ElementHandle<Element>).click();
     }
     //await for user to take action
     await this.page.waitForSelector(".header-entry-mini", { timeout: 0 });
@@ -83,21 +83,23 @@ class BilibiliScraper extends Scraper {
    * @param {string} keyword
    * @returns element
    */
-  async clickSearchbtn({ page, keyword }) {
-    if (page) {
-      this.page = page;
+  async clickSearchbtn(searobj: clickbtnserobj) {
+    if (searobj.page) {
+      this.page = searobj.page;
     }
 
     this.logger.info("Using loginUrl: " + this.startUrl);
     await this.page.setBypassCSP(true);
     this.last_response = await this.page.goto(this.startUrl);
-    await page.type(".nav-search-input", keyword);
+    await this.page.type(".nav-search-input", searobj.keyword);
     // await this.page.$eval(".nav-search-input", function (keyword) {
     //   this.value = keyword;
     // });
     // await page.$eval('.nav-search-input', el => el.value = "");
     const searchbtn = await this.page.$(".nav-search-btn");
-    searchbtn.click();
+    if (searchbtn) {
+      await searchbtn.click();
+    }
     return searchbtn;
   }
   /**
@@ -106,24 +108,26 @@ class BilibiliScraper extends Scraper {
    * @param {string} keyword
    * @returns array
    */
-  async searchdata({ page, keyword }) {
-    if (page) {
-      this.page = page;
+  async searchdata(searobj: Searchobject): Promise<Array<object>> {
+    if (searobj.page) {
+      this.page = searobj.page;
     }
-    let result=[]
-    if(Array.isArray(keyword)){
-      for (const element of keyword) {
-        let linkres=await this.getVideourls({ page: this.page, keyword: element });
+    let result: Array<object> = []
+    if (Array.isArray(searobj.keyword)) {
+      for (const element of searobj.keyword) {
+        let subsearobg: Searchobject = { page: this.page, keyword: element }
+        let linkres = await this.getVideourls(subsearobg);
         debug(linkres)
-        for(const link of linkres){ 
+        for (const link of linkres) {
           result.push(link)
         }
       }
-      
-    }else if(typeof keyword === 'string'){
-      let linkres=await this.getVideourls({ page: this.page, keyword: keyword });
-      for(const link of linkres){
-        
+
+    } else if (typeof searobj.keyword === 'string') {
+      let sersearobg: Searchobject = { page: this.page, keyword: searobj.keyword }
+      let linkres = await this.getVideourls(sersearobg);
+      for (const link of linkres) {
+
         result.push(linkres)
       }
     }
@@ -136,24 +140,41 @@ class BilibiliScraper extends Scraper {
    * @param {object,string,string}
    * @returns array
    */
-  async getVideourls({ page, keyword, cookiesPath }) {
-    if (page) {
-      this.page = page;
+  async getVideourls(serobj: Searchobject): Promise<Array<Linkurl>> {
+    if (serobj.page) {
+      this.page = serobj.page;
     }
-    if (cookiesPath) {
-      if (!fs.existsSync(cookiesPath)) {
-        throw new Error(`Cannot find cookies file at ${cookiesPath}`);
+    if (serobj.cookiesPath) {
+      if (!fs.existsSync(serobj.cookiesPath)) {
+        throw new Error(`Cannot find cookies file at ${serobj.cookiesPath}`);
       }
 
-      let cookies = JSON.parse(await fs.promises.readFile(cookiesPath));
+      let cookies = JSON.parse(await fs.promises.readFile(serobj.cookiesPath));
       // console.log(cookies);
       await this.page.setCookie(...cookies);
     }
 
+    if (typeof serobj.keyword === 'string') {
+      return await this.handleSearch({ page: this.page, keyword: serobj.keyword })
+    } else {
+      let linkres: Array<Linkurl> = [];
+      for (const keyelement of serobj.keyword) {
+        const res=await this.handleSearch({ page: this.page, keyword: keyelement })
+        for (const link of res) {
+          linkres.push(link)
+        }
+      }
+      return linkres
+    }
+
+  }
+
+  async handleSearch(csobj: clickbtnserobj): Promise<Array<Linkurl>> {
     const searchbtn = await this.clickSearchbtn({
       page: this.page,
-      keyword: keyword,
+      keyword: csobj.keyword,
     });
+
     let browser = this.page.browser();
     const newPage = await browser.waitForTarget((target) =>
       target.url().includes("search.bilibili.com")
@@ -171,41 +192,20 @@ class BilibiliScraper extends Scraper {
     if (!searchPage) {
       throw new Error("search page not found");
     }
-    // this.page.waitFor(2000);
-    // this.browser.on('targetcreated', function(){
-    //   console.log('New Tab Created');
-    // });
-    // let browser=this.page.browser()
-    // console.log("current page count ", (await browser.pages()).length);
-    // const tables = await browser.pages()
-    // for (let i = 0; i < tables.length; i++) {
-    //   debug(await tables[i].title())
-    // }
 
-    // const [tabOne, tabTwo] = (await browser.pages());
-    // debug(await tabOne.title())
-    // debug(await tabTwo.title())
-    // await this.page.waitForNavigation()
-    // await delay(5000);
     await autoScroll(searchPage);
-    // await page.screenshot({
-    //   path: '/home/robertzeng/screenshot.jpg'
-    // });
+
 
     await searchPage.waitForSelector(".vui_pagenation", { timeout: 5000 });
 
-    let linkres = [];
+    let linkres: Array<Linkurl> = [];
     // await this.page.$$("button.vui_button", elements=>{
     //   console.log(elements)
     // })
     const linkPage = await searchPage.$$("button.vui_button");
     debug(linkPage);
     for (let i = 0; i < linkPage.length; i++) {
-      // await autoScroll(tabTwo )
-      // await this.page.waitForNavigation({
-      //   waitUntil: 'networkidle0',
-      // });
-      // await linkPage[i].click()
+
       await searchPage.evaluate((element) => {
         element.click();
       }, linkPage[i]);
@@ -216,19 +216,7 @@ class BilibiliScraper extends Scraper {
       });
     }
 
-    // await this.page.$$eval("button.vui_button", async elements=>{
-    //   // await autoScroll(this.page )
-    //   elements.map(async element=>{
-    //     await autoScroll(this.page )
-    //   await element.click()
-    //   const links=await this.getVideolistlink({ page:this.page });
-    //   debug(links)
-    //   links.map((link)=>{
-    //     linkres.push(link)
-    //   })
-    // })
-    // })
-    debug(linkres);
+
     return linkres;
   }
   /**
@@ -236,27 +224,47 @@ class BilibiliScraper extends Scraper {
    * @param {page} page
    * @returns array
    */
-  async getVideolistlink({ page }) {
+  async getVideolistlink({ page }): Promise<Array<Linkurl>> {
     if (page) {
       this.page = page;
     }
     // const elHandleArray = await page.$$(
     //   ".bili-video-card__info--right a:nth-child(1)"
     // );
-
-    // let linkmap = [];
-    let linkmap = await page.$$eval(
+    
+    let linkmap: Array<Linkurl> = [];
+    // const that=this;
+    debug(this.config.taskid)
+    let taskids=0;
+    if(this.config.taskid){
+    taskids=this.config.taskid
+    }
+    linkmap = await this.page.$$eval(
       ".bili-video-card__info--right >a:first-child",
-      (alinks) => {
+      (alinks,taskids) => {
         return alinks.map((alink) => {
-          var linkarr = {};
-          linkarr.link = alink.getAttribute("href");
-          console.log(alink);
-          htitle = alink.querySelector("h3");
-          linkarr.title = htitle.getAttribute("title");
-          return linkarr;
+          let linkobg: Linkurl = {title:'',link:'',lang:'zh-cn'};
+          // if(!that.taskid){
+          // linkobg.taskid=that.taskid;
+          // }
+          if(taskids){
+            linkobg.taskid=taskids
+          }
+          const herf=alink.getAttribute("href")
+          if(herf){
+          linkobg.link = herf
+          }
+          // console.log(alink);
+          let htitle = alink.querySelector("h3");
+          if(htitle){
+             const htres= htitle.getAttribute("title");
+             if(htres){
+             linkobg.title=htres
+             }
+          }
+          return linkobg;
         });
-      }
+      },taskids
     );
     // debug("query link finish");
     // debug(linkmap);

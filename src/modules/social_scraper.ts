@@ -2,25 +2,38 @@
 
 const meta = require('./metadata.js');
 const debug = require('debug')('se-scraper:Scraper');
-interface ScrapeOptionsPage {
-    setViewport: Function,
-    setRequestInterception: Function,
-    on: Function,
-    goto: Function,
-    screenshot: Function,
-}
-interface ScrapeOptions {
+import {RemoteSource,Linkdata}  from "../remotesource"
+import {Page} from 'puppeteer';
+
+// export interface ScrapeOptionsPages {
+//     setViewport: Function,
+//     setRequestInterception: Function,
+//     on: Function,
+//     goto: Function,
+//     screenshot: Function,
+//     setBypassCSP: Function,
+//     click: Function,
+//     waitForSelector: Function,
+//     $x: Function,
+//     cookies: Function,
+// }
+// export class ScrapeOptionsPage extends Page{
+
+// }
+// export class Elementhands extends puppeteer.ElementHandle{}
+export interface ScrapeOptions {
     config: {
         logger: logType,
         search_engine: string, keywords: Array<string>, proxy: string, apply_evasion_techniques: boolean, block_assets: boolean, test_evasion: boolean, log_http_headers: boolean, log_ip_address: boolean
     },
     context?: object,
     pluggable?: object,
-    page: ScrapeOptionsPage,
+    page: Page,
+    taskid?:number,
 }
 
 interface runParameter {
-    page?: ScrapeOptionsPage,
+    page?: Page,
     data?: object,
     worker?: object
 }
@@ -30,18 +43,36 @@ interface logType {
 }
 
 interface wosearchObj {
-    page?: ScrapeOptionsPage,
+    page?: Page,
     worker:object
 }
+
+export interface Linkurl{
+    title:string,
+    link:string,
+    lang:string,
+    taskid?:number
+}
+export type Searchobject={
+    page?:Page,
+    keyword:string|Array<string>
+    cookiesPath?:string
+  }
+
+
+
 /**
  * this is parent class for social scrapyer node
  *  */
-module.exports = class SocialScraper {
+export class SocialScraper {
     config: {
         logger: logType,
         search_engine: string, keywords: Array<string>, proxy: string, apply_evasion_techniques: boolean, block_assets: boolean, test_evasion: boolean, log_http_headers: boolean, log_ip_address: boolean
+        tmppath?: string,
+        taskid?:number
+        // obj:puppeteer.Page
     };
-    page: ScrapeOptionsPage;
+    page: Page;
     last_response: object | null;
     metadata: { http_headers?: object, ipinfo?: { ip: string }, scraping_detected?: boolean };
     pluggable?: object;
@@ -55,8 +86,11 @@ module.exports = class SocialScraper {
     result_rank: number;
     num_requests: number;
     num_keywords: number;
+    taskid?:number;
     constructor(options: ScrapeOptions) {
+        
         debug('constructor');
+        debug(options);
         // const {
         //     // config = {},
         //     context = {},
@@ -77,7 +111,9 @@ module.exports = class SocialScraper {
 
         this.proxy = options.config.proxy;
         this.keywords = options.config.keywords;
-
+        if(options.taskid){
+            this.taskid=options.taskid;
+        }
         this.STANDARD_TIMEOUT = 10000;
         this.SOLVE_CAPTCHA_TIME = 45000;
 
@@ -196,7 +232,7 @@ module.exports = class SocialScraper {
     /**
      * make login action
      */
-    async makeloginaction() {
+    async makeloginaction(): Promise<any|boolean> {
 
     }
     /**
@@ -206,10 +242,9 @@ module.exports = class SocialScraper {
 
     }
 
-    async searchdata(seachobj: { keyword: Array<string> }) {
+    async searchdata(seachobj: Searchobject):Promise<any|Array<Linkurl>>{
 
-    }
-
+    } 
 
     /**
      * use worker to search data
@@ -225,8 +260,15 @@ module.exports = class SocialScraper {
     await this.page.setViewport({ width: 1280, height: 800 });
     await this.load_browser_engine()
     const links = await this.searchdata({ keyword: this.config.keywords })
+    const remoteSourmodel=new RemoteSource();
     debug(links)
     //handle the links
+    links?.map(linkItem=>{
+       let linkobj : Linkdata={title:linkItem.title,url:linkItem.link,lang:linkItem.lang,socialtask_id:linkItem.taskid}
+        debug(linkobj)
+    //    remoteSourmodel.saveLinkremote(linkobj)
+    })
+
 }
 
 }

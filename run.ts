@@ -2,7 +2,7 @@
 export {};
 const se_scraper = require("./index");
 const { ArgumentParser } = require("argparse");
-const {RemoteSource} = require("./src/remotesource");
+import {RemoteSource} from "./src/remotesource";
 const { version } = require("./package.json");
 const fs = require('fs');
 const resolve = require('path').resolve;
@@ -101,6 +101,7 @@ let scrape_config = {
   user: "",
   pass: "",
   tmppath:"",
+  taskid:0,
 };
 
 function get(object:Array<string>, key:string, default_value) {
@@ -139,6 +140,7 @@ async function getcampaign() {
     switch (campaign.type) {
       case "bilibilidownload":
         scrape_config.platform="bilibili"
+        scrape_config.taskid=campaign.id
         scrape_config.keywords=campaign.keywords
         se_scraper.searchdata(browser_config, scrape_config);
         break;

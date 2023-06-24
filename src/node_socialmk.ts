@@ -14,9 +14,9 @@ const { addExtra } = require("puppeteer-extra");
 // const AdblockerPlugin = require("puppeteer-extra-plugin-adblocker");
 
 const UserAgent = require("user-agents");
-const facebook = require("./modules/facebook_scraper.js");
-const youtube = require("./modules/youtube_scraper.js");
-const bilibili = require("./modules/bilibili_scraper.js");
+const facebook = require("./modules/facebook_scraper");
+const youtube = require("./modules/youtube_scraper");
+const bilibili = require("./modules/bilibili_scraper");
 // const bing = require('./modules/bing.js');
 // const yandex = require('./modules/yandex.js');
 // const infospace = require('./modules/infospace.js');
@@ -80,8 +80,9 @@ type SMconfig ={
   user_agent:string;
   headless:boolean;
   platform:string;
+  taskid?:number;
 }
-class ScrapeManager {
+export class ScrapeManager {
   cluster:{execute:Function;idle:Function;close:Function};
   pluggable:{start_browser?:Function,close_browser?:Function,handle_results?:Function,handle_metadata?:Function};
   scraper:{runLogin:Function;workersearchdata:Function};
@@ -133,7 +134,7 @@ class ScrapeManager {
       platform: "facebook",
       keywords: ["nodejs rocks"],
       // whether to start the browser in headless mode
-      headless: true,
+      // headless: true,
       // specify flags passed to chrome here
       // About our defaults values https://peter.sh/experiments/chromium-command-line-switches/
       chrome_flags: [

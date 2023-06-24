@@ -1,6 +1,7 @@
 export { };
 const axios = require("axios");
 const debug = require('debug')('RemoteSource:RemoteSource');
+const FormData = require('form-data');
 type sosetting = {
   sotype: string;
   socialuser: string;
@@ -11,20 +12,27 @@ type sosetting = {
     pass: string;
   },
 }
+export type Linkdata = {
+  title: string,
+  url: string,
+  content?: string,
+  lang: string,
+  socialtask_id: number,
+}
 type socialTask = {
-  id: string,
-  campaign_id: string,
+  id: number,
+  campaign_id: number,
   campaign_name: string,
   tag: string,
   type: string,
   keywords: Array<string>,
 }
-type configType={
+type configType = {
   REMOTEADD: string,
   REMOTEUSERNAME: string,
-  REMOTEPASSWORD:string,
+  REMOTEPASSWORD: string,
 }
-class RemoteSource {
+export class RemoteSource {
   REMOTEADD: string;
   REMOTEUSERNAME: string;
   REMOTEPASSWORD: string;
@@ -36,7 +44,7 @@ class RemoteSource {
   }
 
 
-  readenv():configType {
+  readenv(): configType {
     //read config from .env file
     let envcofig = this.readConfig();
     debug(envcofig)
@@ -129,7 +137,7 @@ class RemoteSource {
           throw new Error("data not exist");
         }
         return res.data.data as Array<socialTask>;
-        
+
       })
       .catch(function (error) {
         throw new Error("code not equal 200");
@@ -137,17 +145,36 @@ class RemoteSource {
       });
     return campignlist;
   }
-  async saveLinkremote({ data }) {
-    axios.post(this.REMOTEADD + "/api/savelink", data)
-      .then(function (response) {
-        console.log(response);
+  /**
+   * save link to remote servive
+   */
+  async saveLinkremote(link: Linkdata): Promise<number> {
+    const FormData = require('form-data');
+    debug(link)
+    let data = new FormData();
+    data.append('title', link.title);
+    if(link.content){
+    data.append('content', link.content);
+    }
+    data.append('url', link.url);
+    data.append('lang', link.lang);
+    if(link.socialtask_id){
+    data.append('socialtask_id', link.socialtask_id);
+    }
+    const linkId=await axios.post(this.REMOTEADD + "/api/savelink", data)
+      .then(function (res) {
+        debug(res);
+        return res.data as number;
       })
       .catch(function (error) {
-        console.log(error);
+        // console.log(error);
+        throw new Error(error.message);
       });
+      return linkId;
   }
 }
 
 module.exports = {
   RemoteSource: RemoteSource,
+
 };

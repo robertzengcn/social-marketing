@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "A module using puppeteer to do social marketing",
   "main": "index.js",
+
   "scripts": {
     "build": "tsc --build",
     "clean": "tsc --build --clean",

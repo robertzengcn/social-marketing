@@ -1,11 +1,12 @@
-const se_scraper = require("./src/node_socialmk");
+import { debug } from "console";
+import {ScrapeManager} from "./src/node_socialmk";
 var Scraper = require("./src/modules/social_scraper");
 
 async function login(browser_config:object, scrape_config:object) {
   // scrape config overwrites the browser_config
   Object.assign(browser_config, scrape_config);
 
-  var scraper = new se_scraper.ScrapeManager(browser_config);
+  var scraper = new ScrapeManager(browser_config);
   // var remoteConfig=await scraper.getRemoteConfig();
   await scraper.start();
 
@@ -19,8 +20,8 @@ async function login(browser_config:object, scrape_config:object) {
 async function searchdata(browser_config, scrape_config) {
   // scrape config overwrites the browser_config
   Object.assign(browser_config, scrape_config);
-
-  var scraper = new se_scraper.ScrapeManager(browser_config);
+  // debug(browser_config)
+  var scraper = new ScrapeManager(browser_config);
   // var remoteConfig=await scraper.getRemoteConfig();
   await scraper.start();
   var results = await scraper.searchdata(scrape_config);
@@ -32,6 +33,6 @@ module.exports = {
   searchdata: searchdata,
   login: login,
   // ytblogin:ytblogin,
-  ScrapeManager: se_scraper.ScrapeManager,
+  ScrapeManager: ScrapeManager,
   Scraper: Scraper,
 };
