@@ -3,17 +3,16 @@
   "version": "1.0.0",
   "description": "A module using puppeteer to do social marketing",
   "main": "index.js",
-
   "scripts": {
     "build": "tsc --build",
     "clean": "tsc --build --clean",
-    "test": "mocha test test/modules",
+    "test": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'test/**/*.ts'",
     "login": "ts-node run.ts -a login -c",
     "task": "ts-node run.ts -a task",
     "testdownload": "mocha test test/modules --grep download download single video",
     "testgetlinks": "mocha test test/modules --grep get video play link",
     "testgetalllinks": "mocha test test/modules --grep video-url-list",
-    "dev": "webpack --config webpack.dev.js"
+    "testsavelinkremote":"env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'test/modules/remotesource.test.ts'"
   },
   "keywords": [
     "scraping",
@@ -37,6 +36,7 @@
     "cron": "^2.3.0",
     "debug": "^4.3.4",
     "dotenv": "^16.0.3",
+    "expect.js": "^0.3.1",
     "filenamify": "^4.3.0",
     "got": "^9.6.0",
     "jshint": "^2.13.6",
@@ -62,16 +62,20 @@
     "node": ">=18.14.0"
   },
   "devDependencies": {
+    "@types/chai": "^4.3.5",
+    "@types/mocha": "^10.0.1",
     "@types/node": "^20.3.1",
+    "@types/sinon": "^10.0.15",
     "bluebird": "^3.7.2",
-    "chai": "^4.2.0",
+    "chai": "^4.3.7",
     "chai-string": "^1.5.0",
     "eslint": "^8.38.0",
     "express": "^4.17.1",
     "http-mitm-proxy": "^0.8.2",
     "key-cert": "^1.0.1",
-    "mocha": "^6.1.4",
+    "mocha": "^6.2.3",
     "prettier": "2.8.4",
+    "sinon": "^15.2.0",
     "ts-loader": "^9.4.3",
     "ts-node": "^10.9.1",
     "tslib": "^2.5.3",

@@ -83,7 +83,7 @@ export class BilibiliScraper extends Scraper {
    * @param {string} keyword
    * @returns element
    */
-  async clickSearchbtn(searobj: clickbtnserobj) {
+  async clickSearchbtn(searobj: clickbtnserobj):Promise<ElementHandle<Element>> {
     if (searobj.page) {
       this.page = searobj.page;
     }
@@ -195,9 +195,16 @@ export class BilibiliScraper extends Scraper {
 
     await autoScroll(searchPage);
 
-
+    try {
     await searchPage.waitForSelector(".vui_pagenation", { timeout: 5000 });
-
+    } catch (e) {
+    if (e instanceof puppeteer.errors.TimeoutError) {
+      // Do something if this is a timeout in find page
+      debug("not find .vui_pagenation item, the page may not have result")
+      //return empty promise array
+      return new Promise((resolve) => { resolve(null); });
+    } 
+  } 
     let linkres: Array<Linkurl> = [];
     // await this.page.$$("button.vui_button", elements=>{
     //   console.log(elements)

@@ -35,6 +35,12 @@ debug the function, for example
 DEBUG='bilibili-scraper:Scraper' npm run testdownload
 ```
 
+### how to test
+test for single module, for example, save single link to remote
+```
+npx mocha test test/modules --grep video-url-list
+```
+
 
 
 

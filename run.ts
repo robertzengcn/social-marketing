@@ -1,6 +1,7 @@
 "use strict";
 export {};
-const se_scraper = require("./index");
+// const se_scraper = require("./index");
+import {Login,Searchdata} from "./index";
 const { ArgumentParser } = require("argparse");
 import {RemoteSource} from "./src/remotesource";
 const { version } = require("./package.json");
@@ -138,12 +139,16 @@ async function getcampaign() {
   }
   for (const campaign of campaignlist) {
     switch (campaign.type) {
-      case "bilibilidownload":
+      case "bilibiliscrape":
         scrape_config.platform="bilibili"
         scrape_config.taskid=campaign.id
         scrape_config.keywords=campaign.keywords
-        se_scraper.searchdata(browser_config, scrape_config);
+        await Searchdata(browser_config, scrape_config);
         break;
+      case 'bilibilidownload':
+        scrape_config.platform="bilibili"
+
+        break;  
     }
   }  
 }
@@ -165,7 +170,7 @@ async function login() {
   await createPath(tmppath);
   scrape_config.tmppath=tmppath
 
-  await se_scraper.login(browser_config, scrape_config);
+  await Login(browser_config, scrape_config);
 }
 
 function createPath(path) {

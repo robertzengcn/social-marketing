@@ -7,9 +7,10 @@
     "inlineSources": true,
       "target": "es5",
     "outDir": "dist",
+    "skipLibCheck": true
     // "noEmit":true
     },
     "include": [
-      "src/*"
+      "src/*","test/*/*","src/**/*"
     ]
   }

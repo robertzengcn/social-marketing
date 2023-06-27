@@ -161,10 +161,17 @@ export class RemoteSource {
     if(link.socialtask_id){
     data.append('socialtask_id', link.socialtask_id);
     }
-    const linkId=await axios.post(this.REMOTEADD + "/api/savelink", data)
+    const linkId=await axios.post(this.REMOTEADD + "/api/savesolink", data,
+    {
+      auth: {
+        username: this.REMOTEUSERNAME,
+        password: this.REMOTEPASSWORD,
+      },
+    })
       .then(function (res) {
-        debug(res);
-        return res.data as number;
+        // debug(res);
+        // console.log(res)
+        return res.data.data as number;
       })
       .catch(function (error) {
         // console.log(error);

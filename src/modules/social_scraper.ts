@@ -1,6 +1,6 @@
 'use strict';
 
-const meta = require('./metadata.js');
+const meta = require('./metadata.ts');
 const debug = require('debug')('se-scraper:Scraper');
 import {RemoteSource,Linkdata}  from "../remotesource"
 import {Page} from 'puppeteer';
@@ -24,7 +24,7 @@ import {Page} from 'puppeteer';
 export interface ScrapeOptions {
     config: {
         logger: logType,
-        search_engine: string, keywords: Array<string>, proxy: string, apply_evasion_techniques: boolean, block_assets: boolean, test_evasion: boolean, log_http_headers: boolean, log_ip_address: boolean
+        search_engine?: string, keywords: Array<string>, proxy: string, apply_evasion_techniques: boolean, block_assets: boolean, test_evasion: boolean, log_http_headers: boolean, log_ip_address: boolean
     },
     context?: object,
     pluggable?: object,
@@ -67,7 +67,14 @@ export type Searchobject={
 export class SocialScraper {
     config: {
         logger: logType,
-        search_engine: string, keywords: Array<string>, proxy: string, apply_evasion_techniques: boolean, block_assets: boolean, test_evasion: boolean, log_http_headers: boolean, log_ip_address: boolean
+        search_engine?: string, 
+        keywords: Array<string>, 
+        proxy: string, 
+        apply_evasion_techniques: boolean, 
+        block_assets: boolean, 
+        test_evasion: boolean, 
+        log_http_headers: boolean, 
+        log_ip_address: boolean
         tmppath?: string,
         taskid?:number
         // obj:puppeteer.Page
@@ -263,10 +270,10 @@ export class SocialScraper {
     const remoteSourmodel=new RemoteSource();
     debug(links)
     //handle the links
-    links?.map(linkItem=>{
+     links?.map(async linkItem=>{
        let linkobj : Linkdata={title:linkItem.title,url:linkItem.link,lang:linkItem.lang,socialtask_id:linkItem.taskid}
         debug(linkobj)
-    //    remoteSourmodel.saveLinkremote(linkobj)
+        await remoteSourmodel.saveLinkremote(linkobj)
     })
 
 }

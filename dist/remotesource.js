@@ -36,8 +36,10 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.RemoteSource = void 0;
 var axios = require("axios");
 var debug = require('debug')('RemoteSource:RemoteSource');
+var FormData = require('form-data');
 var RemoteSource = /** @class */ (function () {
     function RemoteSource() {
         var config = this.readenv();
@@ -141,10 +143,14 @@ var RemoteSource = /** @class */ (function () {
                             if (parseInt(res.status) != 200) {
                                 throw new Error("code not equal 200");
                             }
+                            if (!res.data.data) {
+                                throw new Error("data not exist");
+                            }
                             return res.data.data;
                         })
                             .catch(function (error) {
-                            console.error(error);
+                            throw new Error("code not equal 200");
+                            // console.error(error);
                         })];
                     case 1:
                         campignlist = _a.sent();
@@ -153,23 +159,51 @@ var RemoteSource = /** @class */ (function () {
             });
         });
     };
-    RemoteSource.prototype.saveLinkremote = function (_a) {
-        var data = _a.data;
+    /**
+     * save link to remote servive
+     */
+    RemoteSource.prototype.saveLinkremote = function (link) {
         return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_b) {
-                axios.post(this.REMOTEADD + "/api/savelink", data)
-                    .then(function (response) {
-                    console.log(response);
-                })
-                    .catch(function (error) {
-                    console.log(error);
-                });
-                return [2 /*return*/];
+            var FormData, data, linkId;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        FormData = require('form-data');
+                        debug(link);
+                        data = new FormData();
+                        data.append('title', link.title);
+                        if (link.content) {
+                            data.append('content', link.content);
+                        }
+                        data.append('url', link.url);
+                        data.append('lang', link.lang);
+                        if (link.socialtask_id) {
+                            data.append('socialtask_id', link.socialtask_id);
+                        }
+                        return [4 /*yield*/, axios.post(this.REMOTEADD + "/api/savesolink", data, {
+                                auth: {
+                                    username: this.REMOTEUSERNAME,
+                                    password: this.REMOTEPASSWORD,
+                                },
+                            })
+                                .then(function (res) {
+                                debug(res);
+                                return res.data;
+                            })
+                                .catch(function (error) {
+                                // console.log(error);
+                                throw new Error(error.message);
+                            })];
+                    case 1:
+                        linkId = _a.sent();
+                        return [2 /*return*/, linkId];
+                }
             });
         });
     };
     return RemoteSource;
 }());
+exports.RemoteSource = RemoteSource;
 module.exports = {
     RemoteSource: RemoteSource,
 };
