@@ -1,6 +1,6 @@
 "use strict";
 // Use TypeScript modules https://stackoverflow.com/questions/35758584/cannot-redeclare-block-scoped-variable
-export {};
+export { };
 const fs = require("fs");
 const os = require("os");
 const _ = require("lodash");
@@ -17,6 +17,9 @@ const UserAgent = require("user-agents");
 const facebook = require("./modules/facebook_scraper");
 const youtube = require("./modules/youtube_scraper");
 const bilibili = require("./modules/bilibili_scraper");
+import { SocialScraper, WosearchObj } from "./modules/social_scraper"
+import { Page } from 'puppeteer';
+import {Linkdata} from './remotesource';
 // const bing = require('./modules/bing.js');
 // const yandex = require('./modules/yandex.js');
 // const infospace = require('./modules/infospace.js');
@@ -45,14 +48,14 @@ function read_keywords_from_file(fname) {
 }
 
 
-function getScraper(search_engine:string, args:any) {
+function getScraper(search_engine: string, args: any) {
   if (typeof search_engine === "string") {
     return new {
       facebook: facebook.FacebookScraper,
       youtube: youtube.YoutubeScraper,
       bilibili: bilibili.BilibiliScraper,
     }[search_engine](args);
-  } 
+  }
   // else if (typeof search_engine === "function") {
   //   return new search_engine(args);
   // } 
@@ -62,44 +65,82 @@ function getScraper(search_engine:string, args:any) {
     );
   }
 }
-type SMconfig ={
-  logger:{info:Function};
-  keywords:Array<string>;
-  proxies:Array<string>;
-  keyword_file:string;
-  proxy_file:string;
-  use_proxies_only:boolean;
-  custom_func:string;
-  chrome_flags:Array<string>;
-  puppeteer_cluster_config:{
-    maxConcurrency:number;
-    monitor:boolean;
-    timeout:number;
+type SMconfig = {
+  logger: { info: Function };
+  keywords: Array<string>;
+  proxies: Array<string>;
+  keyword_file: string;
+  proxy_file: string;
+  use_proxies_only: boolean;
+  custom_func: string;
+  chrome_flags: Array<string>;
+  puppeteer_cluster_config: {
+    maxConcurrency: number;
+    monitor: boolean;
+    timeout: number;
   }
-  random_user_agent:boolean;
-  user_agent:string;
-  headless:boolean;
-  platform:string;
-  taskid?:number;
+  random_user_agent: boolean;
+  user_agent: string;
+  headless: boolean;
+  platform: string;
+  taskid?: number;
+}
+export type SMstruct = {
+  // the user agent to scrape with
+  user_agent: string,
+  // if random_user_agent is set to True, a random user agent is chosen
+  random_user_agent: boolean,
+  // whether to start the browser in headless mode
+  // headless: false,
+  // whether debug information should be printed
+  // level 0: print nothing
+  // level 1: print most important info
+  // ...
+  // level 4: print all shit nobody wants to know
+  debug_level: number,
+  // specify flags passed to chrome here
+  chrome_flags: Array<string>,
+  // path to js module that extends functionality
+  // this module should export the functions:
+  // get_browser, handle_metadata, close_browser
+  // must be an absolute path to the module
+  //custom_func: resolve('examples/pluggable.js'),
+  custom_func: string,
+  // use a proxy for all connections
+  // example: 'socks5://78.94.172.42:1080'
+  // example: 'http://118.174.233.10:48400'
+  proxy: string,
+  // a file with one proxy per line. Example:
+  // socks5://78.94.172.42:1080
+  // http://118.174.233.10:48400
+  proxy_file: string,
+  use_cluster: boolean,
+  puppeteer_cluster_config: {
+    timeout: number, // max timeout set to 10 minutes
+    monitor: boolean,
+    concurrency: number, // one scraper per tab
+    maxConcurrency: number, // scrape with 1 tab
+  },
+  sleep_range?: Array<number>,
 }
 export class ScrapeManager {
-  cluster:{execute:Function;idle:Function;close:Function};
-  pluggable:{start_browser?:Function,close_browser?:Function,handle_results?:Function,handle_metadata?:Function};
-  scraper:{runLogin:Function;workersearchdata:Function};
-  context:object;
-  config:SMconfig;
-  logger:{info:Function};
-  browser:{newPage:Function};
-  page:object;
-  numClusters:number;
-  tmppath:string;
-  runLogin:Function;
-  constructor(config, context = {}) {
+  cluster: { execute: Function; idle: Function; close: Function };
+  pluggable: { start_browser?: Function, close_browser?: Function, handle_results?: Function, handle_metadata?: Function };
+  scraper: SocialScraper;
+  context: object;
+  config: SMconfig;
+  logger: { info: Function };
+  browser: { newPage: Function };
+  page: Page;
+  numClusters: number;
+  tmppath: string;
+  runLogin: Function;
+  constructor(config: SMstruct, context = {}) {
     this.cluster = null;
     this.pluggable = null;
     this.scraper = null;
     this.context = context;
-    
+
     // await this.getRemoteConfig(campaignId)
 
     this.config = _.defaults(config, {
@@ -205,15 +246,15 @@ export class ScrapeManager {
         maxConcurrency: 1,
       },
     });
-    
+
     this.logger = this.config.logger;
 
     if (config.sleep_range) {
       // parse an array
-      config.sleep_range = eval(config.sleep_range);
+      // config.sleep_range = eval(config.sleep_range);
 
       if (
-        config.sleep_range.length !== 2 
+        config.sleep_range.length !== 2
       ) {
         throw "sleep_range is not a valid array of two integers.";
       }
@@ -277,7 +318,7 @@ export class ScrapeManager {
       // console.log("229")
       this.page = await this.browser.newPage();
     } else {
-      
+
       // if no custom start_browser functionality was given
       // use puppeteer-cluster for scraping
 
@@ -373,7 +414,7 @@ export class ScrapeManager {
         tmppath: this.tmppath,
       });
 
-      await this.scraper.runLogin(this.page);
+      await this.scraper.runLogin({ page: this.page });
     } else {
       // Each browser will get N/(K+1) keywords and will issue N/(K+1) * M total requests to the search engine.
       // https://github.com/GoogleChrome/puppeteer/issues/678
@@ -463,8 +504,8 @@ export class ScrapeManager {
         page: this.page,
         tmppath: this.tmppath,
       });
-
-      await this.scraper.workersearchdata(this.page);
+      const searobj: WosearchObj = { page: this.page };
+      await this.scraper.workersearchdata(searobj);
     } else {
       // Each browser will get N/(K+1) keywords and will issue N/(K+1) * M total requests to the search engine.
       // https://github.com/GoogleChrome/puppeteer/issues/678
@@ -550,7 +591,28 @@ export class ScrapeManager {
       await this.cluster.close();
     }
   }
+  async downloadPlatomvideo(links:Array<Linkdata>) {
+    //check whether user send correct platform parameter 
+    const availPlatform = ["bilibili"];
+    if (!availPlatform.includes(this.config.platform)) {
+      throw new Error("download video function not work at platform " + this.config.platform)
+    }
+    this.scraper = getScraper(this.config.platform, {
+      config: this.config,
+      context: this.context,
+      pluggable: this.pluggable,
+      page: this.page,
+      tmppath: this.tmppath,
+    });
+    debug("links=%o", links)
+    //console.log(this.scraper)
+    await this.scraper.downloadvideo(links)
+   
+
+  }
 }
+
+
 
 module.exports = {
   ScrapeManager: ScrapeManager,

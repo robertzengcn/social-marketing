@@ -1,0 +1,21 @@
+Metadata-Version: 2.1
+Name: Marketingtool
+Version: 0.0.1
+Summary: A tool module to generate captions from video
+Author: Robert Zeng
+Author-email: zengjianze@gmail.com
+Description-Content-Type: text/markdown
+
+### How to develop
+You can also install python package comfortably with pip:
+
+```
+virtualenv --python python3 env
+source env/bin/activate
+pip3 install GoogleScraper
+```
+
+### Install depend python package
+```
+pip3 freeze > requirements.txt
+```

@@ -1,13 +1,17 @@
+/**
+ * work like a run api
+ */
 "use strict";
 export {};
 // const se_scraper = require("./index");
-import {Login,Searchdata} from "./index";
+import {Login,Searchdata,Downloadvideo,ScrapeConfig,Sqlinit} from "./index";
 const { ArgumentParser } = require("argparse");
 import {RemoteSource} from "./src/remotesource";
 const { version } = require("./package.json");
 const fs = require('fs');
 const resolve = require('path').resolve;
-const debug = require('debug')('runjs:runjs');
+const debug = require('debug')('runjs');
+
 // const { data } = require("cheerio/lib/api/attributes.js");
 
 const parser = new ArgumentParser({
@@ -21,6 +25,9 @@ parser.add_argument("-a", "--action", {
 parser.add_argument("-c", "--campaign", {
   help: "Tha campaign id you want to program to take",
 });
+parser.add_argument("-t", "--taskid", {
+  help: "Tha task id you want to program to take",
+});
 
 let parearg = parser.parse_args();
 
@@ -33,7 +40,7 @@ let browser_config = {
   // if random_user_agent is set to True, a random user agent is chosen
   random_user_agent: false,
   // whether to start the browser in headless mode
-  headless: false,
+   headless: false,
   // whether debug information should be printed
   // level 0: print nothing
   // level 1: print most important info
@@ -65,7 +72,7 @@ let browser_config = {
   },
 };
 
-let scrape_config = {
+let scrape_config:ScrapeConfig = {
   // which search engine to scrape
   // platform: "facebook",
   // an array of keywords to scrape
@@ -84,7 +91,7 @@ let scrape_config = {
   keyword_file: "",
   // how long to sleep between requests. a random sleep interval within the range [a,b]
   // is drawn before every request. empty string for no sleeping.
-  sleep_range: "",
+  // sleep_range: "",
   // path to output file, data will be stored in JSON
   output_file: "/tmp/test/test.json",
   // whether to prevent images, css, fonts from being loaded
@@ -121,44 +128,88 @@ async function runCommand(parearg) {
       login();
       break;
     case "task":
-      getcampaign();
+      const taskid = get(parearg, "taskid", false);
+      if(!taskid){
+        throw new Error("task id is empty")
+      }
+      runTask(taskid)
       break; 
+    case "sqlinit":
+      Sqlinit();
+    break;  
+
   }
 }
 //get campaign
-async function getcampaign() {
-  var remotesource =new RemoteSource();
-  const campaignlist=await remotesource.getCampaignlist()
-  debug(campaignlist)
-  if(!campaignlist){
-    throw new Error("campaignlist is undefined");
+// async function getcampaign():Promise<void> {
+//   var remotesource =RemoteSource.getInstance();
+//   const campaignlist=await remotesource.getCampaignlist()
+//   debug(campaignlist)
+//   if(!campaignlist){
+//     throw new Error("campaignlist is undefined");
+//   }
+//   const arrLength = campaignlist?.length ?? 0;
+//   if(arrLength==0){
+//     console.log("not campaign need to run")
+//   }
+//   for (const campaign of campaignlist) {
+//     switch (campaign.type) {
+//       case "bilibiliscrape":
+//         scrape_config.platform="bilibili"
+//         scrape_config.taskid=campaign.id
+//         scrape_config.keywords=campaign.keywords
+//         await Searchdata(browser_config, scrape_config);
+//         break;
+//       case 'bilibilidownload':
+//         scrape_config.platform="bilibili"
+//         if(campaign.extra_task_info.TaskId<=0){
+//           break;
+//         }
+//         scrape_config.taskid=campaign.extra_task_info.TaskId;
+//         scrape_config.resulttaskid=campaign.extra_task_info.TaskId
+//         await Downloadvideo(browser_config, scrape_config);
+//         break;  
+//     }
+//   }  
+// }
+
+async function runTask(taskId:number):Promise<void>{
+  const remoteSourmodel = RemoteSource.getInstance();
+  const taskInfo=await remoteSourmodel.Gettaskinfo(taskId);
+  if(!taskInfo){
+    throw new Error("taskInfo is undefined");
   }
-  const arrLength = campaignlist?.length ?? 0;
-  if(arrLength==0){
-    console.log("not campaign need to run")
-  }
-  for (const campaign of campaignlist) {
-    switch (campaign.type) {
-      case "bilibiliscrape":
+  const taskArr=await remoteSourmodel.Gettaskkeywords(taskId)
+  
+  switch (taskInfo.type) {
+    case "bilibiliscrape":
         scrape_config.platform="bilibili"
-        scrape_config.taskid=campaign.id
-        scrape_config.keywords=campaign.keywords
+        scrape_config.taskid=taskInfo.id
+        scrape_config.keywords=taskArr
         await Searchdata(browser_config, scrape_config);
         break;
       case 'bilibilidownload':
         scrape_config.platform="bilibili"
+        if(!taskInfo.extra_task_info.ResulttaskId){
+         throw new Error("ResulttaskId is undefined");
+        }
+        debug(taskInfo)
+        scrape_config.taskid=taskInfo.id;
+        scrape_config.resulttaskid=taskInfo.extra_task_info.ResulttaskId
+        debug(scrape_config)
+        await Downloadvideo(browser_config, scrape_config);
+        break;
+  }
 
-        break;  
-    }
-  }  
+
 }
 //login to facebook
 async function login() {
   let campaignId = get(parearg, "campaign", false);
-  var remotesource =new RemoteSource();
+  var remotesource =RemoteSource.getInstance();
   let sosetting = await remotesource.getRemoteConfig(campaignId);
   debug(sosetting)
-  if(sosetting== null){
+  if(sosetting== null||!sosetting){
     throw new Error("sosetting is undefined");
   }
   scrape_config.platform = sosetting.sotype;

@@ -3,15 +3,61 @@ const crypto = require("crypto");
 const http = require("http");
 const https = require("https");
 const progress = require("progress-stream");
+const fetch =require("node-fetch");
 
+export interface getAiddata {
+	videoData: {
+		aid: number;
+		pages: Array<{
+			cid: number;
+		}>;
+	};
+
+	epInfo: {
+		aid: number;
+		cid: number;
+	}
+	epList: Array<{
+		aid: number;
+		cid: number;
+	}>;
+}
+type Durldata = {
+	url: string;
+	order: string;
+	length: string;
+	size: string;
+}
+type Targetresult = {
+	durl: Array<Durldata>;
+	quality: string;
+}
+export type Videodata = {
+	data: {
+		title: string;
+	}
+}
 class Task {
+	url: string;
+	finished: boolean;
 	constructor(url) {
 		this.url = url;
 		this.finished = false;
 	}
 }
 
-class Downloader {
+
+export class Downloader {
+	type: string;
+	id: string;
+	url: string;
+	aid: number;
+	pid: number;
+	cid: number;
+	name: string;
+	links: Array<string>;
+	tasks: Array<Task>;
+
 	constructor() {
 		this.type = "";
 		this.id = "";
@@ -24,7 +70,7 @@ class Downloader {
 		this.tasks = [];
 	}
 
-	getVideoUrl(videoUrl) {
+	getVideoUrl(videoUrl: string): void {
 		this.url = "";
 		const mapping = {
 			"BV": "https://www.bilibili.com/video/",
@@ -50,38 +96,52 @@ class Downloader {
 			.then(response => response.text())
 			.then(result => {
 				let data = result.match(/__INITIAL_STATE__=(.*?);\(function\(\)/)[1];
-				data = JSON.parse(data);
+				// data =  cast(JSON.parse(data),r("User"));
+				const aiddata: getAiddata = JSON.parse(data)
 				console.log("INITIAL STATE", data);
 				if (type === "BV" || type === "bv" || type === "av") {
-					this.aid = data.videoData.aid;
+					this.aid = aiddata.videoData.aid;
 					this.pid = parseInt(url.split("p=")[1], 10) || 1;
-					this.cid = data.videoData.pages[this.pid - 1].cid;
+					this.cid = aiddata.videoData.pages[this.pid - 1].cid;
 				}
 				else if (type === "ep") {
-					this.aid = data.epInfo.aid;
-					this.cid = data.epInfo.cid;
+					this.aid = aiddata.epInfo.aid;
+					this.cid = aiddata.epInfo.cid;
 				}
 				else if (type === "ss") {
-					this.aid = data.epList[0].aid;
-					this.cid = data.epList[0].cid;
+					this.aid = aiddata.epList[0].aid;
+					this.cid = aiddata.epList[0].cid;
 				}
 			})
-			.catch(error => showError("获取视频 aid 出错！"));
+			.catch(
+				// error => showError("获取视频 aid 出错！")
+				function (error) {
+					// console.error(error);
+					throw new Error("get video aid error");
+				}
+			);
 	}
 
-	async getInfo() {
+	async getInfo(): Promise<Videodata> {
 		const { aid, cid } = this;
 		if (!cid) {
-			showError("获取视频 cid 出错！");
-			return;
+			throw new Error("get video cid error");
+			// showError("获取视频 cid 出错！");
+			// return;
 		}
 		// getDanmaku(); //获取cid后，获取下载链接和弹幕信息
 		return fetch("https://api.bilibili.com/x/web-interface/view?aid=" + aid)
-			.then(response => response.json())
-			.catch(error => showError("获取视频信息出错！"));
+			.then(response => response.json() as Promise<Videodata>)
+			.catch(
+				function (error) {
+					// console.error(error);
+					throw new Error("get video info error");
+				}
+				// error => showError("获取视频信息出错！")
+			);
 	}
 
-	async getData(fallback) {
+	async getData(fallback: boolean = false) {
 		const { cid, type } = this;
 		let playUrl;
 		if (fallback) {
@@ -95,7 +155,7 @@ class Downloader {
 				playUrl = `https://interface.bilibili.com/v2/playurl?${params}&sign=${sign}`;
 			} else {
 				playUrl = `https://api.bilibili.com/pgc/player/web/playurl?qn=80&cid=${cid}`;
-				
+
 			}
 		}
 		return fetch(playUrl)
@@ -104,24 +164,30 @@ class Downloader {
 				const data = fallback ? this.parseData(result) : JSON.parse(result);
 				const target = data.durl || data.result.durl;
 				console.log("PLAY URL", data);
-                if (target) {
-                    this.links = target.map(part => part.url);
-                    return {
-                        fallback, data
-                    };
+				if (target) {
+					this.links = target.map(part => part.url);
+					return {
+						fallback, data
+					};
 				} else {
 					if (fallback) throw Error();
 					return this.getData(true);
 				}
 			})
-			.catch(error => {
-				showError("获取 PlayUrl 或下载链接出错！由于B站限制，只能下载低清晰度视频。");
-			});
+			.catch(
+				function (error) {
+					// console.error(error);
+					throw new Error("get playUrl or download link error");
+				}
+				// 	error => {
+				// 	// showError("获取 PlayUrl 或下载链接出错！由于B站限制，只能下载低清晰度视频。");
+				// }
+			);
 	}
 
 	parseData(target) {
 		const data = $(target);
-		const result = {};
+		let result: Targetresult = { durl: [], quality: "" };
 		result.durl = [];
 		result.quality = data.find("quality").text();
 		data.find("durl").each((i, o) => {
@@ -136,7 +202,7 @@ class Downloader {
 		return result;
 	}
 
-	downloadByIndex(part, file, callback = () => {}) {
+	downloadByIndex(part, file, callback = (progress: any, index: any) => { }) {
 		const { url } = this;
 
 		if (this.tasks.some(item => item.url === this.links[part])) return "DUPLICATE";

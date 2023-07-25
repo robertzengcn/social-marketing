@@ -4,7 +4,7 @@ import {RemoteSource,Linkdata} from '../../src/remotesource'
 const expect = require('expect.js');
 // mocha test test/modules --grep save-link-to-remote
 describe('Module Remote', function(){
-    const remoteSourceModel=new RemoteSource();
+    const remoteSourceModel=RemoteSource.getInstance();
     it('save-link-to-remote', function(){
         let link:Linkdata={
         title:"test title",

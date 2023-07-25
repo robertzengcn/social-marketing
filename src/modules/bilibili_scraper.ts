@@ -3,12 +3,12 @@
 const cheerio = require("cheerio");
 import { SocialScraper as Scraper, Linkurl, ScrapeOptions, Searchobject} from "./social_scraper";
 const fs = require("fs");
-const { Downloader } = require("./bilibili/downloader.js");
+import { Downloader,Videodata } from "./bilibili/downloader";
 const path = require("path");
 const sanitize = require("filenamify");
-const debug = require("debug")("bilibili-scraper:Scraper");
+const debug = require("debug")("bilibili-scraper");
 const { autoScroll, delay } = require("./lib/function.js");
-import {ElementHandle,Page} from 'puppeteer';
+import {ElementHandle,Page,errors as Puppeteererror} from 'puppeteer';
 
 
 type clickbtnserobj = {
@@ -198,7 +198,7 @@ export class BilibiliScraper extends Scraper {
     try {
     await searchPage.waitForSelector(".vui_pagenation", { timeout: 5000 });
     } catch (e) {
-    if (e instanceof puppeteer.errors.TimeoutError) {
+    if (e instanceof Puppeteererror.TimeoutError) {
       // Do something if this is a timeout in find page
       debug("not find .vui_pagenation item, the page may not have result")
       //return empty promise array
@@ -301,7 +301,7 @@ export class BilibiliScraper extends Scraper {
    * @param {string} link
    * @param {string} videopath
    */
-  async downloadSigleVideo({ link, videopath }) {
+  async downloadSigleVideo( link:string, videopath:string ):Promise<Array<string>> {
     // if (page) {
     //   this.page = page;
     // }
@@ -321,7 +321,10 @@ export class BilibiliScraper extends Scraper {
     // const html = await page.$eval('#bilibili-player', el => el.outerHTML);
     // console.log(html)
     // const src = await page.$eval("#bilibili-player video",el => el.getAttribute("src"))
-
+    if(!link){
+      debug(link)
+      throw new Error("link is empty")
+    }
     const downloader = new Downloader();
     downloader.getVideoUrl(link);
     if (!downloader.url) {
@@ -352,12 +355,14 @@ export class BilibiliScraper extends Scraper {
     if (fallback) {
       throw new Error("error happen when get video data");
     }
-    debug("echo target");
-    debug(target);
+    // debug("echo target");
+    // debug(target);
+    let result:Array<string>=[];
     target.forEach((element, part) => {
       const file = path.join(videopath, `${sanitize(filename)}-${part}.flv`);
       debug("part is %o", part);
       debug("file name %o", file);
+      
       const state = downloader.downloadByIndex(
         part,
         file,
@@ -367,9 +372,10 @@ export class BilibiliScraper extends Scraper {
           console.log(`eta:${eta}s`);
         }
       );
+      result.push(file)
     });
 
-    return true;
+    return result;
   }
   /**
    * get video detail

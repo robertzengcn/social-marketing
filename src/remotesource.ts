@@ -1,6 +1,6 @@
 export { };
-const axios = require("axios");
-const debug = require('debug')('RemoteSource:RemoteSource');
+import axios from "axios";
+const debug = require('debug')('RemoteSource');
 const FormData = require('form-data');
 type sosetting = {
   sotype: string;
@@ -13,34 +13,53 @@ type sosetting = {
   },
 }
 export type Linkdata = {
+  id?:number,
   title: string,
   url: string,
   content?: string,
   lang: string,
   socialtask_id: number,
 }
-type socialTask = {
+export type socialTask = {
   id: number,
   campaign_id: number,
   campaign_name: string,
   tag: string,
   type: string,
   keywords: Array<string>,
+  extra_task_info: {
+    TaskId: number
+    ResulttaskId?: number
+  }
 }
 type configType = {
   REMOTEADD: string,
   REMOTEUSERNAME: string,
   REMOTEPASSWORD: string,
 }
+type keywordItem = {
+  keyword: string,
+  tag: string,
+  Created : string,
+  UsedTime: number,
+}
 export class RemoteSource {
+  private static instance: RemoteSource;
   REMOTEADD: string;
   REMOTEUSERNAME: string;
   REMOTEPASSWORD: string;
-  constructor() {
+  private constructor() {
     const config = this.readenv();
     this.REMOTEADD = config.REMOTEADD;
     this.REMOTEUSERNAME = config.REMOTEUSERNAME;
     this.REMOTEPASSWORD = config.REMOTEPASSWORD;
+  }
+
+  public static getInstance(): RemoteSource {
+    if (!RemoteSource.instance) {
+      RemoteSource.instance = new RemoteSource();
+    }
+    return RemoteSource.instance;
   }
 
 
@@ -78,7 +97,7 @@ export class RemoteSource {
    * get response from remote servive
    * @return object
    */
-  async getRemoteConfig(campaignId): Promise<sosetting> {
+  async getRemoteConfig(campaignId): Promise<sosetting|void> {
     // let envconfig = await readenv();
 
     let sosetvar = await axios
@@ -89,7 +108,7 @@ export class RemoteSource {
         },
       })
       .then(function (res) {
-        if (parseInt(res.status) != 200) {
+        if (res.status != 200) {
           throw new Error("code not equal 200");
         }
         if (!res.data.status) {
@@ -130,7 +149,7 @@ export class RemoteSource {
         },
       })
       .then(function (res) {
-        if (parseInt(res.status) != 200) {
+        if (res.status != 200) {
           throw new Error("code not equal 200");
         }
         if (!res.data.data) {
@@ -153,21 +172,23 @@ export class RemoteSource {
     debug(link)
     let data = new FormData();
     data.append('title', link.title);
-    if(link.content){
-    data.append('content', link.content);
+    if (link.content) {
+      data.append('content', link.content);
     }
     data.append('url', link.url);
     data.append('lang', link.lang);
-    if(link.socialtask_id){
-    data.append('socialtask_id', link.socialtask_id);
+    if (link.socialtask_id) {
+      data.append('socialtask_id', link.socialtask_id);
     }
-    const linkId=await axios.post(this.REMOTEADD + "/api/savesolink", data,
-    {
-      auth: {
-        username: this.REMOTEUSERNAME,
-        password: this.REMOTEPASSWORD,
-      },
-    })
+    // debug(this.REMOTEUSERNAME)
+    // debug(this.REMOTEPASSWORD)
+    const linkId = await axios.post(this.REMOTEADD + "/api/savesolink", data,
+      {
+        auth: {
+          username: this.REMOTEUSERNAME,
+          password: this.REMOTEPASSWORD,
+        },
+      })
       .then(function (res) {
         // debug(res);
         // console.log(res)
@@ -177,11 +198,79 @@ export class RemoteSource {
         // console.log(error);
         throw new Error(error.message);
       });
-      return linkId;
+    return linkId;
   }
+  //get scrapy info list
+  async Getscrapyinfolist(taskId: number, limit: number): Promise<Array<Linkdata> | null> {
+    const linkdaarr =await axios.get(this.REMOTEADD +"/api/getscrapeinfolist?sotaskid="+taskId+"&limit="+limit,{
+      auth: {
+        username: this.REMOTEUSERNAME,
+        password: this.REMOTEPASSWORD,
+      },
+    }).then(function (res) {
+      debug(res);
+      // console.log(res)
+      return res.data.data as Array<Linkdata| null>;
+    })
+    .catch(function (error) {
+      // console.log(error);
+      throw new Error(error.message);
+    });
+    return linkdaarr;
+  }
+  /**
+   * get task info
+   * @param taskId 
+   */
+  async Gettaskinfo(taskId: number): Promise<null|socialTask>{
+    const taskInfo =await axios.get(this.REMOTEADD +"/api/getsocialtaskinfo?task_id="+taskId,{
+      auth: {
+        username: this.REMOTEUSERNAME,
+        password: this.REMOTEPASSWORD,
+      },
+    }).then(function (res) {
+      // debug(res);
+      // console.log(res)
+      return res.data.data as socialTask;
+    })
+    .catch(function (error) {
+      // console.log(error);
+      throw new Error(error.message);
+    });
+    return taskInfo;
+  }
+ /**
+  * get social task keywords
+  * @param taskId 
+  * @returns 
+  */
+  async Gettaskkeywords(taskId: number): Promise<Array<string>>{
+    const taskInfo =await axios.get(this.REMOTEADD +"/api/taskkeyword?task_id="+taskId,{
+      auth: {
+        username: this.REMOTEUSERNAME,
+        password: this.REMOTEPASSWORD,
+      },
+    }).then(function (res) {
+      // debug(res);
+      // console.log(res)
+      let keywords:Array<string>=[];
+      const Keyitemarr=res.data.data as Array<keywordItem>;
+      for(const item in Keyitemarr){
+        
+        keywords.push(Keyitemarr[item].keyword)
+      }
+      return keywords;
+    })
+    .catch(function (error) {
+      // console.log(error);
+      throw new Error(error.message);
+    });
+    return taskInfo;
+  }
+
 }
 
-module.exports = {
-  RemoteSource: RemoteSource,
+// module.exports = {
+//   RemoteSource: RemoteSource,
 
-};
+// };

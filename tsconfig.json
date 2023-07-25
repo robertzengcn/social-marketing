@@ -1,11 +1,12 @@
 {
     "compilerOptions": {
+      "moduleResolution": "node",
       "noImplicitAny": false,
     //   "noEmitOnError": true,
       "removeComments": false,
       "sourceMap": true,
     "inlineSources": true,
-      "target": "es5",
+      "target": "es6",
     "outDir": "dist",
     "skipLibCheck": true
     // "noEmit":true

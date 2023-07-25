@@ -2,8 +2,14 @@
 
 const meta = require('./metadata.ts');
 const debug = require('debug')('se-scraper:Scraper');
-import {RemoteSource,Linkdata}  from "../remotesource"
-import {Page} from 'puppeteer';
+import { RemoteSource, Linkdata } from "../remotesource"
+import { Page } from 'puppeteer';
+const appRoot = require('app-root-path');
+var fs = require('fs');
+// const resolve = require('path').resolve;
+import * as path from "path";
+import {Scraperdb} from "../scraperdb"
+const {spawn} = require('child_process');
 
 // export interface ScrapeOptionsPages {
 //     setViewport: Function,
@@ -29,7 +35,8 @@ export interface ScrapeOptions {
     context?: object,
     pluggable?: object,
     page: Page,
-    taskid?:number,
+    taskid?: number,
+    // platform:string
 }
 
 interface runParameter {
@@ -42,22 +49,22 @@ interface logType {
     error: Function
 }
 
-interface wosearchObj {
+export interface WosearchObj {
     page?: Page,
-    worker:object
+    worker?: object
 }
 
-export interface Linkurl{
-    title:string,
-    link:string,
-    lang:string,
-    taskid?:number
+export interface Linkurl {
+    title: string,
+    link: string,
+    lang: string,
+    taskid?: number
 }
-export type Searchobject={
-    page?:Page,
-    keyword:string|Array<string>
-    cookiesPath?:string
-  }
+export type Searchobject = {
+    page?: Page,
+    keyword: string | Array<string>
+    cookiesPath?: string
+}
 
 
 
@@ -67,16 +74,16 @@ export type Searchobject={
 export class SocialScraper {
     config: {
         logger: logType,
-        search_engine?: string, 
-        keywords: Array<string>, 
-        proxy: string, 
-        apply_evasion_techniques: boolean, 
-        block_assets: boolean, 
-        test_evasion: boolean, 
-        log_http_headers: boolean, 
+        search_engine?: string,
+        keywords: Array<string>,
+        proxy: string,
+        apply_evasion_techniques: boolean,
+        block_assets: boolean,
+        test_evasion: boolean,
+        log_http_headers: boolean,
         log_ip_address: boolean
         tmppath?: string,
-        taskid?:number
+        taskid?: number
         // obj:puppeteer.Page
     };
     page: Page;
@@ -93,11 +100,11 @@ export class SocialScraper {
     result_rank: number;
     num_requests: number;
     num_keywords: number;
-    taskid?:number;
+    taskid?: number;
     constructor(options: ScrapeOptions) {
-        
-        debug('constructor');
-        debug(options);
+
+        // debug('constructor');
+        // debug(options);
         // const {
         //     // config = {},
         //     context = {},
@@ -118,8 +125,8 @@ export class SocialScraper {
 
         this.proxy = options.config.proxy;
         this.keywords = options.config.keywords;
-        if(options.taskid){
-            this.taskid=options.taskid;
+        if (options.taskid) {
+            this.taskid = options.taskid;
         }
         this.STANDARD_TIMEOUT = 10000;
         this.SOLVE_CAPTCHA_TIME = 45000;
@@ -197,13 +204,13 @@ export class SocialScraper {
 
         if (this.config.log_http_headers === true) {
             this.metadata.http_headers = await meta.get_http_headers(this.page);
-            debug('this.metadata.http_headers=%O', this.metadata.http_headers);
+            // debug('this.metadata.http_headers=%O', this.metadata.http_headers);
         }
 
         if (this.config.log_ip_address === true) {
             let ipinfo = await meta.get_ip_data(this.page);
             this.metadata.ipinfo = ipinfo;
-            debug('this.metadata.ipinfo', this.metadata.ipinfo);
+            // debug('this.metadata.ipinfo', this.metadata.ipinfo);
         }
 
         // check that our proxy is working by confirming
@@ -239,7 +246,7 @@ export class SocialScraper {
     /**
      * make login action
      */
-    async makeloginaction(): Promise<any|boolean> {
+    async makeloginaction(): Promise<any | boolean> {
 
     }
     /**
@@ -249,34 +256,84 @@ export class SocialScraper {
 
     }
 
-    async searchdata(seachobj: Searchobject):Promise<any|Array<Linkurl>>{
+    async searchdata(seachobj: Searchobject): Promise<any | Array<Linkurl>> {
 
-    } 
+    }
 
     /**
      * use worker to search data
      * @param object keyword 
      */
-    async workersearchdata(workerseach:wosearchObj) {
-    debug('worker=%o',workerseach.worker, this.config.keywords);
+    async workersearchdata(workerseach: WosearchObj) {
+        if(workerseach.worker){
+        debug('worker=%o', workerseach.worker, this.config.keywords);
+        }
+        if (workerseach.page) {
+            this.page = workerseach.page;
+        }
 
-    if (workerseach.page) {
-        this.page = workerseach.page;
+        await this.page.setViewport({ width: 1280, height: 800 });
+        await this.load_browser_engine()
+        const links = await this.searchdata({ keyword: this.config.keywords })
+        const remoteSourmodel = RemoteSource.getInstance();
+        // debug('links=%o',links)
+        //handle the links
+        links?.map(async linkItem => {
+            let linkobj: Linkdata = { title: linkItem.title, url: linkItem.link, lang: linkItem.lang, socialtask_id: linkItem.taskid }
+            // debug(linkobj)
+            try {
+                await remoteSourmodel.saveLinkremote(linkobj)
+            } catch (error) {
+                console.error(error);
+            }
+        })
+
+    }
+    /**
+     * download video
+     */
+    async downloadvideo(list:Array<Linkdata>): Promise<void> {
+        
+        var currentdate = new Date(); 
+        var datetime = currentdate.getFullYear() + "-"
+                + (currentdate.getMonth()+1)  + "-"  
+                +(currentdate.getDate());
+        const videosavepath:string=path.resolve(appRoot+"/tmp/video/"+datetime+"/");
+        if (!fs.existsSync(videosavepath)){
+            fs.mkdirSync(videosavepath, { recursive: true });
+        }
+        // debug('linklist=%o',list)
+        debug(list)
+        list.forEach(async(linkItem,index) => {
+            console.log(linkItem)
+            console.log(index)
+            // const lt=linkItem as Linkdata
+            // console.log(lt.id)
+            debug(linkItem)
+            // console.log(Object.getPrototypeOf(linkItem))
+           let videoArray=await this.downloadSigleVideo(linkItem.url,videosavepath)
+           if(videoArray){
+            const scraperDb=Scraperdb.getInstance();
+           for(let i=0;i<videoArray.length;i++){
+            //    console.log(videoArray[i])
+            debug(linkItem.url)
+            debug(linkItem.title)
+            debug(linkItem.content)
+            debug(linkItem.lang)
+            scraperDb.saveVideo(linkItem.url,videoArray[i],linkItem.title,linkItem.content,linkItem.lang)
+           }
+        }
+        })
+    }
+    /**
+     * download single video
+     * @param string link 
+     * @param string videopath 
+     */
+    async downloadSigleVideo( link:string, videopath:string ):Promise<Array<string>|void> {
+
     }
 
-    await this.page.setViewport({ width: 1280, height: 800 });
-    await this.load_browser_engine()
-    const links = await this.searchdata({ keyword: this.config.keywords })
-    const remoteSourmodel=new RemoteSource();
-    debug(links)
-    //handle the links
-     links?.map(async linkItem=>{
-       let linkobj : Linkdata={title:linkItem.title,url:linkItem.link,lang:linkItem.lang,socialtask_id:linkItem.taskid}
-        debug(linkobj)
-        await remoteSourmodel.saveLinkremote(linkobj)
-    })
-
-}
 
 }
 // This is where we'll put the code to get around the tests.
@@ -285,10 +342,10 @@ async function evadeChromeHeadlessDetection(page) {
     // Pass the Webdriver Test.
     await page.evaluateOnNewDocument(() => {
         // const newProto = navigator.__proto__;
-        const newProto =Object.getPrototypeOf(navigator);
+        const newProto = Object.getPrototypeOf(navigator);
         delete newProto.webdriver;
         // navigator.__proto__ = newProto;
-        Object.setPrototypeOf(navigator,newProto);
+        Object.setPrototypeOf(navigator, newProto);
     });
 
     // Pass the Chrome Test.
@@ -353,8 +410,8 @@ async function evadeChromeHeadlessDetection(page) {
         const originalQuery = window.navigator.permissions.query;
         // window.navigator.permissions.__proto__.query = parameters =>
         Object.getPrototypeOf(window.navigator.permissions).query = parameters =>
-            
-        parameters.name === 'notifications'
+
+            parameters.name === 'notifications'
                 ? Promise.resolve({ state: Notification.permission })
                 : originalQuery(parameters);
 
