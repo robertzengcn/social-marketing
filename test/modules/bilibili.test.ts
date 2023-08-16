@@ -7,17 +7,18 @@ const { createLogger, transports } = require('winston');
 // const http = require('http');
 // const https = require('https');
 const assert = require('assert');
-const path = require('path');
+// const path = require('path');
 const resolve = require('path').resolve;
 // const keyCert = require('key-cert');
 // const Promise = require('bluebird');
 // const Proxy = require('http-mitm-proxy');
 
 const debug = require('debug')('social_market:test');
-// import {ScrapeOptions} from "../../src/modules/social_scraper";
-const {BilibiliScraper} =require('../../src/modules/bilibili_scraper');
+import {ScrapeOptions} from "../../src/modules/social_scraper";
+import {BilibiliScraper} from '../../src/modules/bilibili_scraper';
 const { dirname } = require('path');
 const fs = require("fs");
+import { Page } from 'puppeteer';
 
 // const httpPort = 3012;
 // const httpsPort = httpPort + 1;
@@ -52,11 +53,7 @@ describe('Module Bilibili', function(){
     beforeEach(async function(){
         debug('Start a new browser');
         browser = await puppeteer.launch({
-            // timeout: 120000,
-            //dumpio: true,
-           //executablePath:'/usr/bin/google-chrome-stable',
-            // headless: false,
-            //slowMo: 250,
+  
             ignoreHTTPSErrors: true,
             args: [
                 '--disable-dev-shm-usage',
@@ -98,16 +95,14 @@ describe('Module Bilibili', function(){
         ]
     });
 
-    
-    const bilibiScraper = new BilibiliScraper({
+    let scrapeOp:ScrapeOptions={
         config: {
-            // search_engine_name: 'bing',
-            // throw_on_detection: true,
-            // keywords: ['test keyword'],
+
             logger: testLogger,
-            // scrape_from_file: '',
+            
         }
-    });
+    }
+    const bilibiScraper = new BilibiliScraper(scrapeOp);
     // bilibiScraper.STANDARD_TIMEOUT = 600000;
     it('search video by keyword', function(){
       
@@ -132,13 +127,15 @@ describe('Module Bilibili', function(){
         });
     });
 
-    it('download single video',async function(){
+    it('download-single-video',async function(){
         let link="https://www.bilibili.com/video/BV14V4y1d7y4/";
         // const appDir = dirname(require.main.filename);
         const videopath=resolve("./tmp/bilibili/liming");
         console.log(videopath)
-        return bilibiScraper.downloadSigleVideo({link,videopath}).then((results)=>{
-            assert.equal(results, true, 'result must be true');
+        return bilibiScraper.downloadSigleVideo(link,videopath).then((results)=>{
+            console.log(results)
+            assert.equal(results.length>0, true, 'result must be true');
+           
         });
     });
     it('video-url-list',async function(){

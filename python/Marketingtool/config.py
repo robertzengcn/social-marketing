@@ -3,6 +3,7 @@
 # import Marketingtool.scrape_config
 import inspect
 import os
+import Marketingtool.tool_config as tool_config
 
 try:
     # SourceFileLoader is the recommended way in 3.3+
@@ -37,11 +38,16 @@ def get_config(command_line_args=None, external_configuration_file=None, config_
     External configuration files may be only specified in the command line args.
     """
 
-    config = {}
+    config = tool_config
 
     def update_members(d):
+        # print(d)
         for k, v in d.items():
+            # if hasattr(config, k):
+            #     setattr(config, k, v)
+            # else:
             setattr(config, k, v)
+            #    config[k] = v
 
     if external_configuration_file:
         if os.path.exists(external_configuration_file) and external_configuration_file.endswith('.py'):

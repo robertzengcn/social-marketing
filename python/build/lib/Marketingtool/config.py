@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
-import Marketingtool.scrape_config
+# import Marketingtool.scrape_config
 import inspect
 import os
+import Marketingtool.tool_config as tool_config
 
 try:
     # SourceFileLoader is the recommended way in 3.3+
@@ -37,9 +38,10 @@ def get_config(command_line_args=None, external_configuration_file=None, config_
     External configuration files may be only specified in the command line args.
     """
 
-    config = Marketingtool.scrape_config
+    config = tool_config
 
     def update_members(d):
+        print(d)
         for k, v in d.items():
             setattr(config, k, v)
 

@@ -3,6 +3,7 @@
 import argparse
 from Marketingtool.version import __version__
 
+VALID_PRIVACY_STATUSES = ("public", "private", "unlisted")
 
 def get_command_line(only_print_help=False):
     """
@@ -16,19 +17,44 @@ def get_command_line(only_print_help=False):
                                      description='An tool for run python script as marketing tool',
                                      epilog='Marketingtool {version}. Please use it on your own risk. (c) by Robert Zeng')
 
-#     parser.add_argument('-m', '--scrape-method', type=str, default='http',
-#                         help='The scraping type. There are currently three types: "http", "selenium" and "http-async". '
-#                              '"Http" scrapes with raw http requests, whereas "selenium" uses the selenium framework to '
-#                              'remotely control browsers. "http-async" makes use of gevent and is well suited for '
-#                              'extremely fast and explosive scraping jobs. You may search more than 1000 requests per '
-#                              'second if you have the necessary number of proxies available. ',
-#                         choices=('http', 'selenium', 'http-async'))
+    # parser.add_argument('-a', '--scrape-method', type=str, default='http',
+    #                     help='The scraping type. There are currently three types: "http", "selenium" and "http-async". '
+    #                          '"Http" scrapes with raw http requests, whereas "selenium" uses the selenium framework to '
+    #                          'remotely control browsers. "http-async" makes use of gevent and is well suited for '
+    #                          'extremely fast and explosive scraping jobs. You may search more than 1000 requests per '
+    #                          'second if you have the necessary number of proxies available. ',
+    #                     choices=('http', 'selenium', 'http-async'))
 
-#     parser.add_argument('--sel-browser', choices=['firefox', 'chrome'], default='chrome',
-#                         help='The browser frontend for selenium scraping mode. Takes only effect if --scrape-method is set to "selenium"')
+    parser.add_argument('-a', '--action', type=str, choices=['transcribe','translate','insertVideo','uploadyoutube'], default='transcribe',
+                        help='The action for the software to do. Valid values = (transcribe)',required=True)
+
+    parser.add_argument('-f','--input-file', type=str, dest='inputfile', action='store',
+                        help='the audio file to transcribe')
+    
+    parser.add_argument('-o','--output-file', type=str, dest='outputfile', action='store',
+                        help='the out put file for save the result')
+    # parser.add_argument('--srtfile', type=str, dest='srtfile', action='store',
+    #                     help='the srt file for input to the program') 
+    parser.add_argument('--source-lang', type=str, dest='sourcelang', action='store',default='auto',
+                        help='the sourcelang for translate')
+    parser.add_argument('--target-lang', type=str, dest='targetlang', action='store',
+                        help='the targetlang for translate')  
+    parser.add_argument('--insert-video', type=str, dest='insertvideo', action='store',
+                        help='the ad video to insert')   
 
 #     parser.add_argument('--browser-mode', choices=['normal', 'headless'], default='normal',
 #                         help='In which mode the browser is started. Valid values = (normal, headless)')
+    parser.add_argument('--title', type=str, dest='title', action='store',
+                        help='Video title') 
+    parser.add_argument('--description', type=str, dest='description', action='store',
+                        help='Video description') 
+    parser.add_argument('--category', type=str, dest='category', action='store',default="22",
+                        help="Numeric video category. " +
+      "See https://developers.google.com/youtube/v3/docs/videoCategories/list") 
+    parser.add_argument("--keywords", help="Video keywords, comma separated",
+    default="")
+    parser.add_argument("--privacyStatus", dest='privacystatus', choices=VALID_PRIVACY_STATUSES,
+    default=VALID_PRIVACY_STATUSES[0], help="Video privacy status.")
 
 
 #     keyword_group = parser.add_mutually_exclusive_group()
@@ -74,10 +100,10 @@ def get_command_line(only_print_help=False):
 #                                              'with the following format: "Proxyprotocol (proxy_ip|proxy_host):Port\n"'
 #                                              'Example file: socks4 127.0.0.1:99\nsocks5 33.23.193.22:1080\n')
 
-#     parser.add_argument('--config-file', type=str, dest='config_file', action='store',
-#                         help='The path to the configuration file for GoogleScraper. Normally you won\'t need this, '
-#                              'because GoogleScrape comes shipped with a thoroughly commented configuration file named '
-#                              '"scrape_config.py"')
+    parser.add_argument('--config-file', type=str, dest='config_file', action='store',
+                        help='The path to the configuration file for Marketing. Normally you won\'t need this, '
+                             'because Marketing comes shipped with a thoroughly commented configuration file named '
+                             '"config.py"')
 
 #     parser.add_argument('--check-detection', type=str, dest='check_detection', action='store',
 #                         help='Check if the given search engine blocked you from scrapign. Often detection can be determined'
@@ -86,22 +112,22 @@ def get_command_line(only_print_help=False):
 #     parser.add_argument('--simulate', action='store_true', default=False, required=False,
 #                         help='''If this flag is set, the scrape job and its estimated length will be printed.''')
 
-#     loglevel_help = '''
-# Set the debug level of the application. Use the string representation
-# instead of the numbers. High numbers will output less, low numbers more.
-# CRITICAL = 50,
-# FATAL = CRITICAL,
-# ERROR = 40,
-# WARNING = 30,
-# WARN = WARNING,
-# INFO = 20,
-# DEBUG = 10,
-# NOTSET = 0
-#     '''
+    loglevel_help = '''
+Set the debug level of the application. Use the string representation
+instead of the numbers. High numbers will output less, low numbers more.
+CRITICAL = 50,
+FATAL = CRITICAL,
+ERROR = 40,
+WARNING = 30,
+WARN = WARNING,
+INFO = 20,
+DEBUG = 10,
+NOTSET = 0
+    '''
 
-#     parser.add_argument('-v', '--verbosity', '--loglevel',
-#                         dest='log_level', default='INFO', type = str.lower,
-#                          choices=['debug', 'info', 'warning', 'warn', 'error', 'critical', 'fatal'], help=loglevel_help)
+    parser.add_argument('-v', '--verbosity', '--loglevel',
+                        dest='log_level', default='INFO', type = str.lower,
+                         choices=['debug', 'info', 'warning', 'warn', 'error', 'critical', 'fatal'], help=loglevel_help)
 
 #     parser.add_argument('--print-results', choices=['all', 'summarize'], default='all',
 #                         help='Whether to print all results ("all"), or only print a summary ("summarize")')

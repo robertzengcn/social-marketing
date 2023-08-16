@@ -10,11 +10,12 @@
     "login": "ts-node run.ts -a login -c",
     "task": "ts-node run.ts -a task -t",
     "init": "ts-node run.ts -a sqlinit",
-    "testdownload": "mocha test test/modules --grep download download single video",
+    "testdownload": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'test/modules/bilibili.test.ts' --grep download-single-video",
     "testgetlinks": "mocha test test/modules --grep get video play link",
     "testgetalllinks": "mocha test test/modules --grep video-url-list",
     "testsavelinkremote": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'test/modules/remotesource.test.ts'",
-    "testsavevideodb": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'test/modules/scraperdb.test.ts'"
+    "testsavevideodb": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'test/modules/scraperdb.test.ts'",
+    "testgoogleauth": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'test/modules/youtubeupload.test.ts' --grep google-auth"
   },
   "keywords": [
     "scraping",
@@ -41,6 +42,8 @@
     "dotenv": "^16.0.3",
     "expect.js": "^0.3.1",
     "filenamify": "^4.3.0",
+    "google-auth-library": "^9.0.0",
+    "googleapis": "^124.0.0",
     "got": "^9.6.0",
     "jshint": "^2.13.6",
     "lodash": "^4.17.21",

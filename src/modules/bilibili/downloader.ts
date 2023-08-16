@@ -71,6 +71,9 @@ export class Downloader {
 	}
 
 	getVideoUrl(videoUrl: string): void {
+		if(!videoUrl){
+			throw new Error("video url is empty");
+		} 
 		this.url = "";
 		const mapping = {
 			"BV": "https://www.bilibili.com/video/",

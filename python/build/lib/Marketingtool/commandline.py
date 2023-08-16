@@ -16,16 +16,19 @@ def get_command_line(only_print_help=False):
                                      description='An tool for run python script as marketing tool',
                                      epilog='Marketingtool {version}. Please use it on your own risk. (c) by Robert Zeng')
 
-#     parser.add_argument('-m', '--scrape-method', type=str, default='http',
-#                         help='The scraping type. There are currently three types: "http", "selenium" and "http-async". '
-#                              '"Http" scrapes with raw http requests, whereas "selenium" uses the selenium framework to '
-#                              'remotely control browsers. "http-async" makes use of gevent and is well suited for '
-#                              'extremely fast and explosive scraping jobs. You may search more than 1000 requests per '
-#                              'second if you have the necessary number of proxies available. ',
-#                         choices=('http', 'selenium', 'http-async'))
+    # parser.add_argument('-a', '--scrape-method', type=str, default='http',
+    #                     help='The scraping type. There are currently three types: "http", "selenium" and "http-async". '
+    #                          '"Http" scrapes with raw http requests, whereas "selenium" uses the selenium framework to '
+    #                          'remotely control browsers. "http-async" makes use of gevent and is well suited for '
+    #                          'extremely fast and explosive scraping jobs. You may search more than 1000 requests per '
+    #                          'second if you have the necessary number of proxies available. ',
+    #                     choices=('http', 'selenium', 'http-async'))
 
-#     parser.add_argument('--sel-browser', choices=['firefox', 'chrome'], default='chrome',
-#                         help='The browser frontend for selenium scraping mode. Takes only effect if --scrape-method is set to "selenium"')
+    parser.add_argument('-a', '--action', type=str, choices=['transcribe'], default='transcribe',
+                        help='The action for the software to do. Valid values = (transcribe)',required=True)
+
+    parser.add_argument('-f','--audio-file', type=str, dest='audio_file', action='store',
+                        help='the audio file to transcribe')
 
 #     parser.add_argument('--browser-mode', choices=['normal', 'headless'], default='normal',
 #                         help='In which mode the browser is started. Valid values = (normal, headless)')

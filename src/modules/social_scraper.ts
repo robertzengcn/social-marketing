@@ -30,11 +30,11 @@ const {spawn} = require('child_process');
 export interface ScrapeOptions {
     config: {
         logger: logType,
-        search_engine?: string, keywords: Array<string>, proxy: string, apply_evasion_techniques: boolean, block_assets: boolean, test_evasion: boolean, log_http_headers: boolean, log_ip_address: boolean
+        search_engine?: string, keywords?: Array<string>, proxy?: string, apply_evasion_techniques?: boolean, block_assets?: boolean, test_evasion?: boolean, log_http_headers?: boolean, log_ip_address?: boolean
     },
     context?: object,
     pluggable?: object,
-    page: Page,
+    page?: Page,
     taskid?: number,
     // platform:string
 }
@@ -75,13 +75,13 @@ export class SocialScraper {
     config: {
         logger: logType,
         search_engine?: string,
-        keywords: Array<string>,
-        proxy: string,
-        apply_evasion_techniques: boolean,
-        block_assets: boolean,
-        test_evasion: boolean,
-        log_http_headers: boolean,
-        log_ip_address: boolean
+        keywords?: Array<string>,
+        proxy?: string,
+        apply_evasion_techniques?: boolean,
+        block_assets?: boolean,
+        test_evasion?: boolean,
+        log_http_headers?: boolean,
+        log_ip_address?: boolean
         tmppath?: string,
         taskid?: number
         // obj:puppeteer.Page

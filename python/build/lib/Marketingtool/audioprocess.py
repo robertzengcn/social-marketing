@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
 import whisper
+import os
 
 class Audioprocess():
     def __init__(self):
         pass
     # transcribe speech
-    def transcribeSpessh(self,videopath:str,model:str="base",language:str="English"):
+    def transcribeSpeech(self,videopath:str,model:str="base",language:str="English"):
+        if os.path.exists(videopath)!=True:
+            raise FileNotFoundError("File not found")
         model = whisper.load_model(model)
-        audio = whisper.load_audio("audio.mp3")
+        audio = whisper.load_audio(videopath)
         audio = whisper.pad_or_trim(audio)
         # make log-Mel spectrogram and move to the same device as the model
         mel = whisper.log_mel_spectrogram(audio).to(model.device)
