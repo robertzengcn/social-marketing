@@ -1,8 +1,8 @@
 "use strict";
 export {};
-const fs = require('fs');
-const { google } = require('googleapis');
-const readline = require('readline');
+import * as fs from 'fs';
+import { google } from 'googleapis';
+import * as readline from 'readline';
 const OAuth2 = google.auth.OAuth2;
 
 // If modifying these scopes, delete your previously saved credentials
@@ -29,25 +29,47 @@ export interface Installed {
     client_secret: string
     redirect_uris: string[]
   }
-export const authorize = (credentials:credentials) => {
+export const authorize = async (credentials:credentials, callback) => {
     const clientSecret = credentials.installed.client_secret;
     const clientId = credentials.installed.client_id;
     const redirectUrl = credentials.installed.redirect_uris[0];
+   
     const oauth2Client = new OAuth2(clientId, clientSecret, redirectUrl);
-
+    // let oauth:any={};
     // Check if we have previously stored a token.
-    fs.readFile(TOKEN_PATH, (error, token) => {
-        if (error) {
-            return getNewToken(oauth2Client);
+    // await fs.readFile(TOKEN_PATH, (error, token) => {
+    //     if (error) {
+    //         oauth=getNewToken(oauth2Client);
+    //     } else {
+    //         oauth2Client.credentials = JSON.parse(token.toString());
+    //         console.log(oauth2Client)
+    //         oauth=oauth2Client;
+    //     }
+    // });
+    // let token=fs.readFileSync(TOKEN_PATH,'utf8')
+    // if (!token) {
+    //    getNewToken(oauth2Client);
+    //    token=fs.readFileSync(TOKEN_PATH,'utf8')
+    // }
+    //     oauth2Client.credentials = JSON.parse(token.toString());
+        
+     
+    //     return oauth2Client;
+
+    fs.readFile(TOKEN_PATH, function(err, token) {
+        if (err) {
+          getNewToken(oauth2Client, callback);
         } else {
-            oauth2Client.credentials = JSON.parse(token);
-            return oauth2Client;
+          oauth2Client.credentials = JSON.parse(token.toString());
+          callback(oauth2Client);
         }
     });
+  
+
 };
 export const cb=(error) => {console.log(error)}
 
-const getNewToken = (oauth2Client) => {
+const getNewToken = (oauth2Client,callback) => {
     const authUrl = oauth2Client.generateAuthUrl({
         access_type: 'offline',
         scope: SCOPES
@@ -67,7 +89,7 @@ const getNewToken = (oauth2Client) => {
             }
             oauth2Client.credentials = token;
             storeToken(token);
-            return oauth2Client;
+            callback(oauth2Client);
         });
     });
 };

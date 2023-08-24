@@ -84,4 +84,5 @@ GoogleScraperPup.iml
 tmp/
 .history/
 dist/
+yt-auth/*
 
