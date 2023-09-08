@@ -8,8 +8,9 @@ const appRoot = require('app-root-path');
 var fs = require('fs');
 // const resolve = require('path').resolve;
 import * as path from "path";
-import {Scraperdb} from "../scraperdb"
-const {spawn} = require('child_process');
+import { Scraperdb } from "../scraperdb"
+const { spawn } = require('child_process');
+import { Subject, Observer } from './subject';
 
 // export interface ScrapeOptionsPages {
 //     setViewport: Function,
@@ -24,7 +25,13 @@ const {spawn} = require('child_process');
 //     cookies: Function,
 // }
 // export class ScrapeOptionsPage extends Page{
-
+export interface VideoInfo{
+    url:string,
+    localpath:string,
+    title:string,
+    description:string,
+    language:string
+}
 // }
 // export class Elementhands extends puppeteer.ElementHandle{}
 export interface ScrapeOptions {
@@ -71,7 +78,7 @@ export type Searchobject = {
 /**
  * this is parent class for social scrapyer node
  *  */
-export class SocialScraper {
+export class SocialScraper implements Subject {
     config: {
         logger: logType,
         search_engine?: string,
@@ -101,6 +108,7 @@ export class SocialScraper {
     num_requests: number;
     num_keywords: number;
     taskid?: number;
+    private observers: Observer[] = [];
     constructor(options: ScrapeOptions) {
 
         // debug('constructor');
@@ -146,6 +154,40 @@ export class SocialScraper {
             }
         }
     }
+
+    /**
+     * The subscription management methods.
+     */
+    public attach(observer: Observer): void {
+        const isExist = this.observers.includes(observer);
+        if (isExist) {
+            return console.log('Subject: Observer has been attached already.');
+        }
+
+        console.log('Subject: Attached an observer.');
+        this.observers.push(observer);
+    }
+
+    public detach(observer: Observer): void {
+        const observerIndex = this.observers.indexOf(observer);
+        if (observerIndex === -1) {
+            return console.log('Subject: Nonexistent observer.');
+        }
+
+        this.observers.splice(observerIndex, 1);
+        console.log('Subject: Detached an observer.');
+    }
+
+    /**
+     * Trigger an update in each subscriber.
+     */
+    public notify(type:string,data:VideoInfo): void {
+        console.log('Subject: Notifying observers...');
+        for (const observer of this.observers) {
+            observer.update(type,data);
+        }
+    }
+
     /**
      * login social media platform
      * @param runobj 
@@ -265,8 +307,8 @@ export class SocialScraper {
      * @param object keyword 
      */
     async workersearchdata(workerseach: WosearchObj) {
-        if(workerseach.worker){
-        debug('worker=%o', workerseach.worker, this.config.keywords);
+        if (workerseach.worker) {
+            debug('worker=%o', workerseach.worker, this.config.keywords);
         }
         if (workerseach.page) {
             this.page = workerseach.page;
@@ -292,37 +334,36 @@ export class SocialScraper {
     /**
      * download video
      */
-    async downloadvideo(list:Array<Linkdata>): Promise<void> {
-        
-        var currentdate = new Date(); 
+    async downloadvideo(list: Array<Linkdata>): Promise<void> {
+
+        var currentdate = new Date();
         var datetime = currentdate.getFullYear() + "-"
-                + (currentdate.getMonth()+1)  + "-"  
-                +(currentdate.getDate());
-        const videosavepath:string=path.resolve(appRoot+"/tmp/video/"+datetime+"/");
-        if (!fs.existsSync(videosavepath)){
+            + (currentdate.getMonth() + 1) + "-"
+            + (currentdate.getDate());
+        const videosavepath: string = path.resolve(appRoot + "/tmp/video/" + datetime + "/");
+        if (!fs.existsSync(videosavepath)) {
             fs.mkdirSync(videosavepath, { recursive: true });
         }
         // debug('linklist=%o',list)
-        debug(list)
-        list.forEach(async(linkItem,index) => {
-            console.log(linkItem)
-            console.log(index)
+        //debug(list)
+        const scraperDb = Scraperdb.getInstance();
+        list.forEach(async (linkItem, index) => {
+            // console.log(linkItem)
+            // console.log(index)
             // const lt=linkItem as Linkdata
             // console.log(lt.id)
             debug(linkItem)
             // console.log(Object.getPrototypeOf(linkItem))
-           let videoArray=await this.downloadSigleVideo(linkItem.url,videosavepath)
-           if(videoArray){
-            const scraperDb=Scraperdb.getInstance();
-           for(let i=0;i<videoArray.length;i++){
-            //    console.log(videoArray[i])
-            debug(linkItem.url)
-            debug(linkItem.title)
-            debug(linkItem.content)
-            debug(linkItem.lang)
-            scraperDb.saveVideo(linkItem.url,videoArray[i],linkItem.title,linkItem.content,linkItem.lang)
-           }
-        }
+            let videoArray = await this.downloadSigleVideo(linkItem.url, videosavepath)
+            if (videoArray) {
+
+                for (let i = 0; i < videoArray.length; i++) {
+                    //    console.log(videoArray[i])
+                    const videoItem:VideoInfo={url:linkItem.url,localpath:videoArray[i],title:linkItem.title,description:linkItem.content,language:linkItem.lang}
+                    scraperDb.saveVideo(linkItem.url, videoArray[i], linkItem.title, linkItem.content, linkItem.lang)
+                    this.notify("downloadvideoend",videoItem);
+                }
+            }
         })
     }
     /**
@@ -330,7 +371,7 @@ export class SocialScraper {
      * @param string link 
      * @param string videopath 
      */
-    async downloadSigleVideo( link:string, videopath:string ):Promise<Array<string>|void> {
+    async downloadSigleVideo(link: string, videopath: string): Promise<Array<string> | void> {
 
     }
 

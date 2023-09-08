@@ -17,7 +17,8 @@
     "testsavevideodb": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'test/modules/scraperdb.test.ts'",
     "testgoogleauth": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'test/modules/youtubeupload.test.ts' --grep google-auth",
     "testyoutubeupload": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'test/modules/youtubeupload.test.ts' --grep youtube-upload",
-    "testppyoutubeupload": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'test/modules/youtubepuooter.test.ts' --grep upload-video"
+    "testppyoutubeupload": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'test/modules/youtubepuooter.test.ts' --grep upload-video",
+    "testyoutubeaddcaption": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'test/modules/youtubecaptions.test.ts' --grep insert-captions"
   },
   "keywords": [
     "scraping",

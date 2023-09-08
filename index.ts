@@ -85,12 +85,13 @@ export async function Downloadvideo(browser_config:SMstruct, scrape_config:Scrap
   const linklist=await remoteSourmodel.Getscrapyinfolist(scrape_config.resulttaskid,scropeNum)
   debug(linklist)
   if(!linklist){
-    throw new Error("vide link list is null")   
+    throw new Error("video link list is null")   
   }
   if(linklist.length<1){
     throw new Error("link list is empty")
   }
   var scraper = new ScrapeManager(browser_config);
+  
   scraper.downloadPlatomvideo(linklist)
 }
 export async function Sqlinit(){

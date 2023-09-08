@@ -2,7 +2,7 @@
 
 This project is mainly for do social marketing on some social media platform like facebook, twitter, youtube
 
-You should set up your own backgroud service
+This program need backgroud web service to peresit data, You should set up your own backgroud service
 
 #### How the program work
 
@@ -10,12 +10,12 @@ You should set up your own backgroud service
 
 2. Defined the api address in local client environment file, edit the .env file
 
-#### Some function
+##### Some function
 ## login social platform
 
 Run the start command
 
-login campaign
+### login campaign
 ```
 npm run login -c compaignid
 ```
@@ -29,17 +29,36 @@ login mean ask the program to login into social media platform, the compaign id 
 
 The program shoud do follow job, get username credentials from backgroud service, open login page, and login, some platform may require use make some manual action
 
+### run task
+
+Run task from command line
+```
+npm run task 
+```
+
+
+
 #### Debug method
 debug the function, for example
 ```
 DEBUG='bilibili-scraper:Scraper' npm run testdownload
 ```
 
-### how to test
+### How to test
 test for single module, for example, save single link to remote
 ```
 npx mocha test test/modules --grep video-url-list
 ```
+
+
+
+
+
+
+
+
+
+
 
 
 

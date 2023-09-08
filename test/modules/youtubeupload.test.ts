@@ -25,7 +25,7 @@ describe('Module Youtubeupload', function(){
         //  let auth=authorize(JSON.parse(fs.readFileSync(path.resolve(appRoot+"/tmp/test/client_secret.json")) as any))
         // // console.log(auth)
         // uploadVideo(auth,"test title","test description",path.resolve(appRoot+"/tmp/test/test.flv"));
-        fs.readFile(path.resolve(appRoot+"/tmp/test/client_secret.json"), function processClientSecrets(err, content) {
+        fs.readFile(path.resolve(appRoot+"/tmp/client_secret_909593013988-qaggscg7gntilse2k5k3jj1qveb419i8.apps.googleusercontent.com.json"), function processClientSecrets(err, content) {
             if (err) {
             throw new Error('Error loading client secret file: ' + err);
               

@@ -20,6 +20,8 @@ const bilibili = require("./modules/bilibili_scraper");
 import { SocialScraper, WosearchObj } from "./modules/social_scraper"
 import { Page } from 'puppeteer';
 import {Linkdata} from './remotesource';
+import {videodownloadObserver} from './modules/videodownload_observer';
+
 // const bing = require('./modules/bing.js');
 // const yandex = require('./modules/yandex.js');
 // const infospace = require('./modules/infospace.js');
@@ -48,7 +50,7 @@ function read_keywords_from_file(fname) {
 }
 
 
-function getScraper(search_engine: string, args: any) {
+function getScraper(search_engine: string, args: any): SocialScraper {
   if (typeof search_engine === "string") {
     return new {
       facebook: facebook.FacebookScraper,
@@ -606,6 +608,10 @@ export class ScrapeManager {
     });
     debug("links=%o", links)
     //console.log(this.scraper)
+
+    //add observer before download video
+    const videodownObser=new videodownloadObserver();
+    this.scraper.attach(videodownObser);
     await this.scraper.downloadvideo(links)
    
 

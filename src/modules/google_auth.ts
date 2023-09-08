@@ -9,7 +9,9 @@ const OAuth2 = google.auth.OAuth2;
 // at ~/.credentials/upload_app_session.json
 const SCOPES = [
     'https://www.googleapis.com/auth/youtube.upload',
-    'https://www.googleapis.com/auth/youtube.readonly'
+    'https://www.googleapis.com/auth/youtube.readonly',
+    'https://www.googleapis.com/auth/youtube.force-ssl',
+    'https://www.googleapis.com/auth/youtubepartner'
 ];
 const TOKEN_DIR =
     (process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE) +
@@ -30,6 +32,7 @@ export interface Installed {
     redirect_uris: string[]
   }
 export const authorize = async (credentials:credentials, callback) => {
+    
     const clientSecret = credentials.installed.client_secret;
     const clientId = credentials.installed.client_id;
     const redirectUrl = credentials.installed.redirect_uris[0];
@@ -55,13 +58,26 @@ export const authorize = async (credentials:credentials, callback) => {
         
      
     //     return oauth2Client;
-
-    fs.readFile(TOKEN_PATH, function(err, token) {
+    const tokenPath=TOKEN_DIR+clientId+'.json';
+    console.log("read token from "+tokenPath)
+    fs.readFile(tokenPath, function(err, token) {
         if (err) {
-          getNewToken(oauth2Client, callback);
-        } else {
+            
+          getNewToken(oauth2Client, callback,clientId);
+        }else{
+
           oauth2Client.credentials = JSON.parse(token.toString());
-          callback(oauth2Client);
+          console.log("parse token:")
+          console.log(oauth2Client.credentials)
+          const cdate = new Date();
+          const timestamp = cdate.getMilliseconds();
+          if(oauth2Client.credentials.expiry_date<timestamp){
+            console.log("token expire")
+            getNewToken(oauth2Client, callback,clientId);
+            return;       
+          }
+        console.log("auth finish")
+        callback(oauth2Client);
         }
     });
   
@@ -69,7 +85,7 @@ export const authorize = async (credentials:credentials, callback) => {
 };
 export const cb=(error) => {console.log(error)}
 
-const getNewToken = (oauth2Client,callback) => {
+const getNewToken = (oauth2Client,callback,client_id) => {
     const authUrl = oauth2Client.generateAuthUrl({
         access_type: 'offline',
         scope: SCOPES
@@ -88,13 +104,13 @@ const getNewToken = (oauth2Client,callback) => {
                     )  
             }
             oauth2Client.credentials = token;
-            storeToken(token);
+            storeToken(token,client_id);
             callback(oauth2Client);
         });
     });
 };
 
-const storeToken = token => {
+const storeToken = (token,client_id:string) => {
     try {
         fs.mkdirSync(TOKEN_DIR);
     } catch (error) {
@@ -102,9 +118,10 @@ const storeToken = token => {
             throw error;
         }
     }
-    fs.writeFile(TOKEN_PATH, JSON.stringify(token), error => {
+    const tokenPath=TOKEN_DIR+client_id+'.json';
+    fs.writeFile(tokenPath, JSON.stringify(token), error => {
         if (error) throw error;
-        console.log('Token stored to ' + TOKEN_PATH);
+        console.log('Token stored to ' + tokenPath);
     });
 };
 

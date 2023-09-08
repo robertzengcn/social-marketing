@@ -12,6 +12,7 @@ import * as path from 'path';
 //     db: db,
 // };
 
+
 export class Scraperdb {
     private static instance: Scraperdb;
     dbname: string;
