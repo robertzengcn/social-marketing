@@ -1,7 +1,9 @@
 'use strict';
 export { };
 import {Observer} from './subject';
-import {VideoInfo} from './social_scraper';
+import {ScrapeVideo} from './social_scraper';
+import {Scraperdb} from "../scraperdb";
+import {RemoteSource} from "../remotesource";
 const debug = require("debug")("Observer:videodownloadObserver");
 
 export class videodownloadObserver implements Observer{
@@ -10,14 +12,19 @@ export class videodownloadObserver implements Observer{
     update(type:string,data:any){
         switch(type){
             case 'downloadvideoend':
-                this.videodownload(data as VideoInfo);
+                this.videodownload(data as ScrapeVideo);
                 break;
             default:
                 break;
         }
     }
-    videodownload(data:VideoInfo){
+    videodownload(data:ScrapeVideo){
         debug(data);
-
+        //save data to video db
+        const scraperDb = Scraperdb.getInstance(); 
+        scraperDb.saveVideo(data.video)
+        //update remote data
+        const remoteSourmodel = RemoteSource.getInstance();
+        remoteSourmodel.Updateprocesstime(data.scrapeinfo.id);
     }
-}
+    }

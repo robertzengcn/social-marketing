@@ -11,7 +11,7 @@ import * as path from "path";
 import { Scraperdb } from "../scraperdb"
 const { spawn } = require('child_process');
 import { Subject, Observer } from './subject';
-
+// import {ScrapeVideo} from './social_scraper';
 // export interface ScrapeOptionsPages {
 //     setViewport: Function,
 //     setRequestInterception: Function,
@@ -25,6 +25,10 @@ import { Subject, Observer } from './subject';
 //     cookies: Function,
 // }
 // export class ScrapeOptionsPage extends Page{
+export interface ScrapeVideo{
+    scrapeinfo:Linkdata,
+    video:VideoInfo,
+}    
 export interface VideoInfo{
     url:string,
     localpath:string,
@@ -181,7 +185,7 @@ export class SocialScraper implements Subject {
     /**
      * Trigger an update in each subscriber.
      */
-    public notify(type:string,data:VideoInfo): void {
+    public notify(type:string,data:ScrapeVideo): void {
         console.log('Subject: Notifying observers...');
         for (const observer of this.observers) {
             observer.update(type,data);
@@ -346,7 +350,7 @@ export class SocialScraper implements Subject {
         }
         // debug('linklist=%o',list)
         //debug(list)
-        const scraperDb = Scraperdb.getInstance();
+        //const scraperDb = Scraperdb.getInstance();
         list.forEach(async (linkItem, index) => {
             // console.log(linkItem)
             // console.log(index)
@@ -360,8 +364,9 @@ export class SocialScraper implements Subject {
                 for (let i = 0; i < videoArray.length; i++) {
                     //    console.log(videoArray[i])
                     const videoItem:VideoInfo={url:linkItem.url,localpath:videoArray[i],title:linkItem.title,description:linkItem.content,language:linkItem.lang}
-                    scraperDb.saveVideo(linkItem.url, videoArray[i], linkItem.title, linkItem.content, linkItem.lang)
-                    this.notify("downloadvideoend",videoItem);
+                    const scrapeitem:ScrapeVideo={video:videoItem,scrapeinfo:linkItem}
+                    //scraperDb.saveVideo(linkItem.url, videoArray[i], linkItem.title, linkItem.content, linkItem.lang)
+                    this.notify("downloadvideoend",scrapeitem);
                 }
             }
         })

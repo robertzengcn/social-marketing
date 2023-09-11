@@ -3,6 +3,7 @@ import * as fs from 'fs';
 const debug = require("debug")("scraperdb");
 const appRoot = require('app-root-path');
 import * as path from 'path';
+import {VideoInfo} from './modules/social_scraper';
 // import { use } from 'chai';
 // import * as e from 'express';
 
@@ -75,10 +76,11 @@ export class Scraperdb {
      * save video
      * @param url string
      */
-    saveVideo(url: string, localpath:string,title: string, description: string, language: string) {
-        let languageid: number = 0;
+    saveVideo(videoinfo:VideoInfo) {
+    // saveVideo(url: string, localpath:string,title: string, description: string, language: string) {    
+    let languageid: number = 0;
         for (let i = 0; i < this.language.length; i++) {
-            if (this.language[i].name == language) {
+            if (this.language[i].name == videoinfo.language) {
                 languageid = this.language[i].id;
             }
         }
@@ -86,13 +88,13 @@ export class Scraperdb {
         const recordtime = date.getFullYear().toString() +"-"+ this.pad2(date.getMonth() + 1)+"-"+ this.pad2(date.getDate())+" " + this.pad2(date.getHours()) +":"+ this.pad2(date.getMinutes())+":" + this.pad2(date.getSeconds());
         const sql = `INSERT INTO ` + this.videoTable + ` (url,localpath,record_time) VALUES (?,?,?)`;
         const component = this;
-        this.db.run(sql, [url, localpath,recordtime], function (err) {
+        this.db.run(sql, [videoinfo.url, videoinfo.localpath,recordtime], function (err) {
             if (err) {
-                throw new Error(err.message+" url:"+url+" recordtime:"+recordtime);
+                throw new Error(err.message+" url:"+videoinfo.url+" recordtime:"+recordtime);
             }
             if (this.lastID) {
                 const sql = `INSERT INTO `+component.videoDescriptionTable+` (video_id,language_id,title,description) VALUES (?,?,?,?)`;
-                component.db.run(sql, [this.lastID, languageid, title, description], function (err) {
+                component.db.run(sql, [this.lastID, languageid, videoinfo.title, videoinfo.description], function (err) {
                     if (err) {
                         throw new Error(err.message);
                     }

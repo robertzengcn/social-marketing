@@ -267,7 +267,28 @@ export class RemoteSource {
     });
     return taskInfo;
   }
-
+  async Updateprocesstime(scropeId:number){
+    const FormData = require('form-data');
+    let data = new FormData();
+    data.append('id', scropeId);
+   
+    await axios.post(this.REMOTEADD + "/api/updatescrapeprotime", data,
+    {
+      auth: {
+        username: this.REMOTEUSERNAME,
+        password: this.REMOTEPASSWORD,
+      },
+    })
+    .then(function (res) {
+      // debug(res);
+      // console.log(res)
+      // return res.data.data as number;
+    })
+    .catch(function (error) {
+      // console.log(error);
+      throw new Error(error.message);
+    });
+  }
 }
 
 // module.exports = {
