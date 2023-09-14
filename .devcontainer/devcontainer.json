@@ -1,0 +1,33 @@
+{
+    "name": "socialmarket-dev",
+    "settings": {
+      "terminal.integrated.defaultProfile.linux": "bash"
+    },
+    "build": {
+      "dockerComposeFile": [
+        "../docker-compose.yml",
+        "./docker-compose.extend.yml"
+      ],
+      "service": "socialmarket",
+      "workspaceFolder": "/app",
+      "shutdownAction": "stopCompose",
+      "remoteUser": "vscode"
+	},
+  "features":{
+    "ghcr.io/devcontainers/features/git:1": {}
+  },
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"alefragnani.Bookmarks",
+				"aaron-bond.better-comments",
+				"ms-vscode.vscode-typescript-next",
+				"dbaeumer.vscode-eslint",
+				"GitHub.copilot",
+				"GitHub.copilot-labs",
+				"cmstead.js-codeformer",
+				"cmstead.jsrefactor"
+			]
+		}
+	}
+  }

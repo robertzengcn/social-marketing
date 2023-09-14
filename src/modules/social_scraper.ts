@@ -9,7 +9,7 @@ var fs = require('fs');
 // const resolve = require('path').resolve;
 import * as path from "path";
 import { Scraperdb } from "../scraperdb"
-const { spawn } = require('child_process');
+// const { spawn } = require('child_process');
 import { Subject, Observer } from './subject';
 // import {ScrapeVideo} from './social_scraper';
 // export interface ScrapeOptionsPages {

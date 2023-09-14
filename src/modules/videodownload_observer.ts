@@ -12,13 +12,13 @@ export class videodownloadObserver implements Observer{
     update(type:string,data:any){
         switch(type){
             case 'downloadvideoend':
-                this.videodownload(data as ScrapeVideo);
+                this.videodownloadend(data as ScrapeVideo);
                 break;
             default:
                 break;
         }
     }
-    videodownload(data:ScrapeVideo){
+    videodownloadend(data:ScrapeVideo){
         debug(data);
         //save data to video db
         const scraperDb = Scraperdb.getInstance(); 
