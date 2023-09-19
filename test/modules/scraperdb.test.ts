@@ -1,5 +1,5 @@
 'use strict';
-import {Scraperdb} from '../../src/scraperdb'
+import {Scraperdb} from '../../src/model/scraperdb'
 
 describe('Module Scraperdb', function(){
     const scraperdb=Scraperdb.getInstance();

@@ -1,9 +1,9 @@
 version: '3'
 services:
   socialmarket:
-    volumes:
-      - ~/.ssh: /home/vscode/.ssh:ro
-      - ~/.gitconfig: /home/vscode/.gitconfig
+    # volumes:
+      # - ~/.ssh:/home/vscode/.ssh:ro
+      # - ~/.gitconfig:/home/vscode/.gitconfig:ro
 
     # [Optional] Required for ptrace-based debuggers like C++, Go, and Rust
     # cap_add:
