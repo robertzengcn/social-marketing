@@ -32,8 +32,10 @@ export class videodownloadObserver implements Observer{
         const remoteSourmodel = RemoteSource.getInstance();
         remoteSourmodel.Updateprocesstime(data.scrapeinfo.id);
         const vemodel=new Videoedit()
-        const outputpath=path.resolve(appRoot+"")
-        vemodel.removeWatermark(data.video.localpath,outputpath)
-        videoDb.updateVideofilter(insertId,outputpath)
+        const outputpath=path.resolve(appRoot+"/tmp/video/filterwater/")
+        const outputpathfilename=outputpath+insertId+"_"+Math.random().toString(16).slice(2)+".mp4"
+
+        vemodel.removeWatermark(data.video.localpath,outputpathfilename)
+        videoDb.updateVideofilter(insertId,outputpathfilename)
     }
     }

@@ -58,12 +58,12 @@ export class Scraperdb {
      * create video table
      */
     createTables() {
-        const videotablepath = __dirname + "/sql/scraperdb/";
+        const videotablepath = path.resolve(appRoot + "/src/sql/scraperdb/");
 
         fs.readdir(videotablepath, (err, files) => {
             debug(files)
             files.forEach(file => {
-                this.db.exec(fs.readFileSync(videotablepath + file).toString());
+                this.db.exec(fs.readFileSync(videotablepath +path.sep+ file).toString());
             });
         });
     }

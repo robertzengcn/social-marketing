@@ -2,7 +2,7 @@
 // import { debug } from "console";
 import {ScrapeManager,SMstruct} from "./src/node_socialmk";
 import { RemoteSource } from "./src/remotesource"
-import {Scraperdb} from "./src/scraperdb";
+import {Scraperdb} from "./src/model/scraperdb";
 const debug = require('debug')('index');
 // var Scraper = require("./src/modules/social_scraper");
 
@@ -72,7 +72,11 @@ export async function Searchdata(browser_config:SMstruct, scrape_config:ScrapeCo
 
   await scraper.quit();
 }
-
+/**
+ * get link from remote and download video
+ * @param browser_config 
+ * @param scrape_config 
+ */
 export async function Downloadvideo(browser_config:SMstruct, scrape_config:ScrapeConfig) {
   Object.assign(browser_config, scrape_config);
   const scropeNum=5;

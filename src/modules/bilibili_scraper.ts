@@ -335,7 +335,7 @@ export class BilibiliScraper extends Scraper {
     let videores = await downloader.getInfo();
     debug("VIDEO INFO", videores);
     // const downloadPath ='/home/robertzeng/downloadtest';
-    const filename = videores.data.title;
+    const filename = Math.random().toString(20).slice(2);
     const { data, fallback } = await downloader.getData();
 
     const target = data.durl || data.result.durl;
@@ -368,8 +368,8 @@ export class BilibiliScraper extends Scraper {
         file,
         (progress, index) => {
           const { speed, eta, percentage } = progress; //显示进度条
-          console.log("speed: " + Math.round(speed / 1e3) + "KB/s");
-          console.log(`eta:${eta}s`);
+          // console.log("speed: " + Math.round(speed / 1e3) + "KB/s");
+          // console.log(`eta:${eta}s`);
         }
       );
       result.push(file)
