@@ -3,13 +3,13 @@
 const cheerio = require("cheerio");
 import { SocialScraper as Scraper, Linkurl, ScrapeOptions, Searchobject} from "./social_scraper";
 const fs = require("fs");
-import { Downloader,Videodata } from "./bilibili/downloader";
+import { Downloader} from "./bilibili/downloader";
 const path = require("path");
 const sanitize = require("filenamify");
 const debug = require("debug")("bilibili-scraper");
 const { autoScroll, delay } = require("./lib/function.js");
 import {ElementHandle,Page,errors as Puppeteererror} from 'puppeteer';
-
+var debugerror = debug('app:error');
 
 type clickbtnserobj = {
   page: Page,
@@ -39,7 +39,7 @@ export class BilibiliScraper extends Scraper {
     await this.page.setBypassCSP(true);
     this.last_response = await this.page.goto(this.startUrl);
 
-    console.log(
+    debug(
       "login success, cookies has been save at " + this.config.tmppath
     );
     //click login btn
@@ -68,7 +68,7 @@ export class BilibiliScraper extends Scraper {
       JSON.stringify(cookies, null, 2),
       (err) => {
         if (err) {
-          console.error(err);
+          debugerror(err);
         }
       }
     );
@@ -351,7 +351,7 @@ export class BilibiliScraper extends Scraper {
         15: "360P",
       };
     const videoQuantity = qualityArray[quality] || "unknown";
-    console.log("videoQuantity is " + videoQuantity);
+    debug("videoQuantity is " + videoQuantity);
     if (fallback) {
       throw new Error("error happen when get video data");
     }

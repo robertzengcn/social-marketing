@@ -26,7 +26,7 @@ export class Videodb {
    * save video
    * @param url string
    */
-  saveVideo(videoinfo: VideoInfo): number {
+  saveVideo(videoinfo: VideoInfo,callback:Function|undefined|null) {
     // saveVideo(url: string, localpath:string,title: string, description: string, language: string) {
     let languageid: number = 0;
     for (let i = 0; i < this.language.length; i++) {
@@ -75,11 +75,13 @@ export class Videodb {
               }
             }
           );
-        }
-        return this.lastID;
+          if(callback){
+            callback(this.lastID)
+          }
+        }    
       }
     );
-    return 0;
+    
     // this.db.close();
   }
   /**

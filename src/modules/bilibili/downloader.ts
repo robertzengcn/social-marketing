@@ -4,7 +4,8 @@ const http = require("http");
 const https = require("https");
 const progress = require("progress-stream");
 const fetch =require("node-fetch");
-
+const debug = require("debug")("bilibili-download");
+var debugerror = debug('app:error');
 export interface getAiddata {
 	videoData: {
 		aid: number;
@@ -101,7 +102,7 @@ export class Downloader {
 				let data = result.match(/__INITIAL_STATE__=(.*?);\(function\(\)/)[1];
 				// data =  cast(JSON.parse(data),r("User"));
 				const aiddata: getAiddata = JSON.parse(data)
-				console.log("INITIAL STATE", data);
+				//debug("INITIAL STATE", data);
 				if (type === "BV" || type === "bv" || type === "av") {
 					this.aid = aiddata.videoData.aid;
 					this.pid = parseInt(url.split("p=")[1], 10) || 1;
@@ -166,7 +167,7 @@ export class Downloader {
 			.then(result => {
 				const data = fallback ? this.parseData(result) : JSON.parse(result);
 				const target = data.durl || data.result.durl;
-				console.log("PLAY URL", data);
+				// console.log("PLAY URL", data);
 				if (target) {
 					this.links = target.map(part => part.url);
 					return {
@@ -253,7 +254,7 @@ export class Downloader {
 				proStream.setLength(res.headers["content-length"]);
 				//先pipe到proStream再pipe到文件的写入流中
 				res.pipe(proStream).pipe(stream).on("error", error => {
-					console.error(error);
+					debugerror(error);
 				});
 			});
 		}

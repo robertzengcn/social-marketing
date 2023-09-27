@@ -9,6 +9,6 @@ describe('Module Watermark', function(){
         const originvideo=path.resolve(appRoot+'/test/data/test_watermark.mp4');
         const outputvideo=path.resolve(appRoot+'/test/output/test_watermark_output.mp4');
         const videoedit = new Videoedit();
-        videoedit.removeWatermark(originvideo,outputvideo);
+        videoedit.removeWatermark(originvideo,outputvideo,0,null);
     });
 });
