@@ -1,7 +1,7 @@
 export { };
 import axios from "axios";
 const debug = require('debug')('RemoteSource');
-const FormData = require('form-data');
+// const FormData = require('form-data');
 type sosetting = {
   sotype: string;
   socialuser: string;

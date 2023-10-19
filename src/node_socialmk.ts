@@ -19,7 +19,7 @@ const youtube = require("./modules/youtube_scraper");
 const bilibili = require("./modules/bilibili_scraper");
 import { SocialScraper, WosearchObj } from "./modules/social_scraper"
 import { Page } from 'puppeteer';
-import {Linkdata} from './remotesource';
+import {Linkdata} from './modules/remotesource';
 import {videodownloadObserver} from './modules/videodownload_observer';
 
 // const bing = require('./modules/bing.js');

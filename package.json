@@ -65,6 +65,7 @@
     "request": "^2.88.2",
     "sqlite3": "^5.1.6",
     "user-agents": "^1.0.1354",
+    "vue-material": "^1.0.0-beta-16",
     "webpack-manifest-plugin": "^5.0.0",
     "webpack-merge": "^5.9.0",
     "winston": "^3.2.1",

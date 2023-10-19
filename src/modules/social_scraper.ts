@@ -2,7 +2,7 @@
 
 const meta = require('./metadata.ts');
 const debug = require('debug')('se-scraper:Scraper');
-import { RemoteSource, Linkdata } from "../remotesource"
+import { RemoteSource, Linkdata } from "./remotesource"
 import { Page } from 'puppeteer';
 const appRoot = require('app-root-path');
 var fs = require('fs');
