@@ -43,13 +43,15 @@ class CustomConcurrency extends Browser {
                 try {
                     // will probably fail, but just in case the repair was not necessary
                     await chrome.close();
-                } catch (e) {}
+                } catch (e) {
+                    debug('Failed to close chrome: %o', e);
+                }
 
                 // just relaunch as there is only one page per browser
                 chrome = await this.puppeteer.launch(options);
             },
         };
     }
-};
+}
 
 module.exports = CustomConcurrency;

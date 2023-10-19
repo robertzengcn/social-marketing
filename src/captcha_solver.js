@@ -92,5 +92,5 @@ try {
 /*
     translate this shit into js: https://github.com/ecthros/uncaptcha2/blob/master/queryAPI.py
  */
-async function translate_audio_file() {
-}
+// async function translate_audio_file() {
+// }

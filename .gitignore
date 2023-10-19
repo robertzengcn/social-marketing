@@ -87,3 +87,6 @@ tmp/
 dist/
 yt-auth/*
 
+
+#Electron-builder output
+/dist_electron
