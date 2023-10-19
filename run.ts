@@ -6,7 +6,7 @@ export {};
 // const se_scraper = require("./index");
 import {Login,Searchdata,Downloadvideo,ScrapeConfig,Sqlinit} from "./index";
 const { ArgumentParser } = require("argparse");
-import {RemoteSource} from "./src/remotesource";
+import {RemoteSource} from "./src/modules/remotesource";
 const { version } = require("./package.json");
 const fs = require('fs');
 const resolve = require('path').resolve;

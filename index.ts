@@ -1,7 +1,7 @@
 // import { debug } from "console";
 // import { debug } from "console";
 import {ScrapeManager,SMstruct} from "./src/node_socialmk";
-import { RemoteSource } from "./src/remotesource"
+import { RemoteSource } from "./src/modules/remotesource"
 import {Scraperdb} from "./src/model/scraperdb";
 const debug = require('debug')('index');
 // var Scraper = require("./src/modules/social_scraper");
