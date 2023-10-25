@@ -64,6 +64,7 @@
     "vue": "^3.3.4",
     "vue-material": "^1.0.0-beta-16",
     "vue-router": "^4.2.5",
+    "vuetify": "^3.3.22",
     "webpack-manifest-plugin": "^5.0.0",
     "webpack-merge": "^5.9.0",
     "winston": "^3.2.1",

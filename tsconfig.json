@@ -1,17 +1,16 @@
 {
-    "compilerOptions": {
-      "moduleResolution": "node",
-      "noImplicitAny": false,
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "noImplicitAny": false,
     //   "noEmitOnError": true,
-      "removeComments": false,
-      "sourceMap": true,
+    "removeComments": false,
+    "sourceMap": true,
     "inlineSources": true,
-      "target": "es6",
+    "target": "es6",
     "outDir": "dist",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "types": ["webpack-env", "vuetify"]
     // "noEmit":true
-    },
-    "include": [
-      "src/*","test/*/*","src/**/*"
-, "python"    ]
-  }
+  },
+  "include": ["src/*", "test/*/*", "src/**/*", "python"]
+}
