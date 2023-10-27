@@ -1,16 +1,46 @@
 {
   "compilerOptions": {
+    "noImplicitAny":false,
+    "noImplicitThis": false,
+    "target": "esnext",
+    "module": "esnext",
+    "strict": true,
+    "jsx": "preserve",
     "moduleResolution": "node",
-    "noImplicitAny": false,
-    //   "noEmitOnError": true,
-    "removeComments": false,
-    "sourceMap": true,
-    "inlineSources": true,
-    "target": "es6",
-    "outDir": "dist",
+    "experimentalDecorators": true,
+    "allowJs": true,
     "skipLibCheck": true,
-    "types": ["webpack-env", "vuetify"]
-    // "noEmit":true
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "useDefineForClassFields": true,
+    "sourceMap": true,
+    "baseUrl": ".",
+    "types": [
+      "webpack-env",
+      "vuetify",
+      "jquery"
+    ],
+    "paths": {
+      "@/*": [
+        "./*"
+      ]
+    },
+    "lib": [
+      "esnext",
+      "dom",
+      "dom.iterable",
+      "scripthost"
+    ]
   },
-  "include": ["src/*", "test/*/*", "src/**/*", "python"]
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue",
+    "tests/**/*.ts",
+    "tests/**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

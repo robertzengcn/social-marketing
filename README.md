@@ -15,7 +15,7 @@ This program need backgroud web service to peresit data, You should set up your 
 
 Run the start command
 
-### login campaign
+### Login campaign
 ```
 npm run login -c compaignid
 ```
@@ -28,6 +28,12 @@ login mean ask the program to login into social media platform, the compaign id 
 
 
 The program shoud do follow job, get username credentials from backgroud service, open login page, and login, some platform may require use make some manual action
+
+### Develop
+Start electron
+```
+yarn electron:serve
+```
 
 ### run task
 

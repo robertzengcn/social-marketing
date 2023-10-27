@@ -538,7 +538,7 @@ export class ScrapeManager {
         });
 
         var boundMethod = obj.workersearchdata.bind(obj);
-        execPromises.push(this.cluster.execute({}, boundMethod));
+        execPromises.push(this.cluster.execute({}, boundMethod) as never);
       }
 
       await Promise.all(execPromises);

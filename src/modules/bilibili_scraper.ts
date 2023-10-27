@@ -83,7 +83,7 @@ export class BilibiliScraper extends Scraper {
    * @param {string} keyword
    * @returns element
    */
-  async clickSearchbtn(searobj: clickbtnserobj):Promise<ElementHandle<Element>> {
+  async clickSearchbtn(searobj: clickbtnserobj):Promise<ElementHandle<Element> | null> {
     if (searobj.page) {
       this.page = searobj.page;
     }
