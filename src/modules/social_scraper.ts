@@ -33,7 +33,7 @@ export interface VideoInfo{
     url:string,
     localpath:string,
     title:string,
-    description:string,
+    description:string|undefined,
     language:string
 }
 // }
@@ -125,7 +125,9 @@ export class SocialScraper implements Subject {
         //     // browsers=null
         // } = options;
         // this.browser=browser;
+        if(options.page){
         this.page = options.page;
+        }
         this.last_response = null; // the last response object
         this.metadata = {
             scraping_detected: false,
@@ -134,9 +136,12 @@ export class SocialScraper implements Subject {
         this.config = options.config;
         this.logger = this.config.logger;
         this.context = options.context;
-
+        if(options.config.proxy){
         this.proxy = options.config.proxy;
+        }
+        if(options.config.keywords){
         this.keywords = options.config.keywords;
+        }
         if (options.taskid) {
             this.taskid = options.taskid;
         }
@@ -320,7 +325,12 @@ export class SocialScraper implements Subject {
 
         await this.page.setViewport({ width: 1280, height: 800 });
         await this.load_browser_engine()
+        if(!this.config.keywords){
+            console.error("keyword is empty");
+            return
+        }
         const links = await this.searchdata({ keyword: this.config.keywords })
+        
         const remoteSourmodel = RemoteSource.getInstance();
         // debug('links=%o',links)
         //handle the links
@@ -451,40 +461,41 @@ async function evadeChromeHeadlessDetection(page) {
         // window.chrome = mockObj;
     });
 
-    // Pass the Permissions Test.
-    await page.evaluateOnNewDocument(() => {
-        const originalQuery = window.navigator.permissions.query;
-        // window.navigator.permissions.__proto__.query = parameters =>
-        Object.getPrototypeOf(window.navigator.permissions).query = parameters =>
+    // //Pass the Permissions Test.
+    // await page.evaluateOnNewDocument(() => {
+    //     const originalQuery = window.navigator.permissions.query;
+    //     // window.navigator.permissions.__proto__.query = parameters =>
+    //     Object.getPrototypeOf(window.navigator.permissions).query = parameters =>
 
-            parameters.name === 'notifications'
-                ? Promise.resolve({ state: Notification.permission })
-                : originalQuery(parameters);
+    //         parameters.name === 'notifications'
+    //             ? Promise.resolve({ state: Notification.permission })
+    //             : originalQuery(parameters);
 
-        // Inspired by: https://github.com/ikarienator/phantomjs_hide_and_seek/blob/master/5.spoofFunctionBind.js
-        const oldCall = Function.prototype.call;
+    //     // Inspired by: https://github.com/ikarienator/phantomjs_hide_and_seek/blob/master/5.spoofFunctionBind.js
+    //     const oldCall = Function.prototype.call;
 
-        function call() {
-            return oldCall.apply(this, arguments);
-        }
+    //     function call() {
+            
+    //         return oldCall.apply(this, arguments);
+    //     }
 
-        Function.prototype.call = call;
+    //     Function.prototype.call = call;
 
-        const nativeToStringFunctionString = Error.toString().replace(/Error/g, "toString");
-        const oldToString = Function.prototype.toString;
+    //     const nativeToStringFunctionString = Error.toString().replace(/Error/g, "toString");
+    //     const oldToString = Function.prototype.toString;
 
-        function functionToString() {
-            if (this === window.navigator.permissions.query) {
-                return "function query() { [native code] }";
-            }
-            if (this === functionToString) {
-                return nativeToStringFunctionString;
-            }
-            return oldCall.call(oldToString, this);
-        }
+    //     function functionToString() {
+    //         if (this === window.navigator.permissions.query) {
+    //             return "function query() { [native code] }";
+    //         }
+    //         if (this === functionToString) {
+    //             return nativeToStringFunctionString;
+    //         }
+    //         return oldCall.call(oldToString, this);
+    //     }
 
-        Function.prototype.toString = functionToString;
-    });
+    //     Function.prototype.toString = functionToString;
+    // });
 
     // Pass the Plugins Length Test.
     await page.evaluateOnNewDocument(() => {

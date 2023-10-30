@@ -201,7 +201,7 @@ export class RemoteSource {
     return linkId;
   }
   //get scrapy info list
-  async Getscrapyinfolist(taskId: number, limit: number): Promise<Array<Linkdata> | null> {
+  async Getscrapyinfolist(taskId: number, limit: number): Promise<Array<Linkdata| null>> {
     const linkdaarr =await axios.get(this.REMOTEADD +"/api/getscrapeinfolist?sotaskid="+taskId+"&limit="+limit,{
       auth: {
         username: this.REMOTEUSERNAME,

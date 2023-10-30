@@ -1,26 +1,11 @@
 <template>
-  <v-app>
-    <v-main>
-      <HelloWorld />
-    </v-main>
+  <v-app :theme="mainStore.theme">
+      <router-view />
   </v-app>
 </template>
-
-<script lang="ts">
-import { defineComponent } from 'vue'
-import HelloWorld from './components/HelloWorld.vue'
-
-export default defineComponent({
-  name: 'App',
-
-  components: {
-    HelloWorld,
-  },
-
-  data () {
-    return {
-      //
-    }
-  },
-})
+<script setup lang="ts">
+import { RouterView } from 'vue-router';
+import { useMainStore } from '@/stores/appMain';
+const mainStore = useMainStore();
 </script>
+<style scoped lang="scss"></style>

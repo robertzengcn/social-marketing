@@ -11,7 +11,7 @@ async function autoScroll(page){
 
                 if(totalHeight >= scrollHeight - window.innerHeight){
                     clearInterval(timer);
-                    resolve();
+                    resolve(void(0));
                 }
             }, 100);
         });

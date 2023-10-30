@@ -71,7 +71,7 @@ export const authorize = async (credentials:credentials, callback) => {
           console.log(oauth2Client.credentials)
           const cdate = new Date();
           const timestamp = cdate.getMilliseconds();
-          if(oauth2Client.credentials.expiry_date<timestamp){
+          if(oauth2Client.credentials.expiry_date&&oauth2Client.credentials.expiry_date<timestamp){
             console.log("token expire")
             getNewToken(oauth2Client, callback,clientId);
             return;       
@@ -114,9 +114,11 @@ const storeToken = (token,client_id:string) => {
     try {
         fs.mkdirSync(TOKEN_DIR);
     } catch (error) {
-        if (error.code != 'EEXIST') {
+        if (error instanceof Error) {
+        //if (error.code != 'EEXIST') {
             throw error;
-        }
+        //} 
+    }
     }
     const tokenPath=TOKEN_DIR+client_id+'.json';
     fs.writeFile(tokenPath, JSON.stringify(token), error => {

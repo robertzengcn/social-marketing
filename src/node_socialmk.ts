@@ -138,9 +138,9 @@ export class ScrapeManager {
   tmppath: string;
   runLogin: Function;
   constructor(config: SMstruct, context = {}) {
-    this.cluster = null;
-    this.pluggable = null;
-    this.scraper = null;
+    // this.cluster = null;
+    // this.pluggable = null;
+    // this.scraper = null;
     this.context = context;
 
     // await this.getRemoteConfig(campaignId)
@@ -425,12 +425,12 @@ export class ScrapeManager {
       // for every browser instance. We will use our custom puppeteer-cluster version.
       // https://www.npmjs.com/package/proxy-chain
       // this answer looks nice: https://github.com/GoogleChrome/puppeteer/issues/678#issuecomment-389096077
-      let chunks = [];
+      let chunks : [][]=[];
       for (var n = 0; n < this.numClusters; n++) {
         chunks.push([]);
       }
       for (var k = 0; k < this.config.keywords.length; k++) {
-        chunks[k % this.numClusters].push(this.config.keywords[k]);
+        chunks[k % this.numClusters].push(this.config.keywords[k] as never);
       }
 
       debug("chunks=%o", chunks);
@@ -447,7 +447,7 @@ export class ScrapeManager {
         });
 
         var boundMethod = obj.runLogin.bind(obj);
-        execPromises.push(this.cluster.execute({}, boundMethod));
+        execPromises.push(this.cluster.execute({}, boundMethod) as never);
       }
 
       await Promise.all(execPromises);
@@ -516,12 +516,12 @@ export class ScrapeManager {
       // for every browser instance. We will use our custom puppeteer-cluster version.
       // https://www.npmjs.com/package/proxy-chain
       // this answer looks nice: https://github.com/GoogleChrome/puppeteer/issues/678#issuecomment-389096077
-      let chunks = [];
+      let chunks :[][]=[];
       for (var n = 0; n < this.numClusters; n++) {
-        chunks.push([]);
+        chunks.push([] as never);
       }
       for (var k = 0; k < this.config.keywords.length; k++) {
-        chunks[k % this.numClusters].push(this.config.keywords[k]);
+        chunks[k % this.numClusters].push(this.config.keywords[k] as never);
       }
 
       debug("chunks=%o", chunks);

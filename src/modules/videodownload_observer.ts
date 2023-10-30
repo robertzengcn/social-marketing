@@ -38,7 +38,8 @@ export class videodownloadObserver implements Observer{
         }))
         //update remote data
         const remoteSourmodel = RemoteSource.getInstance();
+        if(data.scrapeinfo.id){
         remoteSourmodel.Updateprocesstime(data.scrapeinfo.id);     
-        
+        }
     }
     }

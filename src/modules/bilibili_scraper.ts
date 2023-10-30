@@ -1,14 +1,14 @@
 "use strict";
 
 const cheerio = require("cheerio");
-import { SocialScraper as Scraper, Linkurl, ScrapeOptions, Searchobject} from "./social_scraper";
+import { SocialScraper as Scraper, Linkurl, ScrapeOptions, Searchobject } from "./social_scraper";
 const fs = require("fs");
-import { Downloader} from "./bilibili/downloader";
+import { Downloader } from "./bilibili/downloader";
 const path = require("path");
 const sanitize = require("filenamify");
 const debug = require("debug")("bilibili-scraper");
 const { autoScroll, delay } = require("./lib/function.js");
-import {ElementHandle,Page,errors as Puppeteererror} from 'puppeteer';
+import { ElementHandle, Page, errors as Puppeteererror } from 'puppeteer';
 var debugerror = debug('app:error');
 
 type clickbtnserobj = {
@@ -20,7 +20,7 @@ type clickbtnserobj = {
 // const PuppeteerVideoRecorder = require('puppeteer-video-recorder');
 export class BilibiliScraper extends Scraper {
   startUrl: string;
-  
+
   constructor(args: ScrapeOptions) {
     super(args);
     this.startUrl = "https://www.bilibili.com";
@@ -83,7 +83,7 @@ export class BilibiliScraper extends Scraper {
    * @param {string} keyword
    * @returns element
    */
-  async clickSearchbtn(searobj: clickbtnserobj):Promise<ElementHandle<Element> | null> {
+  async clickSearchbtn(searobj: clickbtnserobj): Promise<ElementHandle<Element> | null> {
     if (searobj.page) {
       this.page = searobj.page;
     }
@@ -117,19 +117,22 @@ export class BilibiliScraper extends Scraper {
       for (const element of searobj.keyword) {
         let subsearobg: Searchobject = { page: this.page, keyword: element }
         let linkres = await this.getVideourls(subsearobg);
-        debug(linkres)
+        if(linkres){
         for (const link of linkres) {
           result.push(link)
         }
+      }
       }
 
     } else if (typeof searobj.keyword === 'string') {
       let sersearobg: Searchobject = { page: this.page, keyword: searobj.keyword }
       let linkres = await this.getVideourls(sersearobg);
+      if(linkres){
       for (const link of linkres) {
 
         result.push(linkres)
       }
+    }
     }
     return result
     // return await this.getVideourls({ page: this.page, keyword: keyword });
@@ -140,7 +143,7 @@ export class BilibiliScraper extends Scraper {
    * @param {object,string,string}
    * @returns array
    */
-  async getVideourls(serobj: Searchobject): Promise<Array<Linkurl>> {
+  async getVideourls(serobj: Searchobject): Promise<Array<Linkurl>|null> {
     if (serobj.page) {
       this.page = serobj.page;
     }
@@ -159,9 +162,11 @@ export class BilibiliScraper extends Scraper {
     } else {
       let linkres: Array<Linkurl> = [];
       for (const keyelement of serobj.keyword) {
-        const res=await this.handleSearch({ page: this.page, keyword: keyelement })
-        for (const link of res) {
-          linkres.push(link)
+        const res = await this.handleSearch({ page: this.page, keyword: keyelement })
+        if (res) {
+          for (const link of res) {
+            linkres.push(link)
+          }
         }
       }
       return linkres
@@ -169,7 +174,7 @@ export class BilibiliScraper extends Scraper {
 
   }
 
-  async handleSearch(csobj: clickbtnserobj): Promise<Array<Linkurl>> {
+  async handleSearch(csobj: clickbtnserobj): Promise<Array<Linkurl> | null> {
     const searchbtn = await this.clickSearchbtn({
       page: this.page,
       keyword: csobj.keyword,
@@ -196,15 +201,15 @@ export class BilibiliScraper extends Scraper {
     await autoScroll(searchPage);
 
     try {
-    await searchPage.waitForSelector(".vui_pagenation", { timeout: 5000 });
+      await searchPage.waitForSelector(".vui_pagenation", { timeout: 5000 });
     } catch (e) {
-    if (e instanceof Puppeteererror.TimeoutError) {
-      // Do something if this is a timeout in find page
-      debug("not find .vui_pagenation item, the page may not have result")
-      //return empty promise array
-      return new Promise((resolve) => { resolve(null); });
-    } 
-  } 
+      if (e instanceof Puppeteererror.TimeoutError) {
+        // Do something if this is a timeout in find page
+        debug("not find .vui_pagenation item, the page may not have result")
+        //return empty promise array
+        return new Promise((resolve) => { resolve(null); });
+      }
+    }
     let linkres: Array<Linkurl> = [];
     // await this.page.$$("button.vui_button", elements=>{
     //   console.log(elements)
@@ -238,40 +243,40 @@ export class BilibiliScraper extends Scraper {
     // const elHandleArray = await page.$$(
     //   ".bili-video-card__info--right a:nth-child(1)"
     // );
-    
+
     let linkmap: Array<Linkurl> = [];
     // const that=this;
     debug(this.config.taskid)
-    let taskids=0;
-    if(this.config.taskid){
-    taskids=this.config.taskid
+    let taskids = 0;
+    if (this.config.taskid) {
+      taskids = this.config.taskid
     }
     linkmap = await this.page.$$eval(
       ".bili-video-card__info--right >a:first-child",
-      (alinks,taskids) => {
+      (alinks, taskids) => {
         return alinks.map((alink) => {
-          let linkobg: Linkurl = {title:'',link:'',lang:'zh-cn'};
+          let linkobg: Linkurl = { title: '', link: '', lang: 'zh-cn' };
           // if(!that.taskid){
           // linkobg.taskid=that.taskid;
           // }
-          if(taskids){
-            linkobg.taskid=taskids
+          if (taskids) {
+            linkobg.taskid = taskids
           }
-          const herf=alink.getAttribute("href")
-          if(herf){
-          linkobg.link = herf
+          const herf = alink.getAttribute("href")
+          if (herf) {
+            linkobg.link = herf
           }
           // console.log(alink);
           let htitle = alink.querySelector("h3");
-          if(htitle){
-             const htres= htitle.getAttribute("title");
-             if(htres){
-             linkobg.title=htres
-             }
+          if (htitle) {
+            const htres = htitle.getAttribute("title");
+            if (htres) {
+              linkobg.title = htres
+            }
           }
           return linkobg;
         });
-      },taskids
+      }, taskids
     );
     // debug("query link finish");
     // debug(linkmap);
@@ -301,7 +306,7 @@ export class BilibiliScraper extends Scraper {
    * @param {string} link
    * @param {string} videopath
    */
-  async downloadSigleVideo( link:string, videopath:string ):Promise<Array<string>> {
+  async downloadSigleVideo(link: string, videopath: string): Promise<Array<string>> {
     // if (page) {
     //   this.page = page;
     // }
@@ -321,7 +326,7 @@ export class BilibiliScraper extends Scraper {
     // const html = await page.$eval('#bilibili-player', el => el.outerHTML);
     // console.log(html)
     // const src = await page.$eval("#bilibili-player video",el => el.getAttribute("src"))
-    if(!link){
+    if (!link) {
       debug(link)
       throw new Error("link is empty")
     }
@@ -357,12 +362,12 @@ export class BilibiliScraper extends Scraper {
     }
     // debug("echo target");
     // debug(target);
-    let result:Array<string>=[];
+    let result: Array<string> = [];
     target.forEach((element, part) => {
       const file = path.join(videopath, `${sanitize(filename)}-${part}.flv`);
       debug("part is %o", part);
       debug("file name %o", file);
-      
+
       const state = downloader.downloadByIndex(
         part,
         file,
