@@ -24,12 +24,13 @@ async function createWindow() {
       contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION
     }
   })
-
+  console.log(process.env.WEBPACK_DEV_SERVER_UR)
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
     await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL as string)
     if (!process.env.IS_TEST) win.webContents.openDevTools()
   } else {
+    console.log('app://./index.html')
     createProtocol('app')
     // Load the index.html when not in development
     win.loadURL('app://./index.html')

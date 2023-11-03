@@ -1,4 +1,5 @@
 {
+
   "compilerOptions": {
     "strictPropertyInitialization": false,
     "noImplicitAny":false,
@@ -39,7 +40,8 @@
     "src/**/*.tsx",
     "src/**/*.vue",
     "tests/**/*.ts",
-    "tests/**/*.tsx"
+    "tests/**/*.tsx",
+    "typings/*"
   ],
   "exclude": [
     "node_modules"

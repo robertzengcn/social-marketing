@@ -130,16 +130,7 @@
                         <span v-if="!mainStore.isMobile">陈咩咩啊</span>
                         <v-menu activator="parent">
                             <v-list nav class="h_a_menu">
-                                <v-list-item
-                                    title="Github"
-                                    prepend-icon="mdi-github"
-                                    @click="toGithub"
-                                />
-                                <v-list-item
-                                    title="Email"
-                                    prepend-icon="mdi-email"
-                                    @click="toEmail"
-                                />
+                            
                                 <v-list-item
                                     title="Sign out"
                                     prepend-icon="mdi-login"
@@ -191,11 +182,5 @@ const changeRail = () => {
     navState.isMini = navState.rail;
 };
 
-const toGithub = () => {
-    window.open('https://github.com/armomu/vue-material-admin', '_blank');
-};
-const toEmail = () => {
-    window.open('mailto:894620576@qq.com', '_blank');
-};
 </script>
 <style scoped lang="scss"></style>
