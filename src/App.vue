@@ -5,7 +5,7 @@
 </template>
 <script setup lang="ts">
 import { RouterView } from 'vue-router';
-import { useMainStore } from '@/stores/appMain';
+import { useMainStore } from '@/store/appMain';
 const mainStore = useMainStore();
 </script>
 <style scoped lang="scss"></style>

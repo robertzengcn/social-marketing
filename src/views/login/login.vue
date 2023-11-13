@@ -1,15 +1,14 @@
 <template>
+    <v-form v-model="valid">
     <v-card class="login_container">
-        <img src="../../assets/Frame-c100fb2f.png" class="frame" />
+        
         <div class="group">
             <v-card class="form">
                 <div class="text-h4">👋 Hallo!</div>
                 <div class="mt-4">
                     <div class="mb-2" style="font-weight: 700">Account</div>
-                    <v-text-field
-                        model-value="Chen HuaJie"
-                        variant="outlined"
-                        readonly
+                    <v-text-field             
+                        variant="outlined"          
                         density="compact"
                         clearable
                         hide-details
@@ -37,34 +36,13 @@
                     >
                 </div>
             </v-card>
-            <v-card class="desc">
-                <div class="logo mt-4">
-                    <img :src="logo" height="60" />
-                    <div class="text-h5 mt-2">Material UI</div>
-                </div>
-                <div class="mt-4">
-                    vue-material-admin is a free open source mid-backend template based on Vuetify
-                </div>
-                <div class="mt-4">
-                    made with by ❤️
-                    <a
-                        target="_blank"
-                        style="
-                            color: rgba(
-                                var(--v-theme-on-background),
-                                var(--v-high-emphasis-opacity)
-                            );
-                        "
-                        href="https://github.com/jaywoow"
-                        >Chen HuaJie</a
-                    >
-                </div>
-            </v-card>
+            
         </div>
     </v-card>
+</v-form>
 </template>
 <script lang="ts" setup>
-import logo from '@/assets/admin-logo.png';
+
 </script>
 <style lang="scss" scoped>
 .login_container {

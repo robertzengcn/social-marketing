@@ -154,7 +154,7 @@ import wxtx from '@/assets/wx.png';
 import { RouterView, useRouter } from 'vue-router';
 import Breadcrumbs from '@/components/breadcrumbs/breadcrumbs.vue';
 import { reactive, computed, watch } from 'vue';
-import { useMainStore } from '@/stores/appMain';
+import { useMainStore } from '@/store/appMain';
 
 const mainStore = useMainStore();
 const router = useRouter();

@@ -1,17 +1,12 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
 import Layout from '@/layout/layout.vue';
-
+import {RouteRecordRaw } from 'vue-router';
 // import { checkVersion } from '@/plugins/pwa';
 
-const router = createRouter({
-    history: createWebHashHistory(),
-    scrollBehavior() {
-        return { top: 0 };
-    },
-    routes: [
-        {
+export const constantRoutes : RouteRecordRaw[] = [
+    {
             path: '/',
-            redirect: '/dashboard/smart-house',
+            redirect: '/dashboard/campaign',
             name: 'Dashboard',
             meta: {
                 visible: true,
@@ -32,6 +27,18 @@ const router = createRouter({
                     component: () => import('@/views/dashboard/smartHouse.vue'),
                     children: [],
                 },
+                {
+                    path: '/dashboard/campaign',
+                    name: 'Campaign',
+                    meta: {
+                        title: 'Campaign',
+                        icon: 'mdi-alpha-s',
+                        keepAlive: false,
+                        visible: true,
+                    },
+                    component: () => import('@/views/dashboard/campaign.vue'),
+                    children: [],
+                }
             ],
         },
         {
@@ -69,9 +76,7 @@ const router = createRouter({
                     children: [],
                 },
             ],
-        },
-       
-        
+        },   
         {
             path: '/login',
             name: 'login',
@@ -101,14 +106,46 @@ const router = createRouter({
                 },
             ],
         },
-    ],
-});
+    ];
 
-router.beforeEach(async (to, _from, next) => {
-    next();
-});
+
+// router.beforeEach(async (to, _from, next) => {
+//     next();
+// });
 
 // router.afterEach(() => {
 //     checkVersion();
 // });
+// export default router;
+
+/**
+ * asyncRoutes
+ * the routes that need to be dynamically loaded based on user roles
+*/
+export const asyncRoutes: RouteRecordRaw[] = [];
+
+// const router = createRouter({
+//     // mode: 'history',  // Disabled due to Github Pages doesn't support this, enable this if you need.
+//     scrollBehavior: () => {
+//         return { top: 0 };
+//     },
+//     // base: process.env.BASE_URL,
+//     routes: constantRoutes
+//   })
+// const router = createRouter({
+//     history: createWebHashHistory(),
+//     scrollBehavior() {
+//         return { top: 0 };
+//     })};
+
+const router = createRouter({
+    history: createWebHashHistory(),
+    scrollBehavior() {
+        return { top: 0 };
+    },
+    routes: constantRoutes
+});
+
+
 export default router;
+
