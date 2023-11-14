@@ -37,7 +37,7 @@ export const updateUser = (username: string, data: any) =>
 
 export const login = (data: any) =>
   request({
-    url: '/employee/login',
+    url: '/user/login',
     method: 'post',
     data
   })
