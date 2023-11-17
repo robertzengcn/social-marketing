@@ -289,6 +289,22 @@ export class RemoteSource {
       throw new Error(error.message);
     });
   }
+  //login user
+  async Login(username:string,password:string){
+    const FormData = require('form-data');
+    let data = new FormData();
+    data.append('username', username);
+    data.append('password', password);
+    const loginInfo =await axios.post(this.REMOTEADD +"/api/login",data).then(function (res) {
+  
+      return res.data.data as {token:string};
+    })
+    .catch(function (error) {
+      // console.log(error);
+      throw new Error(error.message);
+    });
+    return loginInfo;
+  }
 }
 
 // module.exports = {

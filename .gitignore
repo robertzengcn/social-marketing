@@ -90,3 +90,4 @@ yt-auth/*
 #Electron-builder output
 /dist_electron
 dist
+.env.development

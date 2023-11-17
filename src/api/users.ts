@@ -1,4 +1,5 @@
 import request from '@/utils/request'
+import {ipcRenderer as ipc} from 'electron-better-ipc'
 
 
 
@@ -36,11 +37,15 @@ export const updateUser = (username: string, data: any) =>
 //   })
 
 export const login = (data: any) =>
-  request({
-    url: '/user/login',
-    method: 'post',
-    data
-  })
+(async () => {
+	const emoji = await ipc.callMain('user-login', data);
+	console.log(emoji);
+})();
+  // request({
+  //   url: '/user/login',
+  //   method: 'post',
+  //   data
+  // })
 
 export const logout = () =>
   request({
