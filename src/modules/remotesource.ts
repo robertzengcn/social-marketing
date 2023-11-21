@@ -1,5 +1,7 @@
 export { };
 import axios from "axios";
+import jwt_decode from "jwt-decode";
+import { decode } from "punycode";
 const debug = require('debug')('RemoteSource');
 // const FormData = require('form-data');
 type sosetting = {
@@ -42,6 +44,18 @@ type keywordItem = {
   tag: string,
   Created : string,
   UsedTime: number,
+}
+export type jwtUser={
+  account_id: number,
+  email: string,
+  token:string
+}
+type jwtTokenUser={
+  account_id: number,
+  email: string,
+  exp: number,
+  iat: number,
+  iss: string,
 }
 export class RemoteSource {
   private static instance: RemoteSource;
@@ -290,20 +304,38 @@ export class RemoteSource {
     });
   }
   //login user
-  async Login(username:string,password:string){
+  async Login(username:string,password:string):Promise<jwtUser>{
     const FormData = require('form-data');
     let data = new FormData();
     data.append('username', username);
     data.append('password', password);
     const loginInfo =await axios.post(this.REMOTEADD +"/api/login",data).then(function (res) {
-  
-      return res.data.data as {token:string};
+      if(res.status!=200){
+        throw new Error(res.statusText);
+      }
+      if(res.data.status==false){
+        throw new Error(res.data.msg);
+      }
+      //decode jwt token
+      const decoded = this.ValidateToken(res.data.Token);
+      return decoded;
+      //return res.data.Token as {token:string};
     })
     .catch(function (error) {
       // console.log(error);
       throw new Error(error.message);
     });
     return loginInfo;
+  }
+  //validate jwt token 
+  public ValidateToken(token:string):jwtUser{
+    const decoded = jwt_decode(token) as jwtTokenUser;
+    const jwtuser:jwtUser={
+      account_id:decoded.account_id,
+      email:decoded.email,
+      token:token
+    }
+    return jwtuser;
   }
 }
 

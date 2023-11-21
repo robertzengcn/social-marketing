@@ -38,8 +38,9 @@ export const updateUser = (username: string, data: any) =>
 
 export const login = (data: any) =>
 (async () => {
-	const emoji = await ipc.callMain('user-login', data);
-	console.log(emoji);
+	const result = await window.electronAPI.userLogin(data);
+	console.log(result);
+  return result;
 })();
   // request({
   //   url: '/user/login',

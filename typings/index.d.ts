@@ -1,7 +1,9 @@
+import { userResponse } from '@/controller/user_controller'
 /* eslint-disable no-var */
 declare function getVersion(version: string): void;
 declare const createObjectURL: any;
 declare const frontendVersion: string;
+
 
 declare module 'vue3-drag-resize' {
     const content: {
@@ -11,3 +13,13 @@ declare module 'vue3-drag-resize' {
     };
     export = content;
 }
+
+export interface IElectronAPI {
+    userLogin: (data) => Promise<userResponse>,
+  }
+  
+declare global {
+    interface Window {
+      electronAPI: IElectronAPI
+    }
+  }

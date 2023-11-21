@@ -3,9 +3,10 @@
 import { app, protocol, BrowserWindow } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
+import { userController, userResponse } from '@/controller/user-controller'
 const isDevelopment = process.env.NODE_ENV !== 'production'
-const {ipcRenderer: ipc} = require('electron-better-ipc');
-
+// const { ipcRenderer: ipc } = require('electron-better-ipc');
+const { ipcMain } = require("electron");
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true } }
@@ -36,7 +37,7 @@ async function createWindow() {
     // Load the index.html when not in development
     await win.loadURL('app://./index.html')
   }
-  
+
 }
 
 // Quit when all windows are closed.
@@ -85,3 +86,32 @@ if (isDevelopment) {
     })
   }
 }
+
+ipcMain.handle("user:login", async (event, data) => {
+ 
+  const userControll = new userController()
+
+  const respon:userResponse = await userControll.login(data).then(function (res) {
+    console.log(res);
+    return {
+      status: true,
+      msg: "login success",
+      data: res
+    } as userResponse;
+    
+  }).catch(function (err) {
+    console.log(err);
+    if (err instanceof Error) {
+      return {
+        status: false,
+        msg: "login failure",
+      } as userResponse;
+    }else{
+      return {
+        status: false,
+        msg: "unknow error",
+      } as userResponse;
+    }
+  })
+  return respon;
+});
