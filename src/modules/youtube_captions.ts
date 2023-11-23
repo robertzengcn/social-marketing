@@ -5,7 +5,7 @@ import { OAuth2Client, JWT, Compute, UserRefreshClient, BaseExternalAccountClien
 const service = google.youtube('v3');
 import * as fs from 'fs';
 export const insertCapptions = (auth: string | OAuth2Client | JWT | Compute | UserRefreshClient | BaseExternalAccountClient | GoogleAuth,
-    sync: boolean = true,
+    sync = true,
     videoId: string,
     language: string,
     name:string,

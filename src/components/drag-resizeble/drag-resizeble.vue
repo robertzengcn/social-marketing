@@ -65,7 +65,7 @@ const userSelectAuto = {
 let eventsFor = events.mouse;
 export default defineComponent({
     replace: true,
-    name: 'vue-draggable-resizable',
+    name: 'VueDraggableResizable',
     props: {
         className: {
             type: String,
@@ -288,6 +288,186 @@ export default defineComponent({
             dragging: false,
             zIndex: this.z,
         };
+    },
+    computed: {
+        handleStyle() {
+            return (stick) => {
+                if (!this.handleInfo.switch) return { display: this.enabled ? 'block' : 'none' };
+
+                const size = (this.handleInfo.size / this.scaleRatio).toFixed(2);
+                const offset = (this.handleInfo.offset / this.scaleRatio).toFixed(2);
+                const center = (size / 2).toFixed(2);
+
+                const styleMap = {
+                    tl: {
+                        top: `${offset}px`,
+                        left: `${offset}px`,
+                    },
+                    tm: {
+                        top: `${offset}px`,
+                        left: `calc(50% - ${center}px)`,
+                    },
+                    tr: {
+                        top: `${offset}px`,
+                        right: `${offset}px`,
+                    },
+                    mr: {
+                        top: `calc(50% - ${center}px)`,
+                        right: `${offset}px`,
+                    },
+                    br: {
+                        bottom: `${offset}px`,
+                        right: `${offset}px`,
+                    },
+                    bm: {
+                        bottom: `${offset}px`,
+                        right: `calc(50% - ${center}px)`,
+                    },
+                    bl: {
+                        bottom: `${offset}px`,
+                        left: `${offset}px`,
+                    },
+                    ml: {
+                        top: `calc(50% - ${center}px)`,
+                        left: `${offset}px`,
+                    },
+                };
+                const stickStyle = {
+                    width: `${size}px`,
+                    height: `${size}px`,
+                    top: styleMap[stick].top,
+                    left: styleMap[stick].left,
+                    right: styleMap[stick].right,
+                    bottom: styleMap[stick].bottom,
+                };
+                stickStyle.display = this.enabled ? 'block' : 'none';
+                return stickStyle;
+            };
+        },
+        style() {
+            return {
+                transform: `translate(${this.left}px, ${this.top}px)`,
+                width: this.computedWidth,
+                height: this.computedHeight,
+                zIndex: this.zIndex,
+                ...(this.dragging && this.disableUserSelect ? userSelectNone : userSelectAuto),
+            };
+        },
+        // 控制柄显示与否
+        actualHandles() {
+            if (!this.resizable) return [];
+
+            return this.handles;
+        },
+        computedWidth() {
+            if (this.w === 'auto') {
+                if (!this.widthTouched) {
+                    return 'auto';
+                }
+            }
+            return this.width + 'px';
+        },
+        computedHeight() {
+            if (this.h === 'auto') {
+                if (!this.heightTouched) {
+                    return 'auto';
+                }
+            }
+            return this.height + 'px';
+        },
+        resizingOnX() {
+            return Boolean(this.handle) && (this.handle.includes('l') || this.handle.includes('r'));
+        },
+        resizingOnY() {
+            return Boolean(this.handle) && (this.handle.includes('t') || this.handle.includes('b'));
+        },
+        isCornerHandle() {
+            return Boolean(this.handle) && ['tl', 'tr', 'br', 'bl'].includes(this.handle);
+        },
+    },
+
+    watch: {
+        active(val) {
+            this.enabled = val;
+
+            if (val) {
+                this.$emit('activated');
+            } else {
+                this.$emit('deactivated');
+            }
+        },
+        z(val) {
+            if (val >= 0 || val === 'auto') {
+                this.zIndex = val;
+            }
+        },
+        x(val) {
+            if (this.resizing || this.dragging) {
+                return;
+            }
+
+            if (this.parent) {
+                this.bounds = this.calcDragLimits();
+            }
+
+            this.moveHorizontally(val);
+        },
+        y(val) {
+            if (this.resizing || this.dragging) {
+                return;
+            }
+
+            if (this.parent) {
+                this.bounds = this.calcDragLimits();
+            }
+
+            this.moveVertically(val);
+        },
+        lockAspectRatio(val) {
+            if (val) {
+                this.aspectFactor = this.width / this.height;
+            } else {
+                this.aspectFactor = undefined;
+            }
+        },
+        minWidth(val) {
+            if (val > 0 && val <= this.width) {
+                this.minW = val;
+            }
+        },
+        minHeight(val) {
+            if (val > 0 && val <= this.height) {
+                this.minH = val;
+            }
+        },
+        maxWidth(val) {
+            this.maxW = val;
+        },
+        maxHeight(val) {
+            this.maxH = val;
+        },
+        w(val) {
+            if (this.resizing || this.dragging) {
+                return;
+            }
+
+            if (this.parent) {
+                this.bounds = this.calcResizeLimits();
+            }
+
+            this.changeWidth(val);
+        },
+        h(val) {
+            if (this.resizing || this.dragging) {
+                return;
+            }
+
+            if (this.parent) {
+                this.bounds = this.calcResizeLimits();
+            }
+
+            this.changeHeight(val);
+        },
     },
 
     created() {
@@ -1142,186 +1322,6 @@ export default defineComponent({
             let [left, top] = string.replace(/[^0-9\-,]/g, '').split(',');
             if (top === undefined) top = 0;
             return [+left, +top];
-        },
-    },
-    computed: {
-        handleStyle() {
-            return (stick) => {
-                if (!this.handleInfo.switch) return { display: this.enabled ? 'block' : 'none' };
-
-                const size = (this.handleInfo.size / this.scaleRatio).toFixed(2);
-                const offset = (this.handleInfo.offset / this.scaleRatio).toFixed(2);
-                const center = (size / 2).toFixed(2);
-
-                const styleMap = {
-                    tl: {
-                        top: `${offset}px`,
-                        left: `${offset}px`,
-                    },
-                    tm: {
-                        top: `${offset}px`,
-                        left: `calc(50% - ${center}px)`,
-                    },
-                    tr: {
-                        top: `${offset}px`,
-                        right: `${offset}px`,
-                    },
-                    mr: {
-                        top: `calc(50% - ${center}px)`,
-                        right: `${offset}px`,
-                    },
-                    br: {
-                        bottom: `${offset}px`,
-                        right: `${offset}px`,
-                    },
-                    bm: {
-                        bottom: `${offset}px`,
-                        right: `calc(50% - ${center}px)`,
-                    },
-                    bl: {
-                        bottom: `${offset}px`,
-                        left: `${offset}px`,
-                    },
-                    ml: {
-                        top: `calc(50% - ${center}px)`,
-                        left: `${offset}px`,
-                    },
-                };
-                const stickStyle = {
-                    width: `${size}px`,
-                    height: `${size}px`,
-                    top: styleMap[stick].top,
-                    left: styleMap[stick].left,
-                    right: styleMap[stick].right,
-                    bottom: styleMap[stick].bottom,
-                };
-                stickStyle.display = this.enabled ? 'block' : 'none';
-                return stickStyle;
-            };
-        },
-        style() {
-            return {
-                transform: `translate(${this.left}px, ${this.top}px)`,
-                width: this.computedWidth,
-                height: this.computedHeight,
-                zIndex: this.zIndex,
-                ...(this.dragging && this.disableUserSelect ? userSelectNone : userSelectAuto),
-            };
-        },
-        // 控制柄显示与否
-        actualHandles() {
-            if (!this.resizable) return [];
-
-            return this.handles;
-        },
-        computedWidth() {
-            if (this.w === 'auto') {
-                if (!this.widthTouched) {
-                    return 'auto';
-                }
-            }
-            return this.width + 'px';
-        },
-        computedHeight() {
-            if (this.h === 'auto') {
-                if (!this.heightTouched) {
-                    return 'auto';
-                }
-            }
-            return this.height + 'px';
-        },
-        resizingOnX() {
-            return Boolean(this.handle) && (this.handle.includes('l') || this.handle.includes('r'));
-        },
-        resizingOnY() {
-            return Boolean(this.handle) && (this.handle.includes('t') || this.handle.includes('b'));
-        },
-        isCornerHandle() {
-            return Boolean(this.handle) && ['tl', 'tr', 'br', 'bl'].includes(this.handle);
-        },
-    },
-
-    watch: {
-        active(val) {
-            this.enabled = val;
-
-            if (val) {
-                this.$emit('activated');
-            } else {
-                this.$emit('deactivated');
-            }
-        },
-        z(val) {
-            if (val >= 0 || val === 'auto') {
-                this.zIndex = val;
-            }
-        },
-        x(val) {
-            if (this.resizing || this.dragging) {
-                return;
-            }
-
-            if (this.parent) {
-                this.bounds = this.calcDragLimits();
-            }
-
-            this.moveHorizontally(val);
-        },
-        y(val) {
-            if (this.resizing || this.dragging) {
-                return;
-            }
-
-            if (this.parent) {
-                this.bounds = this.calcDragLimits();
-            }
-
-            this.moveVertically(val);
-        },
-        lockAspectRatio(val) {
-            if (val) {
-                this.aspectFactor = this.width / this.height;
-            } else {
-                this.aspectFactor = undefined;
-            }
-        },
-        minWidth(val) {
-            if (val > 0 && val <= this.width) {
-                this.minW = val;
-            }
-        },
-        minHeight(val) {
-            if (val > 0 && val <= this.height) {
-                this.minH = val;
-            }
-        },
-        maxWidth(val) {
-            this.maxW = val;
-        },
-        maxHeight(val) {
-            this.maxH = val;
-        },
-        w(val) {
-            if (this.resizing || this.dragging) {
-                return;
-            }
-
-            if (this.parent) {
-                this.bounds = this.calcResizeLimits();
-            }
-
-            this.changeWidth(val);
-        },
-        h(val) {
-            if (this.resizing || this.dragging) {
-                return;
-            }
-
-            if (this.parent) {
-                this.bounds = this.calcResizeLimits();
-            }
-
-            this.changeHeight(val);
         },
     },
 });

@@ -72,7 +72,7 @@
                         <Device
                             v-model="widgets.cctv"
                             title="Camera CCTV"
-                            :imgSrc="imgcctv"
+                            :img-src="imgcctv"
                             dev-model="Google Camera - X2"
                         />
                     </v-col>
@@ -80,7 +80,7 @@
                         <Device
                             v-model="widgets.speaker"
                             title="Speaker"
-                            :imgSrc="imgspeaker"
+                            :img-src="imgspeaker"
                             dev-model="Google Speaker - A2"
                         />
                     </v-col>
@@ -88,7 +88,7 @@
                         <Device
                             v-model="widgets.thermostat"
                             title="Thermostat"
-                            :imgSrc="imgthermostat"
+                            :img-src="imgthermostat"
                             dev-model="Google Thermostat"
                         />
                     </v-col>
@@ -96,7 +96,7 @@
                         <Device
                             v-model="widgets.humidifier"
                             title="Humidifier"
-                            :imgSrc="imghumidifier"
+                            :img-src="imghumidifier"
                             dev-model="Xiaomi Mi - X500"
                         />
                     </v-col>

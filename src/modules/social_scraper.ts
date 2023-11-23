@@ -5,7 +5,7 @@ const debug = require('debug')('se-scraper:Scraper');
 import { RemoteSource, Linkdata } from "./remotesource"
 import { Page } from 'puppeteer';
 const appRoot = require('app-root-path');
-var fs = require('fs');
+const fs = require('fs');
 // const resolve = require('path').resolve;
 import * as path from "path";
 // import { Scraperdb } from "../model/scraperdb"
@@ -235,7 +235,7 @@ export class SocialScraper implements Subject {
         if (this.config.block_assets === true) {
             await this.page.setRequestInterception(true);
             this.page.on('request', (req) => {
-                let type = req.resourceType();
+                const type = req.resourceType();
                 const block = ['stylesheet', 'font', 'image', 'media'];
                 if (block.includes(type)) {
                     req.abort();
@@ -259,7 +259,7 @@ export class SocialScraper implements Subject {
         }
 
         if (this.config.log_ip_address === true) {
-            let ipinfo = await meta.get_ip_data(this.page);
+            const ipinfo = await meta.get_ip_data(this.page);
             this.metadata.ipinfo = ipinfo;
             // debug('this.metadata.ipinfo', this.metadata.ipinfo);
         }
@@ -335,7 +335,7 @@ export class SocialScraper implements Subject {
         // debug('links=%o',links)
         //handle the links
         links?.map(async linkItem => {
-            let linkobj: Linkdata = { title: linkItem.title, url: linkItem.link, lang: linkItem.lang, socialtask_id: linkItem.taskid }
+            const linkobj: Linkdata = { title: linkItem.title, url: linkItem.link, lang: linkItem.lang, socialtask_id: linkItem.taskid }
             // debug(linkobj)
             try {
                 await remoteSourmodel.saveLinkremote(linkobj)
@@ -350,8 +350,8 @@ export class SocialScraper implements Subject {
      */
     async downloadvideo(list: Array<Linkdata>): Promise<void> {
 
-        var currentdate = new Date();
-        var datetime = currentdate.getFullYear() + "-"
+        const currentdate = new Date();
+        const datetime = currentdate.getFullYear() + "-"
             + (currentdate.getMonth() + 1) + "-"
             + (currentdate.getDate());
         const videosavepath: string = path.resolve(appRoot + "/tmp/video/" + datetime + "/");
@@ -368,7 +368,7 @@ export class SocialScraper implements Subject {
             // console.log(lt.id)
             debug(linkItem)
             // console.log(Object.getPrototypeOf(linkItem))
-            let videoArray = await this.downloadSigleVideo(linkItem.url, videosavepath)
+            const videoArray = await this.downloadSigleVideo(linkItem.url, videosavepath)
             if (videoArray) {
 
                 for (let i = 0; i < videoArray.length; i++) {

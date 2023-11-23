@@ -13,7 +13,7 @@ class YoutubeScraper extends Scraper {
 
     async load_login_page() {
         
-        let startUrl = 'https://www.youtube.com';
+        const startUrl = 'https://www.youtube.com';
 
         this.logger.info('Using loginUrl: ' + startUrl);
         await this.page.setBypassCSP(true);
@@ -21,7 +21,7 @@ class YoutubeScraper extends Scraper {
         
         //hidden icon
         await this.page.evaluate(() => {
-        var icon = document.getElementById("logo-icon");
+        const icon = document.getElementById("logo-icon");
         if(icon){
         icon.style.display = "none";
         }

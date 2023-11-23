@@ -4,8 +4,8 @@ import { VideoInfo } from "../modules/social_scraper";
 
 export class Videodb {
   db: Database;
-  videoTable: string = "video";
-  videoDescriptionTable: string = "video_description";
+  videoTable = "video";
+  videoDescriptionTable = "video_description";
   language: Array<{ id: number; name: string }> = [
     { id: 1, name: "en-us" },
     { id: 2, name: "zh-cn" },
@@ -28,13 +28,13 @@ export class Videodb {
    */
   saveVideo(videoinfo: VideoInfo,callback:Function|undefined|null) {
     // saveVideo(url: string, localpath:string,title: string, description: string, language: string) {
-    let languageid: number = 0;
+    let languageid = 0;
     for (let i = 0; i < this.language.length; i++) {
       if (this.language[i].name == videoinfo.language) {
         languageid = this.language[i].id;
       }
     }
-    var date = new Date();
+    const date = new Date();
     const recordtime =
       date.getFullYear().toString() +
       "-" +

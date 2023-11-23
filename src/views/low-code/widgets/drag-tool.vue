@@ -1,6 +1,6 @@
 <template>
     <VueDragResize
-        :isActive="_active"
+        :is-active="_active"
         :w="_width"
         :h="_height"
         :x="_left"

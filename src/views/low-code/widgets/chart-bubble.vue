@@ -8,12 +8,12 @@ import { useMainStore } from '@/store/appMain';
 
 const mainStore = useMainStore();
 const generateData = (baseval: any, count: any, yrange: any) => {
-    var i = 0;
-    var series = [];
+    let i = 0;
+    const series = [];
     while (i < count) {
-        var x = Math.floor(Math.random() * (750 - 1 + 1)) + 1;
-        var y = Math.floor(Math.random() * (yrange.max - yrange.min + 1)) + yrange.min;
-        var z = Math.floor(Math.random() * (75 - 15 + 1)) + 15;
+        const x = Math.floor(Math.random() * (750 - 1 + 1)) + 1;
+        const y = Math.floor(Math.random() * (yrange.max - yrange.min + 1)) + yrange.min;
+        const z = Math.floor(Math.random() * (75 - 15 + 1)) + 15;
 
         series.push([x, y, z]);
         baseval += 86400000;

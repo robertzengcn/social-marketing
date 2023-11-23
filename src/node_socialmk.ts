@@ -425,28 +425,28 @@ export class ScrapeManager {
       // for every browser instance. We will use our custom puppeteer-cluster version.
       // https://www.npmjs.com/package/proxy-chain
       // this answer looks nice: https://github.com/GoogleChrome/puppeteer/issues/678#issuecomment-389096077
-      let chunks : [][]=[];
-      for (var n = 0; n < this.numClusters; n++) {
+      const chunks : [][]=[];
+      for (let n = 0; n < this.numClusters; n++) {
         chunks.push([]);
       }
-      for (var k = 0; k < this.config.keywords.length; k++) {
+      for (let k = 0; k < this.config.keywords.length; k++) {
         chunks[k % this.numClusters].push(this.config.keywords[k] as never);
       }
 
       debug("chunks=%o", chunks);
 
-      let execPromises = [];
-      for (var c = 0; c < chunks.length; c++) {
+      const execPromises = [];
+      for (let c = 0; c < chunks.length; c++) {
         const config = _.clone(this.config);
         config.keywords = chunks[c];
 
-        var obj = getScraper(this.config.platform, {
+        const obj = getScraper(this.config.platform, {
           config: config,
           context: {},
           pluggable: this.pluggable,
         });
 
-        var boundMethod = obj.runLogin.bind(obj);
+        const boundMethod = obj.runLogin.bind(obj);
         execPromises.push(this.cluster.execute({}, boundMethod) as never);
       }
 
@@ -516,28 +516,28 @@ export class ScrapeManager {
       // for every browser instance. We will use our custom puppeteer-cluster version.
       // https://www.npmjs.com/package/proxy-chain
       // this answer looks nice: https://github.com/GoogleChrome/puppeteer/issues/678#issuecomment-389096077
-      let chunks :[][]=[];
-      for (var n = 0; n < this.numClusters; n++) {
+      const chunks :[][]=[];
+      for (let n = 0; n < this.numClusters; n++) {
         chunks.push([] as never);
       }
-      for (var k = 0; k < this.config.keywords.length; k++) {
+      for (let k = 0; k < this.config.keywords.length; k++) {
         chunks[k % this.numClusters].push(this.config.keywords[k] as never);
       }
 
       debug("chunks=%o", chunks);
 
-      let execPromises = [];
-      for (var c = 0; c < chunks.length; c++) {
+      const execPromises = [];
+      for (let c = 0; c < chunks.length; c++) {
         const config = _.clone(this.config);
         config.keywords = chunks[c];
 
-        var obj = getScraper(this.config.platform, {
+        const obj = getScraper(this.config.platform, {
           config: config,
           context: {},
           pluggable: this.pluggable,
         });
 
-        var boundMethod = obj.workersearchdata.bind(obj);
+        const boundMethod = obj.workersearchdata.bind(obj);
         execPromises.push(this.cluster.execute({}, boundMethod) as never);
       }
 

@@ -1,29 +1,37 @@
 'use strict'
-
-import { app, protocol, BrowserWindow } from 'electron'
+// import {ipcMain as ipc} from 'electron-better-ipc';
+import { app, protocol, BrowserWindow,ipcMain } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
-import { userController, userResponse } from '@/controller/user-controller'
+import { userController, userResponse, userlogin } from '@/controller/user-controller'
+import * as path from 'path';
 const isDevelopment = process.env.NODE_ENV !== 'production'
+
 // const { ipcRenderer: ipc } = require('electron-better-ipc');
-const { ipcMain } = require("electron");
+// const { ipcMain } = require("electron");
+
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true } }
 ])
-
+let win;
 async function createWindow() {
   // Create the browser window.
-  const win = new BrowserWindow({
+  win = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
 
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
-      nodeIntegration: (process.env
-        .ELECTRON_NODE_INTEGRATION as unknown) as boolean,
-      contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION
+      // nodeIntegration: (process.env
+      //   .ELECTRON_NODE_INTEGRATION as unknown) as boolean,
+      //  contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
+      
+      // contextIsolation:false,
+      nodeIntegration: false,
+      contextIsolation: true,    
+       preload: path.join(__dirname + '/preload.js')
     }
   })
   console.log(process.env.WEBPACK_DEV_SERVER_UR)
@@ -87,7 +95,34 @@ if (isDevelopment) {
   }
 }
 
-ipcMain.handle("user:login", async (event, data) => {
+// ipc.answerRenderer('user-login', async data => {
+// 	const userControll = new userController()
+//   const respon:userResponse = await userControll.login(data as userlogin).then(function (res) {
+//     console.log(res);
+//     return {
+//       status: true,
+//       msg: "login success",
+//       data: res
+//     } as userResponse;
+    
+//   }).catch(function (err) {
+//     console.log(err);
+//     if (err instanceof Error) {
+//       return {
+//         status: false,
+//         msg: "login failure",
+//       } as userResponse;
+//     }else{
+//       return {
+//         status: false,
+//         msg: "unknow error",
+//       } as userResponse;
+//     }
+//   })
+//   return respon;
+// });
+
+ipcMain.on("userLogin", async (event, data) => {
  
   const userControll = new userController()
 
@@ -113,5 +148,5 @@ ipcMain.handle("user:login", async (event, data) => {
       } as userResponse;
     }
   })
-  return respon;
+  win.webContents.send("fromMain", respon);
 });

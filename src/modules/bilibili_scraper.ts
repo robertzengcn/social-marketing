@@ -9,7 +9,7 @@ const sanitize = require("filenamify");
 const debug = require("debug")("bilibili-scraper");
 const { autoScroll, delay } = require("./lib/function.js");
 import { ElementHandle, Page, errors as Puppeteererror } from 'puppeteer';
-var debugerror = debug('app:error');
+const debugerror = debug('app:error');
 
 type clickbtnserobj = {
   page: Page,
@@ -112,11 +112,11 @@ export class BilibiliScraper extends Scraper {
     if (searobj.page) {
       this.page = searobj.page;
     }
-    let result: Array<object> = []
+    const result: Array<object> = []
     if (Array.isArray(searobj.keyword)) {
       for (const element of searobj.keyword) {
-        let subsearobg: Searchobject = { page: this.page, keyword: element }
-        let linkres = await this.getVideourls(subsearobg);
+        const subsearobg: Searchobject = { page: this.page, keyword: element }
+        const linkres = await this.getVideourls(subsearobg);
         if(linkres){
         for (const link of linkres) {
           result.push(link)
@@ -125,8 +125,8 @@ export class BilibiliScraper extends Scraper {
       }
 
     } else if (typeof searobj.keyword === 'string') {
-      let sersearobg: Searchobject = { page: this.page, keyword: searobj.keyword }
-      let linkres = await this.getVideourls(sersearobg);
+      const sersearobg: Searchobject = { page: this.page, keyword: searobj.keyword }
+      const linkres = await this.getVideourls(sersearobg);
       if(linkres){
       for (const link of linkres) {
 
@@ -152,7 +152,7 @@ export class BilibiliScraper extends Scraper {
         throw new Error(`Cannot find cookies file at ${serobj.cookiesPath}`);
       }
 
-      let cookies = JSON.parse(await fs.promises.readFile(serobj.cookiesPath));
+      const cookies = JSON.parse(await fs.promises.readFile(serobj.cookiesPath));
       // console.log(cookies);
       await this.page.setCookie(...cookies);
     }
@@ -160,7 +160,7 @@ export class BilibiliScraper extends Scraper {
     if (typeof serobj.keyword === 'string') {
       return await this.handleSearch({ page: this.page, keyword: serobj.keyword })
     } else {
-      let linkres: Array<Linkurl> = [];
+      const linkres: Array<Linkurl> = [];
       for (const keyelement of serobj.keyword) {
         const res = await this.handleSearch({ page: this.page, keyword: keyelement })
         if (res) {
@@ -180,7 +180,7 @@ export class BilibiliScraper extends Scraper {
       keyword: csobj.keyword,
     });
 
-    let browser = this.page.browser();
+    const browser = this.page.browser();
     const newPage = await browser.waitForTarget((target) =>
       target.url().includes("search.bilibili.com")
     );
@@ -210,7 +210,7 @@ export class BilibiliScraper extends Scraper {
         return new Promise((resolve) => { resolve(null); });
       }
     }
-    let linkres: Array<Linkurl> = [];
+    const linkres: Array<Linkurl> = [];
     // await this.page.$$("button.vui_button", elements=>{
     //   console.log(elements)
     // })
@@ -255,7 +255,7 @@ export class BilibiliScraper extends Scraper {
       ".bili-video-card__info--right >a:first-child",
       (alinks, taskids) => {
         return alinks.map((alink) => {
-          let linkobg: Linkurl = { title: '', link: '', lang: 'zh-cn' };
+          const linkobg: Linkurl = { title: '', link: '', lang: 'zh-cn' };
           // if(!that.taskid){
           // linkobg.taskid=that.taskid;
           // }
@@ -267,7 +267,7 @@ export class BilibiliScraper extends Scraper {
             linkobg.link = herf
           }
           // console.log(alink);
-          let htitle = alink.querySelector("h3");
+          const htitle = alink.querySelector("h3");
           if (htitle) {
             const htres = htitle.getAttribute("title");
             if (htres) {
@@ -337,7 +337,7 @@ export class BilibiliScraper extends Scraper {
     }
     await downloader.getAid();
 
-    let videores = await downloader.getInfo();
+    const videores = await downloader.getInfo();
     debug("VIDEO INFO", videores);
     // const downloadPath ='/home/robertzeng/downloadtest';
     const filename = Math.random().toString(20).slice(2);
@@ -362,7 +362,7 @@ export class BilibiliScraper extends Scraper {
     }
     // debug("echo target");
     // debug(target);
-    let result: Array<string> = [];
+    const result: Array<string> = [];
     target.forEach((element, part) => {
       const file = path.join(videopath, `${sanitize(filename)}-${part}.flv`);
       debug("part is %o", part);

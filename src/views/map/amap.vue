@@ -4,8 +4,8 @@
 <script setup lang="ts">
 import { onBeforeUnmount } from 'vue';
 import AMapLoader from '@amap/amap-jsapi-loader';
-var AMap: any;
-var map: any;
+let AMap: any;
+let map: any;
 const initMap = async () => {
     const amap_ = await AMapLoader.load({
         key: '527a03c5d37f26c924d83b3c68f9ac5c', // 申请好的Web端开发者Key，首次调用 load 时必填
@@ -31,7 +31,7 @@ const test = () => {
     });
 
     // eslint-disable-next-line no-undef
-    var loca = new Loca.Container({
+    const loca = new Loca.Container({
         map,
     });
 
@@ -53,12 +53,12 @@ const test = () => {
         distance: 3900,
     };
     // eslint-disable-next-line no-undef
-    var geo = new Loca.GeoJSONSource({
+    const geo = new Loca.GeoJSONSource({
         url: 'https://a.amap.com/Loca/static/loca-v2/demos/mock_data/sh_building_center.json',
     });
 
     // eslint-disable-next-line no-undef
-    var pl = new Loca.PolygonLayer({
+    const pl = new Loca.PolygonLayer({
         zIndex: 120,
         shininess: 10,
         hasSide: true,
@@ -90,7 +90,7 @@ const test = () => {
     });
 
     function animate() {
-        var speed = 1;
+        const speed = 1;
         // 镜头动画
         map.setZoom(11.8, true);
         map.setPitch(0, true);

@@ -8,16 +8,19 @@
                     <v-card-title>Login Form</v-card-title>
                     <div class="mt-4">
                         <div class="mb-2" style="font-weight: 700">E-mail</div>
-                        <v-text-field v-model="email" :rules="emailRules" label="E-mail" variant="outlined"
+                        <v-text-field
+v-model="email" :rules="emailRules" label="E-mail" variant="outlined"
                             density="compact" clearable hide-details></v-text-field>
                     </div>
                     <div class="my-4">
                         <div class="mb-2 mt-6" style="font-weight: 700">Password</div>
-                        <v-text-field model-value="" type="password" variant="outlined" density="compact" label="password"
+                        <v-text-field
+model-value="" type="password" variant="outlined" density="compact" label="password"
                             :rules="passwordRules" clearable hide-details></v-text-field>
                     </div>
                     <div style="text-align: right">
-                        <v-btn color="primary" append-icon="mdi-arrow-right" size="large"
+                        <v-btn
+color="primary" append-icon="mdi-arrow-right" size="large"
                             @click="submitForm">Submit</v-btn>
                     </div>
                 </v-card>
@@ -65,7 +68,12 @@ export default{
                 await UserModule.Login({
                 username: this.email,
                 password: this.password,
-                })
+                }).then(() => {
+                    console.log("login success")
+                }).catch((err) => {
+                    console.log(err)
+                    console.log("login fail")
+                });
                 //redirect
                 this.$router.push(this.$route.query.redirect || '/')
             }

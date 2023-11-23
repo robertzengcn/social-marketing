@@ -10,7 +10,7 @@ export class FacebookScraper extends Scraper {
  
 
     async load_login_page():Promise<void> {
-        let startUrl = 'https://www.facebook.com';
+        const startUrl = 'https://www.facebook.com';
 
         // if (this.config.facebook_settings) {
         //     startUrl = `https://www.${this.config.facebook_settings.facebook_domain}`;

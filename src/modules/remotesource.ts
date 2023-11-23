@@ -1,7 +1,7 @@
 export { };
 import axios from "axios";
 import jwt_decode from "jwt-decode";
-import { decode } from "punycode";
+// import { decode } from "punycode";
 const debug = require('debug')('RemoteSource');
 // const FormData = require('form-data');
 type sosetting = {
@@ -79,7 +79,7 @@ export class RemoteSource {
 
   readenv(): configType {
     //read config from .env file
-    let envcofig = this.readConfig();
+    const envcofig = this.readConfig();
     debug(envcofig)
     //check key exist in object
     if (!envcofig.hasOwnProperty("REMOTEADD")) {
@@ -114,7 +114,7 @@ export class RemoteSource {
   async getRemoteConfig(campaignId): Promise<sosetting|void> {
     // let envconfig = await readenv();
 
-    let sosetvar = await axios
+    const sosetvar = await axios
       .get(this.REMOTEADD + "/api/getsobyCam/?campaign_id=" + campaignId, {
         auth: {
           username: this.REMOTEUSERNAME,
@@ -184,7 +184,7 @@ export class RemoteSource {
   async saveLinkremote(link: Linkdata): Promise<number> {
     const FormData = require('form-data');
     debug(link)
-    let data = new FormData();
+    const data = new FormData();
     data.append('title', link.title);
     if (link.content) {
       data.append('content', link.content);
@@ -267,7 +267,7 @@ export class RemoteSource {
     }).then(function (res) {
       // debug(res);
       // console.log(res)
-      let keywords:Array<string>=[];
+      const keywords:Array<string>=[];
       const Keyitemarr=res.data.data as Array<keywordItem>;
       for(const item in Keyitemarr){
         
@@ -283,7 +283,7 @@ export class RemoteSource {
   }
   async Updateprocesstime(scropeId:number){
     const FormData = require('form-data');
-    let data = new FormData();
+    const data = new FormData();
     data.append('id', scropeId);
    
     await axios.post(this.REMOTEADD + "/api/updatescrapeprotime", data,
@@ -306,7 +306,7 @@ export class RemoteSource {
   //login user
   async Login(username:string,password:string):Promise<jwtUser>{
     const FormData = require('form-data');
-    let data = new FormData();
+    const data = new FormData();
     data.append('username', username);
     data.append('password', password);
     const loginInfo =await axios.post(this.REMOTEADD +"/api/login",data).then(function (res) {

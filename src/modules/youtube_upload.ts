@@ -12,7 +12,7 @@ export const youtubecategoryIds = {
   }
 
 //upload video to youtube
-export const uploadVideo = (auth,title:string,description:string,videopath:string,privacy:string='public',category:string,language:string,thumbFilePath?:string) => {
+export const uploadVideo = (auth,title:string,description:string,videopath:string,privacy='public',category:string,language:string,thumbFilePath?:string) => {
    
     
     service.videos.insert(

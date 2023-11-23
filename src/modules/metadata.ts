@@ -10,11 +10,11 @@ async function get_ip_data(page) {
       waitLoad: true,
       waitNetworkIdle: true
     });
-    let json = await page.content({
+    const json = await page.content({
         timeout: 20000
     });
     const $ = cheerio.load(json);
-    let ipinfo_text =  $('pre').text();
+    const ipinfo_text =  $('pre').text();
     return JSON.parse(ipinfo_text);
 }
 
@@ -23,9 +23,9 @@ async function get_http_headers(page) {
       waitLoad: true,
       waitNetworkIdle: true
     });
-    let headers = await page.content();
+    const headers = await page.content();
 
     const $ = cheerio.load(headers);
-    let headers_text =  $('pre').text();
+    const headers_text =  $('pre').text();
     return JSON.parse(headers_text);
 }

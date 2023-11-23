@@ -1,5 +1,6 @@
+//const {ipcRenderer: ipc} = require('electron-better-ipc');
 import request from '@/utils/request'
-import {ipcRenderer as ipc} from 'electron-better-ipc'
+// import {ipcRenderer as ipc} from 'electron-better-ipc'
 
 
 
@@ -37,6 +38,10 @@ export const updateUser = (username: string, data: any) =>
 //   })
 
 export const login = (data: any) =>
+// (async () => {
+// 	const result = await ipc.callMain('user-login', data);
+// 	console.log(result);
+// })();
 (async () => {
 	const result = await window.electronAPI.userLogin(data);
 	console.log(result);

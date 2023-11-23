@@ -5,7 +5,7 @@ const https = require("https");
 const progress = require("progress-stream");
 const fetch =require("node-fetch");
 const debug = require("debug")("bilibili-download");
-var debugerror = debug('app:error');
+const debugerror = debug('app:error');
 export interface getAiddata {
 	videoData: {
 		aid: number;
@@ -99,7 +99,7 @@ export class Downloader {
 		return fetch(url)
 			.then(response => response.text())
 			.then(result => {
-				let data = result.match(/__INITIAL_STATE__=(.*?);\(function\(\)/)[1];
+				const data = result.match(/__INITIAL_STATE__=(.*?);\(function\(\)/)[1];
 				// data =  cast(JSON.parse(data),r("User"));
 				const aiddata: getAiddata = JSON.parse(data)
 				//debug("INITIAL STATE", data);
@@ -145,7 +145,7 @@ export class Downloader {
 			);
 	}
 
-	async getData(fallback: boolean = false) {
+	async getData(fallback = false) {
 		const { cid, type } = this;
 		let playUrl;
 		if (fallback) {
@@ -191,7 +191,7 @@ export class Downloader {
 
 	parseData(target) {
 		const data = $(target);
-		let result: Targetresult = { durl: [], quality: "" };
+		const result: Targetresult = { durl: [], quality: "" };
 		result.durl = [];
 		result.quality = data.find("quality").text();
 		data.find("durl").each((i, o) => {
@@ -244,7 +244,7 @@ export class Downloader {
 			callback(progress, index);
 		});
 
-		let { url } = options;
+		const { url } = options;
 		function downloadLink(url) {
 			(url.startsWith("https") ? https : http).get(url, options, res => {
 				if (res.statusCode === 302) {
