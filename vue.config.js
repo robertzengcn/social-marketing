@@ -7,7 +7,7 @@ module.exports = {
     electronBuilder: {
       preload: 'src/preload.js',
       // nodeIntegration:true,
-      removeElectronJunk: false
+      // removeElectronJunk: false
       // Or, for multiple preload files:
       //preload: { preload: 'src/preload.js' }
     }

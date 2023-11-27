@@ -34,13 +34,13 @@ async function createWindow() {
        preload: path.join(__dirname + '/preload.js')
     }
   })
-  console.log(process.env.WEBPACK_DEV_SERVER_UR)
+  // console.log(process.env.WEBPACK_DEV_SERVER_UR)
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
     await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL as string)
     if (!process.env.IS_TEST) win.webContents.openDevTools()
   } else {
-    console.log('app://./index.html')
+    // console.log('app://./index.html')
     createProtocol('app')
     // Load the index.html when not in development
     await win.loadURL('app://./index.html')
@@ -78,6 +78,37 @@ app.on('ready', async () => {
     }
   }
   createWindow()
+
+  ipcMain.handle("user:Login", async (event, data) => {
+ 
+    const userControll = new userController()
+    const logindata:userlogin = {user:data.username,
+      pass:data.password};
+    const respon:userResponse = await userControll.login(logindata).then(function (res) {
+      console.log(res);
+      return {
+        status: true,
+        msg: "login success",
+        data: res
+      } as userResponse;
+      
+    }).catch(function (err) {
+      console.log(err);
+      if (err instanceof Error) {
+        return {
+          status: false,
+          msg: "login failure",
+        } as userResponse;
+      }else{
+        return {
+          status: false,
+          msg: "unknow error",
+        } as userResponse;
+      }
+    })
+    return respon;
+    // win.webContents.send("user:Login", respon);
+  });
 })
 
 // Exit cleanly on request from parent process in development mode.
@@ -122,31 +153,4 @@ if (isDevelopment) {
 //   return respon;
 // });
 
-ipcMain.on("userLogin", async (event, data) => {
- 
-  const userControll = new userController()
 
-  const respon:userResponse = await userControll.login(data).then(function (res) {
-    console.log(res);
-    return {
-      status: true,
-      msg: "login success",
-      data: res
-    } as userResponse;
-    
-  }).catch(function (err) {
-    console.log(err);
-    if (err instanceof Error) {
-      return {
-        status: false,
-        msg: "login failure",
-      } as userResponse;
-    }else{
-      return {
-        status: false,
-        msg: "unknow error",
-      } as userResponse;
-    }
-  })
-  win.webContents.send("fromMain", respon);
-});

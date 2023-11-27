@@ -14,8 +14,8 @@ v-model="email" :rules="emailRules" label="E-mail" variant="outlined"
                     </div>
                     <div class="my-4">
                         <div class="mb-2 mt-6" style="font-weight: 700">Password</div>
-                        <v-text-field
-model-value="" type="password" variant="outlined" density="compact" label="password"
+                        <v-text-field 
+                        v-model="password" type="password" variant="outlined" density="compact" label="password"
                             :rules="passwordRules" clearable hide-details></v-text-field>
                     </div>
                     <div style="text-align: right">
@@ -81,10 +81,9 @@ export default{
         },
     },
 }
-const methods = {
-    
-
-}
+window.api.receive("user:Login", (data) => {
+            console.log(`Received ${data.msg} from main process`);
+});
 </script>
 <style lang="scss" scoped>
 .login_container {

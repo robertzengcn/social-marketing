@@ -4,19 +4,26 @@ import { contextBridge, ipcRenderer } from 'electron'
 // contextBridge.exposeInMainWorld('electronAPI', {
 //     userLogin: (data) => ipcRenderer.invoke('user:login', data)
 // })
-contextBridge.exposeInMainWorld('ipcRenderer', {
+contextBridge.exposeInMainWorld('api', {
     send: (channel, data) => {
       // whitelist channels
-      let validChannels = ['userLogin']
+      let validChannels = ['user:Login']
       if (validChannels.includes(channel)) {
         ipcRenderer.send(channel, data)
       }
     },
     receive: (channel, func) => {
-      let validChannels = ['userLogin']
+      let validChannels = ['user:Login']
       if (validChannels.includes(channel)) {
         // Deliberately strip event as it includes `sender`
         ipcRenderer.on(channel, (event, ...args) => func(...args))
+      }
+    },
+    invoke: (channel, data) => {
+      // whitelist channels
+      let validChannels = ['user:Login']
+      if (validChannels.includes(channel)) {
+        return ipcRenderer.invoke(channel, data)
       }
     }
   })

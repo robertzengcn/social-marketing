@@ -1,5 +1,5 @@
 import { RemoteSource, jwtUser } from '@/modules/remotesource'
-// const debug = require('debug')('user-controller');
+const debug = require('debug')('user-controller');
 export type userlogin = {
     user: string,
     pass: string,
@@ -20,7 +20,7 @@ export class userController {
         const remoteSourmodel = RemoteSource.getInstance();
 
         const jwtuser = await remoteSourmodel.Login(data.user, data.pass).then(function (res) {
-            //debug(22);
+            debug(data);
             return res;
         }).catch(function (error) {
                 //debug(error);

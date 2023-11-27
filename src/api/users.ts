@@ -43,8 +43,8 @@ export const login = (data: any) =>
 // 	console.log(result);
 // })();
 (async () => {
-	const result = await window.electronAPI.userLogin(data);
-	console.log(result);
+  const result =await window.api.invoke("user:Login", data)
+  console.log(result);
   return result;
 })();
   // request({
