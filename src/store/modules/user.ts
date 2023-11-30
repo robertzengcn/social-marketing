@@ -64,8 +64,18 @@ class User extends VuexModule implements IUserState {
     if(data.status==false){
       throw Error(data.msg)
     }else{
-      setToken(data.token)
-      this.SET_TOKEN(data.token)
+      // action after user login
+      setToken(data.data.token)
+      this.SET_TOKEN(data.data.token)
+      this.SET_ROLES(data.data.roles)
+
+      const roles = UserModule.roles
+          // Generate accessible routes map based on role
+      PermissionModule.GenerateRoutes(roles)
+          // Dynamically add accessible routes
+      PermissionModule.dynamicRoutes.forEach(route => {
+            router.addRoute(route)
+     })
     }
     // console.log(data)
     // setToken(data.accessToken)

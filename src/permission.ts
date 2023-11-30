@@ -14,50 +14,59 @@ const whiteList = ['/login', '/auth-redirect']
 
 const getPageTitle = (key: string) => {
 
-// const hasKey = i18n.te(`route.${key}`)
-//   if (hasKey) {
-//     const pageName = i18n.t(`route.${key}`)
-//     return `${pageName} - ${settings.title}`
-//   }
+  // const hasKey = i18n.te(`route.${key}`)
+  //   if (hasKey) {
+  //     const pageName = i18n.t(`route.${key}`)
+  //     return `${pageName} - ${settings.title}`
+  //   }
   return `${settings.title}`
 }
 
-router.beforeEach(async(to, from, next: any) => {
+router.beforeEach(async (to, from, next: any) => {
   // Start progress bar
-   NProgress.start()
+  NProgress.start()
 
   // Determine whether the user has logged in
   if (UserModule.token) {
     if (to.path === '/login') {
       // If is logged in, redirect to the home page
       next({ path: '/' })
-       NProgress.done()
+      NProgress.done()
     } else {
+      console.log(UserModule.roles)
       // Check whether the user has obtained his permission roles
-      if (UserModule.roles.length === 0) {
-        try {
-          // Note: roles must be a object array! such as: ['admin'] or ['developer', 'editor']
-          await UserModule.GetUserInfo()
-          const roles = UserModule.roles
-          // Generate accessible routes map based on role
-          PermissionModule.GenerateRoutes(roles)
-          // Dynamically add accessible routes
-          PermissionModule.dynamicRoutes.forEach(route => {
-            router.addRoute(route)
-          })
-          // Hack: ensure addRoutes is complete
-          // Set the replace: true, so the navigation will not leave a history record
-          next({ ...to, replace: true })
-        } catch (err) {
-          // Remove token and redirect to login page
-          UserModule.ResetToken()
-          // Message.error('Has Error')
+
+      try {
+        if (UserModule.roles.length === 0) {
+          console.log('user role empty, login failure')
           next(`/login?redirect=${to.path}`)
-           NProgress.done()
+        } else {
+          // Note: roles must be a object array! such as: ['admin'] or ['developer', 'editor']
+          // await UserModule.GetUserInfo()
+          // const roles = UserModule.roles
+          // // Generate accessible routes map based on role
+          // PermissionModule.GenerateRoutes(roles)
+          // // Dynamically add accessible routes
+          // PermissionModule.dynamicRoutes.forEach(route => {
+          //   router.addRoute(route)
+          // })
+          // console.log(to)
+          // // Hack: ensure addRoutes is complete
+          // // Set the replace: true, so the navigation will not leave a history record
+          // next({ ...to, replace: true })
+          next()
         }
-      } else {
-        next()
+      } catch (err) {
+        console.error(err)
+        // Remove token and redirect to login page
+        UserModule.ResetToken()
+        // Message.error('Has Error')
+        next(`/login?redirect=${to.path}`)
+        NProgress.done()
       }
+      // } else {
+      //   next()
+      // }
     }
   } else {
     // Has no token
@@ -67,7 +76,7 @@ router.beforeEach(async(to, from, next: any) => {
     } else {
       // Other pages that do not have permission to access are redirected to the login page.
       next(`/login?redirect=${to.path}`)
-       NProgress.done()
+      NProgress.done()
     }
   }
 })
@@ -75,7 +84,7 @@ router.beforeEach(async(to, from, next: any) => {
 router.afterEach(() => {
   // Finish progress bar
   // hack: https://github.com/PanJiaChen/vue-element-admin/pull/2939
-   NProgress.done()
+  NProgress.done()
   // set page title
   // document.title = getPageTitle(to.meta.title)
 })

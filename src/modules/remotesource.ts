@@ -49,6 +49,7 @@ export type jwtUser={
   account_id: number,
   email: string,
   token:string
+  roles:Array<string>,
 }
 type jwtTokenUser={
   account_id: number,
@@ -56,17 +57,20 @@ type jwtTokenUser={
   exp: number,
   iat: number,
   iss: string,
+  roles:Array<string>,
 }
 export class RemoteSource {
   private static instance: RemoteSource;
   REMOTEADD: string;
   REMOTEUSERNAME: string;
   REMOTEPASSWORD: string;
+ 
   private constructor() {
     const config = this.readenv();
     this.REMOTEADD = config.REMOTEADD;
     this.REMOTEUSERNAME = config.REMOTEUSERNAME;
     this.REMOTEPASSWORD = config.REMOTEPASSWORD;
+    
   }
 
   public static getInstance(): RemoteSource {
@@ -309,7 +313,8 @@ export class RemoteSource {
     const data = new FormData();
     data.append('username', username);
     data.append('password', password);
-    const loginInfo =await axios.post(this.REMOTEADD +"/api/login",data).then(function (res) {
+    const thisobj=this
+    const loginInfo =await axios.post(this.REMOTEADD +"/user/login",data).then(function (res) {
       if(res.status!=200){
         throw new Error(res.statusText);
       }
@@ -317,7 +322,7 @@ export class RemoteSource {
         throw new Error(res.data.msg);
       }
       //decode jwt token
-      const decoded = this.ValidateToken(res.data.Token);
+      const decoded = thisobj.ValidateToken(res.data.data.Token);
       return decoded;
       //return res.data.Token as {token:string};
     })
@@ -329,11 +334,13 @@ export class RemoteSource {
   }
   //validate jwt token 
   public ValidateToken(token:string):jwtUser{
+    console.log(token)
     const decoded = jwt_decode(token) as jwtTokenUser;
     const jwtuser:jwtUser={
       account_id:decoded.account_id,
       email:decoded.email,
-      token:token
+      token:token,
+      roles:decoded.roles?decoded.roles:[],
     }
     return jwtuser;
   }

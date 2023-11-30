@@ -18,9 +18,9 @@ export class userController {
     public async login(data: userlogin): Promise<jwtUser> {
 
         const remoteSourmodel = RemoteSource.getInstance();
-
+        console.log(data)
         const jwtuser = await remoteSourmodel.Login(data.user, data.pass).then(function (res) {
-            debug(data);
+            console.log(res);
             return res;
         }).catch(function (error) {
                 //debug(error);

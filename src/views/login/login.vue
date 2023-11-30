@@ -28,11 +28,28 @@ color="primary" append-icon="mdi-arrow-right" size="large"
             </div>
         </v-card>
     </v-form>
+
+    <v-dialog
+        v-model="dialog"
+        
+        width="auto"
+      >
+        <v-card>
+          <v-card-text>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </v-card-text>
+          <v-card-actions>
+            <v-btn color="primary" block @click="dialog = false">Close Dialog</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
 </template>
 <script lang="ts">
 import { UserModule } from '@/store/modules/user'
 export default{
     data: () => ({
+        alertContent:'',
+        dialog: false,
         valid: false,
         email: '',
         password: '',
@@ -66,11 +83,13 @@ export default{
                 console.log("valid form")
                 //login
                 await UserModule.Login({
-                username: this.email,
-                password: this.password,
+                username: this.email.trim(),
+                password: this.password.trim(),
                 }).then(() => {
+                    
                     console.log("login success")
                 }).catch((err) => {
+                    this.dialog=true
                     console.log(err)
                     console.log("login fail")
                 });
@@ -81,9 +100,7 @@ export default{
         },
     },
 }
-window.api.receive("user:Login", (data) => {
-            console.log(`Received ${data.msg} from main process`);
-});
+
 </script>
 <style lang="scss" scoped>
 .login_container {
