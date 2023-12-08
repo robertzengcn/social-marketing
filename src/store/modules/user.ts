@@ -65,8 +65,8 @@ class User extends VuexModule implements IUserState {
       throw Error(data.msg)
     }else{
       // action after user login
-      setToken(data.data.token)
-      this.SET_TOKEN(data.data.token)
+      // setToken(data.data.token)
+      // this.SET_TOKEN(data.data.token)
       this.SET_ROLES(data.data.roles)
 
       const roles = UserModule.roles
@@ -91,32 +91,35 @@ class User extends VuexModule implements IUserState {
     }
   }
 
-  @Action
+  @Action({rawError: true})
   public ResetToken() {
     removeToken()
     this.SET_TOKEN('')
     this.SET_ROLES([])
   }
 
-  @Action
+  @Action({rawError: true})
   public async GetUserInfo() {
-    if (this.token === '') {
-      throw Error('GetUserInfo: token is undefined!')
-    }
-    const { data } = await getUserInfo({ /* Your params here */ })
+  
+    const data  = await getUserInfo()
+    console.log(data);
     if (!data) {
       throw Error('Verification failed, please Login again.')
     }
-    const { roles, name, avatar, introduction, email } = data.user
+    if(data.status==false){
+      throw Error("get user info status error")
+    }
+    const { roles, name, email } = data.data
     // roles must be a non-empty array
     if (!roles || roles.length <= 0) {
       throw Error('GetUserInfo: roles must be a non-null array!')
     }
     this.SET_ROLES(roles)
     this.SET_NAME(name)
-    this.SET_AVATAR(avatar)
-    this.SET_INTRODUCTION(introduction)
+    // this.SET_AVATAR(avatar)
+    // this.SET_INTRODUCTION(introduction)
     this.SET_EMAIL(email)
+    return data.data
   }
 
   @Action

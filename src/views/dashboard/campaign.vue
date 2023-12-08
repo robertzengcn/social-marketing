@@ -214,6 +214,9 @@ const onTest = () => {
     //     path: '/graphics/oasis-engine',
     // });
 };
+const loadItems =({ page, itemsPerPage, sortBy }) =>{
+    console.log(page, itemsPerPage, sortBy)
+}
 </script>
 <style lang="scss">
 .tables_page {

@@ -28,7 +28,6 @@ color="primary" append-icon="mdi-arrow-right" size="large"
             </div>
         </v-card>
     </v-form>
-
     <v-dialog
         v-model="dialog"
         
@@ -36,7 +35,7 @@ color="primary" append-icon="mdi-arrow-right" size="large"
       >
         <v-card>
           <v-card-text>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+           {{ alertContent }}
           </v-card-text>
           <v-card-actions>
             <v-btn color="primary" block @click="dialog = false">Close Dialog</v-btn>
@@ -90,8 +89,9 @@ export default{
                     console.log("login success")
                 }).catch((err) => {
                     this.dialog=true
+                    this.alertContent=err.message
                     console.log(err)
-                    console.log("login fail")
+                    // console.log("login fail")
                 });
                 //redirect
                 this.$router.push(this.$route.query.redirect || '/')

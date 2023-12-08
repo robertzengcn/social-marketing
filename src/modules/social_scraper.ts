@@ -331,7 +331,7 @@ export class SocialScraper implements Subject {
         }
         const links = await this.searchdata({ keyword: this.config.keywords })
         
-        const remoteSourmodel = RemoteSource.getInstance();
+        const remoteSourmodel = new RemoteSource();
         // debug('links=%o',links)
         //handle the links
         links?.map(async linkItem => {

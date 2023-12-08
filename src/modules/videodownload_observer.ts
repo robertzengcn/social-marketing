@@ -37,7 +37,7 @@ export class videodownloadObserver implements Observer{
             videoDbs.updateVideofilter(insertId,outputpathfilename)
         }))
         //update remote data
-        const remoteSourmodel = RemoteSource.getInstance();
+        const remoteSourmodel = new RemoteSource();
         if(data.scrapeinfo.id){
         remoteSourmodel.Updateprocesstime(data.scrapeinfo.id);     
         }

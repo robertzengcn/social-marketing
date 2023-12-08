@@ -1,6 +1,7 @@
 export { };
 import axios from "axios";
 import jwt_decode from "jwt-decode";
+import {Token} from "./token"
 // import { decode } from "punycode";
 const debug = require('debug')('RemoteSource');
 // const FormData = require('form-data');
@@ -48,37 +49,37 @@ type keywordItem = {
 export type jwtUser={
   account_id: number,
   email: string,
-  token:string
+  // token:string
   roles:Array<string>,
 }
 type jwtTokenUser={
-  account_id: number,
-  email: string,
-  exp: number,
-  iat: number,
-  iss: string,
-  roles:Array<string>,
+  AccountId: number,
+  Email: string,
+  exp?: number,
+  iat?: number,
+  iss?: string,
+  Roles:Array<string>,
 }
 export class RemoteSource {
-  private static instance: RemoteSource;
+  // private static instance: RemoteSource;
   REMOTEADD: string;
-  REMOTEUSERNAME: string;
-  REMOTEPASSWORD: string;
+  // REMOTEUSERNAME: string;
+  // REMOTEPASSWORD: string;
+  // private _Token:string;
  
-  private constructor() {
+  constructor() {
     const config = this.readenv();
     this.REMOTEADD = config.REMOTEADD;
-    this.REMOTEUSERNAME = config.REMOTEUSERNAME;
-    this.REMOTEPASSWORD = config.REMOTEPASSWORD;
-    
+    // this.REMOTEUSERNAME = config.REMOTEUSERNAME;
+    // this.REMOTEPASSWORD = config.REMOTEPASSWORD;
   }
 
-  public static getInstance(): RemoteSource {
-    if (!RemoteSource.instance) {
-      RemoteSource.instance = new RemoteSource();
-    }
-    return RemoteSource.instance;
-  }
+  // public static getInstance(): RemoteSource {
+  //   if (!RemoteSource.instance) {
+  //     RemoteSource.instance = new RemoteSource();
+  //   }
+  //   return RemoteSource.instance;
+  // }
 
 
   readenv(): configType {
@@ -120,10 +121,10 @@ export class RemoteSource {
 
     const sosetvar = await axios
       .get(this.REMOTEADD + "/api/getsobyCam/?campaign_id=" + campaignId, {
-        auth: {
-          username: this.REMOTEUSERNAME,
-          password: this.REMOTEPASSWORD,
-        },
+        // auth: {
+          // username: this.REMOTEUSERNAME,
+          // password: this.REMOTEPASSWORD,
+        // },
       })
       .then(function (res) {
         if (res.status != 200) {
@@ -161,10 +162,10 @@ export class RemoteSource {
   async getCampaignlist(): Promise<Array<socialTask>> {
     const campignlist = await axios
       .get(this.REMOTEADD + "/api/listsotask", {
-        auth: {
-          username: this.REMOTEUSERNAME,
-          password: this.REMOTEPASSWORD,
-        },
+        // auth: {
+        //   username: this.REMOTEUSERNAME,
+        //   password: this.REMOTEPASSWORD,
+        // },
       })
       .then(function (res) {
         if (res.status != 200) {
@@ -202,10 +203,10 @@ export class RemoteSource {
     // debug(this.REMOTEPASSWORD)
     const linkId = await axios.post(this.REMOTEADD + "/api/savesolink", data,
       {
-        auth: {
-          username: this.REMOTEUSERNAME,
-          password: this.REMOTEPASSWORD,
-        },
+        // auth: {
+        //   username: this.REMOTEUSERNAME,
+        //   password: this.REMOTEPASSWORD,
+        // },
       })
       .then(function (res) {
         // debug(res);
@@ -221,10 +222,10 @@ export class RemoteSource {
   //get scrapy info list
   async Getscrapyinfolist(taskId: number, limit: number): Promise<Array<Linkdata| null>> {
     const linkdaarr =await axios.get(this.REMOTEADD +"/api/getscrapeinfolist?sotaskid="+taskId+"&limit="+limit,{
-      auth: {
-        username: this.REMOTEUSERNAME,
-        password: this.REMOTEPASSWORD,
-      },
+      // auth: {
+      //   username: this.REMOTEUSERNAME,
+      //   password: this.REMOTEPASSWORD,
+      // },
     }).then(function (res) {
       debug(res);
       // console.log(res)
@@ -242,10 +243,10 @@ export class RemoteSource {
    */
   async Gettaskinfo(taskId: number): Promise<null|socialTask>{
     const taskInfo =await axios.get(this.REMOTEADD +"/api/getsocialtaskinfo?task_id="+taskId,{
-      auth: {
-        username: this.REMOTEUSERNAME,
-        password: this.REMOTEPASSWORD,
-      },
+      // auth: {
+      //   username: this.REMOTEUSERNAME,
+      //   password: this.REMOTEPASSWORD,
+      // },
     }).then(function (res) {
       // debug(res);
       // console.log(res)
@@ -264,10 +265,10 @@ export class RemoteSource {
   */
   async Gettaskkeywords(taskId: number): Promise<Array<string>>{
     const taskInfo =await axios.get(this.REMOTEADD +"/api/taskkeyword?task_id="+taskId,{
-      auth: {
-        username: this.REMOTEUSERNAME,
-        password: this.REMOTEPASSWORD,
-      },
+      // auth: {
+      //   username: this.REMOTEUSERNAME,
+      //   password: this.REMOTEPASSWORD,
+      // },
     }).then(function (res) {
       // debug(res);
       // console.log(res)
@@ -292,10 +293,10 @@ export class RemoteSource {
    
     await axios.post(this.REMOTEADD + "/api/updatescrapeprotime", data,
     {
-      auth: {
-        username: this.REMOTEUSERNAME,
-        password: this.REMOTEPASSWORD,
-      },
+      // auth: {
+      //   username: this.REMOTEUSERNAME,
+      //   password: this.REMOTEPASSWORD,
+      // },
     })
     .then(function (res) {
       // debug(res);
@@ -323,7 +324,43 @@ export class RemoteSource {
       }
       //decode jwt token
       const decoded = thisobj.ValidateToken(res.data.data.Token);
+      if(decoded.account_id>0){
+        const tokenModel=new Token()
+        tokenModel.setToken(res.data.data.Token)
+      }
       return decoded;
+      //return res.data.Token as {token:string};
+    })
+    .catch(function (error) {
+      // console.log(error);
+      throw new Error(error.message);
+    });
+    return loginInfo;
+  }
+  //get user info use token
+  async GetUserInfo():Promise<jwtUser>{
+    const tokenModel=new Token()
+    const token=await tokenModel.getToken();
+    //const thisobj=this
+    console.log(token)
+    console.log(222222)
+    const loginInfo =await axios.get(this.REMOTEADD +"/api/user/info",{
+      headers: {
+        Authorization: "Bearer "+token,
+      },
+    }).then(function (res) {
+      console.log(res);
+      if(res.status!=200){
+        
+        throw new Error(res.statusText);
+      }
+      if(res.data.status==false){
+        throw new Error(res.data.msg);
+      }
+      console.log(res.data.data)
+      //decode jwt token
+      //const decoded = thisobj.ValidateToken(token);
+      return res.data.data;
       //return res.data.Token as {token:string};
     })
     .catch(function (error) {
@@ -334,13 +371,13 @@ export class RemoteSource {
   }
   //validate jwt token 
   public ValidateToken(token:string):jwtUser{
-    console.log(token)
+    //console.log(token)
     const decoded = jwt_decode(token) as jwtTokenUser;
     const jwtuser:jwtUser={
-      account_id:decoded.account_id,
-      email:decoded.email,
-      token:token,
-      roles:decoded.roles?decoded.roles:[],
+      account_id:decoded.AccountId,
+      email:decoded.Email,
+      // token:token,
+      roles:decoded.Roles?decoded.Roles:[],
     }
     return jwtuser;
   }

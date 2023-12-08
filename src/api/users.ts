@@ -11,12 +11,17 @@ export const getUsers = (params: any) =>
     params
   })
 
-export const getUserInfo = (data: any) =>
-  request({
-    url: '/users/info',
-    method: 'post',
-    data
-  })
+export const getUserInfo = () =>
+(async () => {
+  const result =await window.api.invoke("user:checklogin")
+  console.log(result);
+  return result;
+})();
+  // request({
+  //   url: '/users/info',
+  //   method: 'post',
+  //   data
+  // })
 
 export const getUserByName = (username: string) =>
   request({

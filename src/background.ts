@@ -1,9 +1,9 @@
 'use strict'
 // import {ipcMain as ipc} from 'electron-better-ipc';
-import { app, protocol, BrowserWindow,ipcMain } from 'electron'
+import { app, protocol, BrowserWindow } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
-import { userController, userResponse, userlogin } from '@/controller/user-controller'
+import * as mainmsg from "./main-process/communication/";
 import * as path from 'path';
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
@@ -11,146 +11,133 @@ const isDevelopment = process.env.NODE_ENV !== 'production'
 // const { ipcMain } = require("electron");
 
 // Scheme must be registered before the app is ready
-protocol.registerSchemesAsPrivileged([
-  { scheme: 'app', privileges: { secure: true, standard: true } }
-])
-let win;
-async function createWindow() {
-  // Create the browser window.
-  win = new BrowserWindow({
-    width: 800,
-    height: 600,
-    webPreferences: {
 
-      // Use pluginOptions.nodeIntegration, leave this alone
-      // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
-      // nodeIntegration: (process.env
-      //   .ELECTRON_NODE_INTEGRATION as unknown) as boolean,
-      //  contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
-      
-      // contextIsolation:false,
-      nodeIntegration: false,
-      contextIsolation: true,    
-       preload: path.join(__dirname + '/preload.js')
+let win;
+function initialize() {
+
+  protocol.registerSchemesAsPrivileged([
+    { scheme: 'app', privileges: { secure: true, standard: true } }
+  ])
+
+  makeSingleInstance()
+
+  
+
+  async function createWindow() {
+    // Create the browser window.
+    win = new BrowserWindow({
+      width: 800,
+      height: 600,
+      webPreferences: {
+
+        // Use pluginOptions.nodeIntegration, leave this alone
+        // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
+        // nodeIntegration: (process.env
+        //   .ELECTRON_NODE_INTEGRATION as unknown) as boolean,
+        //  contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
+
+        // contextIsolation:false,
+        nodeIntegration: false,
+        contextIsolation: true,
+        preload: path.join(__dirname + '/preload.js')
+      }
+    })
+
+    // console.log(process.env.WEBPACK_DEV_SERVER_UR)
+    if (process.env.WEBPACK_DEV_SERVER_URL) {
+      // Load the url of the dev server if in development mode
+      await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL as string)
+      if (!process.env.IS_TEST) win.webContents.openDevTools()
+    } else {
+      // console.log('app://./index.html')
+      createProtocol('app')
+      // Load the index.html when not in development
+      await win.loadURL('app://./index.html')
+    }
+  }
+
+  // Quit when all windows are closed.
+  app.on('window-all-closed', () => {
+    // On macOS it is common for applications and their menu bar
+    // to stay active until the user quits explicitly with Cmd + Q
+    if (process.platform !== 'darwin') {
+      app.quit()
     }
   })
-  // console.log(process.env.WEBPACK_DEV_SERVER_UR)
-  if (process.env.WEBPACK_DEV_SERVER_URL) {
-    // Load the url of the dev server if in development mode
-    await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL as string)
-    if (!process.env.IS_TEST) win.webContents.openDevTools()
-  } else {
-    // console.log('app://./index.html')
-    createProtocol('app')
-    // Load the index.html when not in development
-    await win.loadURL('app://./index.html')
-  }
 
-}
+  app.on('activate', () => {
+    // On macOS it's common to re-create a window in the app when the
+    // dock icon is clicked and there are no other windows open.
+    if (BrowserWindow.getAllWindows().length === 0) createWindow()
+  })
 
-// Quit when all windows are closed.
-app.on('window-all-closed', () => {
-  // On macOS it is common for applications and their menu bar
-  // to stay active until the user quits explicitly with Cmd + Q
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
-})
-
-app.on('activate', () => {
-  // On macOS it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
-  if (BrowserWindow.getAllWindows().length === 0) createWindow()
-})
-
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.on('ready', async () => {
-  if (isDevelopment && !process.env.IS_TEST) {
-    // Install Vue Devtools
-    try {
-      await installExtension(VUEJS3_DEVTOOLS)
-    } catch (e) {
-      if (e instanceof Error) {
-        console.error('Vue Devtools failed to install:', e.toString())
+  // This method will be called when Electron has finished
+  // initialization and is ready to create browser windows.
+  // Some APIs can only be used after this event occurs.
+  app.on('ready', async () => {
+    createWindow();
+    if (isDevelopment && !process.env.IS_TEST) {
+      // Install Vue Devtools
+      try {
+        await installExtension(VUEJS3_DEVTOOLS)
+      } catch (e) {
+        if (e instanceof Error) {
+          console.error('Vue Devtools failed to install:', e.toString())
+        }
       }
     }
-  }
-  createWindow()
+  })
 
-  ipcMain.handle("user:Login", async (event, data) => {
- 
-    const userControll = new userController()
-    const logindata:userlogin = {user:data.username,
-      pass:data.password};
-    const respon:userResponse = await userControll.login(logindata).then(function (res) {
-      console.log(res);
-      return {
-        status: true,
-        msg: "login success",
-        data: res
-      } as userResponse;
-      
-    }).catch(function (err) {
-      console.log(err);
-      if (err instanceof Error) {
-        return {
-          status: false,
-          msg: "login failure",
-        } as userResponse;
-      }else{
-        return {
-          status: false,
-          msg: "unknow error",
-        } as userResponse;
-      }
-    })
-    return respon;
-    // win.webContents.send("user:Login", respon);
-  });
-})
-
-// Exit cleanly on request from parent process in development mode.
-if (isDevelopment) {
-  if (process.platform === 'win32') {
-    process.on('message', (data) => {
-      if (data === 'graceful-exit') {
+  // Exit cleanly on request from parent process in development mode.
+  if (isDevelopment) {
+    if (process.platform === 'win32') {
+      process.on('message', (data) => {
+        if (data === 'graceful-exit') {
+          app.quit()
+        }
+      })
+    } else {
+      process.on('SIGTERM', () => {
         app.quit()
-      }
-    })
-  } else {
-    process.on('SIGTERM', () => {
-      app.quit()
-    })
+      })
+    }
   }
+  mainmsg.SyncMsg();
+
 }
 
-// ipc.answerRenderer('user-login', async data => {
-// 	const userControll = new userController()
-//   const respon:userResponse = await userControll.login(data as userlogin).then(function (res) {
-//     console.log(res);
-//     return {
-//       status: true,
-//       msg: "login success",
-//       data: res
-//     } as userResponse;
-    
-//   }).catch(function (err) {
-//     console.log(err);
-//     if (err instanceof Error) {
-//       return {
-//         status: false,
-//         msg: "login failure",
-//       } as userResponse;
-//     }else{
-//       return {
-//         status: false,
-//         msg: "unknow error",
-//       } as userResponse;
-//     }
-//   })
-//   return respon;
-// });
+
+
+
+
+
+
+function makeSingleInstance() {
+  if (process.mas) return
+
+  app.requestSingleInstanceLock()
+
+  app.on('second-instance', () => {
+    if (win) {
+      if (win.isMinimized()) win.restore()
+      win.focus()
+    }
+  })
+
+
+}
+
+// makeSingleInstance()
+// createWindow()
+
+
+
+
+
+
+initialize()
+
+
+
 
 

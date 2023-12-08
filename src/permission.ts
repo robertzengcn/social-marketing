@@ -25,9 +25,15 @@ const getPageTitle = (key: string) => {
 router.beforeEach(async (to, from, next: any) => {
   // Start progress bar
   NProgress.start()
-
+  let userinfo
+  try{
+  userinfo=await  UserModule.GetUserInfo()
+  console.log(userinfo)
+  }catch(err){
+    console.log(err)
+  }
   // Determine whether the user has logged in
-  if (UserModule.token) {
+  if (userinfo) {
     if (to.path === '/login') {
       // If is logged in, redirect to the home page
       next({ path: '/' })
