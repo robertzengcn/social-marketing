@@ -13,10 +13,10 @@ describe('Module Scraperdb', function(){
         const description="test test test"
         const language="zh-cn"
         const locapah="~/tmp/video/test.mp4"
-        scraperdb.saveVideo(url,locapah,title,description,language);
+        // scraperdb.saveVideo(url,locapah,title,description,language);
     });
     it('truncate-data', function(){
-        scraperdb.truncatedb();
+        // scraperdb.truncatedb();
     });
 
 

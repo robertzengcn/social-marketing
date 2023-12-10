@@ -31,16 +31,17 @@ export class userController {
         return jwtuser;
     }
     //check user login status
-    public async checklogin(): Promise<jwtUser> {
+    public async checklogin(): Promise<jwtUser|null> {
         const remoteSourmodel = new RemoteSource;
         const userInfo=await remoteSourmodel.GetUserInfo().then(function (res) {
             console.log(res);
             return res;
         }).catch(function (error) {
+            console.log(error)
                 //debug(error);
-                throw new Error(error.message);
+                //throw new Error(error.message);
+            return null
         });
         return userInfo;
-
     }
 }

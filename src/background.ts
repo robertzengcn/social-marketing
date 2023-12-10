@@ -6,6 +6,7 @@ import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 import * as mainmsg from "./main-process/communication/";
 import * as path from 'path';
 const isDevelopment = process.env.NODE_ENV !== 'production'
+import { safeStorage } from 'electron';
 
 // const { ipcRenderer: ipc } = require('electron-better-ipc');
 // const { ipcMain } = require("electron");
@@ -20,8 +21,6 @@ function initialize() {
   ])
 
   makeSingleInstance()
-
-  
 
   async function createWindow() {
     // Create the browser window.
@@ -76,6 +75,9 @@ function initialize() {
   // Some APIs can only be used after this event occurs.
   app.on('ready', async () => {
     createWindow();
+    mainmsg.SyncMsg();
+    
+   
     if (isDevelopment && !process.env.IS_TEST) {
       // Install Vue Devtools
       try {
@@ -102,7 +104,7 @@ function initialize() {
       })
     }
   }
-  mainmsg.SyncMsg();
+  
 
 }
 

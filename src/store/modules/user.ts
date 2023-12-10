@@ -102,7 +102,7 @@ class User extends VuexModule implements IUserState {
   public async GetUserInfo() {
   
     const data  = await getUserInfo()
-    console.log(data);
+    // console.log(data);
     if (!data) {
       throw Error('Verification failed, please Login again.')
     }

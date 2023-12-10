@@ -13,7 +13,7 @@ export class Videoedit {
    * @param startTime 
    * @param endTime 
    */
-  async removeWatermark(videoPath: string, outputpathfile: string, insertId: number | null, callback: Function | undefined) {
+  async removeWatermark(videoPath: string, outputpathfile: string, insertId: number | null, callback: Function | undefined|null) {
     //check video path exist
     if (!fs.existsSync(videoPath)) {
       throw new Error("video path not exist for the path "+videoPath);

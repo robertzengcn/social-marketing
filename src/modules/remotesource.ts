@@ -61,6 +61,7 @@ type jwtTokenUser={
   Roles:Array<string>,
 }
 export class RemoteSource {
+  private tokenname:string="social-market-token";
   // private static instance: RemoteSource;
   REMOTEADD: string;
   // REMOTEUSERNAME: string;
@@ -70,6 +71,7 @@ export class RemoteSource {
   constructor() {
     const config = this.readenv();
     this.REMOTEADD = config.REMOTEADD;
+    // this.tokenname="social-market-token"
     // this.REMOTEUSERNAME = config.REMOTEUSERNAME;
     // this.REMOTEPASSWORD = config.REMOTEPASSWORD;
   }
@@ -326,7 +328,7 @@ export class RemoteSource {
       const decoded = thisobj.ValidateToken(res.data.data.Token);
       if(decoded.account_id>0){
         const tokenModel=new Token()
-        tokenModel.setToken(res.data.data.Token)
+        tokenModel.setValue(thisobj.tokenname,res.data.data.Token)
       }
       return decoded;
       //return res.data.Token as {token:string};
@@ -338,12 +340,17 @@ export class RemoteSource {
     return loginInfo;
   }
   //get user info use token
-  async GetUserInfo():Promise<jwtUser>{
+  async GetUserInfo():Promise<jwtUser|null>{
     const tokenModel=new Token()
-    const token=await tokenModel.getToken();
+    console.log("token name:"+this.tokenname)
+    
+    const token=await tokenModel.getValue(this.tokenname);
     //const thisobj=this
+    if(token==null||token.length<1){
+      return null;
+    }
     console.log(token)
-    console.log(222222)
+    
     const loginInfo =await axios.get(this.REMOTEADD +"/api/user/info",{
       headers: {
         Authorization: "Bearer "+token,

@@ -38,6 +38,12 @@ ipcMain.handle("user:Login", async (event, data) => {
     const userControll = new userController()
     userControll.checklogin().then(function (res) {
       console.log(res);
+      if(res==null){
+        return {
+          status: false,
+          msg: "check failure",
+        } as userResponse;
+      }
       return {
         status: true,
         msg: "check success",
