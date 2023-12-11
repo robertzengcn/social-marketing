@@ -34,7 +34,8 @@
     "testsettoken": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'test/modules/token.test.ts' --grep set-token",
     "testgettoken": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'test/modules/token.test.ts' --grep get-token",
     "testgetuserinfo": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'test/modules/remotesource.test.ts' --grep get-user-info",
-    "testcheckencry": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'test/modules/token.test.ts' --grep check-encry-available"
+    "testencrypt": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'test/modules/cryptoscource.test.ts' --grep encrypt",
+    "testdecrypt": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'test/modules/cryptoscource.test.ts' --grep decrypt"
   },
   "dependencies": {
     "@mdi/font": "5.9.55",

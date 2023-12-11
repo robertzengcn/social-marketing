@@ -21,7 +21,8 @@
       "webpack-env",
       "vuetify",
       "jquery",
-      "mocha"
+      "mocha",
+      "node"
     ],
     "paths": {
       "@/*": [

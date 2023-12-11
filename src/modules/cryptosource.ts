@@ -6,14 +6,17 @@ export type encrytext={
     iv:string,
     encryptedData:string
 }
-export class cryptoSource {
+export class CryptoSource {
     private algorithm:string = 'aes-256-cbc'; //Using AES encryption
     private key:Buffer;
     private iv:Buffer = crypto.randomBytes(16);
     constructor() {
         this.algorithm = 'aes-256-cbc'; //Using AES encryption
-        this.key = Buffer.from("social-market-key",'utf8');
+        const salt="Tus7uAT6r3eSj9gVbF7Wic3ipNczYNK1"
+        //this.key = Buffer.from(crypto.createHash("sha1").update(salt).digest().slice(0, 16));
+        this.key = Buffer.from(salt);
         this.iv = crypto.randomBytes(16);
+        // this.key=crypto.scryptSync(salt, 'GfG', 16)
     }
     //Encrypting text
     encrypt(text:string):encrytext {

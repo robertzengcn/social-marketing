@@ -4,7 +4,7 @@ export {};
 // const os = require('os');
 import Store from 'electron-store';
 import { safeStorage } from 'electron';
-import {cryptoSource} from './cryptosource';
+import {CryptoSource} from './cryptosource';
 
 export class Token {
 
@@ -34,7 +34,7 @@ export class Token {
         this.store.set(key, buffer.toString());
         }else{
             //if system not support safe storage
-            const cryptModel=new cryptoSource();
+            const cryptModel=new CryptoSource();
             const encrytoken=cryptModel.encrypt(token)
             this.store.set(key, JSON.stringify(encrytoken));
         }
@@ -52,7 +52,7 @@ export class Token {
         return safeStorage.decryptString(Buffer.from(buffer))
         }else{
             //if system not support safe storage
-            const cryptModel=new cryptoSource();
+            const cryptModel=new CryptoSource();
             return cryptModel.decrypt(JSON.parse(buffer))
         }
     }
