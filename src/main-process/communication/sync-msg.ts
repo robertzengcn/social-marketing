@@ -36,7 +36,7 @@ ipcMain.handle("user:Login", async (event, data) => {
   //check if user login
   ipcMain.handle("user:checklogin", async (event, data) => {
     const userControll = new userController()
-    userControll.checklogin().then(function (res) {
+    const checkres:userResponse=await userControll.checklogin().then(function (res) {
       console.log(res);
       if(res==null){
         return {
@@ -62,6 +62,8 @@ ipcMain.handle("user:Login", async (event, data) => {
           msg: "unknow error",
         } as userResponse;
       }
-    })
+    });  
+    return checkres; 
   }); 
+ 
 }

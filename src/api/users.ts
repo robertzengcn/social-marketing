@@ -4,12 +4,12 @@ import request from '@/utils/request'
 
 
 
-export const getUsers = (params: any) =>
-  request({
-    url: '/users',
-    method: 'get',
-    params
-  })
+// export const getUsers = (params: any) =>
+//   request({
+//     url: '/users',
+//     method: 'get',
+//     params
+//   })
 
 export const getUserInfo = () =>
 (async () => {
@@ -23,18 +23,18 @@ export const getUserInfo = () =>
   //   data
   // })
 
-export const getUserByName = (username: string) =>
-  request({
-    url: `/users/${username}`,
-    method: 'get'
-  })
+// export const getUserByName = (username: string) =>
+//   request({
+//     url: `/users/${username}`,
+//     method: 'get'
+//   })
 
-export const updateUser = (username: string, data: any) =>
-  request({
-    url: `/users/${username}`,
-    method: 'put',
-    data
-  })
+// export const updateUser = (username: string, data: any) =>
+//   request({
+//     url: `/users/${username}`,
+//     method: 'put',
+//     data
+//   })
 
 // export const deleteUser = (username: string) =>
 //   request({
@@ -43,10 +43,6 @@ export const updateUser = (username: string, data: any) =>
 //   })
 
 export const login = (data: any) =>
-// (async () => {
-// 	const result = await ipc.callMain('user-login', data);
-// 	console.log(result);
-// })();
 (async () => {
   const result =await window.api.invoke("user:Login", data)
   console.log(result);

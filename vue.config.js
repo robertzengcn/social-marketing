@@ -1,6 +1,7 @@
 module.exports = {
   transpileDependencies: true,
   configureWebpack: {
+    devtool: 'source-map'
     //target:'electron-renderer',
   },
   pluginOptions: {

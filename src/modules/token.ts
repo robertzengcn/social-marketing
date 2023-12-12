@@ -27,8 +27,8 @@ export class Token {
     // }
     //save user token
     public setValue(key:string,token: string): void {
-        console.log("encrypt token "+token)
-        console.log(safeStorage)
+        // console.log("encrypt token "+token)
+        // console.log(safeStorage)
         if(this.useSafestore){
         const buffer = safeStorage.encryptString(token);
         this.store.set(key, buffer.toString());
@@ -42,7 +42,7 @@ export class Token {
     } 
     //get user token
     public getValue(key:string):string{
-        console.log("the key is"+key);
+        // console.log("the key is"+key);
         // const token=await keytar.getPassword(this.keytarService, this.getaccountname())
         const buffer=this.store.get(key) as string;
         if(!buffer){
