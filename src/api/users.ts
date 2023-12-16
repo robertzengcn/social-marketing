@@ -1,7 +1,9 @@
+'use strict';
+export {};
 //const {ipcRenderer: ipc} = require('electron-better-ipc');
 import request from '@/utils/request'
 // import {ipcRenderer as ipc} from 'electron-better-ipc'
-
+import {Iresponse} from '@/api/types'
 
 
 // export const getUsers = (params: any) =>
@@ -13,9 +15,9 @@ import request from '@/utils/request'
 
 export const getUserInfo = () =>
 (async () => {
-  const result =await window.api.invoke("user:checklogin")
-  console.log(result);
-  return result;
+  const result:Iresponse =await window.api.invoke("user:checklogin")
+  // console.log(result);
+  return result as Iresponse;
 })();
   // request({
   //   url: '/users/info',

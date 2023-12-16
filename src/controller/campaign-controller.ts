@@ -1,13 +1,23 @@
-export type campaign={
-    CampaignId:number,
-    CampaignName: string,
-    CampaignDescription: string,
-    Disable: number,
-    Tags:string,
+import { RemoteSource,campaign } from '@/modules/remotesource'
+
+export type campaignResponse = {
+    status: boolean,
+    msg: string,
+    data?: campaign,
 }
 export class campaignController {
     public async getCampaignlist(data: any): Promise<Array<campaign>|null> {
-        const result = await window.api.invoke("campaign:list", data);
+        const qdata=JSON.parse(data);
+        const remotesou=new RemoteSource();
+        const result=await remotesou.getCampaignlist(qdata).then(function (res) {
+            //console.log(res);
+            return res;
+        }).catch(function (error) {
+            console.log(error)
+                //debug(error);
+                //throw new Error(error.message);
+            return null
+        });
         return result;
     }
 }

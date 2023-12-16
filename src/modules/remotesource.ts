@@ -1,9 +1,10 @@
-export { };
+export {};
 import axios from "axios";
 import jwt_decode from "jwt-decode";
 import {Token} from "./token"
 // import { decode } from "punycode";
 const debug = require('debug')('RemoteSource');
+const url = require("url");
 // const FormData = require('form-data');
 type sosetting = {
   sotype: string;
@@ -22,6 +23,13 @@ export type Linkdata = {
   content?: string,
   lang: string,
   socialtask_id: number,
+}
+export type campaign={
+  CampaignId:number,
+  CampaignName: string,
+  CampaignDescription: string,
+  Disable: number,
+  Tags:string,
 }
 export type socialTask = {
   id: number,
@@ -59,6 +67,12 @@ type jwtTokenUser={
   iat?: number,
   iss?: string,
   Roles:Array<string>,
+}
+export type queryParams={
+  page:number,
+  size:number,
+  sortby:string,
+  search:string,
 }
 export class RemoteSource {
   private tokenname:string="social-market-token";
@@ -161,22 +175,20 @@ export class RemoteSource {
   /**
    * get campaign from remote servive
    */
-  async getCampaignlist(): Promise<Array<socialTask>> {
+  async getCampaignlist(queryParams:queryParams): Promise<Array<campaign>> {
+    const params = new url.URLSearchParams(queryParams);
+    
     const campignlist = await axios
-      .get(this.REMOTEADD + "/api/listsotask", {
-        // auth: {
-        //   username: this.REMOTEUSERNAME,
-        //   password: this.REMOTEPASSWORD,
-        // },
+      .get(this.REMOTEADD + "/api/campaign?${params}", {
       })
-      .then(function (res) {
+      .then(function (res) {           
         if (res.status != 200) {
           throw new Error("code not equal 200");
         }
         if (!res.data.data) {
           throw new Error("data not exist");
         }
-        return res.data.data as Array<socialTask>;
+        return res.data.data as Array<campaign>;
 
       })
       .catch(function (error) {

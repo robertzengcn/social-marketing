@@ -1,5 +1,6 @@
 import {ipcMain } from 'electron'
 import { userController, userResponse, userlogin } from '@/controller/user-controller'
+import {campaignController,campaignResponse} from '@/controller/campaign-controller'
 export default function SyncMsg() {
   console.log("SyncMsg");
 ipcMain.handle("user:Login", async (event, data) => {
@@ -65,5 +66,29 @@ ipcMain.handle("user:Login", async (event, data) => {
     });  
     return checkres; 
   }); 
- 
+  ipcMain.handle("campaign:list", async (event, data) => {
+    const camControl=new campaignController()
+    const res=await camControl.getCampaignlist(data).then(function (res) {
+      console.log(res);
+      return {
+        status: true,
+        msg: "get campaign list success",
+        data: res
+      };
+    }).catch(function (err) {
+      console.log(err);
+      if (err instanceof Error) {
+        return {
+          status: false,
+          msg: err.message,
+        };
+      }else{
+        return {
+          status: false,
+          msg: "unknow error",
+        };
+      }
+    });
+    return res as campaignResponse;
+  });
 }

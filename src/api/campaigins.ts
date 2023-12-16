@@ -1,6 +1,6 @@
-export const getCampaignlist = (data: any) =>(
-    async () => {
-        const result =await window.api.invoke("campaign:list", data); 
-        return result; 
-    }
-)
+import {ItemSearchparam,SearchResult} from './types'
+import {windowInvoke} from '@/utils/apirequest'
+export async function getCampaignlist(data: ItemSearchparam):Promise<SearchResult>{
+     
+        return await windowInvoke(data) as SearchResult;  
+}

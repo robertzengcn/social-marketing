@@ -44,7 +44,8 @@
                 </v-card>
             </v-col>
         </v-row>
-        <div class="search_bar mt-4 d-flex jsb">
+         <!--table start-->
+        <!-- <div class="search_bar mt-4 d-flex jsb">
             <div class="d-flex jsb search_tool">
                 <div class="search_wrap mr-4">
                     <v-text-field
@@ -150,12 +151,15 @@
                     <v-btn color="primary" block @click="dialog = false">Close Dialog</v-btn>
                 </v-card-actions>
             </v-card>
-        </v-dialog>
+        </v-dialog> -->
+        <!--table end-->
+<CampaignTable />
     </div>
 </template>
 <script setup lang="ts">
 import router from '@/router';
 import { ref, onMounted } from 'vue';
+import CampaignTable from '@/views/dashboard/widgets/CampaignTable.vue'
 const dialog = ref(false);
 const list = ref([
     {

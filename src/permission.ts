@@ -28,7 +28,7 @@ router.beforeEach(async (to, from, next: any) => {
   let userinfo
   try{
   userinfo=await  UserModule.GetUserInfo()
-  console.log(userinfo)
+  // console.log(userinfo)
   }catch(err){
     console.log(err)
   }
@@ -39,9 +39,8 @@ router.beforeEach(async (to, from, next: any) => {
       next({ path: '/' })
       NProgress.done()
     } else {
-      console.log(UserModule.roles)
+      // console.log(UserModule.roles)
       // Check whether the user has obtained his permission roles
-
       try {
         if (UserModule.roles.length === 0) {
           console.log('user role empty, login failure')

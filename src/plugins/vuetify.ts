@@ -4,6 +4,7 @@ import { createVuetify } from 'vuetify';
 import '@mdi/font/css/materialdesignicons.css';
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
+import * as labsComponents from 'vuetify/labs/components'
 
 export const vuetify = createVuetify({
     theme: {
@@ -20,6 +21,9 @@ export const vuetify = createVuetify({
         defaultSet: 'mdi',
         sets: {},
     },
-    components,
+    components:{
+        ...components,
+        ...labsComponents,   
+    },
     directives
 });
