@@ -21,7 +21,7 @@ contextBridge.exposeInMainWorld('api', {
     },
     invoke: (channel, data) => {
       // whitelist channels
-      let validChannels = ['user:Login','user:checklogin']
+      let validChannels = ['user:Login','user:checklogin','campaign:list']
       if (validChannels.includes(channel)) {
         return ipcRenderer.invoke(channel, data)
       }

@@ -7,6 +7,9 @@ type Iresponse ={
 export const windowInvoke=async(data)=>{
     console.log(data)
     const result =await window.api.invoke("campaign:list", JSON.stringify(data)); 
+    if(!result){
+        throw new Error("unknow error")
+    }
     console.log(result)
     if(!result.status){
         throw new Error(result.msg)

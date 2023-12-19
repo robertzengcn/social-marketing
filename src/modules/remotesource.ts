@@ -1,5 +1,6 @@
 export {};
 import axios from "axios";
+import request from '@/modules/lib/request'
 import jwt_decode from "jwt-decode";
 import {Token} from "./token"
 // import { decode } from "punycode";
@@ -23,6 +24,10 @@ export type Linkdata = {
   content?: string,
   lang: string,
   socialtask_id: number,
+}
+export type campaignRes={
+  data:Array<campaign>,
+  num:number,
 }
 export type campaign={
   CampaignId:number,
@@ -73,6 +78,11 @@ export type queryParams={
   size:number,
   sortby:string,
   search:string,
+}
+export type campaignResponse = {
+  status: boolean,
+  msg: string,
+  data?: campaign,
 }
 export class RemoteSource {
   private tokenname:string="social-market-token";
@@ -175,27 +185,49 @@ export class RemoteSource {
   /**
    * get campaign from remote servive
    */
-  async getCampaignlist(queryParams:queryParams): Promise<Array<campaign>> {
-    const params = new url.URLSearchParams(queryParams);
+  async getCampaignlist(queryParams:queryParams): Promise<campaignResponse|null> {
+     const params = new url.URLSearchParams(queryParams);
     
-    const campignlist = await axios
-      .get(this.REMOTEADD + "/api/campaign?${params}", {
-      })
-      .then(function (res) {           
-        if (res.status != 200) {
-          throw new Error("code not equal 200");
-        }
-        if (!res.data.data) {
-          throw new Error("data not exist");
-        }
-        return res.data.data as Array<campaign>;
+    // const campignlist = await axios
+    //   .get(this.REMOTEADD + "/api/campaign?${params}", {
+    //   })
+    //   .then(function (res) {           
+    //     if (res.status != 200) {
+    //       throw new Error("code not equal 200,code is "+res.status.toString());
+    //     }
+    //     if (!res.data.data) {
+    //       throw new Error("data not exist");
+    //     }
+    //     return res.data.data as Array<campaign>;
 
-      })
-      .catch(function (error) {
-        throw new Error("code not equal 200");
-        // console.error(error);
-      });
-    return campignlist;
+    //   })
+    //   .catch(function (error) {
+    //     throw new Error(error.message);
+    //     // console.error(error);
+    //   });
+    console.log(params)
+    const campignlistres = await request({
+      url: '/api/campaign?${params}',
+      method: 'get',  
+    }).catch(function (error) {
+      throw new Error(error.message);
+      // console.error(error);
+    })
+    if(!campignlistres){
+      return null;
+    }
+    // const res:campaignRes={
+    //   data:campignlist.data.data as Array<campaign>,
+    //   num:campignlist.num,
+    // }
+    console.log("campaign list is following")
+    console.log(campignlistres.data)
+    const resp:campaignResponse={
+      status:campignlistres.data.status,
+      msg:campignlistres.data.msg,
+      data:campignlistres.data.data,
+    }
+    return resp
   }
   /**
    * save link to remote servive
@@ -354,7 +386,7 @@ export class RemoteSource {
   //get user info use token
   async GetUserInfo():Promise<jwtUser|null>{
     const tokenModel=new Token()
-    console.log("token name:"+this.tokenname)
+    //console.log("token name:"+this.tokenname)
     
     const token=await tokenModel.getValue(this.tokenname);
     //const thisobj=this

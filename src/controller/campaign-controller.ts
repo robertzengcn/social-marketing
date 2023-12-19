@@ -1,12 +1,8 @@
-import { RemoteSource,campaign } from '@/modules/remotesource'
+import { RemoteSource,campaignResponse } from '@/modules/remotesource'
 
-export type campaignResponse = {
-    status: boolean,
-    msg: string,
-    data?: campaign,
-}
+
 export class campaignController {
-    public async getCampaignlist(data: any): Promise<Array<campaign>|null> {
+    public async getCampaignlist(data: any): Promise<campaignResponse|null> {
         const qdata=JSON.parse(data);
         const remotesou=new RemoteSource();
         const result=await remotesou.getCampaignlist(qdata).then(function (res) {

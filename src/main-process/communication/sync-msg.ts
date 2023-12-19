@@ -1,15 +1,17 @@
 import {ipcMain } from 'electron'
 import { userController, userResponse, userlogin } from '@/controller/user-controller'
-import {campaignController,campaignResponse} from '@/controller/campaign-controller'
+import {campaignController} from '@/controller/campaign-controller'
+import {campaignResponse} from '@/modules/remotesource'
+
 export default function SyncMsg() {
-  console.log("SyncMsg");
+  // console.log("SyncMsg");
 ipcMain.handle("user:Login", async (event, data) => {
- 
+    // console.log("handle user:Login")
     const userControll = new userController()
     const logindata:userlogin = {user:data.username,
       pass:data.password};
     const respon:userResponse = await userControll.login(logindata).then(function (res) {
-      console.log(res);
+      //console.log(res);
       return {
         status: true,
         msg: "login success",
@@ -36,9 +38,10 @@ ipcMain.handle("user:Login", async (event, data) => {
 
   //check if user login
   ipcMain.handle("user:checklogin", async (event, data) => {
+    //console.log("handle user:checklogin")
     const userControll = new userController()
     const checkres:userResponse=await userControll.checklogin().then(function (res) {
-      console.log(res);
+      //console.log(res);
       if(res==null){
         return {
           status: false,
@@ -67,6 +70,7 @@ ipcMain.handle("user:Login", async (event, data) => {
     return checkres; 
   }); 
   ipcMain.handle("campaign:list", async (event, data) => {
+    //console.log("handle campaign:list")
     const camControl=new campaignController()
     const res=await camControl.getCampaignlist(data).then(function (res) {
       console.log(res);
@@ -89,6 +93,7 @@ ipcMain.handle("user:Login", async (event, data) => {
         };
       }
     });
+    console.log(res)
     return res as campaignResponse;
   });
 }
