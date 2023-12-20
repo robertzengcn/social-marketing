@@ -6,7 +6,7 @@ import {RouteRecordRaw } from 'vue-router';
 export const constantRoutes : RouteRecordRaw[] = [
     {
             path: '/',
-            redirect: '/dashboard/campaign',
+            redirect: '/campaign/list',
             name: 'Dashboard',
             meta: {
                 visible: true,
@@ -15,31 +15,63 @@ export const constantRoutes : RouteRecordRaw[] = [
             },
             component: Layout,
             children: [
+                // {
+                //     path: '/dashboard/smart-house',
+                //     name: 'smartHouse',
+                //     meta: {
+                //         title: 'Smart House',
+                //         icon: 'mdi-alpha-s',
+                //         keepAlive: false,
+                //         visible: true,
+                //     },
+                //     component: () => import('@/views/dashboard/smartHouse.vue'),
+                //     children: [],
+                // },
+                // {
+                //     path: '/campaign',
+                //     name: 'Campaign',
+                //     meta: {
+                //         title: 'Campaign',
+                //         icon: 'mdi-alpha-s',
+                //         keepAlive: false,
+                //         visible: true,
+                //     },
+                //     component: () => import('@/views/dashboard/campaign.vue'),
+                //     children: [],
+                // }
+             ],
+        },
+        {
+            path: '/campaign',
+            name: 'campaign',
+            meta: {
+                visible: true,
+                title: 'Campaign',
+                icon: 'mdi-cube-scan',
+            },
+            component: Layout, 
+            children: [
                 {
-                    path: '/dashboard/smart-house',
-                    name: 'smartHouse',
+                    path: 'edit/:id(\\d+)',
+                    component: () => import(/* webpackChunkName: "staff-edit" */ '@/views/campaign/campaign.vue'),
+                    name: 'EditCampaign',
                     meta: {
-                        title: 'Smart House',
-                        icon: 'mdi-alpha-s',
-                        keepAlive: false,
-                        visible: true,
-                    },
-                    component: () => import('@/views/dashboard/smartHouse.vue'),
-                    children: [],
-                },
-                {
-                    path: '/dashboard/campaign',
-                    name: 'Campaign',
+                      title: 'editCampaign',
+                      noCache: true,
+                      activeMenu: '/campaign/list',
+                      hidden: true
+                    }
+                  }, 
+                  {
+                    path: 'list',
+                    component: () => import(/* webpackChunkName: "staff-list" */ '@/views/campaign/campaign.vue'),
+                    name: 'CampaignList',
                     meta: {
-                        title: 'Campaign',
-                        icon: 'mdi-alpha-s',
-                        keepAlive: false,
-                        visible: true,
-                    },
-                    component: () => import('@/views/dashboard/campaign.vue'),
-                    children: [],
-                }
-            ],
+                      title: 'campaignList',
+                      icon: 'list'
+                    }
+                  }
+            ]  
         },
         {
             path: '/componets',

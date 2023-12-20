@@ -15,6 +15,28 @@
     </div>
     <v-data-table-server v-model:items-per-page="itemsPerPage" :search="search" :headers="headers"
         :items-length="totalItems" :items="serverItems" :loading="loading" item-value="name" @update:options="loadItems">
+        <template v-slot:[`item.actions`]="{ item }">
+            <v-icon
+            size="small"
+            class="me-2"
+            @click="openfolder(item)"
+          >
+            mdi-folder
+          </v-icon>
+            <v-icon
+            size="small"
+            class="me-2"
+            @click="editItem(item)"
+          >
+            mdi-pencil
+          </v-icon>
+          <v-icon
+            size="small"
+           
+          >
+            mdi-delete
+          </v-icon>
+        </template>
     </v-data-table-server>
     
     <!-- <v-dialog width="30%">
@@ -36,6 +58,7 @@ import { getCampaignlist } from '@/api/campaigins'
 import { ref } from 'vue'
 import { SearchResult } from '@/api/types'
 // import type { VDataTable } from 'vuetify/lib/components/index.mjs'
+import router from '@/router';
 type Fetchparam = {
     page: number,
     itemsPerPage: number,
@@ -84,6 +107,7 @@ const headers: Array<any> = [
         sortable: false,
         key: 'Types',
     },
+    { title: 'Actions', key: 'actions', sortable: false },
 
 ];
 const itemsPerPage = ref(10);
@@ -127,6 +151,15 @@ function loadItems({ page, itemsPerPage, sortBy }) {
 }
 // },
 // }
-
+const editItem = (item) => {
+    router.push({
+        path: '/graphics/oasis-engine',
+    });
+};
+const openfolder=(item)=>{
+    router.push({
+        path: '/graphics/oasis-engine',
+    });
+}
 
 </script>
