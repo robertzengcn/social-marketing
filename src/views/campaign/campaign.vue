@@ -157,7 +157,7 @@
     </div>
 </template>
 <script setup lang="ts">
-import router from '@/router';
+import router from '@/views/router';
 import { ref, onMounted } from 'vue';
 import CampaignTable from '@/views/campaign/widgets/CampaignTable.vue'
 const dialog = ref(false);

@@ -1,7 +1,7 @@
 import { VuexModule, Module, Action, Mutation, getModule } from 'vuex-module-decorators'
 import { login, logout, getUserInfo } from '@/api/users'
 import { getToken, setToken, removeToken } from '@/views/utils/cookies'
-import router from '@/router'
+import router from '@/views/router'
 import { PermissionModule } from './permission'
 // import { TagsViewModule } from './tags-view'
 import store from '@/views/store'

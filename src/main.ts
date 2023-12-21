@@ -2,9 +2,9 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia';
 import './styles/index.scss';
 import App from './App.vue'
-import router from './router';
-import {vuetify} from '@/plugins/vuetify'
-import { loadFonts } from './plugins/webfontloader'
+import router from '@/views/router';
+import {vuetify} from '@/views/plugins/vuetify'
+import { loadFonts } from '@/views/plugins/webfontloader'
 import store from '@/views/store'
 import '@/permission'
 

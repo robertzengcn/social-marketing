@@ -58,7 +58,7 @@ import { getCampaignlist } from '@/api/campaigins'
 import { ref } from 'vue'
 import { SearchResult } from '@/api/types'
 // import type { VDataTable } from 'vuetify/lib/components/index.mjs'
-import router from '@/router';
+import router from '@/views/router';
 type Fetchparam = {
     page: number,
     itemsPerPage: number,

@@ -1,6 +1,6 @@
 import { VuexModule, Module, Mutation, Action, getModule } from 'vuex-module-decorators'
 import { RouteRecordRaw } from 'vue-router'
-import { asyncRoutes, constantRoutes } from '@/router'
+import { asyncRoutes, constantRoutes } from '@/views/router'
 import store from '@/views/store'
 
 const hasPermission = (roles: string[], route: RouteRecordRaw) => {
