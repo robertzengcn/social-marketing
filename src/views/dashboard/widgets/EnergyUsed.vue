@@ -11,7 +11,7 @@
 <script setup lang="ts">
 import VueApexCharts from 'vue3-apexcharts';
 import { ref, computed } from 'vue';
-import { useMainStore } from '@/store/appMain';
+import { useMainStore } from '@/views/store/appMain';
 
 const props = withDefaults(
     defineProps<{

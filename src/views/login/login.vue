@@ -44,7 +44,7 @@ color="primary" append-icon="mdi-arrow-right" size="large"
       </v-dialog>
 </template>
 <script lang="ts">
-import { UserModule } from '@/store/modules/user'
+import { UserModule } from '@/views/store/modules/user'
 export default{
     data: () => ({
         alertContent:'',

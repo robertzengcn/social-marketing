@@ -3,8 +3,8 @@ import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 // import { Message } from 'element-ui'
 //import { Router } from 'vue-router'
-import { UserModule } from '@/store/modules/user'
-import { PermissionModule } from '@/store/modules/permission'
+import { UserModule } from '@/views/store/modules/user'
+import { PermissionModule } from '@/views/store/modules/permission'
 // import i18n from '@/lang' // Internationalization
 import settings from '@/settings'
 

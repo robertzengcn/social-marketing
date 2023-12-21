@@ -4,7 +4,7 @@ import { getToken, setToken, removeToken } from '@/utils/cookies'
 import router from '@/router'
 import { PermissionModule } from './permission'
 // import { TagsViewModule } from './tags-view'
-import store from '@/store'
+import store from '@/views/store'
 
 export interface IUserState {
   token: string

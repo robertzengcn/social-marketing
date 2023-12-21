@@ -4,7 +4,7 @@
 <script setup lang="ts">
 import VueApexCharts from 'vue3-apexcharts';
 import { ref, computed } from 'vue';
-import { useMainStore } from '@/store/appMain';
+import { useMainStore } from '@/views/store/appMain';
 
 const mainStore = useMainStore();
 const generateData = (baseval: any, count: any, yrange: any) => {

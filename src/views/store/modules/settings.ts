@@ -1,5 +1,5 @@
 import { VuexModule, Module, Mutation, Action, getModule } from 'vuex-module-decorators'
-import store from '@/store'
+import store from '@/views/store'
 import elementVariables from '@/styles/element-variables.scss'
 import defaultSettings from '@/settings'
 
