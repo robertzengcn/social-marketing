@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import { createI18n,VueI18n} from 'vue-i18n'
 
-import { getLanguage } from '@/utils/cookies'
+import { getLanguage } from '@/views/utils/cookies'
 
 // element-ui built-in lang
 import elementEnLocale from 'element-ui/lib/locale/lang/en'

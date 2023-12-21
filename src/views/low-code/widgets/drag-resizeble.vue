@@ -16,7 +16,7 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue';
-import DragResizeBle from '@/components/drag-resizeble/drag-resizeble.vue';
+import DragResizeBle from '@/views/components/drag-resizeble/drag-resizeble.vue';
 
 const props = withDefaults(
     defineProps<{

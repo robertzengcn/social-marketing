@@ -1,5 +1,5 @@
 import {ItemSearchparam,SearchResult} from './types'
-import {windowInvoke} from '@/utils/apirequest'
+import {windowInvoke} from '@/views/utils/apirequest'
 export async function getCampaignlist(data: ItemSearchparam):Promise<SearchResult>{
      
         const resp=await windowInvoke(data);

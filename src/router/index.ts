@@ -1,5 +1,5 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
-import Layout from '@/layout/layout.vue';
+import Layout from '@/views/layout/layout.vue';
 import {RouteRecordRaw } from 'vue-router';
 // import { checkVersion } from '@/plugins/pwa';
 

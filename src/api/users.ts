@@ -1,7 +1,7 @@
 'use strict';
 export {};
 //const {ipcRenderer: ipc} = require('electron-better-ipc');
-import request from '@/utils/request'
+import request from '@/views/utils/request'
 // import {ipcRenderer as ipc} from 'electron-better-ipc'
 import {Iresponse} from '@/api/types'
 

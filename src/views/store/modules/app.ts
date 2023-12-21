@@ -1,6 +1,6 @@
 import { VuexModule, Module, Mutation, Action, getModule } from 'vuex-module-decorators'
-import { getSidebarStatus, getSize, setSidebarStatus, setLanguage, setSize } from '@/utils/cookies'
-import { getLocale } from '@/lang'
+import { getSidebarStatus, getSize, setSidebarStatus, setLanguage, setSize } from '@/views/utils/cookies'
+import { getLocale } from '@/views/lang'
 import store from '@/views/store'
 
 export enum DeviceType {

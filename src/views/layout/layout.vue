@@ -152,7 +152,7 @@
 import logo from '@/assets/admin-logo.png';
 import wxtx from '@/assets/wx.png';
 import { RouterView, useRouter } from 'vue-router';
-import Breadcrumbs from '@/components/breadcrumbs/breadcrumbs.vue';
+import Breadcrumbs from '@/views/components/breadcrumbs/breadcrumbs.vue';
 import { reactive, computed, watch } from 'vue';
 import { useMainStore } from '@/views/store/appMain';
 
