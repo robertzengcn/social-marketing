@@ -1,6 +1,6 @@
 import { VuexModule, Module, Mutation, Action, getModule } from 'vuex-module-decorators'
 import { getSidebarStatus, getSize, setSidebarStatus, setLanguage, setSize } from '@/views/utils/cookies'
-import { getLocale } from '@/views/lang'
+
 import store from '@/views/store'
 
 export enum DeviceType {
@@ -14,7 +14,7 @@ export interface IAppState {
     opened: boolean
     withoutAnimation: boolean
   }
-  language: string
+  language?: string
   size: string
 }
 
@@ -26,7 +26,7 @@ class App extends VuexModule implements IAppState {
   }
 
   public device = DeviceType.Desktop
-  public language = getLocale()
+  // public language = getLocale()
   public size = getSize() || 'medium'
 
   @Mutation
@@ -54,8 +54,8 @@ class App extends VuexModule implements IAppState {
 
   @Mutation
   private SET_LANGUAGE(language: string) {
-    this.language = language
-    setLanguage(this.language)
+    // this.language = language
+    // setLanguage(this.language)
   }
 
   @Mutation

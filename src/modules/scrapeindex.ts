@@ -1,8 +1,10 @@
+"use strict";
+export {};
 // import { debug } from "console";
 // import { debug } from "console";
-import {ScrapeManager,SMstruct} from "./src/node_socialmk";
-import { RemoteSource } from "./src/modules/remotesource"
-import {Scraperdb} from "./src/model/scraperdb";
+import {ScrapeManager,SMstruct} from "../node_socialmk";
+import { RemoteSource } from "./remotesource"
+import {Scraperdb} from "../model/scraperdb";
 const debug = require('debug')('index');
 // var Scraper = require("./src/modules/social_scraper");
 
@@ -10,9 +12,9 @@ export type ScrapeConfig={
   // which search engine to scrape
   // platform: "facebook",
   // an array of keywords to scrape
-  keywords: Array<string>,
+  keywords?: Array<string>,
   // the number of pages to scrape for each keyword
-  num_pages: number,
+  num_pages?: number,
 
   // OPTIONAL PARAMS BELOW:
   // google_settings: {
@@ -22,28 +24,28 @@ export type ScrapeConfig={
   //     num: 100, // Determines the number of results to show, defaults to 10. Maximum is 100.
   // },
   // instead of keywords you can specify a keyword_file. this overwrites the keywords array
-  keyword_file: string,
+  keyword_file?: string,
   // how long to sleep between requests. a random sleep interval within the range [a,b]
   // is drawn before every request. empty string for no sleeping.
   sleep_range?: Array<number>,
   // path to output file, data will be stored in JSON
-  output_file: string,
+  output_file?: string,
   // whether to prevent images, css, fonts from being loaded
   // will speed up scraping a great deal
   block_assets: boolean,
   // check if headless chrome escapes common detection techniques
   // this is a quick test and should be used for debugging
-  test_evasion: boolean,
+  test_evasion?: boolean,
   apply_evasion_techniques: boolean,
   // log ip address data
-  log_ip_address: boolean,
+  log_ip_address?: boolean,
   // log http headers
-  log_http_headers: boolean,
+  log_http_headers?: boolean,
   platform: string,
-  user:string,
-  pass: string,
-  tmppath:string,
-  taskid:number,
+  user?:string,
+  pass?: string,
+  tmppath?:string,
+  taskid?:number,
   resulttaskid?:number,
 }
 export async function Login(browser_config:SMstruct, scrape_config:ScrapeConfig) {
@@ -81,7 +83,7 @@ export async function Downloadvideo(browser_config:SMstruct, scrape_config:Scrap
   Object.assign(browser_config, scrape_config);
   const scropeNum=5;
   // var scraper = new ScrapeManager(browser_config);
-  const remoteSourmodel = RemoteSource.getInstance();
+  const remoteSourmodel = new RemoteSource();
   debug("result task id is "+scrape_config.resulttaskid)
   if(!scrape_config.resulttaskid){
     throw new Error("result_taskid is null")
@@ -95,8 +97,9 @@ export async function Downloadvideo(browser_config:SMstruct, scrape_config:Scrap
     throw new Error("link list is empty")
   }
   var scraper = new ScrapeManager(browser_config);
-  
+ 
   scraper.downloadPlatomvideo(linklist)
+
 }
 export async function Sqlinit(){
   const scraperdb=Scraperdb.getInstance();

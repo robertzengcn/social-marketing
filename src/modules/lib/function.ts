@@ -1,3 +1,10 @@
+const path = require("path");
+export type queryParams = {
+    page: number,
+    size: number,
+    sortby: string,
+    search: string,
+  }
 //scroll down to the bottom of the page
 async function autoScroll(page){
     await page.evaluate(async () => {
@@ -21,9 +28,74 @@ function delay(time) {
     return new Promise(function(resolve) { 
         setTimeout(resolve, time)
     });
- }
-
-module.exports = {
-    autoScroll:autoScroll,
-    delay:delay
 }
+//get record date string for local db
+export function getRecorddatetime():string{
+    const date = new Date();
+    
+    return date.getFullYear().toString() +
+      "-" +
+      pad2(date.getMonth() + 1) +
+      "-" +
+      pad2(date.getDate()) +
+      " " +
+      pad2(date.getHours()) +
+      ":" +
+      pad2(date.getMinutes()) +
+      ":" +
+      pad2(date.getSeconds());  
+}
+export function pad2(n: number): string {
+    if (n < 10) {
+      return "0" + n.toString();
+    } else {
+      return n.toString();
+    }
+  }
+//return date string
+export function getdate():string{
+    const date = new Date();
+    
+    return date.getFullYear().toString() +
+      "-" +
+      pad2(date.getMonth() + 1) +
+      "-" +
+      pad2(date.getDate()) +
+      " " +
+      pad2(date.getHours()) +
+      ":" +
+      pad2(date.getMinutes()) +
+      ":" +
+      pad2(date.getSeconds());  
+}
+
+
+export function getUserhome():string|undefined{
+    switch(process.platform) {
+        case 'darwin': {
+          return path.join(process.env.HOME, 'Library', 'Application Support');
+        }
+        case 'win32': {
+          return process.env.APPDATA;
+        }
+        case 'linux': {
+          return process.env.HOME;
+        }
+      }
+      return undefined;
+}
+export function getApplogpath():string|undefined{
+    const userPath=getUserhome()
+    if(!userPath){
+        return undefined
+    }
+    const appname="social-marketing"
+    return path.join(process.env.HOME, appname, 'log');
+}
+
+
+// module.exports = {
+//     autoScroll:autoScroll,
+//     delay:delay,
+//     getRecorddate:getRecorddate
+// }

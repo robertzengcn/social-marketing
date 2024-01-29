@@ -1,5 +1,5 @@
 import { VuexModule, Module, Action, Mutation, getModule } from 'vuex-module-decorators'
-import { login, logout, getUserInfo } from '@/api/users'
+import { login, logout, getUserInfo } from '@/views/api/users'
 import { getToken, setToken, removeToken } from '@/views/utils/cookies'
 import router from '@/views/router'
 import { PermissionModule } from './permission'

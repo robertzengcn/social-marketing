@@ -53,7 +53,7 @@ export const constantRoutes : RouteRecordRaw[] = [
             children: [
                 {
                     path: 'edit/:id(\\d+)',
-                    component: () => import(/* webpackChunkName: "staff-edit" */ '@/views/campaign/campaign.vue'),
+                    component: () => import(/* webpackChunkName: "staff-edit" */ '@/views/pages/campaign/campaign.vue'),
                     name: 'EditCampaign',
                     meta: {
                       title: 'editCampaign',
@@ -64,10 +64,61 @@ export const constantRoutes : RouteRecordRaw[] = [
                   }, 
                   {
                     path: 'list',
-                    component: () => import(/* webpackChunkName: "staff-list" */ '@/views/campaign/campaign.vue'),
+                    component: () => import(/* webpackChunkName: "staff-list" */ '@/views/pages/campaign/campaign.vue'),
                     name: 'CampaignList',
                     meta: {
                       title: 'campaignList',
+                      icon: 'list'
+                    }
+                  }
+            ]  
+        },
+        {
+            path: '/socialtask',
+            name: 'socialtask',
+            meta: {
+                visible: true,
+                title: 'Social Task',
+                icon: 'mdi-cube-scan',
+            },
+            component: Layout, 
+            children: [
+                {
+                    path: 'edit/:id(\\d+)',
+                    component: () => import(/* webpackChunkName: "staff-edit" */ '@/views/pages/socialtask/socialtaskdetail.vue'),
+                    name: 'EditSocialtask',
+                    meta: {
+                      title: 'Edit Socialtask',
+                      noCache: true,
+                      activeMenu: '/socialtask/edit',
+                      hidden: true
+                    }
+                  }, 
+                  {
+                    path: 'create/:campaignId(\\d+)',
+                    component: () => import(/* webpackChunkName: "socialtaskdetail" */ '@/views/pages/socialtask/socialtaskdetail.vue'),
+                    name: 'CreateSocialtask',
+                    meta: {
+                      title: 'Create Socialtask',
+                      noCache: true,
+                      activeMenu: '/socialtask/create',
+                    //   hidden: true
+                    }
+                  },
+                  {
+                    path: 'list/:id(\\d+)',
+                    component: () => import(/* webpackChunkName: "staff-list" */ '@/views/pages/socialtask/socialtask.vue'),
+                    name: 'SocialtaskList',
+                    meta: {
+                      title: 'socialtaskList',
+                      icon: 'list'
+                    }
+                  },{
+                    path: 'run/:id(\\d+)',
+                    component: () => import(/* webpackChunkName: "staff-list" */ '@/views/pages/socialtask/socialtaskrun.vue'),
+                    name: 'Runtask',
+                    meta: {
+                      title: 'Socialtask Run',
                       icon: 'list'
                     }
                   }
@@ -117,7 +168,7 @@ export const constantRoutes : RouteRecordRaw[] = [
                 icon: 'mdi-shield-account',
                 visible: true,
             },
-            component: () => import('@/views/login/login.vue'),
+            component: () => import('@/views/pages/login/login.vue'),
         },
         { path: '/:pathMatch(.*)', name: 'Match', meta: { keepAlive: false }, redirect: '/404' },
         {

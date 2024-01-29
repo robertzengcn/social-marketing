@@ -8,7 +8,7 @@ import {Videoedit} from "./videoedit";
 const debug = require("debug")("Observer:videodownloadObserver");
 const appRoot = require('app-root-path');
 import * as path from "path";
-import {Videodb} from "../model/videodb";
+import {Videodb} from "@/model/videodb";
 
 export class videodownloadObserver implements Observer{
     constructor() {

@@ -3,7 +3,7 @@ export { };
 import * as fs from 'fs';
 // import { todo } from 'node:test';
 const debug = require('debug')('videoedit');
-import { spawn, spawnSync } from 'node:child_process';
+import { spawn } from 'node:child_process';
 import * as path from 'path';
 
 export class Videoedit {

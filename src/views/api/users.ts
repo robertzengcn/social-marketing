@@ -3,7 +3,7 @@ export {};
 //const {ipcRenderer: ipc} = require('electron-better-ipc');
 import request from '@/views/utils/request'
 // import {ipcRenderer as ipc} from 'electron-better-ipc'
-import {Iresponse} from '@/api/types'
+import {Iresponse} from '@/views/api/types'
 
 
 // export const getUsers = (params: any) =>

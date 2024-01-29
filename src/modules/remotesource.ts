@@ -1,11 +1,11 @@
 export {};
 import axios from "axios";
-import request from '@/modules/lib/request'
+
 import jwt_decode from "jwt-decode";
 import {Token} from "./token"
 // import { decode } from "punycode";
 const debug = require('debug')('RemoteSource');
-const url = require("url");
+// const url = require("url");
 // const FormData = require('form-data');
 type sosetting = {
   sotype: string;
@@ -25,17 +25,7 @@ export type Linkdata = {
   lang: string,
   socialtask_id: number,
 }
-export type campaignRes={
-  data:Array<campaign>,
-  num:number,
-}
-export type campaign={
-  CampaignId:number,
-  CampaignName: string,
-  CampaignDescription: string,
-  Disable: number,
-  Tags:string,
-}
+
 export type socialTask = {
   id: number,
   campaign_id: number,
@@ -73,17 +63,7 @@ type jwtTokenUser={
   iss?: string,
   Roles:Array<string>,
 }
-export type queryParams={
-  page:number,
-  size:number,
-  sortby:string,
-  search:string,
-}
-export type campaignResponse = {
-  status: boolean,
-  msg: string,
-  data?: campaign,
-}
+
 export class RemoteSource {
   private tokenname:string="social-market-token";
   // private static instance: RemoteSource;
@@ -182,53 +162,7 @@ export class RemoteSource {
     return sosetvar;
   }
 
-  /**
-   * get campaign from remote servive
-   */
-  async getCampaignlist(queryParams:queryParams): Promise<campaignResponse|null> {
-     const params = new url.URLSearchParams(queryParams);
-    
-    // const campignlist = await axios
-    //   .get(this.REMOTEADD + "/api/campaign?${params}", {
-    //   })
-    //   .then(function (res) {           
-    //     if (res.status != 200) {
-    //       throw new Error("code not equal 200,code is "+res.status.toString());
-    //     }
-    //     if (!res.data.data) {
-    //       throw new Error("data not exist");
-    //     }
-    //     return res.data.data as Array<campaign>;
-
-    //   })
-    //   .catch(function (error) {
-    //     throw new Error(error.message);
-    //     // console.error(error);
-    //   });
-    console.log(params)
-    const campignlistres = await request({
-      url: '/api/campaign?${params}',
-      method: 'get',  
-    }).catch(function (error) {
-      throw new Error(error.message);
-      // console.error(error);
-    })
-    if(!campignlistres){
-      return null;
-    }
-    // const res:campaignRes={
-    //   data:campignlist.data.data as Array<campaign>,
-    //   num:campignlist.num,
-    // }
-    console.log("campaign list is following")
-    console.log(campignlistres.data)
-    const resp:campaignResponse={
-      status:campignlistres.data.status,
-      msg:campignlistres.data.msg,
-      data:campignlistres.data.data,
-    }
-    return resp
-  }
+ 
   /**
    * save link to remote servive
    */
@@ -266,7 +200,7 @@ export class RemoteSource {
     return linkId;
   }
   //get scrapy info list
-  async Getscrapyinfolist(taskId: number, limit: number): Promise<Array<Linkdata| null>> {
+  async Getscrapyinfolist(taskId: number, limit: number): Promise<Array<Linkdata>|null> {
     const linkdaarr =await axios.get(this.REMOTEADD +"/api/getscrapeinfolist?sotaskid="+taskId+"&limit="+limit,{
       // auth: {
       //   username: this.REMOTEUSERNAME,
@@ -275,7 +209,11 @@ export class RemoteSource {
     }).then(function (res) {
       debug(res);
       // console.log(res)
-      return res.data.data as Array<Linkdata| null>;
+      if(res.data.data){
+      return res.data.data as Array<Linkdata>;
+      }else{
+        return null;
+      }
     })
     .catch(function (error) {
       // console.log(error);

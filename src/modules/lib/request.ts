@@ -13,7 +13,7 @@ const service = axios.create({
 // Request interceptors
 service.interceptors.request.use(
   (config) => {
-    console.log("get token...")
+    //console.log("get token...")
     const tokenModel=new Token()
     const tokenval=tokenModel.getValue("social-market-token")
     // Add X-Access-Token header to every request, you can add other custom headers here
@@ -44,6 +44,7 @@ service.interceptors.response.use(
     const res = response.data
     if (!res.status) {
       console.log(res.msg)
+      console.log(res.code)
       // Message({
       //   message: res.message || 'Error',
       //   type: 'error',

@@ -1,16 +1,16 @@
-/**
- * work like a run api
- */
 "use strict";
 export {};
 // const se_scraper = require("./index");
-import {Login,Searchdata,Downloadvideo,ScrapeConfig,Sqlinit} from "./index";
+import {Login,Searchdata,Downloadvideo,ScrapeConfig,Sqlinit} from "@/modules/scrapeindex";
 const { ArgumentParser } = require("argparse");
-import {RemoteSource} from "./src/modules/remotesource";
+import {RemoteSource} from "@/modules/remotesource";
+import {SocialTaskRun} from "@/modules/socialtaskrun"
+import {SocialTaskEntity} from "@/entity-types/socialtask-type"
+import {SocialTask} from "@/modules/socialtask"
 const { version } = require("./package.json");
 const fs = require('fs');
 const resolve = require('path').resolve;
-const debug = require('debug')('runjs');
+const debug = require('debug')('runcli');
 
 // const { data } = require("cheerio/lib/api/attributes.js");
 
@@ -76,9 +76,9 @@ let scrape_config:ScrapeConfig = {
   // which search engine to scrape
   // platform: "facebook",
   // an array of keywords to scrape
-  keywords: ["cloud service test"],
+  // keywords: ["cloud service test"],
   // the number of pages to scrape for each keyword
-  num_pages: 1,
+  // num_pages: 1,
 
   // OPTIONAL PARAMS BELOW:
   // google_settings: {
@@ -88,7 +88,7 @@ let scrape_config:ScrapeConfig = {
   //     num: 100, // Determines the number of results to show, defaults to 10. Maximum is 100.
   // },
   // instead of keywords you can specify a keyword_file. this overwrites the keywords array
-  keyword_file: "",
+  // keyword_file: "",
   // how long to sleep between requests. a random sleep interval within the range [a,b]
   // is drawn before every request. empty string for no sleeping.
   // sleep_range: "",
@@ -106,8 +106,8 @@ let scrape_config:ScrapeConfig = {
   // log http headers
   log_http_headers: false,
   platform: "facebook",
-  user: "",
-  pass: "",
+  // user: "",
+  // pass: "",
   tmppath:"",
   taskid:0,
 };
@@ -173,31 +173,39 @@ async function runCommand(parearg) {
 //   }  
 // }
 
-async function runTask(taskId:number):Promise<void>{
-  const remoteSourmodel = RemoteSource.getInstance();
-  const taskInfo=await remoteSourmodel.Gettaskinfo(taskId);
-  if(!taskInfo){
+async function runTask(taskRunNum:string):Promise<void>{
+  const socialtaskrun = new SocialTaskRun();
+  const taskId=await socialtaskrun.getTaskidbytaskrunNum(taskRunNum);
+  const socialtask=new SocialTask()
+  const taskInfoResult=await socialtask.getTaskbyid(taskId)
+  if(!taskInfoResult){
     throw new Error("taskInfo is undefined");
   }
-  const taskArr=await remoteSourmodel.Gettaskkeywords(taskId)
-  
-  switch (taskInfo.type) {
+  // const taskArr=await remoteSourmodel.Gettaskkeywords(taskId)
+  if(!taskInfoResult.status){
+      throw new Error(taskInfoResult.msg)
+  }
+  if(!taskInfoResult.data){
+      throw new Error("social task data empty");
+  }
+  const taskInfo=taskInfoResult.data as SocialTaskEntity;
+  switch (taskInfo.task_name) {
     case "bilibiliscrape":
         scrape_config.platform="bilibili"
         scrape_config.taskid=taskInfo.id
-        scrape_config.keywords=taskArr
+        scrape_config.keywords=taskInfo.keywords
         await Searchdata(browser_config, scrape_config);
         break;
       case 'bilibilidownload':
-        scrape_config.platform="bilibili"
-        if(!taskInfo.extra_task_info.ResulttaskId){
-         throw new Error("ResulttaskId is undefined");
-        }
-        debug(taskInfo)
-        scrape_config.taskid=taskInfo.id;
-        scrape_config.resulttaskid=taskInfo.extra_task_info.ResulttaskId
-        debug(scrape_config)
-        await Downloadvideo(browser_config, scrape_config);
+        // scrape_config.platform="bilibili"
+        // if(!taskInfo.extra_task_info.ResulttaskId){
+        //  throw new Error("ResulttaskId is undefined");
+        // }
+        // debug(taskInfo)
+        // scrape_config.taskid=taskInfo.id;
+        // scrape_config.resulttaskid=taskInfo.extra_task_info.ResulttaskId
+        // debug(scrape_config)
+        // await Downloadvideo(browser_config, scrape_config);
         break;
   }
 
@@ -206,7 +214,7 @@ async function runTask(taskId:number):Promise<void>{
 //login to facebook
 async function login() {
   let campaignId = get(parearg, "campaign", false);
-  var remotesource =RemoteSource.getInstance();
+  var remotesource =new RemoteSource();
   let sosetting = await remotesource.getRemoteConfig(campaignId);
   debug(sosetting)
   if(sosetting== null||!sosetting){

@@ -54,9 +54,9 @@
 
 <script setup lang="ts">
 
-import { getCampaignlist } from '@/api/campaigins'
+import { getCampaignlist } from '@/views/api/campaigins'
 import { ref } from 'vue'
-import { SearchResult } from '@/api/types'
+import { SearchResult } from '@/views/api/types'
 // import type { VDataTable } from 'vuetify/lib/components/index.mjs'
 import router from '@/views/router';
 type Fetchparam = {
@@ -68,8 +68,8 @@ type Fetchparam = {
 
 const FakeAPI = {
     async fetch(fetchparam: Fetchparam): Promise<SearchResult> {
-
-        return await getCampaignlist({ page: fetchparam.page, size: fetchparam.itemsPerPage, sortby: fetchparam.sortBy, search: fetchparam.search })
+        const fpage=(fetchparam.page-1)*fetchparam.itemsPerPage
+        return await getCampaignlist({ page: fpage, size: fetchparam.itemsPerPage, sortby: fetchparam.sortBy, search: fetchparam.search })
     }
 }
 // export default {
@@ -124,6 +124,7 @@ const search = ref('');
 // methods: {
 function loadItems({ page, itemsPerPage, sortBy }) {
     loading.value = true
+    // console.log(page);
     const fetchitem: Fetchparam = {
         page: page,
         itemsPerPage: itemsPerPage,
@@ -132,8 +133,8 @@ function loadItems({ page, itemsPerPage, sortBy }) {
     }
     FakeAPI.fetch(fetchitem).then(
         ({ data, total }) => {
-            console.log(data)
-            console.log(total)
+            // console.log(data)
+            // console.log(total)
             //loop data
             for(let i=0; i<data.length; i++){
                 if(data[i].Disable == 0){
@@ -152,14 +153,21 @@ function loadItems({ page, itemsPerPage, sortBy }) {
 // },
 // }
 const editItem = (item) => {
-    router.push({
-        path: '/graphics/oasis-engine',
-    });
+ 
+    // else if(item.Types=="social task"){
+        
+    // }
+    // router.push({
+    //     path: '/graphics/oasis-engine',
+    // });
 };
 const openfolder=(item)=>{
-    router.push({
-        path: '/graphics/oasis-engine',
-    });
+    // console.log(item)
+    if(item.Types=="social task"){
+        router.push({
+            name: 'SocialtaskList',params: { id: item.CampaignId } 
+        });
+    }
 }
 
 </script>

@@ -1,6 +1,6 @@
 <template>
     <div class="tables_page">
-        <v-row align="center" no-gutters style="margin: 0 -8px">
+        <!-- <v-row align="center" no-gutters style="margin: 0 -8px">
             <v-col cols="12" sm="4">
                 <v-card class="elevation-0 tjjj pa-4 mx-2 mb-sm-0 mb-4" append-icon="">
                     <div class="d-flex jsb">
@@ -43,7 +43,7 @@
                     </div>
                 </v-card>
             </v-col>
-        </v-row>
+        </v-row> -->
          <!--table start-->
         <!-- <div class="search_bar mt-4 d-flex jsb">
             <div class="d-flex jsb search_tool">
@@ -157,9 +157,9 @@
     </div>
 </template>
 <script setup lang="ts">
-import router from '@/views/router';
+// import router from '@/views/router';
 import { ref, onMounted } from 'vue';
-import CampaignTable from '@/views/campaign/widgets/CampaignTable.vue'
+import CampaignTable from '@/views/pages/campaign/widgets/CampaignTable.vue'
 const dialog = ref(false);
 // const list = ref([
 //     {

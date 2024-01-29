@@ -1,6 +1,7 @@
 import { Scraperdb } from "./scraperdb";
 import { Database } from "sqlite3";
-import { VideoInfo } from "../modules/social_scraper";
+import { VideoInfo } from "@/modules/social_scraper";
+import {getRecorddatetime} from "@/modules/lib/function";
 
 export class Videodb {
   db: Database;
@@ -14,13 +15,7 @@ export class Videodb {
     const scraperModel = Scraperdb.getInstance();
     this.db = scraperModel.getdb();
   }
-  pad2(n: number): string {
-    if (n < 10) {
-      return "0" + n.toString();
-    } else {
-      return n.toString();
-    }
-  }
+
 
   /**
    * save video
@@ -35,18 +30,19 @@ export class Videodb {
       }
     }
     const date = new Date();
-    const recordtime =
-      date.getFullYear().toString() +
-      "-" +
-      this.pad2(date.getMonth() + 1) +
-      "-" +
-      this.pad2(date.getDate()) +
-      " " +
-      this.pad2(date.getHours()) +
-      ":" +
-      this.pad2(date.getMinutes()) +
-      ":" +
-      this.pad2(date.getSeconds());
+    const recordtime =getRecorddatetime();
+    // const recordtime =
+    //   date.getFullYear().toString() +
+    //   "-" +
+    //   this.pad2(date.getMonth() + 1) +
+    //   "-" +
+    //   this.pad2(date.getDate()) +
+    //   " " +
+    //   this.pad2(date.getHours()) +
+    //   ":" +
+    //   this.pad2(date.getMinutes()) +
+    //   ":" +
+    //   this.pad2(date.getSeconds());
     const sql =
       `INSERT INTO ` +
       this.videoTable +

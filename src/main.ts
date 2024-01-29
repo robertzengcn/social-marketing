@@ -1,7 +1,7 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia';
 import './styles/index.scss';
-import App from './App.vue'
+import App from '@/views/App.vue'
 import router from '@/views/router';
 import {vuetify} from '@/views/plugins/vuetify'
 import { loadFonts } from '@/views/plugins/webfontloader'

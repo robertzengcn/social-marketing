@@ -33,7 +33,7 @@
       "esnext",
       "dom",
       "dom.iterable",
-      "scripthost"
+      "scripthost"   
     ]
   },
   "include": [
@@ -44,7 +44,7 @@
     "tests/**/*.ts",
     "tests/**/*.tsx",
     "typings/*"
-  ],
+, "src/modules/worker/worker.js", "src/utilityCode.ts"  ],
   "exclude": [
     "node_modules"
   ]

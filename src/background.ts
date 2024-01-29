@@ -6,7 +6,7 @@ import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 import * as mainmsg from "./main-process/communication/";
 import * as path from 'path';
 const isDevelopment = process.env.NODE_ENV !== 'production'
-import { safeStorage } from 'electron';
+// import { safeStorage } from 'electron';
 
 // const { ipcRenderer: ipc } = require('electron-better-ipc');
 // const { ipcMain } = require("electron");
@@ -40,6 +40,25 @@ function initialize() {
         contextIsolation: true,
         preload: path.join(__dirname + '/preload.js')
       }
+    })
+    // In this example, only windows with the `about:blank` url will be created.
+    // All other urls will be blocked.
+    win.webContents.setWindowOpenHandler(({ url }) => {
+      // console.log(url)
+      //if (url === '_blank') {
+        return {
+          action: 'allow',
+          overrideBrowserWindowOptions: {
+            // frame: false,
+            // fullscreenable: false,
+            backgroundColor: 'black',
+            webPreferences: {
+              preload: path.join(__dirname + '/preload.js')
+            }
+          }
+        }
+      // }
+      // return { action: 'deny' }
     })
 
     // console.log(process.env.WEBPACK_DEV_SERVER_UR)
@@ -76,6 +95,7 @@ function initialize() {
   app.on('ready', async () => {
     createWindow();
     mainmsg.SyncMsg();
+    mainmsg.AsyncMsg();
     
    
     if (isDevelopment && !process.env.IS_TEST) {
