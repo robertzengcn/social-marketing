@@ -1,6 +1,7 @@
 import { getApplogpath, getdate } from "@/modules/lib/function"
 import { Taskrundb } from "@/model/taskrundb"
-import { v4 as uuidv4 } from 'uuid';
+// import { v4 as uuidv4 } from 'uuid';
+import * as randomstring from "randomstring";
 import {SocialTaskRunEntity} from "@/entity-types/socialtask-type"
 const path = require("path");
 
@@ -31,7 +32,7 @@ export class SocialTaskRun {
 
     //generate unique task run number
     private gentaskrunNum(taskId: number): string {
-        return taskId.toString() + ":" + uuidv4();
+        return taskId.toString() + ":" + randomstring.generate();
     }
     //get task id by task run id
     public getTaskidbytaskrunNum(taskrunNum: string): number {

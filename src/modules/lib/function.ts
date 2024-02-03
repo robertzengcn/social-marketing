@@ -93,7 +93,7 @@ export function getApplogpath():string|undefined{
     return path.join(process.env.HOME, appname, 'log');
 }
 
-
+export const hash = Math.floor(Math.random() * 90000) + 10000;
 // module.exports = {
 //     autoScroll:autoScroll,
 //     delay:delay,

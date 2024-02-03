@@ -14,10 +14,10 @@ export class Taskrundb {
         const sql =
         `INSERT INTO ` +
         this.taskrunTable +
-        ` (task_id,taskrun_num,log_path,record_time) VALUES (?,?)`;  
+        ` (task_id,taskrun_num,log_path,record_time) VALUES (?,?,?,?)`;  
         this.db.run(    
             sql,
-            [taskId, ,logfilepath,recordtime],
+            [taskId, taskrunNum,logfilepath,recordtime],
             function (err) {
               if (err) {
                 throw new Error(

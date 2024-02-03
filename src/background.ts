@@ -1,11 +1,13 @@
 'use strict'
 // import {ipcMain as ipc} from 'electron-better-ipc';
 import { app, protocol, BrowserWindow } from 'electron'
-import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
+// import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 import * as mainmsg from "./main-process/communication/";
 import * as path from 'path';
 const isDevelopment = process.env.NODE_ENV !== 'production'
+declare const MAIN_WINDOW_VITE_DEV_SERVER_URL: string;
+declare const MAIN_WINDOW_VITE_NAME: string;
 // import { safeStorage } from 'electron';
 
 // const { ipcRenderer: ipc } = require('electron-better-ipc');
@@ -15,7 +17,7 @@ const isDevelopment = process.env.NODE_ENV !== 'production'
 
 let win;
 function initialize() {
-
+  console.log(import.meta.env.VITE_REMOTEADD)
   protocol.registerSchemesAsPrivileged([
     { scheme: 'app', privileges: { secure: true, standard: true } }
   ])
@@ -62,15 +64,15 @@ function initialize() {
     })
 
     // console.log(process.env.WEBPACK_DEV_SERVER_UR)
-    if (process.env.WEBPACK_DEV_SERVER_URL) {
+    if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
       // Load the url of the dev server if in development mode
-      await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL as string)
+      await win.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL as string)
       if (!process.env.IS_TEST) win.webContents.openDevTools()
     } else {
       // console.log('app://./index.html')
       createProtocol('app')
       // Load the index.html when not in development
-      await win.loadURL('app://./index.html')
+      await win.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`))
     }
   }
 

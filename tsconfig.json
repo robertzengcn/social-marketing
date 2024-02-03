@@ -22,7 +22,8 @@
       "vuetify",
       "jquery",
       "mocha",
-      "node"
+      "node",
+      "vite/client"
     ],
     "paths": {
       "@/*": [

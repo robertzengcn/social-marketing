@@ -90,10 +90,10 @@ export class SocialTaskController {
         
         return result as SocialTaskRunEntity;
     }
-    public async runSocialtask(entity:SocialTaskRunEntity) {
+    public async runSocialtask(entity:SocialTaskRunEntity,callback:Function|undefined|null): Promise<SocialTaskRunEntity|null|void> {
             
             const socialTaskModel=new SocialTask();
-            const result=await socialTaskModel.runsocialtask(entity).then(function (res) {
+            const result=await socialTaskModel.runsocialtask(entity,callback).then(function (res) {
                 //console.log(res);
                 return res;
             })

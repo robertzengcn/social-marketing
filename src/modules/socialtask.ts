@@ -1,12 +1,14 @@
 import url from "url"
 import request from "@/modules/lib/request"
-import {SocialTaskRun } from "@/modules/socialtaskrun"
+import { SocialTaskRun } from "@/modules/socialtaskrun"
 //import { spawn } from 'node:child_process';
 // import { Worker } from 'worker_threads';
 // const os = require("os");
-import { SocialTaskEntity, SocialTaskResponse, SocialTaskInfoResponse, SocialTaskTypeResponse, SaveSocialTaskResponse, TagResponse,SocialTaskRunEntity } from "@/entity-types/socialtask-type"
-import { utilityProcess, MessageChannelMain } from "electron";
+import { SocialTaskEntity, SocialTaskResponse, SocialTaskInfoResponse, SocialTaskTypeResponse, SaveSocialTaskResponse, TagResponse, SocialTaskRunEntity } from "@/entity-types/socialtask-type"
+import { utilityProcess, MessageChannelMain} from "electron";
 import * as path from 'path';
+// import { spawn } from 'node:child_process';
+import * as fs from 'fs';
 // const fileLocation = path.join(__static, 'myText.txt')
 export class SocialTask {
     /**
@@ -136,18 +138,36 @@ export class SocialTask {
         return socialTaskrun
     }
 
-    public async runsocialtask(entity: SocialTaskRunEntity) {
+    public async runsocialtask(entity: SocialTaskRunEntity,callback:Function|undefined|null) {
+        const childPath = path.join(__dirname, 'utilityCode.js')
+        if (!fs.existsSync(childPath)) {
+            throw new Error("child js path not exist for the path " + childPath);
+        }
+
         const { port1, port2 } = new MessageChannelMain()
 
-        const child = utilityProcess.fork(path.join(__dirname, 'utilityCode.js'))
-        child.postMessage({ message: 'hello' }, [port1])
-
-
+        const child = utilityProcess.fork(path.join(__dirname, 'utilityCode.js'), [],{stdio:"pipe"} )
+        console.log(path.join(__dirname, 'utilityCode.js'))
+        
+        // child.postMessage({ message: 'hello' }, [port1])
         child.on("spawn", () => {
+            
             child.postMessage({ message: 'hello' }, [port1])
         })
         child.stdout?.on('data', (data) => {
-            console.log(`Received chunk ${data}`)
+            console.log(`Received data chunk ${data}`)
+            if(callback){
+                callback(data)
+            }
+        })
+        child.stderr?.on('data', (data) => {
+            console.log(`Received error chunk ${data}`)
+            if(callback){
+                callback(data)
+            }
+        })
+        child.on("exit", () => {
+            console.log(`child process exited `)
         })
 
         port2.on("message", (e) => {

@@ -5,8 +5,9 @@ import {Token} from "@/modules/token"
 
 
 const service = axios.create({
-  baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
-  timeout: 5000
+  baseURL: import.meta.env.VITE_REMOTEADD, // url = base url + request url
+  timeout: 5000,
+  //adapter: require('axios/lib/adapters/http'),
   // withCredentials: true // send cookies when cross-domain requests
 })
 
