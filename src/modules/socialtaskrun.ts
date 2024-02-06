@@ -7,10 +7,14 @@ const path = require("path");
 
 //the social task run created each time when task run
 export class SocialTaskRun {
-    public createsocialtaskrun(socailtaskId: number): SocialTaskRunEntity {
+    public createsocialtaskrun(socailtaskId: number,taskrunNum:string): SocialTaskRunEntity {
         const taskrunmodel = new Taskrundb()
         const logfile = this.getlogfile(socailtaskId)
-        const taskrunNum = this.gentaskrunNum(socailtaskId)
+        const res=taskrunmodel.checkTaskrunExist(socailtaskId, taskrunNum)
+        if(res){
+            throw new Error("task run number exist")
+        }
+        // const taskrunNum = this.gentaskrunNum(socailtaskId)
         taskrunmodel.saveTaskrun(socailtaskId, taskrunNum, logfile, null)
         const socialtaskRun: SocialTaskRunEntity = {
             taskId: socailtaskId,

@@ -131,9 +131,9 @@ export class SocialTask {
         return tasktyperes.data as SaveSocialTaskResponse
     }
 
-    async createsocialtask(socailtaskId: number): Promise<SocialTaskRunEntity> {
+    async createsocialtask(socailtaskId: number,taskRunNum:string): Promise<SocialTaskRunEntity> {
         const runModel = new SocialTaskRun()
-        const socialTaskrun = runModel.createsocialtaskrun(socailtaskId)
+        const socialTaskrun = runModel.createsocialtaskrun(socailtaskId,taskRunNum)
         // const result = await this.runsocialtask(socialTaskrun)
         return socialTaskrun
     }
@@ -157,13 +157,13 @@ export class SocialTask {
         child.stdout?.on('data', (data) => {
             console.log(`Received data chunk ${data}`)
             if(callback){
-                callback(data)
+                callback(data.toString())
             }
         })
         child.stderr?.on('data', (data) => {
             console.log(`Received error chunk ${data}`)
             if(callback){
-                callback(data)
+                callback(data.toString())
             }
         })
         child.on("exit", () => {

@@ -1,4 +1,4 @@
-import {windowInvoke,windowSend} from '@/views/utils/apirequest'
+import {windowInvoke,windowSend,windowReceive} from '@/views/utils/apirequest'
 import {SocialTaskEntity,TagEntity} from '@/entity-types/socialtask-type'
 
 export type TaskQuery={
@@ -82,6 +82,9 @@ export async function saveSocialTask(data: SocialTaskEntity): Promise<Socialtask
     
     return resp as Socialtaskresp; 
 }
-export function startSocialTask(taskId:number){
-    windowSend('socialtask:start',{id:taskId})
+export function startSocialTask(taskId:number,taskrunNum:string){
+    windowSend('socialtask:start',{id:taskId,runNum:taskrunNum})
+}
+export function receiveSocialTaskLog(channel:string,cb:(data:any)=>void){
+    windowReceive('socialtask:log:'+channel,cb)
 }

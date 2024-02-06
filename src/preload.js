@@ -16,7 +16,9 @@ contextBridge.exposeInMainWorld('api', {
     },
     receive: (channel, func) => {
       let validChannels = ['user:Login','socialtask:start','socialtask:log']
-      if (validChannels.includes(channel)) {
+      const regex="/^socialtask:log:/"
+
+      if (validChannels.includes(channel)||channel.test(regex)) {
         // Deliberately strip event as it includes `sender`
         ipcRenderer.on(channel, (event, ...args) => func(...args))
       }

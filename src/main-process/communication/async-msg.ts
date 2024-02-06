@@ -14,10 +14,14 @@ export default function AsyncMsg() {
         if (!qdata.hasOwnProperty("id")) {
             throw new Error("id not found");
         }
+
+        if (!qdata.hasOwnProperty("runNum")) {
+            throw new Error("runNum not found");
+        }
         const socialtaskcon = new SocialTask()
 
 
-        const result = await socialtaskcon.createsocialtask(qdata.id).catch(function (error) {
+        const result = await socialtaskcon.createsocialtask(qdata.id,qdata.runNum).catch(function (error) {
             console.log(error.message)
             return null;
         });
@@ -39,7 +43,7 @@ export default function AsyncMsg() {
         if (result) {
             socialtaskcon.runsocialtask(result, function (res) {
 
-                event.sender.send('socialtask:log', JSON.stringify(res))
+                event.sender.send('socialtask:log:'+qdata.runNum, JSON.stringify(res))
             })
         }
     })

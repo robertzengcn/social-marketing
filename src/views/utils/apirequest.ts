@@ -21,3 +21,11 @@ export const windowInvoke=async(channel:string,data?:object)=>{
 export const windowSend=async(channel:string,data?:object)=>{
     window.api.send(channel, JSON.stringify(data)); 
 }
+//receive async message
+export const windowReceive=(channel:string,cb:(value:any)=>void)=>{
+    window.api.receive(channel, (evnet) => {
+        console.log(evnet)
+        //console.log(evnet.data)
+        cb(evnet)
+    })
+}

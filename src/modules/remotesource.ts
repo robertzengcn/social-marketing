@@ -1,5 +1,5 @@
 export { };
-import axios from "axios";
+// import axios from "axios";
 import request from "@/modules/lib/request"
 import jwt_decode from "jwt-decode";
 import { Token } from "./token"
@@ -124,7 +124,7 @@ export class RemoteSource {
    */
   async getRemoteConfig(campaignId): Promise<sosetting | void> {
     // let envconfig = await readenv();
-
+    
     const sosetvar = await request({
       url:"/api/getsobyCam/?campaign_id=" + campaignId,
       method: 'get',

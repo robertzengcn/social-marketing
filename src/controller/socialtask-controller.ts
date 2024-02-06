@@ -80,10 +80,10 @@ export class SocialTaskController {
         });
         return result as SaveSocialTaskResponse;
     }
-    public async createSocialtask(id:number): Promise<SocialTaskRunEntity|null> {
+    public async createSocialtask(id:number,runNum:string): Promise<SocialTaskRunEntity|null> {
         
         const socialTaskModel=new SocialTask();
-        const result=await socialTaskModel.createsocialtask(id).then(function (res) {
+        const result=await socialTaskModel.createsocialtask(id,runNum).then(function (res) {
             //console.log(res);
             return res;
         });

@@ -1,12 +1,14 @@
 import axios from 'axios'
+// const axios = require('axios/dist/node/axios.cjs');
 import {Token} from "@/modules/token"
 // import { Message, MessageBox } from 'element-ui'
 // import { UserModule } from '@/store/modules/user'
-
+// import http from 'axios/lib/adapters/http'
 
 const service = axios.create({
   baseURL: import.meta.env.VITE_REMOTEADD, // url = base url + request url
   timeout: 5000,
+  
   //adapter: require('axios/lib/adapters/http'),
   // withCredentials: true // send cookies when cross-domain requests
 })

@@ -46,5 +46,19 @@ export class Taskrundb {
       });
       return taskid;
     }
+    //check task id and task run number exist
+    public checkTaskrunExist(taskid:number,taskrunNum:string):boolean{
+      const sql = `SELECT task_id FROM ` + this.taskrunTable + ` WHERE task_id = ? AND taskrun_num = ?`;
+      let exist: boolean = false;
+      this.db.get(sql, [taskid,taskrunNum], (err, row) => {
+        if (err) {
+          throw new Error(err.message);
+        }
+        if (row) {
+          exist = true;
+        }
+      });
+      return exist;
+    }
 
 }

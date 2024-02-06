@@ -18,7 +18,6 @@
     "sourceMap": true,
     "baseUrl": ".",
     "types": [
-      "webpack-env",
       "vuetify",
       "jquery",
       "mocha",

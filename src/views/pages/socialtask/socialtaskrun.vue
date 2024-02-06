@@ -15,7 +15,8 @@
                 </v-list>
             </v-col>
             <v-col cols="6" class="ps-3">
-                <v-textarea label="Log"></v-textarea>
+                <v-textarea label="Log" clearable
+                clear-icon="mdi-close-circle" v-model="runlog"></v-textarea>
             </v-col>
         </v-row>
         <v-row no-gutters class="mt-5">
@@ -31,10 +32,11 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
-
+import { v4 as uuidv4 } from 'uuid';
 import { SocialTaskEntity } from "@/entity-types/socialtask-type";
+// import * as randomstring from "randomstring";
 import {
-    getSocialtaskinfo, startSocialTask
+    getSocialtaskinfo, startSocialTask,receiveSocialTaskLog
 } from "@/views/api/socialtask";
 // import {ipcRenderer} from 'electron'
 const task_name = ref('')
@@ -43,6 +45,7 @@ const socialtaskId = ref()
 const items = ref<{ title: string, content: string }[]>([]);
 const buttonName = ref("")
 const buttonDisable=ref(false)
+const runlog=ref("")
 const FakeAPI = {
     async fetch(id: number): Promise<SocialTaskEntity> {
         return await getSocialtaskinfo({ id: id });
@@ -78,8 +81,6 @@ const initialize = async () => {
             console.log(items.value)
         });
     }
-
-
 }
 onMounted(() => {
     initialize();
@@ -97,6 +98,17 @@ onMounted(() => {
 const starttask = () => {
     console.log("start task"+socialtaskId.value)
     // buttonDisable.value=true
-    startSocialTask(socialtaskId.value);
+    const runNum=socialtaskId.value+":"+uuidv4()
+    startSocialTask(socialtaskId.value,runNum);
+    //recive message
+    receiveMsg(runNum)
 }
+
+const receiveMsg=(channel:string)=>{
+    receiveSocialTaskLog(channel,function (value) {
+        console.log(value)
+        runlog.value=runlog.value+value
+    })  
+}
+
 </script>

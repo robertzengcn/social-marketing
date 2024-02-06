@@ -37,7 +37,8 @@
     "testgettoken": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'test/modules/token.test.ts' --grep get-token",
     "testgetuserinfo": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'test/modules/remotesource.test.ts' --grep get-user-info",
     "testencrypt": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'test/modules/cryptoscource.test.ts' --grep encrypt",
-    "testdecrypt": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'test/modules/cryptoscource.test.ts' --grep decrypt"
+    "testdecrypt": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'test/modules/cryptoscource.test.ts' --grep decrypt",
+    "testhttpclient": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'test/modules/httpclient.test.ts' --grep decrypt"
   },
   "dependencies": {
     "@mdi/font": "5.9.55",
@@ -45,7 +46,7 @@
     "apexcharts": "^3.44.0",
     "app-root-path": "^3.1.0",
     "argparse": "^2.0.1",
-    "axios": "https://github.com/ArnaudValensi/axios.git#37c7730a2917b1d8e0a6396d1295a8c20a1d3c1a",
+    "axios": "^1.6.7",
     "cheerio": "^1.0.0-rc.3",
     "core-js": "^3.33.0",
     "cron": "^2.3.0",
@@ -56,6 +57,7 @@
     "electron-squirrel-startup": "^1.0.0",
     "electron-store": "^8.1.0",
     "expect.js": "^0.3.1",
+    "fetch-intercept": "^2.4.0",
     "filenamify": "^4.3.0",
     "global": "^4.4.0",
     "google-auth-library": "^9.0.0",
