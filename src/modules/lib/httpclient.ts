@@ -17,7 +17,7 @@ export class HttpClient {
     constructor() {
       //AuthInterceptor()
       this.baseUrl = import.meta.env.VITE_REMOTEADD;
-      this.setheaderToken()
+      
       // const tokenModel=new Token()
       // const tokenval=tokenModel.getValue("social-market-token")
       // if (tokenval) {
@@ -29,6 +29,7 @@ export class HttpClient {
     public async setheaderToken(){
       const tokenModel=new Token()
       const tokenval=await tokenModel.getValue("social-market-token")
+      console.log("prepare to set token:"+tokenval)
       if (tokenval) {
         //config.headers.Authorization = 'Bearer ' + tokenval
         this.setHeader('Authorization', 'Bearer ' + tokenval)
@@ -36,9 +37,11 @@ export class HttpClient {
     }
   
     public async _fetchJSON(endpoint:string, options:RequestInit): Promise<any> {
-      console.log(this.baseUrl+endpoint)
-      console.log(options)
-      const res = await fetch(this.baseUrl+endpoint,{...options}
+      await this.setheaderToken()
+      const res = await fetch(this.baseUrl+endpoint,
+        {...options,
+          headers: this._headers,
+        }
        );
        
       if (!res.ok) throw new Error(res.statusText);
@@ -71,10 +74,11 @@ export class HttpClient {
   
     public async get(endpoint:string, options = {}): Promise<any> {
       // const body = new URLSearchParams(params).toString();  
+      console.log(this._headers)
       return this._fetchJSON(endpoint, {
         ...options,
         method: "GET",
-        headers: this._headers,
+        // headers: this._headers,
       });
     }
   
@@ -93,7 +97,7 @@ export class HttpClient {
         // let mergedhead = {...this._headers, ...postheader};
         return this._fetchJSON(endpoint, {
         ...options,
-        headers: this._headers,
+        // headers: this._headers,
         body: formData,
         method: "POST"
       });
@@ -101,7 +105,7 @@ export class HttpClient {
   
     public async put(endpoint:string, data): Promise<any> {
         return this._fetchJSON(endpoint, {
-        headers: this._headers,
+        // headers: this._headers,
         body: data ? JSON.stringify(data) : undefined,
         method: "PUT"
       });
@@ -112,7 +116,7 @@ export class HttpClient {
         ...options,
         body: JSON.stringify(operations),
         method: "PATCH",
-        headers: this._headers,
+        // headers: this._headers,
       });
     }
   
@@ -120,7 +124,7 @@ export class HttpClient {
       return this._fetchJSON(endpoint, {
         ...options,
         method: "DELETE",
-        headers: this._headers,
+        // headers: this._headers,
       });
     }
   }

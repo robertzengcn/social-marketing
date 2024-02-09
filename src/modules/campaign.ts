@@ -33,7 +33,7 @@ export class Campaign {
         const params = new url.URLSearchParams(queryParams);
         const paramstring=params.toString();
         const finalurl='/api/campaign?'+paramstring;
-        console.log(finalurl)
+        // console.log(finalurl)
         // const campignlistres = await request({
         //     url: finalurl,
         //     method: 'get',
