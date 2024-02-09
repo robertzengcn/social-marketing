@@ -1,3 +1,4 @@
+/// <reference types="vitest" />
 import { defineConfig, loadEnv } from 'vite';
 import alias from "@rollup/plugin-alias";
 import * as path from 'path';
@@ -19,6 +20,9 @@ export default ({ mode }) => {
                     'sqlite3'
                 ]
             }
+        },
+        test: {
+            include:['test/vitest/*.test.ts'],
         }
     })
 }

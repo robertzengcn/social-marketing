@@ -4,24 +4,50 @@ export type HttpClientOptions = {
 // export type FetchOptions = {
 //     headers?: HeadersInit;
 // }
-import { AuthInterceptor } from '@/modules/lib/authInterceptor';
+//import { AuthInterceptor } from '@/modules/lib/authInterceptor';
+import {Token} from "@/modules/token"
+// export type RemoteResp = {
+//   status: boolean,
+//   msg: string,
+//   data?: any,
+// }
 export class HttpClient {
     private _headers: HeadersInit = {};
+    private baseUrl: string;
     constructor() {
-      AuthInterceptor()
+      //AuthInterceptor()
+      this.baseUrl = import.meta.env.VITE_REMOTEADD;
+      this.setheaderToken()
+      // const tokenModel=new Token()
+      // const tokenval=tokenModel.getValue("social-market-token")
+      // if (tokenval) {
+      //   //config.headers.Authorization = 'Bearer ' + tokenval
+      //   this.setHeader('Authorization', 'Bearer ' + tokenval)
+      // }
+    }
+
+    public async setheaderToken(){
+      const tokenModel=new Token()
+      const tokenval=await tokenModel.getValue("social-market-token")
+      if (tokenval) {
+        //config.headers.Authorization = 'Bearer ' + tokenval
+        this.setHeader('Authorization', 'Bearer ' + tokenval)
+      }
     }
   
-    public async _fetchJSON(endpoint, options:RequestInit): Promise<Response> {
-
-      const res = await fetch(endpoint,options
+    public async _fetchJSON(endpoint:string, options:RequestInit): Promise<any> {
+      console.log(this.baseUrl+endpoint)
+      console.log(options)
+      const res = await fetch(this.baseUrl+endpoint,{...options}
        );
-  
+       
       if (!res.ok) throw new Error(res.statusText);
   
     //   if (options.parseResponse !== false && res.status !== 204)
     //     return res.json();
-  
-      return res;
+    const data = await res.json();
+    console.log(data)
+      return data;
     }
   
     setHeader(key, value) {
@@ -43,27 +69,37 @@ export class HttpClient {
       return this;
     }
   
-    public async get(endpoint, params = {}, options = {}): Promise<Response> {
-      const body = new URLSearchParams(params).toString();  
+    public async get(endpoint:string, options = {}): Promise<any> {
+      // const body = new URLSearchParams(params).toString();  
       return this._fetchJSON(endpoint, {
         ...options,
-        body,
         method: "GET",
         headers: this._headers,
       });
     }
   
-    public async post(endpoint, formData, options = {}): Promise<Response>{
-        const body=new URLSearchParams(formData)
+    public async post(endpoint:string, formData:FormData, options = {}): Promise<any>{
+        // const body=new URLSearchParams(formData)
+        // const body=formData
+        // var requestOptions = {
+        //   method: 'POST',
+        //   headers: this._headers,
+        //   body: formData,
+          
+        // };
+        // return fetch("http://localhost:8082/user/login", requestOptions)
+        // .then(response => {return response.json()})
+        // const postheader={'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'}
+        // let mergedhead = {...this._headers, ...postheader};
         return this._fetchJSON(endpoint, {
         ...options,
         headers: this._headers,
-        body: body,
+        body: formData,
         method: "POST"
       });
     }
   
-    public async put(endpoint, data): Promise<Response> {
+    public async put(endpoint:string, data): Promise<any> {
         return this._fetchJSON(endpoint, {
         headers: this._headers,
         body: data ? JSON.stringify(data) : undefined,
@@ -71,7 +107,7 @@ export class HttpClient {
       });
     }
   
-    public async patch(endpoint, operations, options = {}): Promise<Response> {
+    public async patch(endpoint:string, operations, options = {}): Promise<any> {
       return this._fetchJSON(endpoint, {
         ...options,
         body: JSON.stringify(operations),
@@ -80,7 +116,7 @@ export class HttpClient {
       });
     }
   
-    public async delete(endpoint, options = {}) {
+    public async delete(endpoint:string, options = {}) {
       return this._fetchJSON(endpoint, {
         ...options,
         method: "DELETE",

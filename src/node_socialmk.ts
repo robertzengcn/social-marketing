@@ -14,19 +14,19 @@ const { addExtra } = require("puppeteer-extra");
 // const AdblockerPlugin = require("puppeteer-extra-plugin-adblocker");
 
 const UserAgent = require("user-agents");
-const facebook = require("./modules/facebook_scraper");
-const youtube = require("./modules/youtube_scraper");
-const bilibili = require("./modules/bilibili_scraper");
-import { SocialScraper, WosearchObj } from "./modules/social_scraper"
+import {FacebookScraper}  from "@/modules/facebook_scraper";
+import {YoutubeScraper} from "@/modules/youtube_scraper";
+import {BilibiliScraper} from "@/modules/bilibili_scraper";
+import { SocialScraper, WosearchObj } from "@/modules/social_scraper"
 import { Page } from 'puppeteer';
-import {Linkdata} from './modules/remotesource';
-import {videodownloadObserver} from './modules/videodownload_observer';
+import {Linkdata} from '@/modules/remotesource';
+import {videodownloadObserver} from '@/modules/videodownload_observer';
 
 // const bing = require('./modules/bing.js');
 // const yandex = require('./modules/yandex.js');
 // const infospace = require('./modules/infospace.js');
 // const duckduckgo = require('./modules/duckduckgo.js');
-const CustomConcurrencyImpl = require("./concurrency-implementation");
+import{CustomConcurrency as CustomConcurrencyImpl} from "@/concurrency-implementation";
 // const axios = require("axios");
 const MAX_ALLOWED_BROWSERS = 6;
 // const puppeteer = require("puppeteer-extra");
@@ -53,9 +53,9 @@ function read_keywords_from_file(fname) {
 function getScraper(search_engine: string, args: any): SocialScraper {
   if (typeof search_engine === "string") {
     return new {
-      facebook: facebook.FacebookScraper,
-      youtube: youtube.YoutubeScraper,
-      bilibili: bilibili.BilibiliScraper,
+      facebook: FacebookScraper,
+      youtube: YoutubeScraper,
+      bilibili: BilibiliScraper,
     }[search_engine](args);
   }
   // else if (typeof search_engine === "function") {

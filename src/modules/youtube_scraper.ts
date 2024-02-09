@@ -4,7 +4,7 @@
 import {SocialScraper as Scraper,ScrapeOptions} from './social_scraper';
 const fs = require('fs');
 
-class YoutubeScraper extends Scraper {
+export class YoutubeScraper extends Scraper {
 
     constructor(args: ScrapeOptions) {
         super(args);    

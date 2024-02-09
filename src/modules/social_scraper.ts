@@ -1,6 +1,6 @@
 'use strict';
 
-const meta = require('./metadata.ts');
+import {get_ip_data,get_http_headers} from '@/modules/metadata';
 const debug = require('debug')('se-scraper:Scraper');
 import { RemoteSource, Linkdata } from "./remotesource"
 import { Page } from 'puppeteer';
@@ -254,12 +254,12 @@ export class SocialScraper implements Subject {
         }
 
         if (this.config.log_http_headers === true) {
-            this.metadata.http_headers = await meta.get_http_headers(this.page);
+            this.metadata.http_headers = await get_http_headers(this.page);
             // debug('this.metadata.http_headers=%O', this.metadata.http_headers);
         }
 
         if (this.config.log_ip_address === true) {
-            const ipinfo = await meta.get_ip_data(this.page);
+            const ipinfo = await get_ip_data(this.page);
             this.metadata.ipinfo = ipinfo;
             // debug('this.metadata.ipinfo', this.metadata.ipinfo);
         }

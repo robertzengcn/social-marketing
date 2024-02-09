@@ -6,7 +6,7 @@ export type queryParams = {
     search: string,
   }
 //scroll down to the bottom of the page
-async function autoScroll(page){
+export async function autoScroll(page){
     await page.evaluate(async () => {
         await new Promise((resolve) => {
             let totalHeight = 0;
@@ -24,7 +24,7 @@ async function autoScroll(page){
         });
     });
 }
-function delay(time) {
+export function delay(time) {
     return new Promise(function(resolve) { 
         setTimeout(resolve, time)
     });

@@ -1,6 +1,7 @@
 export { };
 // import axios from "axios";
-import request from "@/modules/lib/request"
+//import request from "@/modules/lib/request"
+import { HttpClient } from "@/modules/lib/httpclient"
 import jwt_decode from "jwt-decode";
 import { Token } from "./token"
 // import { decode } from "punycode";
@@ -71,8 +72,10 @@ export class RemoteSource {
   // REMOTEUSERNAME: string;
   // REMOTEPASSWORD: string;
   // private _Token:string;
-
+  private _httpClient: HttpClient
   constructor() {
+
+    this._httpClient = new HttpClient();
     // const config = this.readenv();
     // this.REMOTEADD = config.REMOTEADD;
     // this.tokenname="social-market-token"
@@ -124,11 +127,10 @@ export class RemoteSource {
    */
   async getRemoteConfig(campaignId): Promise<sosetting | void> {
     // let envconfig = await readenv();
-    
-    const sosetvar = await request({
-      url:"/api/getsobyCam/?campaign_id=" + campaignId,
-      method: 'get',
-    })
+
+    const sosetvar = this._httpClient.get(
+      "/api/getsobyCam/?campaign_id=" + campaignId
+    )
       .then(function (res) {
         if (res.status != 200) {
           throw new Error("code not equal 200");
@@ -157,7 +159,7 @@ export class RemoteSource {
       });
 
     return sosetvar;
-    
+
   }
 
 
@@ -179,11 +181,10 @@ export class RemoteSource {
     }
     // debug(this.REMOTEUSERNAME)
     // debug(this.REMOTEPASSWORD)
-    const linkId = await request({
-      url:"/api/savesolink", 
-      method: 'post',
-      data:data,
-      })
+    const linkId = this._httpClient.post(
+      "/api/savesolink",
+      data
+    )
       .then(function (res) {
         // debug(res);
         // console.log(res)
@@ -197,10 +198,9 @@ export class RemoteSource {
   }
   //get scrapy info list
   async Getscrapyinfolist(taskId: number, limit: number): Promise<Array<Linkdata> | null> {
-    const linkdaarr = await request({
-      url:"/api/getscrapeinfolist?sotaskid=" + taskId + "&limit=" + limit, 
-      method: 'get',
-    }).then(function (res) {
+    const linkdaarr = this._httpClient.get(
+      "/api/getscrapeinfolist?sotaskid=" + taskId + "&limit=" + limit
+    ).then(function (res) {
       debug(res);
       // console.log(res)
       if (res.data.data) {
@@ -220,10 +220,9 @@ export class RemoteSource {
    * @param taskId 
    */
   async Gettaskinfo(taskId: number): Promise<null | socialTask> {
-    const taskInfo = await request({
-      url:"/api/getsocialtaskinfo?task_id=" + taskId, 
-      method: 'get',
-    }).then(function (res) {
+    const taskInfo = this._httpClient.get(
+      "/api/getsocialtaskinfo?task_id=" + taskId,
+    ).then(function (res) {
       // debug(res);
       // console.log(res)
       return res.data.data as socialTask;
@@ -240,10 +239,9 @@ export class RemoteSource {
    * @returns 
    */
   async Gettaskkeywords(taskId: number): Promise<Array<string>> {
-    const taskInfo = await request({
-      url:"/api/taskkeyword?task_id=" + taskId,
-      method: 'get',  
-    }).then(function (res) {
+    const taskInfo = this._httpClient.get(
+      "/api/taskkeyword?task_id=" + taskId,
+    ).then(function (res) {
       // debug(res);
       // console.log(res)
       const keywords: Array<string> = [];
@@ -265,16 +263,14 @@ export class RemoteSource {
     const data = new FormData();
     data.append('id', scropeId);
 
-    await request({
-      url:"/api/updatescrapeprotime",
-      method: 'post', 
-      data:data,
+    await this._httpClient.post(
+      "/api/updatescrapeprotime",
+      data,
+    ).then(function (res) {
+      // debug(res);
+      // console.log(res)
+      // return res.data.data as number;
     })
-      .then(function (res) {
-        // debug(res);
-        // console.log(res)
-        // return res.data.data as number;
-      })
       .catch(function (error) {
         // console.log(error);
         throw new Error(error.message);
@@ -282,27 +278,28 @@ export class RemoteSource {
   }
   //login user
   async Login(username: string, password: string): Promise<jwtUser> {
-    const FormData = require('form-data');
-    const data = new FormData();
+    // const FormData = require('form-data');
+    var data = new FormData();
     data.append('username', username);
     data.append('password', password);
+    console.log(Array.from(data));
     const thisobj = this
-    const loginInfo = await request({
-      url: "/user/login",
-      method: 'post',
-      data: data,
-    }).then(function (res) {
-      if (res.status != 200) {
-        throw new Error(res.statusText);
-      }
-      if (res.data.status == false) {
-        throw new Error(res.data.msg);
+
+    const loginInfo = await this._httpClient.post(
+      "/user/login",
+      data, 
+    ).then(function (res) {
+      // if (res.status != 200) {
+      //   throw new Error(res.statusText);
+      // }
+      if (!res.status) {
+        throw new Error(res.msg);
       }
       //decode jwt token
-      const decoded = thisobj.ValidateToken(res.data.data.Token);
+      const decoded = thisobj.ValidateToken(res.data.Token);
       if (decoded.account_id > 0) {
         const tokenModel = new Token()
-        tokenModel.setValue(thisobj.tokenname, res.data.data.Token)
+        tokenModel.setValue(thisobj.tokenname, res.data.Token)
       }
       return decoded;
       //return res.data.Token as {token:string};
@@ -325,20 +322,17 @@ export class RemoteSource {
     }
     console.log("token is:" + token)
 
-    const loginInfo = await request({
-      url:"/api/user/info", 
-  }).then(function (res) {
+    const loginInfo = await this._httpClient.get(
+     "/api/user/info",
+   ).then(function (res) {
       // console.log(res);
-      if (res.status != 200) {
+      
+      if (res.status == false) {
+        throw new Error(res.msg);
+      }
 
-        throw new Error(res.statusText);
-      }
-      if (res.data.status == false) {
-        throw new Error(res.data.msg);
-      }
-    
       //const decoded = thisobj.ValidateToken(token);
-      return res.data.data;
+      return res.data;
       //return res.data.Token as {token:string};
     })
       .catch(function (error) {

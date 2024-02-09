@@ -4,7 +4,7 @@ const { timeoutExecute } = require('puppeteer-cluster/dist/util');
 
 const BROWSER_TIMEOUT = 5000;
 
-class CustomConcurrency extends Browser {
+export class CustomConcurrency extends Browser {
 
     async init() {}
     async close() {}
@@ -54,4 +54,4 @@ class CustomConcurrency extends Browser {
     }
 }
 
-module.exports = CustomConcurrency;
+// module.exports = CustomConcurrency;

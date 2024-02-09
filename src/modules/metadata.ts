@@ -1,11 +1,11 @@
 const cheerio = require('cheerio');
 
-module.exports = {
-    get_ip_data: get_ip_data,
-    get_http_headers: get_http_headers,
-};
+// module.exports = {
+//     get_ip_data: get_ip_data,
+//     get_http_headers: get_http_headers,
+// };
 
-async function get_ip_data(page) {
+export async function get_ip_data(page) {
     await page.goto('https://ipinfo.io/json', {
       waitLoad: true,
       waitNetworkIdle: true
@@ -18,7 +18,7 @@ async function get_ip_data(page) {
     return JSON.parse(ipinfo_text);
 }
 
-async function get_http_headers(page) {
+export async function get_http_headers(page) {
     await page.goto('https://httpbin.org/get', {
       waitLoad: true,
       waitNetworkIdle: true

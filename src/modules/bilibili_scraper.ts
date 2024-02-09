@@ -3,12 +3,12 @@
 const cheerio = require("cheerio");
 import { SocialScraper as Scraper, Linkurl, ScrapeOptions, Searchobject } from "./social_scraper";
 const fs = require("fs");
-import { Downloader } from "./bilibili/downloader";
+import { Downloader } from "@/modules/bilibili/downloader";
 const path = require("path");
 const sanitize = require("filenamify");
 const debug = require("debug")("bilibili-scraper");
-const { autoScroll, delay } = require("./lib/function.js");
-import { ElementHandle, Page, errors as Puppeteererror } from 'puppeteer';
+import { autoScroll, delay } from "@/modules/lib/function";
+import { ElementHandle, Page, } from 'puppeteer';
 const debugerror = debug('app:error');
 
 type clickbtnserobj = {
@@ -52,8 +52,9 @@ export class BilibiliScraper extends Scraper {
     await this.page.waitForSelector(".bili-mini-content-wp", {
       timeout: this.STANDARD_TIMEOUT,
     });
+    
     //click login by sms
-    const [button] = await this.page.$x("//div[contains(., ' 短信登录 ')]");
+    const button = await this.page.$("//div[contains(., ' 短信登录 ')]");
     if (button) {
       await (button as ElementHandle<Element>).click();
     }
@@ -203,12 +204,12 @@ export class BilibiliScraper extends Scraper {
     try {
       await searchPage.waitForSelector(".vui_pagenation", { timeout: 5000 });
     } catch (e) {
-      if (e instanceof Puppeteererror.TimeoutError) {
+      //if (e instanceof Puppeteererror.TimeoutError) {
         // Do something if this is a timeout in find page
         debug("not find .vui_pagenation item, the page may not have result")
         //return empty promise array
         return new Promise((resolve) => { resolve(null); });
-      }
+      //}
     }
     const linkres: Array<Linkurl> = [];
     // await this.page.$$("button.vui_button", elements=>{
