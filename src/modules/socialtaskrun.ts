@@ -10,10 +10,12 @@ export class SocialTaskRun {
     public createsocialtaskrun(socailtaskId: number,taskrunNum:string): SocialTaskRunEntity {
         const taskrunmodel = new Taskrundb()
         const logfile = this.getlogfile(socailtaskId)
-        const res=taskrunmodel.checkTaskrunExist(socailtaskId, taskrunNum)
-        if(res){
-            throw new Error("task run number exist")
-        }
+        const res=taskrunmodel.checkTaskrunExist(socailtaskId, taskrunNum,(res)=>{
+            if(res){
+                throw new Error("task run number exist")
+            }
+        })
+        
         // const taskrunNum = this.gentaskrunNum(socailtaskId)
         taskrunmodel.saveTaskrun(socailtaskId, taskrunNum, logfile, null)
         const socialtaskRun: SocialTaskRunEntity = {
@@ -39,8 +41,8 @@ export class SocialTaskRun {
         return taskId.toString() + ":" + randomstring.generate();
     }
     //get task id by task run id
-    public getTaskidbytaskrunNum(taskrunNum: string): number {
+    public TaskidbytaskrunNum(taskrunNum: string,callback:Function|undefined|null) {
         const taskrunmodel = new Taskrundb()
-        return taskrunmodel.getTaskidbytaskrunNum(taskrunNum)
+        taskrunmodel.getTaskidbytaskrunNum(taskrunNum,callback)
     }
 }

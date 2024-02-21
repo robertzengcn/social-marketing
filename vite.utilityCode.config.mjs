@@ -19,6 +19,9 @@ export default ({ mode }) => {
                     'sqlite3'
                 ]
             }
+        },
+        test: {
+            include:['test/vitest/utilitycode/*.test.ts'],
         }
     })
 }

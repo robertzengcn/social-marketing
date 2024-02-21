@@ -11,6 +11,7 @@ import {SocialTask} from "@/modules/socialtask"
 const fs = require('fs');
 const resolve = require('path').resolve;
 const debug = require('debug')('runcli');
+import {Keyword} from "@/modules/keyword"
 
 // const { data } = require("cheerio/lib/api/attributes.js");
 
@@ -43,7 +44,7 @@ let browser_config = {
   // if random_user_agent is set to True, a random user agent is chosen
   random_user_agent: false,
   // whether to start the browser in headless mode
-   headless: true,
+   headless: false,
   // whether debug information should be printed
   // level 0: print nothing
   // level 1: print most important info
@@ -178,12 +179,17 @@ async function runCommand(parearg) {
 
 async function runTask(taskRunNum:string):Promise<void>{
   const socialtaskrun = new SocialTaskRun();
-  const taskId=await socialtaskrun.getTaskidbytaskrunNum(taskRunNum);
-  const socialtask=new SocialTask()
+  await socialtaskrun.TaskidbytaskrunNum(taskRunNum,async(taskId)=>{
+  console.log(taskId)
+    if(!taskId){
+    throw new Error("get taskid from db error");
+  }
+    const socialtask=new SocialTask()
   const taskInfoResult=await socialtask.getTaskbyid(taskId)
   if(!taskInfoResult){
     throw new Error("taskInfo is undefined");
   }
+  console.log(taskInfoResult)
   // const taskArr=await remoteSourmodel.Gettaskkeywords(taskId)
   if(!taskInfoResult.status){
       throw new Error(taskInfoResult.msg)
@@ -192,25 +198,49 @@ async function runTask(taskRunNum:string):Promise<void>{
       throw new Error("social task data empty");
   }
   const taskInfo=taskInfoResult.data as SocialTaskEntity;
-  switch (taskInfo.task_name) {
+  switch (taskInfo.type_name) {
     case "bilibiliscrape":
         scrape_config.platform="bilibili"
         scrape_config.taskid=taskInfo.id
-        scrape_config.keywords=taskInfo.keywords
+        if(!taskInfo.keywords){
+          //try to get keywords by tag
+          const tagarr=taskInfo.tag
+          if(!tagarr){
+            throw new Error("both keyword and tag is undefined");
+
+          }else{
+            const keywordModel=new Keyword()
+            const keywordarr=await keywordModel.getKeywordsbytag(tagarr)
+            if(!keywordarr){
+              throw new Error("get keyword by tag failure, keywordarr is undefined");
+            }else{
+              scrape_config.keywords=keywordarr
+            }
+          }
+        }else{
+          scrape_config.keywords=taskInfo.keywords
+
+        }
+        if(!scrape_config.keywords){
+          throw new Error("can not get keywords,keywords is undefined");
+        }
+        
         await Searchdata(browser_config, scrape_config);
         break;
       case 'bilibilidownload':
-        // scrape_config.platform="bilibili"
+         scrape_config.platform="bilibili"
         // if(!taskInfo.extra_task_info.ResulttaskId){
         //  throw new Error("ResulttaskId is undefined");
         // }
         // debug(taskInfo)
-        // scrape_config.taskid=taskInfo.id;
+         scrape_config.taskid=taskInfo.id;
         // scrape_config.resulttaskid=taskInfo.extra_task_info.ResulttaskId
         // debug(scrape_config)
-        // await Downloadvideo(browser_config, scrape_config);
+         await Downloadvideo(browser_config, scrape_config);
         break;
   }
+  });
+  
 
 
 }

@@ -57,6 +57,7 @@ const initialize = async () => {
     if ($route.params.id) {
         socialtaskId.value = parseInt($route.params.id.toString());
     }
+    console.log("socialtask id:"+socialtaskId.value)
     if (socialtaskId.value > 0) {
         FakeAPI.fetch(parseInt(socialtaskId.value.toString())).then((res) => {
             task_name.value = res.task_name;

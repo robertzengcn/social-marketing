@@ -80,7 +80,7 @@ export class SocialTask {
             throw new Error("remote return social task type is null");
         }
 
-        return tasktyperes.data as SocialTaskTypeResponse
+        return tasktyperes as SocialTaskTypeResponse
     }
 
     //get tag list
@@ -101,7 +101,7 @@ export class SocialTask {
     async saveSocialTask(data: SocialTaskEntity): Promise<SaveSocialTaskResponse> {
 
 
-        const formData = new FormData();
+        let formData = new FormData();
         // Object.entries(data).forEach(([key, value]) => {
         //     formData.append(key, String(value));
         // });
@@ -120,7 +120,7 @@ export class SocialTask {
 
         const tasktyperes = await this._httpClient.post(
            '/api/savesocialtask',
-            data,
+           formData,
         ).catch(function (error) {
             throw new Error(error.message);
             // console.error(error);
@@ -129,7 +129,7 @@ export class SocialTask {
             throw new Error("remote return social task type is null");
         }
 
-        return tasktyperes.data as SaveSocialTaskResponse
+        return tasktyperes as SaveSocialTaskResponse
     }
 
     async createsocialtask(socailtaskId: number,taskRunNum:string): Promise<SocialTaskRunEntity> {
@@ -146,7 +146,7 @@ export class SocialTask {
         }
         const { port1, port2 } = new MessageChannelMain()
 
-        const child = utilityProcess.fork(path.join(__dirname, 'utilityCode.js'), ['-a','runtask','-t',entity.taskRunNum],{stdio:"pipe"} )
+        const child = utilityProcess.fork(path.join(__dirname, 'utilityCode.js'), ['-a','runtask','-t',entity.taskRunNum],{stdio:"pipe",execArgv:["puppeteer-cluster:*"]} )
         console.log(path.join(__dirname, 'utilityCode.js'))
         
         // child.postMessage({ message: 'hello' }, [port1])

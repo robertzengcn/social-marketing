@@ -22,7 +22,7 @@ export default ({ mode }) => {
             }
         },
         test: {
-            include:['test/vitest/*.test.ts'],
+            include:['test/vitest/main/*.test.ts'],
         }
     })
 }

@@ -33,7 +33,7 @@ export class Taskrundb {
           );
     }
     //get task id by task run number
-    public getTaskidbytaskrunNum(taskrunNum: string): number {
+    public getTaskidbytaskrunNum(taskrunNum: string,callback:Function|undefined|null) {
       const sql = `SELECT task_id FROM ` + this.taskrunTable + ` WHERE taskrun_num = ?`;
       let taskid: number = 0;
       this.db.get(sql, [taskrunNum], (err, row) => {
@@ -42,12 +42,15 @@ export class Taskrundb {
         }
         if (row) {
           taskid = (row as { task_id: number }).task_id;
+          if(callback){
+            callback(taskid)
+          }
         }
       });
-      return taskid;
+      //return taskid;
     }
     //check task id and task run number exist
-    public checkTaskrunExist(taskid:number,taskrunNum:string):boolean{
+    public checkTaskrunExist(taskid:number,taskrunNum:string,callback:Function|undefined|null){
       const sql = `SELECT task_id FROM ` + this.taskrunTable + ` WHERE task_id = ? AND taskrun_num = ?`;
       let exist: boolean = false;
       this.db.get(sql, [taskid,taskrunNum], (err, row) => {
@@ -57,8 +60,13 @@ export class Taskrundb {
         if (row) {
           exist = true;
         }
+       
+          if(callback){
+            callback(exist)
+          }
+        
       });
-      return exist;
+      //return exist;
     }
 
 }

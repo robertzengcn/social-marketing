@@ -158,7 +158,8 @@ function loadItems({ page, itemsPerPage, sortBy }) {
 // };
 const runtask=(item)=>{
     console.log("run task")
-    const routeData = router.resolve({name: 'Runtask', query: {id: item.id}});
+    console.log("item id is "+item.id)
+    const routeData = router.resolve({name: 'Runtask', params: {id: item.id}});
     console.log(routeData.href)
     window.open(routeData.href, '_blank')
 }
