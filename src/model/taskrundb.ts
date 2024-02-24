@@ -34,16 +34,17 @@ export class Taskrundb {
     }
     //get task id by task run number
     public getTaskidbytaskrunNum(taskrunNum: string,callback:Function|undefined|null) {
-      const sql = `SELECT task_id FROM ` + this.taskrunTable + ` WHERE taskrun_num = ?`;
-      let taskid: number = 0;
+      const sql = `SELECT id,task_id FROM ` + this.taskrunTable + ` WHERE taskrun_num = ?`;
+      // let taskid: number = 0;
       this.db.get(sql, [taskrunNum], (err, row) => {
         if (err) {
           throw new Error(err.message);
         }
         if (row) {
-          taskid = (row as { task_id: number }).task_id;
+          const taskid = (row as { id:number,task_id: number }).task_id;
+          const id = (row as { id:number,task_id: number }).task_id;
           if(callback){
-            callback(taskid)
+            callback(id,taskid)
           }
         }
       });

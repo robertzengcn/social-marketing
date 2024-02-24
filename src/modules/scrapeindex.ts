@@ -47,6 +47,7 @@ export type ScrapeConfig={
   tmppath?:string,
   taskid?:number,
   resulttaskid?:number,
+  taskrunid?:number
 }
 export async function Login(browser_config:SMstruct, scrape_config:ScrapeConfig) {
   // scrape config overwrites the browser_config

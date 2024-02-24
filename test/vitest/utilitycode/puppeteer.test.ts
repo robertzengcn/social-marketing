@@ -1,6 +1,5 @@
 'use strict';
 import { expect, test } from 'vitest'
-import {default_browser_config,scrape_config} from "@/config/puppeteerconfig"
 import puppeteer from 'puppeteer';
 
 test('start-puppeteer', async function () {
@@ -8,7 +7,7 @@ test('start-puppeteer', async function () {
         // Launch the browser and open a new blank page
         const browser = await puppeteer.launch({
              headless: false,
-             args: ['--no-sandbox', '--single-process'],
+             args: ['--no-sandbox', '--single-process','--incognito'],
             devtools: true });
             
         const page = await browser.newPage();
@@ -23,3 +22,5 @@ test('start-puppeteer', async function () {
         await browser.close();
     })();
 });
+
+

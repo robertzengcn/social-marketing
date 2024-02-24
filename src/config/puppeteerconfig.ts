@@ -38,7 +38,7 @@ export const default_browser_config = {
     },
   };
 
-export const scrape_config:ScrapeConfig = {
+export const default_scrape_config:ScrapeConfig = {
     // which search engine to scrape
     // platform: "facebook",
     // an array of keywords to scrape

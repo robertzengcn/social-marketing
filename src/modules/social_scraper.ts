@@ -2,8 +2,9 @@
 
 import {get_ip_data,get_http_headers} from '@/modules/metadata';
 const debug = require('debug')('se-scraper:Scraper');
-import { RemoteSource, Linkdata } from "./remotesource"
+import { Linkdata } from "./remotesource"
 import { Page } from 'puppeteer';
+import {TaskResultdb,TaskResultEntity} from "@/model/task_resultdb"
 const appRoot = require('app-root-path');
 const fs = require('fs');
 // const resolve = require('path').resolve;
@@ -112,6 +113,7 @@ export class SocialScraper implements Subject {
     num_requests: number;
     num_keywords: number;
     taskid?: number;
+    taskrunid?:number;
     private observers: Observer[] = [];
     constructor(options: ScrapeOptions) {
 
@@ -144,6 +146,9 @@ export class SocialScraper implements Subject {
         }
         if (options.taskid) {
             this.taskid = options.taskid;
+        }
+        if(options.taskrunid){
+            this.taskrunid=options.taskrunid;
         }
         this.STANDARD_TIMEOUT = 10000;
         this.SOLVE_CAPTCHA_TIME = 45000;
@@ -330,15 +335,21 @@ export class SocialScraper implements Subject {
             return
         }
         const links = await this.searchdata({ keyword: this.config.keywords })
+        //save link to local db
+        const taskresultModel=new TaskResultdb()
         
-        const remoteSourmodel = new RemoteSource();
+        // const remoteSourmodel = new RemoteSource();
         // debug('links=%o',links)
         //handle the links
         links?.map(async linkItem => {
-            const linkobj: Linkdata = { title: linkItem.title, url: linkItem.link, lang: linkItem.lang, socialtask_id: linkItem.taskid }
+            // const linkobj: Linkdata = { title: linkItem.title, url: linkItem.link, lang: linkItem.lang, socialtask_id: linkItem.taskid }
             // debug(linkobj)
             try {
-                await remoteSourmodel.saveLinkremote(linkobj)
+                const taskresultEntity:TaskResultEntity={url:linkItem.link,
+                    title: linkItem.title,  
+                     
+                }
+                // await remoteSourmodel.saveLinkremote(linkobj)
             } catch (error) {
                 console.error(error);
             }

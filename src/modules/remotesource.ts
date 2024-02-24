@@ -169,7 +169,7 @@ export class RemoteSource {
   async saveLinkremote(link: Linkdata): Promise<number> {
     const FormData = require('form-data');
     debug(link)
-    const data = new FormData();
+    let data = new FormData();
     data.append('title', link.title);
     if (link.content) {
       data.append('content', link.content);

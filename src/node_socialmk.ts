@@ -85,7 +85,7 @@ type SMconfig = {
   user_agent: string;
   headless: boolean;
   platform: string;
-  taskid?: number;
+ 
 }
 export type SMstruct = {
   // the user agent to scrape with
@@ -124,6 +124,8 @@ export type SMstruct = {
     maxConcurrency: number, // scrape with 1 tab
   },
   sleep_range?: Array<number>,
+  taskid?: number,
+  taskrunId?:number
 }
 export class ScrapeManager {
   cluster: { execute: Function; idle: Function; close: Function };
