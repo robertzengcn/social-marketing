@@ -24,8 +24,8 @@ export class BilibiliScraper extends Scraper {
   constructor(args: ScrapeOptions) {
     super(args);
     this.startUrl = "https://www.bilibili.com";
-    // console.log(this.taskid)
-    // debug(self.taskid)
+    this.taskid = args.taskid;
+    this.taskrunid = args.taskrunid;
   }
   async load_start_page(): Promise<void> {
     debug("load start page")
@@ -38,10 +38,10 @@ export class BilibiliScraper extends Scraper {
     this.logger.info("Using loginUrl: " + this.startUrl);
     await this.page.setBypassCSP(true);
     this.last_response = await this.page.goto(this.startUrl);
-
-    debug(
-      "login success, cookies has been save at " + this.config.tmppath
-    );
+    //cookies should not save in this way
+    // debug(
+    //   "login success, cookies has been save at " + this.config.tmppath
+    // );
     //click login btn
     await this.page.click(".header-login-entry");
     // await this.page.evaluate(_ => {
@@ -52,7 +52,7 @@ export class BilibiliScraper extends Scraper {
     await this.page.waitForSelector(".bili-mini-content-wp", {
       timeout: this.STANDARD_TIMEOUT,
     });
-    
+
     //click login by sms
     const button = await this.page.$("//div[contains(., ' 短信登录 ')]");
     if (button) {
@@ -65,7 +65,7 @@ export class BilibiliScraper extends Scraper {
     const cookies = await this.page.cookies();
 
     await fs.writeFile(
-      this.config.tmppath + "/cookies.json",
+      // this.config.tmppath + "/cookies.json",
       JSON.stringify(cookies, null, 2),
       (err) => {
         if (err) {
@@ -118,22 +118,22 @@ export class BilibiliScraper extends Scraper {
       for (const element of searobj.keyword) {
         const subsearobg: Searchobject = { page: this.page, keyword: element }
         const linkres = await this.getVideourls(subsearobg);
-        if(linkres){
-        for (const link of linkres) {
-          result.push(link)
+        if (linkres) {
+          for (const link of linkres) {
+            result.push(link)
+          }
         }
-      }
       }
 
     } else if (typeof searobj.keyword === 'string') {
       const sersearobg: Searchobject = { page: this.page, keyword: searobj.keyword }
       const linkres = await this.getVideourls(sersearobg);
-      if(linkres){
-      for (const link of linkres) {
+      if (linkres) {
+        for (const link of linkres) {
 
-        result.push(linkres)
+          result.push(linkres)
+        }
       }
-    }
     }
     return result
     // return await this.getVideourls({ page: this.page, keyword: keyword });
@@ -144,7 +144,7 @@ export class BilibiliScraper extends Scraper {
    * @param {object,string,string}
    * @returns array
    */
-  async getVideourls(serobj: Searchobject): Promise<Array<Linkurl>|null> {
+  async getVideourls(serobj: Searchobject): Promise<Array<Linkurl> | null> {
     if (serobj.page) {
       this.page = serobj.page;
     }
@@ -182,7 +182,7 @@ export class BilibiliScraper extends Scraper {
     });
 
     const browser = this.page.browser();
-    const newPage = await browser.waitForTarget((target) =>
+     await browser.waitForTarget((target) =>
       target.url().includes("search.bilibili.com")
     );
     const pages = await browser.pages();
@@ -205,10 +205,10 @@ export class BilibiliScraper extends Scraper {
       await searchPage.waitForSelector(".vui_pagenation", { timeout: 5000 });
     } catch (e) {
       //if (e instanceof Puppeteererror.TimeoutError) {
-        // Do something if this is a timeout in find page
-        debug("not find .vui_pagenation item, the page may not have result")
-        //return empty promise array
-        return new Promise((resolve) => { resolve(null); });
+      // Do something if this is a timeout in find page
+      debug("not find .vui_pagenation item, the page may not have result")
+      //return empty promise array
+      return new Promise((resolve) => { resolve(null); });
       //}
     }
     const linkres: Array<Linkurl> = [];
@@ -247,25 +247,57 @@ export class BilibiliScraper extends Scraper {
 
     let linkmap: Array<Linkurl> = [];
     // const that=this;
-    debug(this.config.taskid)
-    let taskids = 0;
-    if (this.config.taskid) {
-      taskids = this.config.taskid
-    }
+    // debug(this.taskid)
+    // let taskids = 0;
+    // if (this.taskid) {
+    //   taskids = this.taskid
+    // }
+    // linkmap = await this.page.$$eval(
+    //   ".bili-video-card__info--right >a:first-child",
+    //   (alinks, taskids) => {
+    //     return alinks.map((alink) => {
+    //       const linkobg: Linkurl = { title: '', link: '', lang: 'zh-cn' };
+    //       // if(!that.taskid){
+    //       // linkobg.taskid=that.taskid;
+    //       // }
+    //       if (taskids) {
+    //         linkobg.taskid = taskids
+    //       }
+    //       const herf = alink.getAttribute("href")
+    //       if (herf) {
+    //         linkobg.link = herf
+    //       }
+    //       // console.log(alink);
+    //       const htitle = alink.querySelector("h3");
+    //       if (htitle) {
+    //         const htres = htitle.getAttribute("title");
+    //         if (htres) {
+    //           linkobg.title = htres
+    //         }
+    //       }
+    //       return linkobg;
+    //     });
+    //   }, taskids
+    // );
+
     linkmap = await this.page.$$eval(
       ".bili-video-card__info--right >a:first-child",
-      (alinks, taskids) => {
+      (alinks) => {
         return alinks.map((alink) => {
           const linkobg: Linkurl = { title: '', link: '', lang: 'zh-cn' };
           // if(!that.taskid){
           // linkobg.taskid=that.taskid;
           // }
-          if (taskids) {
-            linkobg.taskid = taskids
-          }
+          // if (taskids) {
+          //   linkobg.taskid = taskids
+          // }
           const herf = alink.getAttribute("href")
           if (herf) {
             linkobg.link = herf
+            //check if link not start with https
+            if (!herf.startsWith("https")) {
+              linkobg.link = "https:" + herf
+            }
           }
           // console.log(alink);
           const htitle = alink.querySelector("h3");
@@ -277,8 +309,9 @@ export class BilibiliScraper extends Scraper {
           }
           return linkobg;
         });
-      }, taskids
+      }
     );
+
     // debug("query link finish");
     // debug(linkmap);
     // debug("show link finish");

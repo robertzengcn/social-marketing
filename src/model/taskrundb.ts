@@ -42,7 +42,7 @@ export class Taskrundb {
         }
         if (row) {
           const taskid = (row as { id:number,task_id: number }).task_id;
-          const id = (row as { id:number,task_id: number }).task_id;
+          const id = (row as { id:number,task_id: number }).id;
           if(callback){
             callback(id,taskid)
           }

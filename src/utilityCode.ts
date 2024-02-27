@@ -182,12 +182,15 @@ async function runCommand(parearg) {
 
 async function runTask(taskRunNum:string):Promise<void>{
   const socialtaskrun = new SocialTaskRun();
-  await socialtaskrun.TaskidbytaskrunNum(taskRunNum,async(id,taskId)=>{
+  await socialtaskrun.TaskidbytaskrunNum(taskRunNum,async(taskrunid,taskId)=>{
   console.log(taskId)
-    if(!taskId){
+  if(!taskId){
     throw new Error("get taskid from db error");
   }
-    const socialtask=new SocialTask()
+  if(!taskrunid){
+    throw new Error("get taskrunid from db error");
+  }
+  const socialtask=new SocialTask()
   const taskInfoResult=await socialtask.getTaskbyid(taskId)
   if(!taskInfoResult){
     throw new Error("taskInfo is undefined");
@@ -205,7 +208,7 @@ async function runTask(taskRunNum:string):Promise<void>{
     case "bilibiliscrape":
         scrape_config.platform="bilibili"
         scrape_config.taskid=taskInfo.id
-        scrape_config.taskrunid=id
+        scrape_config.taskrunid=taskrunid
         if(!taskInfo.keywords){
           //try to get keywords by tag
           const tagarr=taskInfo.tag

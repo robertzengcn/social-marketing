@@ -70,6 +70,7 @@ export async function Searchdata(browser_config:SMstruct, scrape_config:ScrapeCo
   // debug(browser_config)
   var scraper = new ScrapeManager(browser_config);
   // var remoteConfig=await scraper.getRemoteConfig();
+  console.log("scraper task id"+scraper.taskid)
   await scraper.start();
   await scraper.searchdata(scrape_config);
 

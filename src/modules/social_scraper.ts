@@ -12,6 +12,7 @@ import * as path from "path";
 // import { Scraperdb } from "../model/scraperdb"
 // const { spawn } = require('child_process');
 import { Subject, Observer } from './subject';
+import {SMconfig} from "@/node_socialmk"
 // import {ScrapeVideo} from './social_scraper';
 // export interface ScrapeOptionsPages {
 //     setViewport: Function,
@@ -40,14 +41,16 @@ export interface VideoInfo{
 // }
 // export class Elementhands extends puppeteer.ElementHandle{}
 export interface ScrapeOptions {
-    config: {
-        logger: logType,
-        search_engine?: string, keywords?: Array<string>, proxy?: string, apply_evasion_techniques?: boolean, block_assets?: boolean, test_evasion?: boolean, log_http_headers?: boolean, log_ip_address?: boolean
-    },
+    // config: {
+    //     logger: logType,
+    //     search_engine?: string, keywords?: Array<string>, proxy?: string, apply_evasion_techniques?: boolean, block_assets?: boolean, test_evasion?: boolean, log_http_headers?: boolean, log_ip_address?: boolean
+    // },
+    config:SMconfig,
     context?: object,
     pluggable?: object,
     page?: Page,
     taskid?: number,
+    taskrunid?:number,
     // platform:string
 }
 
@@ -84,20 +87,21 @@ export type Searchobject = {
  * this is parent class for social scrapyer node
  *  */
 export class SocialScraper implements Subject {
-    config: {
-        logger: logType,
-        search_engine?: string,
-        keywords?: Array<string>,
-        proxy?: string,
-        apply_evasion_techniques?: boolean,
-        block_assets?: boolean,
-        test_evasion?: boolean,
-        log_http_headers?: boolean,
-        log_ip_address?: boolean
-        tmppath?: string,
-        taskid?: number
-        // obj:puppeteer.Page
-    };
+    // config: {
+    //     logger: logType,
+    //     search_engine?: string,
+    //     keywords?: Array<string>,
+    //     proxy?: string,
+    //     apply_evasion_techniques?: boolean,
+    //     block_assets?: boolean,
+    //     test_evasion?: boolean,
+    //     log_http_headers?: boolean,
+    //     log_ip_address?: boolean
+    //     tmppath?: string,
+    //     taskid?: number
+    //     // obj:puppeteer.Page
+    // };
+    config:SMconfig;
     page: Page;
     last_response: object | null;
     metadata: { http_headers?: object, ipinfo?: { ip: string }, scraping_detected?: boolean };
@@ -138,9 +142,9 @@ export class SocialScraper implements Subject {
         this.config = options.config;
         this.logger = this.config.logger;
         this.context = options.context;
-        if(options.config.proxy){
-        this.proxy = options.config.proxy;
-        }
+        // if(options.config.proxy){
+        // this.proxy = options.config.proxy;
+        // }
         if(options.config.keywords){
         this.keywords = options.config.keywords;
         }
@@ -159,12 +163,12 @@ export class SocialScraper implements Subject {
         this.num_requests = 0;
         // keep track of the keywords searched
         this.num_keywords = 0;
-
-        let settings = this.config[`${this.config.search_engine}_settings`];
+        
+        let settings = this.config[`${this.config.platform}_settings`];
         if (settings) {
             if (typeof settings === 'string') {
                 settings = JSON.parse(settings);
-                this.config[`${this.config.search_engine}_settings`] = settings;
+                this.config[`${this.config.platform}_settings`] = settings;
             }
         }
     }
@@ -322,7 +326,7 @@ export class SocialScraper implements Subject {
      */
     async workersearchdata(workerseach: WosearchObj) {
         if (workerseach.worker) {
-            debug('worker=%o', workerseach.worker, this.config.keywords);
+            console.log('worker=%o', workerseach.worker, this.config.keywords);
         }
         if (workerseach.page) {
             this.page = workerseach.page;
@@ -345,10 +349,16 @@ export class SocialScraper implements Subject {
             // const linkobj: Linkdata = { title: linkItem.title, url: linkItem.link, lang: linkItem.lang, socialtask_id: linkItem.taskid }
             // debug(linkobj)
             try {
-                const taskresultEntity:TaskResultEntity={url:linkItem.link,
-                    title: linkItem.title,  
-                     
+                let taskresultEntity:TaskResultEntity={url:linkItem.link,
+                    title: linkItem.title, 
+                    lang: linkItem.lang,
+                    
+                    taskrunId:this.taskrunid as number,
                 }
+                if(linkItem.content){
+                    taskresultEntity.content=linkItem.content  
+                }
+                taskresultModel.saveTaskresult(taskresultEntity,null)
                 // await remoteSourmodel.saveLinkremote(linkobj)
             } catch (error) {
                 console.error(error);

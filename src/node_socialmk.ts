@@ -14,24 +14,33 @@ const { addExtra } = require("puppeteer-extra");
 // const AdblockerPlugin = require("puppeteer-extra-plugin-adblocker");
 
 const UserAgent = require("user-agents");
-import {FacebookScraper}  from "@/modules/facebook_scraper";
-import {YoutubeScraper} from "@/modules/youtube_scraper";
-import {BilibiliScraper} from "@/modules/bilibili_scraper";
+import { FacebookScraper } from "@/modules/facebook_scraper";
+import { YoutubeScraper } from "@/modules/youtube_scraper";
+import { BilibiliScraper } from "@/modules/bilibili_scraper";
 import { SocialScraper, WosearchObj } from "@/modules/social_scraper"
 import { Page } from 'puppeteer';
-import {Linkdata} from '@/modules/remotesource';
-import {videodownloadObserver} from '@/modules/videodownload_observer';
+import { Linkdata } from '@/modules/remotesource';
+import { videodownloadObserver } from '@/modules/videodownload_observer';
 
 // const bing = require('./modules/bing.js');
 // const yandex = require('./modules/yandex.js');
 // const infospace = require('./modules/infospace.js');
 // const duckduckgo = require('./modules/duckduckgo.js');
-import{CustomConcurrency as CustomConcurrencyImpl} from "@/concurrency-implementation";
+import { CustomConcurrency as CustomConcurrencyImpl } from "@/concurrency-implementation";
+import { ScrapeOptions } from "@/modules/social_scraper";
 // const axios = require("axios");
 const MAX_ALLOWED_BROWSERS = 6;
 // const puppeteer = require("puppeteer-extra");
 // const _StealthPlugin = require('puppeteer-extra-plugin-stealth');
 // const _AdblockerPlugin = require('puppeteer-extra-plugin-adblocker');
+// export type getScraperconfig={
+//   config:SMconfig,
+//   context:object,
+//   pluggable:object,
+//   page:Page,
+//   tmppath:string
+
+// }
 
 function write_results(fname, data) {
   fs.writeFileSync(fname, data, (err) => {
@@ -50,7 +59,7 @@ function read_keywords_from_file(fname) {
 }
 
 
-function getScraper(search_engine: string, args: any): SocialScraper {
+function getScraper(search_engine: string, args: ScrapeOptions): SocialScraper {
   if (typeof search_engine === "string") {
     return new {
       facebook: FacebookScraper,
@@ -67,8 +76,8 @@ function getScraper(search_engine: string, args: any): SocialScraper {
     );
   }
 }
-type SMconfig = {
-  logger: { info: Function };
+export type SMconfig = {
+  logger: { info: Function, error: Function };
   keywords: Array<string>;
   proxies: Array<string>;
   keyword_file: string;
@@ -85,7 +94,11 @@ type SMconfig = {
   user_agent: string;
   headless: boolean;
   platform: string;
- 
+  apply_evasion_techniques?: boolean;
+  block_assets?: boolean;
+  test_evasion?: boolean;
+  log_http_headers?: boolean;
+  log_ip_address?: boolean;
 }
 export type SMstruct = {
   // the user agent to scrape with
@@ -125,7 +138,7 @@ export type SMstruct = {
   },
   sleep_range?: Array<number>,
   taskid?: number,
-  taskrunId?:number
+  taskrunId?: number
 }
 export class ScrapeManager {
   cluster: { execute: Function; idle: Function; close: Function };
@@ -139,6 +152,8 @@ export class ScrapeManager {
   numClusters: number;
   tmppath: string;
   runLogin: Function;
+  taskid?: number;
+  taskrunId?: number;
   constructor(config: SMstruct, context = {}) {
     // this.cluster = null;
     // this.pluggable = null;
@@ -176,8 +191,8 @@ export class ScrapeManager {
         ),
         transports: [new transports.Console()],
       }),
-      platform: "facebook",
-      keywords: ["nodejs rocks"],
+      // platform: "facebook",
+      // keywords: ["nodejs rocks"],
       // whether to start the browser in headless mode
       // headless: true,
       // specify flags passed to chrome here
@@ -286,6 +301,13 @@ export class ScrapeManager {
     }
 
     debug("this.config=%O", this.config);
+    //defind task id and task run id
+    if (config.taskid) {
+      this.taskid = config.taskid;
+    }
+    if (config.taskrunId) {
+      this.taskrunId = config.taskrunId;
+    }
   }
 
   /*
@@ -415,7 +437,7 @@ export class ScrapeManager {
         context: this.context,
         pluggable: this.pluggable,
         page: this.page,
-        tmppath: this.tmppath,
+        // tmppath: this.tmppath,
       });
 
       await this.scraper.runLogin({ page: this.page });
@@ -427,7 +449,7 @@ export class ScrapeManager {
       // for every browser instance. We will use our custom puppeteer-cluster version.
       // https://www.npmjs.com/package/proxy-chain
       // this answer looks nice: https://github.com/GoogleChrome/puppeteer/issues/678#issuecomment-389096077
-      const chunks : [][]=[];
+      const chunks: [][] = [];
       for (let n = 0; n < this.numClusters; n++) {
         chunks.push([]);
       }
@@ -506,7 +528,11 @@ export class ScrapeManager {
         context: this.context,
         pluggable: this.pluggable,
         page: this.page,
-        tmppath: this.tmppath,
+        taskid: this.taskid,
+        taskrunid: this.taskrunId,
+        // taskid?: number,
+        // taskrunid?:number,
+        // tmppath: this.tmppath,
       });
       const searobj: WosearchObj = { page: this.page };
       await this.scraper.workersearchdata(searobj);
@@ -518,7 +544,7 @@ export class ScrapeManager {
       // for every browser instance. We will use our custom puppeteer-cluster version.
       // https://www.npmjs.com/package/proxy-chain
       // this answer looks nice: https://github.com/GoogleChrome/puppeteer/issues/678#issuecomment-389096077
-      const chunks :[][]=[];
+      const chunks: [][] = [];
       for (let n = 0; n < this.numClusters; n++) {
         chunks.push([] as never);
       }
@@ -532,11 +558,14 @@ export class ScrapeManager {
       for (let c = 0; c < chunks.length; c++) {
         const config = _.clone(this.config);
         config.keywords = chunks[c];
-
+        console.log("task run id is" + config.taskrunid)
         const obj = getScraper(this.config.platform, {
           config: config,
           context: {},
           pluggable: this.pluggable,
+          taskid: config.taskid,
+          taskrunid: config.taskrunid,
+
         });
 
         const boundMethod = obj.workersearchdata.bind(obj);
@@ -595,7 +624,7 @@ export class ScrapeManager {
       await this.cluster.close();
     }
   }
-  async downloadPlatomvideo(links:Array<Linkdata>) {
+  async downloadPlatomvideo(links: Array<Linkdata>) {
     //check whether user send correct platform parameter 
     const availPlatform = ["bilibili"];
     if (!availPlatform.includes(this.config.platform)) {
@@ -606,16 +635,16 @@ export class ScrapeManager {
       context: this.context,
       pluggable: this.pluggable,
       page: this.page,
-      tmppath: this.tmppath,
+      // tmppath: this.tmppath,
     });
     debug("links=%o", links)
     //console.log(this.scraper)
 
     //add observer before download video
-    const videodownObser=new videodownloadObserver();
+    const videodownObser = new videodownloadObserver();
     this.scraper.attach(videodownObser);
     await this.scraper.downloadvideo(links)
-   
+
 
   }
 }

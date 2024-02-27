@@ -5,8 +5,8 @@ export interface TaskResultEntity{
   taskrunId:number
   url:string
   title:string
-  content:string
-  lang:string
+  content?:string
+  lang?:string
 }
 export class TaskResultdb {
     db: Database;
