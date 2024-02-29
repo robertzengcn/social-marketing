@@ -16,6 +16,7 @@ export type SocialTaskTypeEntity = {
     id: number,
     name: string,
 }
+
 export type SocialTaskResponse = {
     status: boolean,
     msg: string,
@@ -46,7 +47,9 @@ export type SaveSocialTaskResponse = {
     data?: { id: number },
 }
 export type SocialTaskRunEntity = {
-    taskId: number
-    taskRunNum: string
-    logfile: string
+    id?:number
+    task_id: number
+    taskrun_num: string
+    log_path: string
+    record_time?: string
 }

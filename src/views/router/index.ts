@@ -121,6 +121,14 @@ export const constantRoutes : RouteRecordRaw[] = [
                       title: 'Socialtask Run',
                       icon: 'list'
                     }
+                  },{
+                    path: 'taskrunlist/:id(\\d+)',
+                    component: () => import(/* webpackChunkName: "staff-list" */ '@/views/pages/socialtask/socialtaskrunlist.vue'),
+                    name: 'Task-run-list',
+                    meta: {
+                      title: 'Social task Run List',
+                      icon: 'list'
+                    }
                   }
             ]  
         },

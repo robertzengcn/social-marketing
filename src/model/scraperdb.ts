@@ -1,44 +1,28 @@
-import { Database } from 'sqlite3';
+// import { Database } from 'sqlite3';
+const Database = require('better-sqlite3');
+//const Database = require('better-sqlite3');
+// import DatabaseConstructor,{Database}from 'better-sqlite3';
 import * as fs from 'fs';
 const debug = require("debug")("scraperdb");
 const appRoot = require('app-root-path');
 import * as path from 'path';
 
-// import { use } from 'chai';
-// import * as e from 'express';
-
-// const db = new sqlite3.Database('socialmarket.db');
-
-// module.exports = {
-//     db: db,
-// };
-
-
 export class Scraperdb {
     private static instance: Scraperdb;
-    dbname: string;
-    db: Database;
-    pathdb: string;
+    dbname: string="scraper.db";
+    db;
+    pathdb=path.resolve(appRoot + "/tmp/db/")
 
     private constructor() {
-        const dbpath: string = path.resolve(appRoot + "/tmp/db/");
-        // debug(dbpath)
-        if (!fs.existsSync(dbpath)) {
-            fs.mkdirSync(dbpath, { recursive: true });
-        }
-        this.dbname = "scraper.db";
-        this.pathdb = dbpath + "/" + this.dbname
+        
+        // debug(dbpath) 
+        // this.dbname = "scraper.db";
+        const dbname = this.pathdb + "/" + this.dbname
         // debug(this.dbname)
-        this.db = new Database(this.pathdb, (err) => {
-            if (err) {
-                // console.log("Getting error " + err);
-                throw new Error("Getting error " + err);
-            }
-        });
+        this.db = new Database(dbname, { verbose: console.log});
+        this.db.pragma('journal_mode = WAL');
     }
-    // deconstructor() {
-    //     this.db.close();
-    // }
+
 
     public static getInstance(): Scraperdb {
         if (!Scraperdb.instance) {
@@ -50,28 +34,27 @@ export class Scraperdb {
         this.createTables();
     }
     //get database
-    getdb(): Database {
+    getdb(){
         return this.db;
     }
     /**
      * create video table
      */
     createTables() {
+        // const dbpath: string = path.resolve(appRoot + "/tmp/db/");
+
+        if (!fs.existsSync(this.pathdb)) {
+            fs.mkdirSync(this.pathdb, { recursive: true });
+        }
         const videotablepath = path.resolve(appRoot + "/src/sql/scraperdb/");
 
         fs.readdir(videotablepath, (err, files) => {
             debug(files)
             files.forEach(file => {
-                this.db.exec(fs.readFileSync(videotablepath +path.sep+ file).toString());
+                this.db.exec(fs.readFileSync(videotablepath +path.sep+ file, 'utf8').toString());
             });
         });
-    }
-   
-  
-
-    
-    
-
+    }  
 }
 
   

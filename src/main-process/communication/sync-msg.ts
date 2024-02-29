@@ -4,6 +4,7 @@ import { CampaignController } from '@/controller/campaign-controller'
 import { campaignResponse } from '@/modules/campaign'
 import { SocialTaskController } from '@/controller/socialtask-controller'
 import { SocialTaskResponse,SocialTaskInfoResponse,SocialTaskTypeResponse,TagResponse,SaveSocialTaskResponse } from '@/entity-types/socialtask-type'
+import {SocialTaskRun} from "@/modules/socialtaskrun"
 
 export default function SyncMsg() {
   console.log("SyncMsg");
@@ -235,5 +236,39 @@ export default function SyncMsg() {
     });
     console.log(res)
     return res as SaveSocialTaskResponse;
+  });
+
+  ipcMain.handle("socialtaskrun:list", async (event, data) => {
+    const qdata = JSON.parse(data);
+    if (!qdata.hasOwnProperty("id")) {
+      //throw new Error("id not found");
+      return {
+        status: false,
+        msg: "id not found",
+      };
+    }
+    const stkrunModel = new SocialTaskRun()
+    // const res = await stkrunModel.getrunlist(qdata.id).then(function (res) {
+    //   // console.log(res);
+    stkrunModel.getrunlist(qdata.id,function(res:any){
+      return {status:true,msg:"",data:res};
+   }) 
+    //   // return {status:true,msg:"",data:res};
+    // }).catch(function (err) {
+    //   console.log(err);
+    //   if (err instanceof Error) {
+    //     return {
+    //       status: false,
+    //       msg: err.message,
+    //     };
+    //   } else {
+    //     return {
+    //       status: false,
+    //       msg: "unknow error",
+    //     };
+    //   }
+    // });
+    // console.log(res)
+    // return res as SocialTaskResponse;
   });
 }

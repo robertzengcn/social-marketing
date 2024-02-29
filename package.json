@@ -42,15 +42,17 @@
     "testhttpclient": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register -r tsconfig-paths/register 'test/modules/httpclient.test.ts'",
     "testmain": "vitest --config vite.main.config.mjs",
     "vitest-puppeteer": "vitest --config vite.utilityCode.config.mjs",
-    "vitest-bibiliscraper":"vitest --config vite.utilityCode.config.mjs -t bibili-scraper"
+    "vitest-bibiliscraper": "vitest --config vite.utilityCode.config.mjs -t bibili-scraper"
   },
   "dependencies": {
     "@mdi/font": "5.9.55",
     "@rollup/plugin-alias": "^5.1.0",
+    "@types/better-sqlite3": "^7.6.9",
     "apexcharts": "^3.44.0",
     "app-root-path": "^3.1.0",
     "argparse": "^2.0.1",
     "axios": "^1.6.7",
+    "better-sqlite3": "^9.4.3",
     "cheerio": "^1.0.0-rc.3",
     "core-js": "^3.33.0",
     "cron": "^2.3.0",

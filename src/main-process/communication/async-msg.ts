@@ -35,7 +35,7 @@ export default function AsyncMsg() {
         } else {
             const successRes: dataResponse = {
                 status: true,
-                msg: result.taskRunNum
+                msg: result.taskrun_num
             }
             event.sender.send('socialtask:start', JSON.stringify(successRes))
         }

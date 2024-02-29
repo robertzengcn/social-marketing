@@ -7,6 +7,7 @@ const path = require("path");
 
 //the social task run created each time when task run
 export class SocialTaskRun {
+    //create social task run
     public createsocialtaskrun(socailtaskId: number,taskrunNum:string): SocialTaskRunEntity {
         const taskrunmodel = new Taskrundb()
         const logfile = this.getlogfile(socailtaskId)
@@ -19,9 +20,10 @@ export class SocialTaskRun {
         // const taskrunNum = this.gentaskrunNum(socailtaskId)
         taskrunmodel.saveTaskrun(socailtaskId, taskrunNum, logfile, null)
         const socialtaskRun: SocialTaskRunEntity = {
-            taskId: socailtaskId,
-            taskRunNum: taskrunNum,
-            logfile: logfile
+            task_id: socailtaskId,
+            taskrun_num: taskrunNum,
+            log_path: logfile,
+            
         }
         return socialtaskRun
     }
@@ -44,5 +46,10 @@ export class SocialTaskRun {
     public TaskidbytaskrunNum(taskrunNum: string,callback:Function|undefined|null) {
         const taskrunmodel = new Taskrundb()
         taskrunmodel.getTaskidbytaskrunNum(taskrunNum,callback)
+    }
+    //get social task run list
+    public getrunlist(taskId:number,callback:Function|undefined|null){
+        const taskrunmodel = new Taskrundb()
+        taskrunmodel.getTaskrunlist(taskId,callback)   
     }
 }
