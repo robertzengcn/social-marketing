@@ -3,22 +3,19 @@
         :items-length="totalItems" :items="serverItems" :loading="loading" item-value="name" @update:options="loadItems">
         <template v-slot:[`item.actions`]="{ item }">
             
-            <v-icon size="small"
-            
-            @click="checkList(item)"
-            >
-                mdi-database
-            </v-icon>
+            <!-- <v-icon size="small">
+                mdi-delete
+            </v-icon> -->
         </template>
     </v-data-table-server>
 </template>
 
 <script setup lang="ts">
-import { getTaskrunlist } from '@/views/api/socialtask'
+import { getTaskresultlist } from '@/views/api/socialtask'
 import { ref } from 'vue'
 // import { SearchResult } from '@/views/api/types'
 import { useRoute } from "vue-router";
-import router from '@/views/router';
+// import router from '@/views/router';
 // import { TaskRunEntity } from '@/entity-types/taskrun-types'
 type Fetchparam = {
     id: number
@@ -32,7 +29,7 @@ type taskrunresp = {
 const FakeAPI = {
     async fetch(fetchparam: Fetchparam): Promise<taskrunresp> {
         const fpage = (fetchparam.page - 1) * fetchparam.itemsPerPage
-        return await getTaskrunlist({ id: fetchparam.id, page: fpage, size: fetchparam.itemsPerPage })
+        return await getTaskresultlist({ id: fetchparam.id, page: fpage, size: fetchparam.itemsPerPage })
     }
 }
 
@@ -45,19 +42,35 @@ const headers: Array<any> = [
         key: 'id',
     },
     {
-        title: 'Task Run num',
+        title: 'Task Run id',
         align: 'start',
         sortable: false,
-        key: 'taskrun_num',
+        key: 'taskrun_id',
+    },
+    {
+        title: 'Title',
+        align: 'start',
+        sortable: false,
+        key: 'title',
+    },
+    {
+        title: 'Language',
+        align: 'start',
+        sortable: false,
+        key: 'lang',
+    },
+    {
+        title: 'Url',
+        align: 'start',
+        sortable: false,
+        key: 'url',
     },
     {
         title: 'Record Time',
         align: 'start',
         sortable: false,
         key: 'record_time',
-    },
-    { title: 'Actions', key: 'actions', sortable: false },
-
+    },  
 ];
 const itemsPerPage = ref(10);
 const serverItems = ref([]);
@@ -85,13 +98,5 @@ function loadItems({ page, itemsPerPage, sortBy }) {
         }).catch(function (error) {
             console.error(error);
         })
-}
-//open task result list page
-const checkList=(item)=>{
-    // const routeData = router.resolve({name: 'Task-result-list', params: {id: item.id}});
-    // window.open(routeData.href, '_blank')
-    router.push({
-            name: 'Task-result-list',params: { id: item.id } 
-        });
 }
 </script>

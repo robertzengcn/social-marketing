@@ -1,12 +1,12 @@
 <template>
     <div class="tables_page"> 
-<SocialtaskrunlistTable />
+<SocialtaskresultlistTable />
     </div>
 </template>
 <script setup lang="ts">
 // import router from '@/views/router';
 import { ref, onMounted } from 'vue';
-import SocialtaskrunlistTable from '@/views/pages/socialtask/widgets/SocialtaskrunlistTable.vue'
+import SocialtaskresultlistTable from '@/views/pages/socialtask/widgets/SocialtaskresultlistTable.vue'
 const dialog = ref(false);
 // const list = ref([
 //     {

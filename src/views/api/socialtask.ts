@@ -1,5 +1,6 @@
 import {windowInvoke,windowSend,windowReceive} from '@/views/utils/apirequest'
 import {SocialTaskEntity,TagEntity} from '@/entity-types/socialtask-type'
+import {TaskRunEntity} from '@/entity-types/taskrun-type'
 
 export type TaskQuery={
     id:number
@@ -16,6 +17,11 @@ export type SocialListresp={
     data:Array<SocialTaskEntity>,
     total:number,
 }
+export type TaskRunlistQuery={
+    id:number
+    page:number
+    size:number
+}
 
 export type TaskinfoQuery={
     id:number
@@ -23,6 +29,11 @@ export type TaskinfoQuery={
 export type Socialtaskresp={
     id:number
 }
+export type Taskrunresp={
+    data:Array<TaskRunEntity>,
+    total:number,
+}
+
 
 export async function getSocialtasklist(data: TaskQuery):Promise<SocialListresp>{
     const resp=await windowInvoke('socialtask:list',data);
@@ -87,4 +98,25 @@ export function startSocialTask(taskId:number,taskrunNum:string){
 }
 export function receiveSocialTaskLog(channel:string,cb:(data:any)=>void){
     windowReceive('socialtask:log:'+channel,cb)
+}
+export async function getTaskrunlist(data:TaskRunlistQuery):Promise<Taskrunresp>{
+    const resp=await windowInvoke('socialtaskrun:list',data); 
+    console.log(resp)
+    //  return resp as Array<TaskRunEntity>;
+    const resdata:Taskrunresp={
+        data:resp.Records,
+        total:resp.Total,
+    }
+    return resdata; 
+}
+//get result list query
+export async function getTaskresultlist(data:TaskRunlistQuery):Promise<Taskrunresp>{
+    const resp=await windowInvoke('socialtaskresult:list',data); 
+    console.log(resp)
+    //  return resp as Array<TaskRunEntity>;
+    const resdata:Taskrunresp={
+        data:resp.Records,
+        total:resp.Total,
+    }
+    return resdata; 
 }

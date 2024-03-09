@@ -1,5 +1,5 @@
 import { VuexModule, Module, Action, Mutation, getModule } from 'vuex-module-decorators'
-import { login, logout, getUserInfo } from '@/views/api/users'
+import { login,Signout,getUserInfo } from '@/views/api/users'
 import { getToken, setToken, removeToken } from '@/views/utils/cookies'
 import router from '@/views/router'
 import { PermissionModule } from './permission'
@@ -145,7 +145,7 @@ class User extends VuexModule implements IUserState {
     if (this.token === '') {
       throw Error('LogOut: token is undefined!')
     }
-    await logout()
+    await Signout()
     removeToken()
     // resetRouter()
 

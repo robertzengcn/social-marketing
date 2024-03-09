@@ -5,6 +5,9 @@ import { campaignResponse } from '@/modules/campaign'
 import { SocialTaskController } from '@/controller/socialtask-controller'
 import { SocialTaskResponse,SocialTaskInfoResponse,SocialTaskTypeResponse,TagResponse,SaveSocialTaskResponse } from '@/entity-types/socialtask-type'
 import {SocialTaskRun} from "@/modules/socialtaskrun"
+import { SocialTaskResult } from '@/modules/socialtask_result'
+import { User } from '@/modules/user'
+import { SocialAccount } from '@/modules/socialaccount'
 
 export default function SyncMsg() {
   console.log("SyncMsg");
@@ -247,12 +250,18 @@ export default function SyncMsg() {
         msg: "id not found",
       };
     }
+    if (!qdata.hasOwnProperty("page")){
+      qdata.page=10;
+    }
+    if (!qdata.hasOwnProperty("size")){
+      qdata.size=10;
+    }
     const stkrunModel = new SocialTaskRun()
     // const res = await stkrunModel.getrunlist(qdata.id).then(function (res) {
     //   // console.log(res);
-    stkrunModel.getrunlist(qdata.id,function(res:any){
-      return {status:true,msg:"",data:res};
-   }) 
+    const reslist=stkrunModel.getrunlist(qdata.id,qdata.page,qdata.size,null)
+    console.log(reslist)
+    return {status:true,msg:"",data:reslist};
     //   // return {status:true,msg:"",data:res};
     // }).catch(function (err) {
     //   console.log(err);
@@ -271,4 +280,75 @@ export default function SyncMsg() {
     // console.log(res)
     // return res as SocialTaskResponse;
   });
+  ipcMain.handle("socialtaskresult:list", async (event, data) => {
+    const qdata = JSON.parse(data);
+    if (!qdata.hasOwnProperty("id")) {
+      //throw new Error("id not found");
+      return {
+        status: false,
+        msg: "id not found",
+      };
+    }
+    if (!qdata.hasOwnProperty("page")){
+      qdata.page=10;
+    }
+    if (!qdata.hasOwnProperty("size")){
+      qdata.size=10;
+    }
+    const socialtaskres=new SocialTaskResult()
+    const reslist=socialtaskres.gettaskresultlist(qdata.id,qdata.page,qdata.size,null)
+    return {status:true,msg:"",data:reslist};
+  })
+  ipcMain.handle("user:Signout", async (event, data) => {
+    const userModel=new User()
+    
+    const res=await userModel.Signout().then(function(){
+      return {
+        status: true,
+        msg: "login out success",
+      };
+    }).catch(function (err) {
+      console.log(err);
+      if (err instanceof Error) {
+        return {
+          status: false,
+          msg: err.message,
+        };
+      } else {
+        return {
+          status: false,
+          msg: "unknow error",
+        };
+      }
+    })
+    return res;
+  })
+
+  ipcMain.handle("socialaccount:list", async (event, data) => {
+    const qdata = JSON.parse(data);
+    
+    if (!qdata.hasOwnProperty("page")){
+      qdata.page=10;
+    }
+    if (!qdata.hasOwnProperty("size")){
+      qdata.size=10;
+    }
+    const socialaccount=new SocialAccount()
+    const res=socialaccount.getSocialaccountlist(qdata.page,qdata.size).catch(function (err) {
+      console.log(err);
+      if (err instanceof Error) {
+        return {
+          status: false,
+          msg: err.message,
+        };
+      } else {
+        return {
+          status: false,
+          msg: "unknow error",
+        };
+      }
+
+    })
+    return res
+  })
 }

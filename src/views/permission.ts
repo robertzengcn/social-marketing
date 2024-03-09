@@ -43,22 +43,11 @@ router.beforeEach(async (to, from, next: any) => {
       // Check whether the user has obtained his permission roles
       try {
         if (UserModule.roles.length === 0) {
+          UserModule.ResetToken()
           console.log('user role empty, login failure')
           next(`/login?redirect=${to.path}`)
         } else {
-          // Note: roles must be a object array! such as: ['admin'] or ['developer', 'editor']
-          // await UserModule.GetUserInfo()
-          // const roles = UserModule.roles
-          // // Generate accessible routes map based on role
-          // PermissionModule.GenerateRoutes(roles)
-          // // Dynamically add accessible routes
-          // PermissionModule.dynamicRoutes.forEach(route => {
-          //   router.addRoute(route)
-          // })
-          // console.log(to)
-          // // Hack: ensure addRoutes is complete
-          // // Set the replace: true, so the navigation will not leave a history record
-          // next({ ...to, replace: true })
+          
           next()
         }
       } catch (err) {
@@ -74,13 +63,19 @@ router.beforeEach(async (to, from, next: any) => {
       // }
     }
   } else {
+    console.log("to path is"+to.path)
     // Has no token
     if (whiteList.indexOf(to.path) !== -1) {
       // In the free login whitelist, go directly
       next()
     } else {
+      const topath=`/login?redirect=${to.path}`
+     //const topath=`/login`
+
+      console.log('no token')
+      console.log(topath)
       // Other pages that do not have permission to access are redirected to the login page.
-      next(`/login?redirect=${to.path}`)
+      next(topath)
       NProgress.done()
     }
   }

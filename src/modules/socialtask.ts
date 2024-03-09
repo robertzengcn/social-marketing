@@ -146,7 +146,7 @@ export class SocialTask {
         }
         const { port1, port2 } = new MessageChannelMain()
 
-        const child = utilityProcess.fork(path.join(__dirname, 'utilityCode.js'), ['-a','runtask','-t',entity.taskRunNum],{stdio:"pipe",execArgv:["puppeteer-cluster:*"]} )
+        const child = utilityProcess.fork(path.join(__dirname, 'utilityCode.js'), ['-a','runtask','-t',entity.taskrun_num],{stdio:"pipe",execArgv:["puppeteer-cluster:*"]} )
         console.log(path.join(__dirname, 'utilityCode.js'))
         
         // child.postMessage({ message: 'hello' }, [port1])

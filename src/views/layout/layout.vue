@@ -56,7 +56,7 @@
                             />
                         </template>
                     </v-list-group>
-                    <v-list-subheader v-if="item.name === 'Dashboard'">Examples</v-list-subheader>
+                    <!-- <v-list-subheader v-if="item.name === 'Dashboard'">Examples</v-list-subheader> -->
                     <v-list-subheader v-if="item.name === 'Miscellaneous'">Other</v-list-subheader>
                 </template>
                 <v-list-item prepend-icon="mdi-text-box" class="mx-1">
@@ -66,7 +66,7 @@
                         ></v-list-item-title
                     >
                 </v-list-item>
-                <v-list-item prepend-icon="mdi-github" class="mx-1">
+                <!-- <v-list-item prepend-icon="mdi-github" class="mx-1">
                     <v-list-item-title
                         ><a
                             target="_blank"
@@ -75,7 +75,7 @@
                             >Github</a
                         ></v-list-item-title
                     >
-                </v-list-item>
+                </v-list-item> -->
             </v-list>
         </v-navigation-drawer>
         <main class="app_main">
@@ -134,7 +134,8 @@
                                 <v-list-item
                                     title="Sign out"
                                     prepend-icon="mdi-login"
-                                    to="/login"
+                                    
+                                    @click="Usersignout"
                                 />
                             </v-list>
                         </v-menu>
@@ -155,6 +156,7 @@ import { RouterView, useRouter } from 'vue-router';
 import Breadcrumbs from '@/views/components/breadcrumbs/breadcrumbs.vue';
 import { reactive, computed, watch } from 'vue';
 import { useMainStore } from '@/views/store/appMain';
+import { Signout } from '@/views/api/users'
 
 const mainStore = useMainStore();
 const router = useRouter();
@@ -181,6 +183,11 @@ const changeRail = () => {
     navState.rail = !navState.rail;
     navState.isMini = navState.rail;
 };
+const Usersignout=async ()=>{
+    console.log("signout")
+    await Signout()
+    router.push('/login')
+}
 
 </script>
 <style scoped lang="scss"></style>

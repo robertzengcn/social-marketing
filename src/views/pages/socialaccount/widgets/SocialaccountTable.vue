@@ -7,12 +7,7 @@
             </div>
             <v-btn class="btn" variant="flat" prepend-icon="mdi-filter-variant"><span> More</span></v-btn>
         </div>
-        <div>
-            
-            <v-btn class="btn" variant="flat" prepend-icon="mdi-plus" color="#5865f2" @click="createTask(campaignId)">
-                Create Task
-            </v-btn>
-           
+        <div>       
         </div>
     </div>
     <v-data-table-server v-model:items-per-page="itemsPerPage" :search="search" :headers="headers"
@@ -21,53 +16,29 @@
             <v-icon
             size="small"
             class="me-2"
-            @click="edittask(item)"
+            @click="editAccount(item)"
           >
           mdi-pencil
           </v-icon>
           <v-icon
             size="small" 
-            @click="runtask(item)"
-          >
-            mdi-play
-          </v-icon> 
-          <v-icon
-            size="small" 
           >
             mdi-delete
           </v-icon>
-          <v-icon
-            size="small" 
-            @click="checkLog(item)"
-          >
-            mdi-history
-          </v-icon>
+          
         </template>
     </v-data-table-server>
-    
-    <!-- <v-dialog width="30%">
-        <v-card title="Dialog">
-            <v-card-text>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-                incididunt ut labore et dolore magna aliqua.
-            </v-card-text>
-            <v-card-actions>
-                <v-btn color="primary" block>Close Dialog</v-btn>
-            </v-card-actions>
-        </v-card>
-    </v-dialog> -->
+
 </template>
 
 <script setup lang="ts">
-import { getSocialtasklist } from '@/views/api/socialtask'
+import { getSocialAccountlist } from '@/views/api/socialaccount'
 import { ref } from 'vue'
 import { SearchResult } from '@/views/api/types'
-// import { SearchResult } from '@/views/api/types'
-// import type { VDataTable } from 'vuetify/lib/components/index.mjs'
 import { useRoute } from "vue-router";
 import router from '@/views/router';
 type Fetchparam = {
-    id:number
+    // id:number
     page: number,
     itemsPerPage: number,
     sortBy: string,
@@ -77,7 +48,7 @@ type Fetchparam = {
 const FakeAPI = {
     async fetch(fetchparam: Fetchparam): Promise<SearchResult> {
         const fpage=(fetchparam.page-1)*fetchparam.itemsPerPage
-        return await getSocialtasklist({ id:fetchparam.id,page: fpage, size: fetchparam.itemsPerPage, sortby: fetchparam.sortBy, search: fetchparam.search })
+        return await getSocialAccountlist({ page: fpage, size: fetchparam.itemsPerPage, sortby: fetchparam.sortBy, search: fetchparam.search })
     }
 }
 // export default {
@@ -91,22 +62,22 @@ const headers: Array<any> = [
         key: 'id',
     },
     {
-        title: 'Task Name',
+        title: 'Type',
         align: 'start',
         sortable: false,
-        key: 'task_name',
+        key: 'social_type',
     },
     {
-        title: 'Tag',
+        title: 'User Name',
         align: 'start',
         sortable: false,
-        key: 'tag',
+        key: 'user',
     },
     {
-        title: 'Task Types',
+        title: 'Pass',
         align: 'start',
         sortable: false,
-        key: 'type',
+        key: 'pass',
     },
     { title: 'Actions', key: 'actions', sortable: false },
 
@@ -117,8 +88,8 @@ const loading = ref(false);
 const totalItems = ref(0);
 const search = ref('');
 const $route = useRoute();
-const campaignId=$route.params.id.toString();
-console.log(campaignId)
+// const campaignId=$route.params.id.toString();
+// console.log(campaignId)
 // }),
 // watch: {
 //     name() {
@@ -129,7 +100,7 @@ console.log(campaignId)
 function loadItems({ page, itemsPerPage, sortBy }) {
     loading.value = true
     const fetchitem: Fetchparam = {
-        id:parseInt(campaignId),
+        // id:parseInt(campaignId),
         page: page,
         itemsPerPage: itemsPerPage,
         sortBy: sortBy,
@@ -137,8 +108,8 @@ function loadItems({ page, itemsPerPage, sortBy }) {
     }
     FakeAPI.fetch(fetchitem).then(
         ({ data, total }) => {
-             console.log(data)
-             console.log(total)
+            //  console.log(data)
+            //  console.log(total)
             //loop data
             for(let i=0; i<data.length; i++){
                 if(data[i].Disable == 0){
@@ -161,14 +132,14 @@ function loadItems({ page, itemsPerPage, sortBy }) {
 //     //     path: '/graphics/oasis-engine',
 //     // });
 // };
-const runtask=(item)=>{
-    console.log("run task")
-    console.log("item id is "+item.id)
-    const routeData = router.resolve({name: 'Runtask', params: {id: item.id}});
-    console.log(routeData.href)
-    window.open(routeData.href, '_blank')
-}
-const edittask=(item)=>{
+// const runtask=(item)=>{
+//     console.log("run task")
+//     console.log("item id is "+item.id)
+//     const routeData = router.resolve({name: 'Runtask', params: {id: item.id}});
+//     console.log(routeData.href)
+//     window.open(routeData.href, '_blank')
+// }
+const editAccount=(item)=>{
     // router.push({
     //     path: '/graphics/oasis-engine',
     // });
@@ -176,15 +147,15 @@ const edittask=(item)=>{
             name: 'EditSocialtask',params: { id: item.id } 
         });
 }
-const createTask=(campaignId:string)=>{
+const createAccount=(campaignId:string)=>{
     router.push({
             name: 'CreateSocialtask',params: { campaignId: campaignId } 
         });
 }
 //open task run list page
-const checkLog=(item)=>{
-    const routeData = router.resolve({name: 'Task-run-list', params: {id: item.id}});
-    window.open(routeData.href, '_blank')
-}
+// const checkLog=(item)=>{
+//     const routeData = router.resolve({name: 'Task-run-list', params: {id: item.id}});
+//     window.open(routeData.href, '_blank')
+// }
 
 </script>

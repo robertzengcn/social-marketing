@@ -3,9 +3,10 @@ export { };
 //import request from "@/modules/lib/request"
 import { HttpClient } from "@/modules/lib/httpclient"
 import jwt_decode from "jwt-decode";
-import { Token } from "./token"
+import { Token } from "@/modules/token"
 // import { decode } from "punycode";
 const debug = require('debug')('RemoteSource');
+import {User} from "@/modules/user"
 // const url = require("url");
 // const FormData = require('form-data');
 type sosetting = {
@@ -320,7 +321,7 @@ export class RemoteSource {
     if (token == null || token.length < 1) {
       return null;
     }
-    console.log("token is:" + token)
+    // console.log("token is:" + token)
 
     const loginInfo = await this._httpClient.get(
      "/api/user/info",
@@ -328,6 +329,11 @@ export class RemoteSource {
       // console.log(res);
       
       if (res.status == false) {
+        if(res.code==403){
+        //remove token
+        const userModel=new User()
+        userModel.Signout()
+        }
         throw new Error(res.msg);
       }
 
@@ -352,6 +358,26 @@ export class RemoteSource {
       roles: decoded.Roles ? decoded.Roles : [],
     }
     return jwtuser;
+  }
+  //remove token in remote
+  public async removeRemoteToken(): Promise<void>{
+    const loginInfo = await this._httpClient.get(
+      "/api/user/signout",
+    ).then(function (res) {
+       // console.log(res);
+       
+       if (res.status == false) {
+         throw new Error(res.msg);
+       }
+       
+       //const decoded = thisobj.ValidateToken(token);
+      //  return res.data;
+       //return res.data.Token as {token:string};
+     })
+       .catch(function (error) {
+         // console.log(error);
+         throw new Error(error.message);
+       });
   }
 }
 

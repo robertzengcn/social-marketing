@@ -4,7 +4,11 @@ import { Taskrundb } from "@/model/taskrundb"
 import * as randomstring from "randomstring";
 import {SocialTaskRunEntity} from "@/entity-types/socialtask-type"
 const path = require("path");
-
+import {TaskRunEntity} from "@/entity-types/taskrun-type";
+export type taskrunSearchres={
+    Total:number
+    Records:Array<TaskRunEntity>
+}
 //the social task run created each time when task run
 export class SocialTaskRun {
     //create social task run
@@ -16,9 +20,13 @@ export class SocialTaskRun {
                 throw new Error("task run number exist")
             }
         })
-        
+        const taskentity:TaskRunEntity={
+            task_id: socailtaskId,
+            taskrun_num: taskrunNum,
+            log_path: logfile
+        }
         // const taskrunNum = this.gentaskrunNum(socailtaskId)
-        taskrunmodel.saveTaskrun(socailtaskId, taskrunNum, logfile, null)
+        taskrunmodel.saveTaskrun(taskentity, null)
         const socialtaskRun: SocialTaskRunEntity = {
             task_id: socailtaskId,
             taskrun_num: taskrunNum,
@@ -48,8 +56,13 @@ export class SocialTaskRun {
         taskrunmodel.getTaskidbytaskrunNum(taskrunNum,callback)
     }
     //get social task run list
-    public getrunlist(taskId:number,callback:Function|undefined|null){
+    public getrunlist(taskId:number,page:number,size:number,callback:Function|undefined|null):taskrunSearchres{
         const taskrunmodel = new Taskrundb()
-        taskrunmodel.getTaskrunlist(taskId,callback)   
+        const total=taskrunmodel.getTaskrunTotal(taskId)
+        const list=taskrunmodel.getTaskrunlist(taskId,page,size,callback)   
+        return {
+            Total:total,
+            Records:list
+        }
     }
 }

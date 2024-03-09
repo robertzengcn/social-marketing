@@ -352,8 +352,7 @@ export class SocialScraper implements Subject {
                 let taskresultEntity:TaskResultEntity={url:linkItem.link,
                     title: linkItem.title, 
                     lang: linkItem.lang,
-                    
-                    taskrunId:this.taskrunid as number,
+                    taskrun_id:this.taskrunid as number,
                 }
                 if(linkItem.content){
                     taskresultEntity.content=linkItem.content  

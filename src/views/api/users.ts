@@ -1,10 +1,10 @@
 'use strict';
 export {};
 //const {ipcRenderer: ipc} = require('electron-better-ipc');
-import request from '@/views/utils/request'
+// import request from '@/views/utils/request'
 // import {ipcRenderer as ipc} from 'electron-better-ipc'
 import {Iresponse} from '@/views/api/types'
-
+import {windowInvoke} from '@/views/utils/apirequest'
 
 // export const getUsers = (params: any) =>
 //   request({
@@ -56,11 +56,12 @@ export const login = (data: any) =>
   //   data
   // })
 
-export const logout = () =>
-  request({
-    url: '/users/logout',
-    method: 'post'
-  })
+export const Signout = async() =>
+await windowInvoke("user:Signout")
+  // request({
+  //   url: '/users/logout',
+  //   method: 'post'
+  // })
 
 // export const register = (data: any) =>
 //   request({
