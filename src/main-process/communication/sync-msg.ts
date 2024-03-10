@@ -333,8 +333,11 @@ export default function SyncMsg() {
     if (!qdata.hasOwnProperty("size")){
       qdata.size=10;
     }
+    if (!qdata.hasOwnProperty("search")){
+      qdata.search="";
+    }
     const socialaccount=new SocialAccount()
-    const res=socialaccount.getSocialaccountlist(qdata.page,qdata.size).catch(function (err) {
+    const res=await socialaccount.getSocialaccountlist(qdata.page,qdata.size,qdata.search).catch(function (err) {
       console.log(err);
       if (err instanceof Error) {
         return {
@@ -349,6 +352,7 @@ export default function SyncMsg() {
       }
 
     })
+    console.log(res)
     return res
   })
 }

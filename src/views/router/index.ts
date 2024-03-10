@@ -172,7 +172,7 @@ export const constantRoutes: RouteRecordRaw[] = [
     meta: {
       title: 'Login',
       icon: 'mdi-shield-account',
-      visible: true,
+      visible: false,
     },
     component: () => import('@/views/pages/login/login.vue'),
   },

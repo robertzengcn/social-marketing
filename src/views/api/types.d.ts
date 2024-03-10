@@ -10,6 +10,10 @@ export type SearchResult={
     data:any
     total:number
 }
+export type SocialaccountResult={
+    records:any
+    total:number
+}
 export type IUserData ={
     id: number
     name: string

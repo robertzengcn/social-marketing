@@ -2,8 +2,8 @@
     <div class="search_bar mt-4 d-flex jsb">
         <div class="d-flex jsb search_tool">
             <div class="search_wrap mr-4">
-                <v-text-field rounded class="elevation-0" density="compact" variant="solo" label="Search sample"
-                    append-inner-icon="mdi-magnify" single-line hide-details></v-text-field>
+                <v-text-field rounded class="elevation-0" density="compact" variant="solo" label="Search"
+                    append-inner-icon="mdi-magnify" single-line hide-details v-model="search"></v-text-field>
             </div>
             <v-btn class="btn" variant="flat" prepend-icon="mdi-filter-variant"><span> More</span></v-btn>
         </div>
@@ -47,8 +47,11 @@ type Fetchparam = {
 
 const FakeAPI = {
     async fetch(fetchparam: Fetchparam): Promise<SearchResult> {
+        // console.log(fetchparam.search)
         const fpage=(fetchparam.page-1)*fetchparam.itemsPerPage
-        return await getSocialAccountlist({ page: fpage, size: fetchparam.itemsPerPage, sortby: fetchparam.sortBy, search: fetchparam.search })
+        const res=await getSocialAccountlist({ page: fpage, size: fetchparam.itemsPerPage, sortby: fetchparam.sortBy, search: fetchparam.search })
+        console.log(res)
+        return res
     }
 }
 // export default {
@@ -118,6 +121,7 @@ function loadItems({ page, itemsPerPage, sortBy }) {
                     data[i].Status = "disable"    
                 }
             }
+            console.log(total)
             serverItems.value = data
             totalItems.value = total
             loading.value = false

@@ -91,3 +91,4 @@ yt-auth/*
 /dist_electron
 dist
 .env.development
+.vite/*
