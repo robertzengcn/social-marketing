@@ -1,38 +1,101 @@
-'use strict';
-import { HttpClient } from "@/modules/lib/httpclient"
-import { SocialAccountResponse } from "@/entity-types/socialaccount-type"
-import url from "url"
+"use strict";
+import { HttpClient } from "@/modules/lib/httpclient";
+import {
+  SocialAccountResponse,
+  SocialAccountDetailResponse,
+  SocialAccountDetailData,
+  SavesocialaccountResp,
+} from "@/entity-types/socialaccount-type";
+// import url from "url"
 // import {PageSearch} from "@/entity-types/common-type"
-import { URLSearchParams } from "url"
+import { URLSearchParams } from "url";
+// import FormData from "form-data";
 export class SocialAccount {
-    private _httpClient: HttpClient
-    constructor() {
-        this._httpClient = new HttpClient()
+  private _httpClient: HttpClient;
+  constructor() {
+    this._httpClient = new HttpClient();
+  }
+  //get social account list from remote
+  public async getSocialaccountlist(
+    page: number,
+    size: number,
+    search: string
+  ): Promise<SocialAccountResponse> {
+    const searchParams: Record<string, any> = new URLSearchParams();
+    searchParams.append("page", page);
+    searchParams.append("size", size);
+    
+    if (search.length > 0) {
+      searchParams.append("search", search);
     }
-    //get social account list from remote
-    public async getSocialaccountlist(page: number, size: number, search: string): Promise<SocialAccountResponse> {
-        const searchParams: Record<string, any> = new URLSearchParams();
-        searchParams.append("page", page);
-        searchParams.append("size", size);
-        if (search.length>0) {
-            searchParams.append("search", search);
-        }
-        // const params = new URLSearchParams({page: page, pagesize: "100"}).toString();
-        const paramstring = searchParams.toString();
-        // const finalurl='/api/campaign?'+paramstring;
-        const finalurl = '/api/socialaccount/list?' + paramstring;
+    // const params = new URLSearchParams({page: page, pagesize: "100"}).toString();
+    const paramstring = searchParams.toString();
+    // const finalurl='/api/campaign?'+paramstring;
+    const finalurl = "/api/socialaccount/list?" + paramstring;
 
-        const sociallistres = await this._httpClient.get(finalurl)
-        if (!sociallistres) {
-            throw new Error("remote return empty");
-        }
-        // console.log("campaign list is following")
-        // console.log(campignlistres.data)
-        const resp: SocialAccountResponse = {
-            status: sociallistres.status,
-            msg: sociallistres.msg,
-            data: sociallistres.data,
-        }
-        return resp
+    const sociallistres = await this._httpClient.get(finalurl);
+    if (!sociallistres) {
+      throw new Error("remote return empty");
     }
+    // console.log("campaign list is following")
+    // console.log(campignlistres.data)
+    const resp: SocialAccountResponse = {
+      status: sociallistres.status,
+      msg: sociallistres.msg,
+      data: sociallistres.data,
+    };
+    return resp;
+  }
+  //get social account detail
+  public async getAccountdetail(
+    id: number
+  ): Promise<SocialAccountDetailResponse> {
+    const searchParams: Record<string, any> = new URLSearchParams();
+    searchParams.append("id", id);
+    const paramstring = searchParams.toString();
+    const finalurl = "/api/socialaccount?" + paramstring;
+    const socialdetailres = await this._httpClient.get(finalurl);
+    if (!socialdetailres) {
+      throw new Error("remote return empty");
+    }
+   
+    return socialdetailres as SocialAccountDetailResponse;
+  }
+  //save social account
+  public async saveSocialAccount(
+    soc: SocialAccountDetailData
+  ): Promise<SavesocialaccountResp> {
+    // const FormData = require('form-data');
+    let data = new FormData();
+    if (soc.id) {
+      data.append("id", soc.id.toString());
+    }
+    data.append("social_type_id", soc.social_type_id.toString());
+    data.append("user", soc.user);
+    data.append("pass", soc.pass);
+    data.append("status", soc.status.toString());
+    data.append("name", soc.name);
+    data.append("phone", soc.phone);
+    data.append("email", soc.email);
+    if (soc.proxy&&soc.proxy.id) {
+      data.append("proxy", soc.proxy.id.toString());
+    }
+
+    const resp = await this._httpClient.post("/api/socialaccount",data);
+    return resp as SavesocialaccountResp;
+  }
+
+  //delete social account
+  public async deleteAccount(id){
+    const searchParams: Record<string, any> = new URLSearchParams();
+    searchParams.append("id", id);
+    const paramstring = searchParams.toString();
+    const finalurl = "/api/socialaccount?" + paramstring;
+    const socialdetailres = await this._httpClient.delete(finalurl);
+    if (!socialdetailres) {
+      throw new Error("remote return empty");
+    }
+    return socialdetailres;
+    
+  }
 }

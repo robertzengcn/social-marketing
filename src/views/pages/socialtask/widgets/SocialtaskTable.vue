@@ -5,13 +5,14 @@
                 <v-text-field rounded class="elevation-0" density="compact" variant="solo" label="Search sample"
                     append-inner-icon="mdi-magnify" single-line hide-details></v-text-field>
             </div>
-            <v-btn class="btn" variant="flat" prepend-icon="mdi-filter-variant"><span> More</span></v-btn>
-        </div>
-        <div>
-            
+            <!-- <v-btn class="btn" variant="flat" prepend-icon="mdi-filter-variant"><span> More</span></v-btn> -->
             <v-btn class="btn" variant="flat" prepend-icon="mdi-plus" color="#5865f2" @click="createTask(campaignId)">
                 Create Task
             </v-btn>
+        </div>
+        <div>
+            
+            
            
         </div>
     </div>

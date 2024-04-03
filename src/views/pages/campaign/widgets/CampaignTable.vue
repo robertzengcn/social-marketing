@@ -7,11 +7,11 @@
             </div>
             <v-btn class="btn" variant="flat" prepend-icon="mdi-filter-variant"><span> More</span></v-btn>
         </div>
-        <div>
+        <!-- <div>
             <v-chip class="mx-2" closable color="pink"> Secondary </v-chip>
             <v-chip class="mx-2" closable color="secondary"> Label </v-chip>
             <v-chip class="mx-2"> Status </v-chip>
-        </div>
+        </div> -->
     </div>
     <v-data-table-server v-model:items-per-page="itemsPerPage" :search="search" :headers="headers"
         :items-length="totalItems" :items="serverItems" :loading="loading" item-value="name" @update:options="loadItems">

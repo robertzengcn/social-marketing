@@ -1,30 +1,18 @@
 <template>
     <div class="tables_page">
-<SocialaccountTable />
+<ProxyTable />
     </div>
 </template>
 <script setup lang="ts">
 // import router from '@/views/router';
 import { ref, onMounted } from 'vue';
-import SocialaccountTable from '@/views/pages/socialaccount/widgets/SocialaccountTable.vue'
+import ProxyTable from '@/views/pages/proxy/widgets/ProxyTable.vue'
 const dialog = ref(false);
 
 onMounted(() => {
-    // setTimeout(() => {
-    //     list.value.forEach((item) => {
-    //         item.progress = Math.floor(Math.random() * 100) + 1;
-    //     });
-    //     console.log(list.value);
-    // }, 300);
+    
 });
-// const onTest = () => {
-    // router.push({
-    //     path: '/graphics/oasis-engine',
-    // });
-// };
-// const loadItems =({ page, itemsPerPage, sortBy }) =>{
-//     console.log(page, itemsPerPage, sortBy)
-// }
+
 </script>
 <style lang="scss">
 .tables_page {

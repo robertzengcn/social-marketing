@@ -127,6 +127,21 @@ export class HttpClient {
         // headers: this._headers,
       });
     }
+    // post json data
+    public async postJson(endpoint:string, data, options = {}): Promise<any> {
+      // this.setHeader('Accept', 'application/json')
+      // this.setHeader('Content-Type', 'application/json')
+      return this._fetchJSON(endpoint, {
+        ...options,
+        body: JSON.stringify(data),
+        method: "POST",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        // headers: this._headers,
+      });
+    }
   }
   
   export default HttpClient;

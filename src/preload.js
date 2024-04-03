@@ -7,7 +7,7 @@ import { contextBridge, ipcRenderer } from 'electron'
 contextBridge.exposeInMainWorld('api', {
     send: (channel, data) => {
       // whitelist channels
-      let validChannels = ['user:Login','socialtask:start','socialtask:log']
+      let validChannels = ['user:Login','socialtask:start','socialtask:log','socialaccount:login']
       console.log('send',channel,data)
       if (validChannels.includes(channel)) {
         console.log('send2',channel,data)
@@ -25,7 +25,7 @@ contextBridge.exposeInMainWorld('api', {
     },
     invoke: (channel, data) => {
       // whitelist channels
-      let validChannels = ['user:Login','user:checklogin','user:Signout','campaign:list','socialtask:list','socialtask:info','socialtasktype:list','tag:list','socialtask:save','socialtask:start','socialtaskrun:list','socialtaskresult:list','socialaccount:list']
+      let validChannels = ['user:Login','user:checklogin','user:Signout','campaign:list','socialtask:list','socialtask:info','socialtasktype:list','tag:list','socialtask:save','socialtask:start','socialtaskrun:list','socialtaskresult:list','socialaccount:list','socialaccount:save','socialplatform:list','socialaccount:detail','socialaccount:delete','proxy:list','proxy:delete','proxy:save','proxy:detail','proxy:check','proxy:import']
       if (validChannels.includes(channel)) {
         return ipcRenderer.invoke(channel, data)
       }

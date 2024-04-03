@@ -164,7 +164,80 @@ export const constantRoutes: RouteRecordRaw[] = [
           icon: 'list'
         }
       },
+      {
+        path: 'edit/:id(\\d+)',
+        component: () => import(/* webpackChunkName: "staff-list" */ '@/views/pages/socialaccount/socialaccountdetail.vue'),
+        name: 'editSocialAccount',
+        meta: {
+          visible: false,
+          title: 'Edit Account',
+          icon: 'list'
+        }
+      },
+      {
+        path: 'add',
+        component: () => import(/* webpackChunkName: "staff-list" */ '@/views/pages/socialaccount/socialaccountdetail.vue'),
+        name: 'CreateSocialAccount',
+        meta: {
+          visible: false,
+          title: 'Add Account',
+          icon: 'list'
+        }
+      },
+     
     ],
+  },
+  {
+    path: '/proxy',
+    name: 'Proxy',
+    meta: {
+      visible: true,
+      title: 'Proxy',
+      icon: 'mdi-paw-off'
+    },
+    component: Layout, 
+    children: [
+      {
+        path: 'list',
+        component: () => import(/* webpackChunkName: "staff-list" */ '@/views/pages/proxy/proxy.vue'),
+        name: 'Proxylist',
+        meta: {
+          visible: true,
+          title: 'Proxy List',
+          icon: 'list'
+        }
+      },
+      {
+        path: 'edit/:id(\\d+)',
+        component: () => import('@/views/pages/proxy/proxydetail.vue'),
+        name: 'editProxy',
+        meta: {
+          visible: false,
+          title: 'Edit Proxy',
+          icon: 'list'
+        }
+      },
+      {
+        path: 'add',
+        component: () => import('@/views/pages/proxy/proxydetail.vue'),
+        name: 'AddProxy',
+        meta: {
+          visible: false,
+          title: 'Add Proxy',
+          icon: 'list'
+        }
+      },
+      {
+        path: 'parse',
+        component: () => import('@/views/pages/proxy/proxyparse.vue'),
+        name: 'ParseProxy',
+        meta: {
+          visible: true,
+          title: 'Parse Proxy',
+          icon: 'list'
+        }
+      }
+    ]
   },
   {
     path: '/login',

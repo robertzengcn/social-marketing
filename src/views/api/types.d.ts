@@ -3,10 +3,15 @@ export {};
 export type ItemSearchparam={
     page:number
     size:number
-    sortby:string
-    search:string
+    sortby?:string
+    search?:string
 }
-export type SearchResult={
+export type Itemlistparam={
+    page:number
+    size:number
+   
+}
+export interface SearchResult{
     data:any
     total:number
 }

@@ -6,9 +6,10 @@
                     append-inner-icon="mdi-magnify" single-line hide-details v-model="search"></v-text-field>
             </div>
             <!-- <v-btn class="btn" variant="flat" prepend-icon="mdi-filter-variant"><span> More</span></v-btn> -->
-            <v-btn class="btn" variant="flat" prepend-icon="mdi-plus" color="#5865f2" @click="createAccount()">
-                Create Account
+            <v-btn class="btn ml-3" variant="flat" prepend-icon="mdi-plus" color="#5865f2" @click="createProxy()">
+                Create Proxy
             </v-btn>
+            
         </div>
         <div>       
         </div>
@@ -19,44 +20,35 @@
             <v-icon
             size="small"
             class="me-2"
-            @click="editAccount(item)"
+            @click="editProxy(item)"
           >
           mdi-pencil
           </v-icon>
           <v-icon
             size="small" 
-            @click="deleteAccount(item)"
+            @click="deleteProxybtn(item)"
           >
             mdi-delete
           </v-icon>
-          <v-icon
-            size="small" 
-            @click="loginAccount(item)"
-          >
-            mdi-login
-          </v-icon>
+          
           
         </template>
     </v-data-table-server>
-
-    
-        <!-- Social Account Table -->
-        <!-- Your existing code for the social account table goes here -->
 
         <!-- Delete Confirmation Modal -->
         <v-dialog v-model="showDeleteModal" width="auto">
             <v-card
             max-width="400"
             prepend-icon="mdi-update"
-            text="The account will be delete"
-            title="Confirm to delete account"
+            text="The proxy will be delete"
+            title="Confirm to delete proxy"
           >
             <template v-slot:actions>
                 <v-btn
                 class="ms-auto"
                 text="Ok"
                 color="secondary"
-                @click="confirmrmAccount"
+                @click="confirmrmProxy"
                 > 
                 </v-btn>
               <v-btn
@@ -88,7 +80,7 @@
 </template>
 
 <script setup lang="ts">
-import { getSocialAccountlist,deleteSocialAccount, socialaccountLogin } from '@/views/api/socialaccount'
+import { getProxyList,deleteProxy} from '@/views/api/proxy'
 import { ref } from 'vue'
 import { SearchResult } from '@/views/api/types'
 // import { useRoute } from "vue-router";
@@ -105,13 +97,12 @@ const FakeAPI = {
     async fetch(fetchparam: Fetchparam): Promise<SearchResult> {
         // console.log(fetchparam.search)
         const fpage=(fetchparam.page-1)*fetchparam.itemsPerPage
-        const res=await getSocialAccountlist({ page: fpage, size: fetchparam.itemsPerPage, sortby: fetchparam.sortBy, search: fetchparam.search })
+        const res=await getProxyList({ page: fpage, size: fetchparam.itemsPerPage, sortby: fetchparam.sortBy, search: fetchparam.search })
         console.log(res)
         return res
     }
 }
-// export default {
-// data: () => ({
+
 
 const headers: Array<any> = [
     {
@@ -121,10 +112,10 @@ const headers: Array<any> = [
         key: 'id',
     },
     {
-        title: 'Type',
+        title: 'Host',
         align: 'start',
         sortable: false,
-        key: 'social_type',
+        key: 'host',
     },
     {
         title: 'User Name',
@@ -138,6 +129,12 @@ const headers: Array<any> = [
         sortable: false,
         key: 'pass',
     },
+    {
+        title: 'Protocol',
+        align: 'start',
+        sortable: false,
+        key: 'protocol',
+    },
     { title: 'Actions', key: 'actions', sortable: false },
 
 ];
@@ -148,9 +145,10 @@ const totalItems = ref(0);
 const search = ref('');
 // const $route = useRoute();
 const showDeleteModal = ref(false);
-const deleteAccountid=ref(0);
+const deleteId=ref(0);
 const showDialog= ref(false);
 const alertext=ref("");
+
 
 function loadItems({ page, itemsPerPage, sortBy }) {
     loading.value = true
@@ -166,13 +164,14 @@ function loadItems({ page, itemsPerPage, sortBy }) {
             //  console.log(data)
             //  console.log(total)
             //loop data
-            for(let i=0; i<data.length; i++){
-                if(data[i].Disable == 0){
-                    data[i].Status = "enable"
-                }else{
-                    data[i].Status = "disable"    
-                }
-            }
+            // for(let i=0; i<data.length; i++){
+            //     if(data[i].Disable == 0){
+            //         data[i].Status = "enable"
+            //     }else{
+            //         data[i].Status = "disable"    
+            //     }
+            // }
+            console.log(data)
             console.log(total)
             serverItems.value = data
             totalItems.value = total
@@ -181,54 +180,39 @@ function loadItems({ page, itemsPerPage, sortBy }) {
             console.error(error);
         })
 }
-// },
-// }
-// const editItem = (item) => {
-//     // router.push({
-//     //     path: '/graphics/oasis-engine',
-//     // });
-// };
-// const runtask=(item)=>{
-//     console.log("run task")
-//     console.log("item id is "+item.id)
-//     const routeData = router.resolve({name: 'Runtask', params: {id: item.id}});
-//     console.log(routeData.href)
-//     window.open(routeData.href, '_blank')
-// }
-const editAccount=(item)=>{
+
+const editProxy=(item)=>{
     router.push({
-            name: 'editSocialAccount',params: { id: item.id } 
+            name: 'editProxy',params: { id: item.id } 
         });
 }
-const deleteAccount=(item)=>{
+const deleteProxybtn=(item)=>{
     showDeleteModal.value = true;
-    deleteAccountid.value=item.id;
+    deleteId.value=item.id;
 }
-const cancelDelete=()=> {
-      showDeleteModal.value = false;
-}
+// const cancelDelete=()=> {
+//       showDeleteModal.value = false;
+// }
 //confirm delete account
-const confirmrmAccount=()=>{
-    console.log("delete account")
-    deleteSocialAccount(deleteAccountid.value).then(
-        (res) => {
-            console.log(res)
+const confirmrmProxy=()=>{
+    // console.log("delete account")
+    deleteProxy(deleteId.value).then(
+        () => {
+            // console.log(res)
             showDeleteModal.value = false;
             loadItems({ page: 1, itemsPerPage: itemsPerPage.value, sortBy: '' })
         }).catch(function (error) {
             console.error(error);
             alertext.value=error.message;
         })
+        // loadItems({ page: 1, itemsPerPage: itemsPerPage.value, sortBy: '' })
 }
-const createAccount=()=>{
+const createProxy=()=>{
     router.push({
-            name: 'CreateSocialAccount' 
+            name: 'AddProxy' 
         });
 }
-//login social account
-const loginAccount=(item)=>{
-    socialaccountLogin({id:item.id})
-}
+
 
 
 

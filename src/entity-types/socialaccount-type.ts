@@ -7,6 +7,11 @@ export type SocialAccountResponse = {
         records?:SocialAccountListData[]
     },
 }
+export type SocialAccountDetailResponse = {
+    status: string,
+    msg: string,
+    data: SocialAccountDetailData
+}
 export type SocialAccountListData={
     id: number,
     social_type: string,
@@ -16,9 +21,10 @@ export type SocialAccountListData={
     status: number,
 }
 export type SocialAccountDetailData={
-    id: number,
-    social_type: string,
+    id?: number,
+    social_type?: string,
     social_type_id: number,
+    social_type_url?:string,
     user: string,
     pass:string,
     status: number,
@@ -27,3 +33,19 @@ export type SocialAccountDetailData={
     email: string, 
     proxy: Proxy 
 }
+export type SavesocialaccountResp={
+    status: boolean,
+    msg: string,
+    data: SoASuccessEntity
+}
+export type SoASuccessEntity={
+    id: number,
+}
+export type SoADeleteResp={
+    status: boolean,
+    msg: string,
+}
+export type SocialLoginParam={
+    id: number
+}
+

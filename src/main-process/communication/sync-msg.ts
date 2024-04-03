@@ -3,12 +3,15 @@ import { userController, userResponse, userlogin } from '@/controller/user-contr
 import { CampaignController } from '@/controller/campaign-controller'
 import { campaignResponse } from '@/modules/campaign'
 import { SocialTaskController } from '@/controller/socialtask-controller'
-import { SocialTaskResponse,SocialTaskInfoResponse,SocialTaskTypeResponse,TagResponse,SaveSocialTaskResponse } from '@/entity-types/socialtask-type'
-import {SocialTaskRun} from "@/modules/socialtaskrun"
+import { SocialTaskResponse, SocialTaskInfoResponse, SocialTaskTypeResponse, TagResponse, SaveSocialTaskResponse } from '@/entity-types/socialtask-type'
+import { SocialTaskRun } from "@/modules/socialtaskrun"
 import { SocialTaskResult } from '@/modules/socialtask_result'
 import { User } from '@/modules/user'
 import { SocialAccount } from '@/modules/socialaccount'
-
+import { SocialPlatform } from "@/modules/social_platform"
+import { ProxyApi } from '@/modules/proxy_api'
+import { ProxyController } from '@/controller/proxy-controller'
+import { ProxyParseItem } from '@/entity-types/proxy-type'
 export default function SyncMsg() {
   console.log("SyncMsg");
   ipcMain.handle("user:Login", async (event, data) => {
@@ -106,16 +109,16 @@ export default function SyncMsg() {
   });
   //get social task list
   ipcMain.handle("socialtask:list", async (event, data) => {
-     const qdata=JSON.parse(data);
-        if(!qdata.hasOwnProperty("id")){
-            //throw new Error("id not found");
-            return {
-                status: false,
-                msg: "id not found",
-            };
-        }
+    const qdata = JSON.parse(data);
+    if (!qdata.hasOwnProperty("id")) {
+      //throw new Error("id not found");
+      return {
+        status: false,
+        msg: "id not found",
+      };
+    }
     const socialControl = new SocialTaskController()
-    const res = await socialControl.getSocialTasklist(qdata.id,qdata.page,qdata.size).then(function (res) {
+    const res = await socialControl.getSocialTasklist(qdata.id, qdata.page, qdata.size).then(function (res) {
       // console.log(res);
       return res;
     }).catch(function (err) {
@@ -169,7 +172,7 @@ export default function SyncMsg() {
 
   //get social task type list
   ipcMain.handle("socialtasktype:list", async (event, data) => {
-    
+
     const socialControl = new SocialTaskController()
     const res = await socialControl.getSocialTaskType().then(function (res) {
       // console.log(res);
@@ -193,7 +196,7 @@ export default function SyncMsg() {
   });
   //get tag list
   ipcMain.handle("tag:list", async (event, data) => {
-    
+
     const socialControl = new SocialTaskController()
     const res = await socialControl.getTaglist().then(function (res) {
       // console.log(res);
@@ -218,7 +221,7 @@ export default function SyncMsg() {
   //save social task
   ipcMain.handle("socialtask:save", async (event, data) => {
     const qdata = JSON.parse(data);
-   
+
     const socialControl = new SocialTaskController()
     const res = await socialControl.saveSocialTask(qdata).then(function (res) {
       // console.log(res);
@@ -250,18 +253,18 @@ export default function SyncMsg() {
         msg: "id not found",
       };
     }
-    if (!qdata.hasOwnProperty("page")){
-      qdata.page=10;
+    if (!qdata.hasOwnProperty("page")) {
+      qdata.page = 10;
     }
-    if (!qdata.hasOwnProperty("size")){
-      qdata.size=10;
+    if (!qdata.hasOwnProperty("size")) {
+      qdata.size = 10;
     }
     const stkrunModel = new SocialTaskRun()
     // const res = await stkrunModel.getrunlist(qdata.id).then(function (res) {
     //   // console.log(res);
-    const reslist=stkrunModel.getrunlist(qdata.id,qdata.page,qdata.size,null)
+    const reslist = stkrunModel.getrunlist(qdata.id, qdata.page, qdata.size, null)
     console.log(reslist)
-    return {status:true,msg:"",data:reslist};
+    return { status: true, msg: "", data: reslist };
     //   // return {status:true,msg:"",data:res};
     // }).catch(function (err) {
     //   console.log(err);
@@ -289,20 +292,20 @@ export default function SyncMsg() {
         msg: "id not found",
       };
     }
-    if (!qdata.hasOwnProperty("page")){
-      qdata.page=10;
+    if (!qdata.hasOwnProperty("page")) {
+      qdata.page = 10;
     }
-    if (!qdata.hasOwnProperty("size")){
-      qdata.size=10;
+    if (!qdata.hasOwnProperty("size")) {
+      qdata.size = 10;
     }
-    const socialtaskres=new SocialTaskResult()
-    const reslist=socialtaskres.gettaskresultlist(qdata.id,qdata.page,qdata.size,null)
-    return {status:true,msg:"",data:reslist};
+    const socialtaskres = new SocialTaskResult()
+    const reslist = socialtaskres.gettaskresultlist(qdata.id, qdata.page, qdata.size, null)
+    return { status: true, msg: "", data: reslist };
   })
   ipcMain.handle("user:Signout", async (event, data) => {
-    const userModel=new User()
-    
-    const res=await userModel.Signout().then(function(){
+    const userModel = new User()
+
+    const res = await userModel.Signout().then(function () {
       return {
         status: true,
         msg: "login out success",
@@ -326,18 +329,18 @@ export default function SyncMsg() {
 
   ipcMain.handle("socialaccount:list", async (event, data) => {
     const qdata = JSON.parse(data);
-    
-    if (!qdata.hasOwnProperty("page")){
-      qdata.page=10;
+
+    if (!qdata.hasOwnProperty("page")) {
+      qdata.page = 10;
     }
-    if (!qdata.hasOwnProperty("size")){
-      qdata.size=10;
+    if (!qdata.hasOwnProperty("size")) {
+      qdata.size = 10;
     }
-    if (!qdata.hasOwnProperty("search")){
-      qdata.search="";
+    if (!qdata.hasOwnProperty("search")) {
+      qdata.search = "";
     }
-    const socialaccount=new SocialAccount()
-    const res=await socialaccount.getSocialaccountlist(qdata.page,qdata.size,qdata.search).catch(function (err) {
+    const socialaccount = new SocialAccount()
+    const res = await socialaccount.getSocialaccountlist(qdata.page, qdata.size, qdata.search).catch(function (err) {
       console.log(err);
       if (err instanceof Error) {
         return {
@@ -352,7 +355,245 @@ export default function SyncMsg() {
       }
 
     })
-    console.log(res)
+    // console.log(res)
+    return res
+  })
+  ipcMain.handle("socialaccount:detail", async (event, data) => {
+    const qdata = JSON.parse(data);
+    if (!qdata.hasOwnProperty("id")) {
+      //throw new Error("id not found");
+      return {
+        status: false,
+        msg: "id not found",
+      };
+    }
+    //get detail from remote
+    const socialaccount = new SocialAccount()
+    const res = await socialaccount.getAccountdetail(qdata.id).catch(function (err) {
+      console.log(err);
+      if (err instanceof Error) {
+        return {
+          status: false,
+          msg: err.message,
+        };
+      } else {
+        return {
+          status: false,
+          msg: "unknow error",
+        };
+      }
+
+    })
+
+    return res
+  })
+  //list social platform
+  ipcMain.handle("socialplatform:list", async (event, data) => {
+    const qdata = JSON.parse(data);
+
+    if (!qdata.hasOwnProperty("page")) {
+      qdata.page = 10;
+    }
+    if (!qdata.hasOwnProperty("size")) {
+      qdata.size = 10;
+    }
+
+    const socialPlatform = new SocialPlatform()
+    const res = await socialPlatform.listsocialplatform(qdata.page, qdata.size).catch(function (err) {
+      console.log(err);
+      if (err instanceof Error) {
+        return {
+          status: false,
+          msg: err.message,
+        };
+      } else {
+        return {
+          status: false,
+          msg: "unknow error",
+        };
+      }
+
+    })
+    // console.log(res)
+    return res
+  })
+  ipcMain.handle("socialaccount:save", async (event, data) => {
+    //save social account
+    const qdata = JSON.parse(data);
+    const socialaccount = new SocialAccount()
+    const res = await socialaccount.saveSocialAccount(qdata).catch(function (err) {
+      console.log(err);
+      if (err instanceof Error) {
+        return {
+          status: false,
+          msg: err.message,
+        };
+      } else {
+        return {
+          status: false,
+          msg: "unknow error",
+        };
+      }
+    })
+    return res
+  })
+  //delete social account
+  ipcMain.handle("socialaccount:delete", async (event, data) => {
+    const qdata = JSON.parse(data);
+    if (!qdata.hasOwnProperty("id")) {
+      //throw new Error("id not found");
+      return {
+        status: false,
+        msg: "id not found",
+      };
+    }
+    //get detail from remote
+    const socialaccount = new SocialAccount()
+    const res = await socialaccount.deleteAccount(qdata.id).catch(function (err) {
+      console.log(err);
+      if (err instanceof Error) {
+        return {
+          status: false,
+          msg: err.message,
+        };
+      } else {
+        return {
+          status: false,
+          msg: "unknow error",
+        };
+      }
+
+    })
+
+    return res
+  })
+  //get proxy list
+  ipcMain.handle("proxy:list", async (event, data) => {
+    const qdata = JSON.parse(data);
+    if (!qdata.hasOwnProperty("page")) {
+      qdata.page = 10;
+    }
+    if (!qdata.hasOwnProperty("size")) {
+      qdata.size = 10;
+    }
+    if (!qdata.hasOwnProperty("search")) {
+      qdata.search = "";
+    }
+    const proxyModule = new ProxyApi()
+    const res = await proxyModule.getProxylist(qdata.page, qdata.size, qdata.search).then(function (res) {
+      return res;
+    }).catch(function (err) {
+      console.log(err);
+      if (err instanceof Error) {
+        return {
+          status: false,
+          msg: err.message,
+        };
+      } else {
+        return {
+          status: false,
+          msg: "unknow error",
+        };
+      }
+    })
+    return res
+  })
+  ipcMain.handle("proxy:delete", async (event, data) => {
+    const qdata = JSON.parse(data);
+    if (!qdata.hasOwnProperty("id")) {
+      return {
+        status: false,
+        msg: "id not found",
+      };
+    }
+
+    const proxyModule = new ProxyApi()
+    const resp = await proxyModule.deleteProxy(qdata.id).then(function (res) {
+      return res;
+    }).catch(function (err) {
+      console.log(err);
+      if (err instanceof Error) {
+        return {
+          status: false,
+          msg: err.message,
+        };
+      } else {
+        return {
+          status: false,
+          msg: "unknow error",
+        };
+      }
+    })
+
+
+    return resp
+  })
+  ipcMain.handle("proxy:detail", async (event, data) => {
+    const qdata = JSON.parse(data);
+    if (!qdata.hasOwnProperty("id")) {
+      return {
+        status: false,
+        msg: "id not found",
+      };
+    }
+
+    const proxyModule = new ProxyApi()
+    const resp = await proxyModule.getProxyDetail(qdata.id).then(function (res) {
+      return res;
+    }).catch(function (err) {
+      console.log(err);
+      if (err instanceof Error) {
+        return {
+          status: false,
+          msg: err.message,
+        };
+      } else {
+        return {
+          status: false,
+          msg: "unknow error",
+        };
+      }
+    })
+    return resp
+  })
+  ipcMain.handle("proxy:save", async (event, data) => {
+    const qdata = JSON.parse(data);
+    const proxyModule = new ProxyApi()
+    const pres = await proxyModule.saveProxy(qdata).then(function (res) {
+      return res;
+    }).catch(function (err) {
+      console.log(err);
+      if (err instanceof Error) {
+        return {
+          status: false,
+          msg: err.message,
+        };
+      } else {
+        return {
+          status: false,
+          msg: "unknow error",
+        };
+      }
+    })
+    return pres
+  })
+  //check proxy
+  ipcMain.handle("proxy:check", async (event, data) => {
+    const qdata = JSON.parse(data) as ProxyParseItem;
+    
+    const proxyCon = new ProxyController()
+    const res=await proxyCon.checkProxy(qdata).catch(function (err) {
+      return {status:false,msg:err.message,data:false};
+    })
+    return res
+  })
+  //import proxy
+  ipcMain.handle("proxy:import", async (event, data) => {
+    const qdata = JSON.parse(data) as Array<ProxyParseItem>;
+    const proxyModel=new ProxyApi()
+    const res=await proxyModel.importProxy(qdata).catch(function (err) {
+      return {status:false,msg:err.message,data:false};
+    })
     return res
   })
 }
