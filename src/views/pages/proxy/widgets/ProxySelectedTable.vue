@@ -68,6 +68,12 @@ const headers: Array<any> = [
         sortable: false,
         key: 'protocol',
     },
+    {
+        title: 'Add time',
+        align: 'start',
+        sortable: false,
+        key: 'addtime',
+    },
 
 ];
 const itemsPerPage = ref(10);

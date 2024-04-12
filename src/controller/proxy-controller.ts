@@ -34,6 +34,35 @@ export class ProxyController {
         const results = Papa.parse(csvData, { header: true });
         return results.data;
     }
+    //convert proxy entity to url
+    public proxyEntityToUrl(proxyEntity: ProxyParseItem): string{
+        if (!proxyEntity.protocol) {
+            throw new Error("protocol is required");
+        }
+        if (!proxyEntity.host) {
+            throw new Error("host is required");
+        }
+        if (!proxyEntity.port) {
+            throw new Error("port is required");
+        }
+        let proxyUrl = "";
+        if (proxyEntity.protocol.includes('http')) {
+            if ((proxyEntity.user && (proxyEntity.user?.length > 0)) && (proxyEntity.pass && (proxyEntity.pass?.length > 0))) {
+                proxyUrl = `${proxyEntity.protocol}://${proxyEntity.user}:${proxyEntity.pass}@${proxyEntity.host}:${proxyEntity.port}`;
+            } else {
+                proxyUrl = `${proxyEntity.protocol}://${proxyEntity.host}:${proxyEntity.port}`;
+            }
+        } else if (proxyEntity.protocol.includes('socks')) {
+            // let socketType:4|5=5
+            // if(proxyEntity.protocol.includes('4')){
+            //     let socketType=4
+            // }
+            proxyUrl = `${proxyEntity.protocol}://${proxyEntity.host}:${proxyEntity.port}`;
+        } else {
+            throw new Error("protocol is not valid");
+        }
+        return proxyUrl;
+    }
     //check proxy valid
     public async checkProxy(proxyEntity: ProxyParseItem): Promise<ProxyCheckres> {
         try {
@@ -50,7 +79,7 @@ export class ProxyController {
                     proxyUrl = `${proxyEntity.protocol}://${proxyEntity.host}:${proxyEntity.port}`;
                 }
                 const agent = new HttpsProxyAgent(proxyUrl);
-                const res = await fetch('https://ident.me/ip', { agent: agent ,signal: AbortSignal.timeout( 1000 ),});
+                const res = await fetch('https://ident.me/ip', { agent: agent ,signal: AbortSignal.timeout( 2000 ),});
 
                 if (res.status == 200) {
                     console.log(res.status);
@@ -62,8 +91,10 @@ export class ProxyController {
             } else if (proxyEntity.protocol.includes('socks')) {
                 let socketType:4|5=5
                 if(proxyEntity.protocol.includes('4')){
-                    let socketType=4
+                    socketType=4
                 }
+                // console.log(proxyEntity.host)
+                // console.log(proxyEntity.port)
                 const dispatcher = socksDispatcher({
                     type: socketType,
                     host: proxyEntity.host,
@@ -83,7 +114,11 @@ export class ProxyController {
             }
         } catch (error) {
             // console.log('Proxy is not valid');
-            throw new Error('Proxy is not valid');
+            let message=""
+            if(error instanceof Error){
+                message=error.message
+            }
+            throw new Error('Proxy is not valid,'+message);             
         }
     }
 

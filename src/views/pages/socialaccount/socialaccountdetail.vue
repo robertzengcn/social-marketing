@@ -1,38 +1,108 @@
 <template>
   <v-sheet class="mx-auto" rounded>
     <v-form ref="form" @submit.prevent="onSubmit">
-      <v-text-field v-model="socialaccountId" label="Id" type="input" v-show="isEdit" :readonly="true"
-        clearable></v-text-field>
-      <v-text-field v-model="user" label="User" type="input" hint="input the name" :rules="[rules.required]" required
-        :readonly="loading" clearable></v-text-field>
-      <v-text-field v-model="pass" label="Pass" type="input" hint="input the pass" :rules="[rules.required]" required
-        :readonly="loading" clearable></v-text-field>
+      <v-text-field
+        v-model="socialaccountId"
+        label="Id"
+        type="input"
+        v-show="isEdit"
+        :readonly="true"
+        clearable
+      ></v-text-field>
+      <v-text-field
+        v-model="user"
+        label="User"
+        type="input"
+        hint="input the name"
+        :rules="[rules.required]"
+        required
+        :readonly="loading"
+        clearable
+      ></v-text-field>
+      <v-text-field
+        v-model="pass"
+        label="Pass"
+        type="input"
+        hint="input the pass"
+        :rules="[rules.required]"
+        required
+        :readonly="loading"
+        clearable
+      ></v-text-field>
       <v-btn-toggle v-model="status" mandatory>
         <v-btn :value="0" color="primary">Inactive</v-btn>
         <v-btn :value="1" color="success">Active</v-btn>
       </v-btn-toggle>
-      <v-select v-model="social_type_id" item-title="name" item-value="id" :items="platformitems" label="Platform"
-        required :readonly="loading" :rules="[rules.required]"></v-select>
-      <v-text-field v-model="name" label="Name" type="input" hint="input the account name"
-        :readonly="loading"></v-text-field>
-      <v-text-field v-model="phone" clearable label="Phone" type="input" hint="input the account phone"
-        :readonly="loading"></v-text-field>
-      <v-text-field v-model="email" clearable label="Email" type="input" hint="input the account email"
-        :readonly="loading"></v-text-field>
+      <v-select
+        v-model="social_type_id"
+        item-title="name"
+        item-value="id"
+        :items="platformitems"
+        label="Platform"
+        required
+        :readonly="loading"
+        :rules="[rules.required]"
+      ></v-select>
+      <v-text-field
+        v-model="name"
+        label="Name"
+        type="input"
+        hint="input the account name"
+        :readonly="loading"
+      ></v-text-field>
+      <v-text-field
+        v-model="phone"
+        clearable
+        label="Phone"
+        type="input"
+        hint="input the account phone"
+        :readonly="loading"
+      ></v-text-field>
+      <v-text-field
+        v-model="email"
+        clearable
+        label="Email"
+        type="input"
+        hint="input the account email"
+        :readonly="loading"
+      ></v-text-field>
 
-      <v-text-field v-model="proxyValue" label="Proxy" type="input" hint="proxy for the account" readonly
-        @click="showProxytable"></v-text-field>
+      <v-combobox
+        v-model="proxyValue"
+        :items="proxyValue"
+        label="Select proxy"
+        item-title="host"
+        multiple
+        return-object
+        chips
+        clearable
+      ></v-combobox>
+      <v-btn color="primary" @click="showProxytable">Change Proxy</v-btn>
+
       <div v-if="proxytableshow">
         <ProxyTableselected @change="handleSelectedChanged" />
       </div>
 
-      <v-alert v-model="alert" border="start" variant="tonal" closable close-label="Close Alert" title="Information"
-        :color="alertcolor">
+      <v-alert
+        v-model="alert"
+        border="start"
+        variant="tonal"
+        closable
+        close-label="Close Alert"
+        title="Information"
+        :color="alertcolor"
+      >
         {{ alertContent }}
       </v-alert>
 
       <div class="d-flex flex-column">
-        <v-btn color="success" class="mt-4" block type="submit" :loading="loading">
+        <v-btn
+          color="success"
+          class="mt-4"
+          block
+          type="submit"
+          :loading="loading"
+        >
           Submit
         </v-btn>
 
@@ -54,7 +124,7 @@ import { getSocialPlatformlist } from "@/views/api/social_platform";
 import { useRoute } from "vue-router";
 import { SocialAccountDetailData } from "@/entity-types/socialaccount-type";
 import ProxyTableselected from "@/views/pages/proxy/widgets/ProxySelectedTable.vue";
-import { ProxyListEntity } from "@/entity-types/proxy-type";
+import { ProxyListEntity, Proxy } from "@/entity-types/proxy-type";
 
 const $route = useRoute();
 const FakeAPI = {
@@ -70,10 +140,11 @@ const status = ref(0);
 const name = ref(""); //username
 const phone = ref("");
 const email = ref("");
-const proxy = ref(0);
+// const proxy = ref(0);
 const socialaccountId = ref(0);
 const social_type_id = ref(0);
-const proxyValue = ref("");
+const proxyValue = ref<Array<Proxy>>([]);
+const proxyValueshow = ref<Array<String>>([]);
 const loading = ref(false);
 const alert = ref(false);
 const alertContent = ref("");
@@ -89,10 +160,9 @@ const rules = {
 const showProxytable = () => {
   console.log("show proxy table");
   proxytableshow.value = !proxytableshow.value;
-}
+};
 
 const initialize = async () => {
-
   if ($route.params.id) {
     socialaccountId.value = parseInt($route.params.id.toString());
   }
@@ -107,14 +177,25 @@ const initialize = async () => {
       name.value = res.name;
       phone.value = res.phone;
       email.value = res.email;
-      if (res.proxy != null && res.proxy.id) {
-        proxy.value = res.proxy.id;
-        if (res.proxy.url) {
-          proxyValue.value = res.proxy.url;
+      if (res.proxy != null && res.proxy.length > 0) {
+        const proxylist: ProxyListEntity[] = [];
+        for (let i = 0; i < res.proxy.length; i++) {
+          proxyValue.value.push(res.proxy[i]);
+          proxylist.push({
+            id: res.proxy[i].id,
+            host: res.proxy[i].host,
+            port: res.proxy[i].port,
+            username: res.proxy[i].username,
+            password: res.proxy[i].password,
+            protocol: res.proxy[i].protocol,
+            addtime: "",
+          });
         }
+        handleSelectedChanged(proxylist);
       }
-      social_type_id.value = res.social_type_id;
 
+      // console.log(proxyValue.value)
+      social_type_id.value = res.social_type_id;
     });
   } else {
     //add new item
@@ -155,7 +236,7 @@ async function onSubmit() {
       name: name.value,
       phone: phone.value,
       email: email.value,
-      proxy: { id: proxy.value },
+      proxy: proxyValue.value,
     };
     if ($route.params.id) {
       soacc.id = parseInt($route.params.id.toString());
@@ -191,7 +272,6 @@ async function onSubmit() {
 
 onMounted(() => {
   initialize();
-
 });
 // watch(ProxyTableselected.selected, (newValue, oldValue) => {
 //   console.log(`selectedProxy changed from ${oldValue} to ${newValue}`);
@@ -202,26 +282,51 @@ onMounted(() => {
 //   }
 // });
 const handleSelectedChanged = (newValue: ProxyListEntity[]) => {
-  console.log(`selectedProxy changed to ${newValue}`);
+  // console.log(`selectedProxy changed to ${newValue}`);
+  // proxyValue.value=[];
   if (newValue && newValue.length > 0) {
-    
-    if (newValue[0].id) {
-      proxy.value = newValue[0].id;
-      proxyValue.value = newValue[0].host + ":" + newValue[0].port;
+    //loop new value and add to proxyValue
+
+    for (let i = 0; i < newValue.length; i++) {
+      if (newValue[i] && newValue[i].id) {
+        let isexist = false;
+        for (let is = 0; is < proxyValue.value.length; is++) {
+          if (proxyValue.value[is].id == newValue[i].id) {
+            isexist = true;
+          }
+        }
+        console.log("isexist:" + isexist.toString());
+        if (!isexist) {
+          proxyValue.value.push({
+            id: newValue[i].id,
+            host: newValue[i].host,
+            port: newValue[i].port,
+            username: newValue[i].username,
+            password: newValue[i].password,
+            protocol: newValue[i].protocol,
+          });
+          console.log(proxyValue.value);
+        }
+      }
     }
   }
-}
-
-// watch(selectedProxy, (newValue, oldValue) => {
-//   console.log(`selectedProxy changed from ${oldValue} to ${newValue}`);
-//   if (newValue && newValue.id) {
-
-//     proxy.value = newValue.id;
-//     proxyValue.value = newValue.host + ":" + newValue.port;
-
-//   } else {
-//     proxy.value = 0;
-//     proxyValue.value = "";
-//   }
-// });
+};
+watch(proxyValue.value, (newValue, oldValue) => {
+  console.log(`proxyValue changed from ${oldValue} to ${newValue}`);
+  if (newValue && newValue.length > 0) {
+    // let proxystr = "";
+    for (let i = 0; i < newValue.length; i++) {
+      if (newValue[i] && newValue[i].id) {
+        // proxystr += newValue[i].host + ":" + newValue[i].port + ",";
+        const target = newValue[i].host + ":" + newValue[i].port;
+        if (proxyValueshow.value.indexOf(target) == -1) {
+          proxyValueshow.value.push(target);
+        }
+        // proxyValueshow.value.push();
+      }
+    }
+  } else {
+    proxyValueshow.value = [];
+  }
+});
 </script>

@@ -1,4 +1,5 @@
 const path = require("path");
+import {Notification} from 'electron'
 export type queryParams = {
     page: number,
     size: number,
@@ -99,3 +100,7 @@ export const hash = Math.floor(Math.random() * 90000) + 10000;
 //     delay:delay,
 //     getRecorddate:getRecorddate
 // }
+
+export function showNotification(title:string,body:string) {
+  new Notification({title: title, body: body}).show()
+}

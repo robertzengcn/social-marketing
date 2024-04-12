@@ -77,8 +77,13 @@ export class SocialAccount {
     data.append("name", soc.name);
     data.append("phone", soc.phone);
     data.append("email", soc.email);
-    if (soc.proxy&&soc.proxy.id) {
-      data.append("proxy", soc.proxy.id.toString());
+    if (soc.proxy) {
+      for (const proxy of soc.proxy) {
+        if(proxy.id){
+          data.append("proxy[]", proxy.id.toString());
+        console.log("proxy id is "+proxy.id.toString())
+        }
+      }
     }
 
     const resp = await this._httpClient.post("/api/socialaccount",data);

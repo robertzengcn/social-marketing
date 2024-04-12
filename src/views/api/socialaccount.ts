@@ -1,5 +1,5 @@
 import {ItemSearchparam,SearchResult} from './types'
-import {windowInvoke,windowSend} from '@/views/utils/apirequest'
+import {windowInvoke,windowSend,windowReceive} from '@/views/utils/apirequest'
 import {SocialAccountDetailData,SoASuccessEntity,SoADeleteResp,SocialLoginParam} from "@/entity-types/socialaccount-type"
 export async function getSocialAccountlist(data: ItemSearchparam):Promise<SearchResult>{
     const resp=await windowInvoke('socialaccount:list',data);
@@ -37,3 +37,6 @@ export async function deleteSocialAccount(id:number):Promise<SoADeleteResp>{
 export function socialaccountLogin(data:SocialLoginParam){
         windowSend('socialaccount:login',data);    
 }
+export function receiveAccountLoginevent(channel:string,cb:(data:any)=>void){
+        windowReceive(channel,cb)
+ }

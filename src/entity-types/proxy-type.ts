@@ -1,7 +1,9 @@
 import { SearchResult } from "@/views/api/types"
 export type Proxy={
     id?:number,
-    url?:string,
+    // url?:string,
+    host?:string,
+    port?:string,
     username?:string,
     password?:string,
     protocol?:string,
@@ -24,6 +26,7 @@ export type ProxyListEntity={
     password?:string,
     protocol?:string,
     country_code?:string
+    addtime:string,
 }
 export type ProxylistResp={
     status:boolean,

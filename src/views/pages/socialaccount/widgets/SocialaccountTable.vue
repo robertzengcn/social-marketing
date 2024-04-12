@@ -13,6 +13,14 @@
         <div>       
         </div>
     </div>
+    <div class="mt-4 jsb">
+        <v-alert
+      v-model="alert"
+      :text="alerttext"
+      :title="alerttitle"
+      :type="alerttype"
+    ></v-alert>
+      </div>
     <v-data-table-server v-model:items-per-page="itemsPerPage" :search="search" :headers="headers"
         :items-length="totalItems" :items="serverItems" :loading="loading" item-value="name" @update:options="loadItems">
         <template v-slot:[`item.actions`]="{ item }">
@@ -84,15 +92,22 @@
         </v-dialog>
     </div>
 
+    
+
 
 </template>
 
 <script setup lang="ts">
-import { getSocialAccountlist,deleteSocialAccount, socialaccountLogin } from '@/views/api/socialaccount'
-import { ref } from 'vue'
+import { getSocialAccountlist,deleteSocialAccount, socialaccountLogin,receiveAccountLoginevent } from '@/views/api/socialaccount'
+import { ref,onMounted } from 'vue'
 import { SearchResult } from '@/views/api/types'
 // import { useRoute } from "vue-router";
 import router from '@/views/router';
+const alert = ref(false);
+const alerttitle = ref("");
+const alerttext= ref("");
+const alertcolor = ref("");
+const alerttype = ref<"success" | "error" | "warning" | "info" | undefined>("success");
 type Fetchparam = {
     // id:number
     page: number,
@@ -230,6 +245,29 @@ const loginAccount=(item)=>{
     socialaccountLogin({id:item.id})
 }
 
-
+const receiveLoginMsg=(channel:string)=>{
+    receiveAccountLoginevent(channel,function (value) {
+        console.log(value)
+        const json_value=JSON.parse(value)
+        if(!json_value.status){
+            console.log(json_value.msg)
+            setAlert(json_value.msg, "Login Account", "error")
+        } 
+    }
+    ) 
+}
+onMounted(() => {
+    // socialaccount:login:msg
+     receiveLoginMsg("socialaccount:login:msg")
+});
+const setAlert=(text: string, title: string, type: "success" | "error" | "warning" | "info" | undefined) =>{
+  alerttext.value = text;
+  alerttitle.value = title;
+  alerttype.value = type;
+  alert.value = true;
+  setTimeout(() => {
+    alert.value= false
+        }, 5000)
+}
 
 </script>

@@ -31,7 +31,7 @@ export type SocialAccountDetailData={
     name: string,
     phone: string,
     email: string, 
-    proxy: Proxy 
+    proxy: Array<Proxy>
 }
 export type SavesocialaccountResp={
     status: boolean,

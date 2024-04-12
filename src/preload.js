@@ -7,7 +7,7 @@ import { contextBridge, ipcRenderer } from 'electron'
 contextBridge.exposeInMainWorld('api', {
     send: (channel, data) => {
       // whitelist channels
-      let validChannels = ['user:Login','socialtask:start','socialtask:log','socialaccount:login']
+      let validChannels = ['user:Login','socialtask:start','socialtask:log','socialaccount:login','socialaccount:login:msg']
       console.log('send',channel,data)
       if (validChannels.includes(channel)) {
         console.log('send2',channel,data)
@@ -15,7 +15,7 @@ contextBridge.exposeInMainWorld('api', {
       }
     },
     receive: (channel, func) => {
-      let validChannels = ['user:Login','socialtask:start','socialtask:log']
+      let validChannels = ['user:Login','socialtask:start','socialtask:log','socialaccount:login:msg']
       const regex="/^socialtask:log:/"
 
       if (validChannels.includes(channel)||channel.test(regex)) {
