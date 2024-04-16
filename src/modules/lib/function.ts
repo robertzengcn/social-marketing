@@ -1,4 +1,6 @@
 const path = require("path");
+import { exec } from 'child_process';
+
 import {Notification} from 'electron'
 export type queryParams = {
     page: number,
@@ -103,4 +105,19 @@ export const hash = Math.floor(Math.random() * 90000) + 10000;
 
 export function showNotification(title:string,body:string) {
   new Notification({title: title, body: body}).show()
+}
+
+export function checkPipPackage(packageName: string,callback): void {
+  exec('pip list', (error: Error | null, stdout: string, stderr: string) => {
+    if (error) {
+      console.error(`exec error: ${error}`);
+      return;
+    }
+    callback(stdout)
+    // if (stdout.includes(packageName)) {
+    //   console.log(`${packageName} is installed`);
+    // } else {
+    //   console.log(`${packageName} is not installed`);
+    // }
+  });
 }
