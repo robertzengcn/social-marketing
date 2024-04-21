@@ -1,20 +1,10 @@
 <template>
-    <v-layout
-        :class="{
-            isMini: navState.isMini,
-            isMobile: mainStore.isMobile,
-        }"
-    >
-        <v-navigation-drawer
-            class="my-4 layout_navigation"
-            :rail="navState.rail"
-            expand-on-hover
-            rail-width="77"
-            @update:rail="navigationRail"
-            :permanent="permanent"
-            v-model="navState.menuVisible"
-            style="position: fixed"
-        >
+    <v-layout :class="{
+        isMini: navState.isMini,
+        isMobile: mainStore.isMobile,
+    }">
+        <v-navigation-drawer class="my-4 layout_navigation" :rail="navState.rail" expand-on-hover rail-width="77"
+            @update:rail="navigationRail" :permanent="permanent" v-model="navState.menuVisible" style="position: fixed">
             <v-list class="py-4 mx-2 logo" nav>
                 <v-list-item :prepend-avatar="logo" class="mx-1">
                     <v-list-item-title class="title">Material UI</v-list-item-title>
@@ -26,45 +16,26 @@
             <v-list nav class="mx-2">
                 <v-list-subheader>Dashboard</v-list-subheader>
                 <template v-for="(item, key) in navState.routes" :key="key">
-                    <v-list-item
-                        v-if="item.meta?.visible && !item.children"
-                        :prepend-icon="(item.meta?.icon as any)"
-                        :title="(item.meta?.title as any)"
-                        :to="{ name: item.name }"
-                        class="mx-1"
-                        active-class="nav_active"
-                    ></v-list-item>
+                    <v-list-item v-if="item.meta?.visible && !item.children" :prepend-icon="(item.meta?.icon as any)"
+                        :title="(item.meta?.title as any)" :to="{ name: item.name }" class="mx-1"
+                        active-class="nav_active"></v-list-item>
 
-                    <v-list-group
-                        v-if="item.meta?.visible && item.children && item.children.length > 0"
-                        class="mx-1"
-                    >
+                    <v-list-group v-if="item.meta?.visible && item.children && item.children.length > 0" class="mx-1">
                         <template v-slot:activator="{ props }">
-                            <v-list-item
-                                v-bind="props"
-                                :prepend-icon="item.meta.icon"
-                                :title="item.meta.title"
-                            />
+                            <v-list-item v-bind="props" :prepend-icon="item.meta.icon" :title="item.meta.title" />
                         </template>
                         <template v-for="(row, i) in item.children">
-                            <v-list-item
-                                v-if="(row.meta?.visible as  any)"
-                                :title="(row.meta?.title as any)"
-                                :prepend-icon="navState.isMini ? (row.meta?.icon as any) : ''"
-                                :key="i"
-                                :to="{ name: row.name }"
-                            />
+                            <v-list-item v-if="(row.meta?.visible as any)" :title="(row.meta?.title as any)"
+                                :prepend-icon="navState.isMini ? (row.meta?.icon as any) : ''" :key="i"
+                                :to="{ name: row.name }" />
                         </template>
                     </v-list-group>
                     <!-- <v-list-subheader v-if="item.name === 'Dashboard'">Examples</v-list-subheader> -->
                     <v-list-subheader v-if="item.name === 'Miscellaneous'">Other</v-list-subheader>
                 </template>
                 <v-list-item prepend-icon="mdi-text-box" class="mx-1">
-                    <v-list-item-title
-                        ><a target="_blank" href="https://vuetifyjs.com/" class="link"
-                            >Document</a
-                        ></v-list-item-title
-                    >
+                    <v-list-item-title><a target="_blank" href="https://vuetifyjs.com/"
+                            class="link">Document</a></v-list-item-title>
                 </v-list-item>
                 <!-- <v-list-item prepend-icon="mdi-github" class="mx-1">
                     <v-list-item-title
@@ -88,36 +59,19 @@
                 <div v-if="mainStore.isMobile" class="head_logo ml-4 mr-1">
                     <img :src="logo" height="40" />
                 </div>
-                <v-btn
-                    v-if="mainStore.isMobile"
-                    variant="text"
-                    icon="mdi-menu"
-                    @click="navState.menuVisible = !navState.menuVisible"
-                >
+                <v-btn v-if="mainStore.isMobile" variant="text" icon="mdi-menu"
+                    @click="navState.menuVisible = !navState.menuVisible">
                     <v-icon size="small"></v-icon>
                 </v-btn>
                 <v-spacer></v-spacer>
                 <div v-if="!mainStore.isMobile" style="width: 220px" class="search_ip mr-2">
                     <!-- <div id="docsearch"></div> -->
-                    <v-text-field
-                        rounded
-                        density="compact"
-                        variant="outlined"
-                        label="Search here"
-                        prepend-inner-icon="mdi-magnify"
-                        single-line
-                        hide-details
-                        clearable
-                    ></v-text-field>
+                    <v-text-field rounded density="compact" variant="outlined" label="Search here"
+                        prepend-inner-icon="mdi-magnify" single-line hide-details clearable></v-text-field>
                 </div>
                 <div class="tool_btns">
-                    <v-btn
-                        @click="mainStore.onTheme"
-                        variant="text"
-                        :icon="
-                            mainStore.theme === 'light' ? 'mdi-weather-sunny' : 'mdi-weather-night'
-                        "
-                    />
+                    <v-btn @click="mainStore.onTheme" variant="text" :icon="mainStore.theme === 'light' ? 'mdi-weather-sunny' : 'mdi-weather-night'
+        " />
                     <v-btn variant="text" icon="mdi-bell-outline">
                         <v-badge content="2" color="error">
                             <v-icon size="small"></v-icon>
@@ -130,13 +84,19 @@
                         <span v-if="!mainStore.isMobile">陈咩咩啊</span>
                         <v-menu activator="parent">
                             <v-list nav class="h_a_menu">
-                            
-                                <v-list-item
-                                    title="Sign out"
-                                    prepend-icon="mdi-login"
+                                <v-menu :location="location">
+                                    <template v-slot:activator="{ props }">
+                                        <v-list-item title="Language" prepend-icon="mdi-translate" v-bind="props" />
+                                    </template>
+                                        <v-list>
+                                            <v-list-item v-for="(item, index) in languages" :key="index">
+                                                <v-list-item-title @click="switchLanguage(item.key)">{{ item.title }}</v-list-item-title>
+
+                                            </v-list-item>
+                                        </v-list>
                                     
-                                    @click="Usersignout"
-                                />
+                                </v-menu>
+                                <v-list-item :title="$t('layout.login')" prepend-icon="mdi-login" @click="Usersignout" />
                             </v-list>
                         </v-menu>
                     </v-btn>
@@ -145,7 +105,9 @@
                     <v-btn icon="mdi-cog" />
                 </div>
             </header>
-            <div class="router"><RouterView /></div>
+            <div class="router">
+                <RouterView />
+            </div>
         </main>
     </v-layout>
 </template>
@@ -157,7 +119,10 @@ import Breadcrumbs from '@/views/components/breadcrumbs/breadcrumbs.vue';
 import { reactive, computed, watch } from 'vue';
 import { useMainStore } from '@/views/store/appMain';
 import { Signout } from '@/views/api/users'
+import {setLanguage} from '@/views/utils/cookies'
+import {useI18n} from "vue-i18n";
 
+// import {ref, watchEffect} from "vue";
 const mainStore = useMainStore();
 const router = useRouter();
 const navState = reactive({
@@ -169,6 +134,29 @@ const navState = reactive({
 const permanent = computed(() => {
     return !mainStore.isMobile;
 });
+const {t,locale} = useI18n();
+const location="end"
+type languageType = {
+    title: string,
+    key: string
+}
+
+const languages: Array<languageType> = [
+    { title: "English",key:"en" },
+    { title: "中文",key:"zh"},
+]
+// const currentLanguage = languages.find((x) => x.key === locale.value)?.key ?? "en";
+// const selectedOption = ref(currentLanguage);
+// watchEffect(() => {
+//  locale.value = languages.find((x) => x.key === selectedOption.value)!.key;
+// })
+const switchLanguage = (lang: string) => {
+    console.log(lang)
+    // i18n.locale = lang
+    locale.value=lang
+    setLanguage(lang)
+    // router.go(0)
+}
 
 watch(permanent, () => {
     navState.menuVisible = true;
@@ -179,11 +167,12 @@ const navigationRail = (e: boolean) => {
     navState.isMini = e;
 };
 
+
 const changeRail = () => {
     navState.rail = !navState.rail;
     navState.isMini = navState.rail;
 };
-const Usersignout=async ()=>{
+const Usersignout = async () => {
     console.log("signout")
     await Signout()
     router.push('/login')

@@ -11,8 +11,12 @@ export type Itemlistparam={
     size:number
    
 }
-export interface SearchResult{
-    data:any
+// export interface SearchResult{
+//     data:any
+//     total:number
+// }
+export interface SearchResult<Type>{
+    data:Array<Type>
     total:number
 }
 export type SocialaccountResult={

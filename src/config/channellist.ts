@@ -1,0 +1,1 @@
+export const EXTRAMODULECHANNE_LIST='extramodule:list'

@@ -3,8 +3,9 @@
 import { app, protocol, BrowserWindow } from 'electron'
 // import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
-import * as mainmsg from "./main-process/communication/";
+import {registerCommunicationIpcHandlers} from "./main-process/communication/";
 import * as path from 'path';
+// import { createProtocol } from 'electron';
 const isDevelopment = process.env.NODE_ENV !== 'production'
 declare const MAIN_WINDOW_VITE_DEV_SERVER_URL: string;
 declare const MAIN_WINDOW_VITE_NAME: string;
@@ -70,7 +71,7 @@ function initialize() {
       if (!process.env.IS_TEST) win.webContents.openDevTools()
     } else {
       // console.log('app://./index.html')
-      createProtocol('app')
+      // createProtocol('app')
       // Load the index.html when not in development
       await win.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`))
     }
@@ -96,8 +97,7 @@ function initialize() {
   // Some APIs can only be used after this event occurs.
   app.on('ready', async () => {
     createWindow();
-    mainmsg.SyncMsg();
-    mainmsg.AsyncMsg();
+    registerCommunicationIpcHandlers();
     
    
     if (isDevelopment && !process.env.IS_TEST) {

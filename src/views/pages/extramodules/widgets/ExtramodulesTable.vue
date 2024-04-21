@@ -1,28 +1,8 @@
 <template>
-    <div class="search_bar mt-4 d-flex jsb">
-        <div class="d-flex jsb search_tool">
-            <div class="search_wrap mr-4">
-                <v-text-field rounded class="elevation-0" density="compact" variant="solo" label="Search sample"
-                    append-inner-icon="mdi-magnify" single-line hide-details></v-text-field>
-            </div>
-            <v-btn class="btn" variant="flat" prepend-icon="mdi-filter-variant"><span> {{$t('common.more')}}</span></v-btn>
-        </div>
-        <!-- <div>
-            <v-chip class="mx-2" closable color="pink"> Secondary </v-chip>
-            <v-chip class="mx-2" closable color="secondary"> Label </v-chip>
-            <v-chip class="mx-2"> Status </v-chip>
-        </div> -->
-    </div>
-    <v-data-table-server v-model:items-per-page="itemsPerPage" :search="search" :headers="headers"
+    <v-data-table-server v-model:items-per-page="itemsPerPage" :headers="headers"
         :items-length="totalItems" :items="serverItems" :loading="loading" item-value="name" @update:options="loadItems">
         <template v-slot:[`item.actions`]="{ item }">
-            <v-icon
-            size="small"
-            class="me-2"
-            @click="openfolder(item)"
-          >
-            mdi-folder
-          </v-icon>
+            
             <v-icon
             size="small"
             class="me-2"
@@ -32,33 +12,19 @@
           </v-icon>
           <v-icon
             size="small"
-           
           >
             mdi-delete
           </v-icon>
         </template>
     </v-data-table-server>
     
-    <!-- <v-dialog width="30%">
-        <v-card title="Dialog">
-            <v-card-text>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-                incididunt ut labore et dolore magna aliqua.
-            </v-card-text>
-            <v-card-actions>
-                <v-btn color="primary" block>Close Dialog</v-btn>
-            </v-card-actions>
-        </v-card>
-    </v-dialog> -->
 </template>
 
 <script setup lang="ts">
 import {useI18n} from "vue-i18n";
-
-import { getCampaignlist } from '@/views/api/campaigins'
+import { getExtramodulelist } from "@/views/api/extramodules"
 import { ref,computed } from 'vue'
 import { SearchResult } from '@/views/api/types'
-// import type { VDataTable } from 'vuetify/lib/components/index.mjs'
 import router from '@/views/router';
 const {t} = useI18n({inheritLocale: true});
 
@@ -67,13 +33,12 @@ type Fetchparam = {
     page: number,
     itemsPerPage: number,
     sortBy: string,
-    search: string
 }
 
 const FakeAPI = {
     async fetch(fetchparam: Fetchparam): Promise<SearchResult> {
         const fpage=(fetchparam.page-1)*fetchparam.itemsPerPage
-        return await getCampaignlist({ page: fpage, size: fetchparam.itemsPerPage, sortby: fetchparam.sortBy, search: fetchparam.search })
+        return await getExtramodulelist({ page: fpage, size: fetchparam.itemsPerPage, sortby: fetchparam.sortBy})
     }
 }
 // export default {
@@ -82,36 +47,24 @@ const FakeAPI = {
 const headers=ref<Array<any>>([])
 headers.value = [
     {
-        title: computed(_ => t("campaign.campaignId")),
+        title: computed(_ => t("extramodule.extramoduleName")),
         align: 'start',
         sortable: false,
-        key: 'CampaignId',
+        key: 'name',
     },
     {
-        title: computed(_ => t("campaign.campaignName")),
+        title: computed(_ => t("extramodule.extramoduleDescription")),
         align: 'start',
         sortable: false,
-        key: 'CampaignName',
+        key: 'Description',
     },
     {
-        title: computed(_ => t("campaign.campaignDescription")),
+        title: computed(_ => t("extramodule.extramoduleStatus")),
         align: 'start',
         sortable: false,
-        key: 'CampaignDescription',
+        key: 'installed',
     },
-    {
-        title: computed(_ => t("campaign.campaignStatus")),
-        align: 'start',
-        sortable: false,
-        key: 'Disable',
-        value: value=>value.Disable == 0 ? 'enable' : 'disable'
-    },
-    {
-        title: computed(_ => t("campaign.campaignTypes")),
-        align: 'start',
-        sortable: false,
-        key: 'Types',
-    },
+
     { title: computed(_ => t("common.actions")), key: 'actions', sortable: false },
 
 ];
@@ -119,7 +72,7 @@ const itemsPerPage = ref(10);
 const serverItems = ref([]);
 const loading = ref(false);
 const totalItems = ref(0);
-const search = ref('');
+// const search = ref('');
 
 function loadItems({ page, itemsPerPage, sortBy }) {
     loading.value = true
@@ -128,7 +81,7 @@ function loadItems({ page, itemsPerPage, sortBy }) {
         page: page,
         itemsPerPage: itemsPerPage,
         sortBy: sortBy,
-        search: search.value
+        // search: search.value
     }
     FakeAPI.fetch(fetchitem).then(
         ({ data, total }) => {
