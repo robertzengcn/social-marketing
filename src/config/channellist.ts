@@ -1,1 +1,5 @@
 export const EXTRAMODULECHANNE_LIST='extramodule:list'
+export const EXTRAMODULECHANNE_INSTALL='extramodule:install'
+export const EXTRAMODULECHANNE_UNINSTALL='extramodule:uninstall'
+export const EXTRAMODULECHANNE_MESSAGE='extramodule:message'
+export const OPENDIRECTORY='open:directory'

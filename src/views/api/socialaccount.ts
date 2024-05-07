@@ -1,14 +1,14 @@
 import {ItemSearchparam,SearchResult} from './types'
 import {windowInvoke,windowSend,windowReceive} from '@/views/utils/apirequest'
-import {SocialAccountDetailData,SoASuccessEntity,SoADeleteResp,SocialLoginParam} from "@/entity-types/socialaccount-type"
-export async function getSocialAccountlist(data: ItemSearchparam):Promise<SearchResult>{
+import {SocialAccountDetailData,SoASuccessEntity,SoADeleteResp,SocialLoginParam,SocialAccountListData} from "@/entity-types/socialaccount-type"
+export async function getSocialAccountlist(data: ItemSearchparam):Promise<SearchResult<SocialAccountListData>>{
     const resp=await windowInvoke('socialaccount:list',data);
         
         if(!resp){
            throw new Error("unknow error")
         }
 
-        const resdata:SearchResult={
+        const resdata:SearchResult<SocialAccountListData>={
                 data:resp.records,
                 total:resp.total,
         }

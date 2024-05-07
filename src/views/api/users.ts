@@ -19,31 +19,7 @@ export const getUserInfo = () =>
   // console.log(result);
   return result as Iresponse;
 })();
-  // request({
-  //   url: '/users/info',
-  //   method: 'post',
-  //   data
-  // })
-
-// export const getUserByName = (username: string) =>
-//   request({
-//     url: `/users/${username}`,
-//     method: 'get'
-//   })
-
-// export const updateUser = (username: string, data: any) =>
-//   request({
-//     url: `/users/${username}`,
-//     method: 'put',
-//     data
-//   })
-
-// export const deleteUser = (username: string) =>
-//   request({
-//     url: `/users/${username}`,
-//     method: 'delete'
-//   })
-
+  
 export const login = (data: any) =>
 (async () => {
   const result =await window.api.invoke("user:Login", data)

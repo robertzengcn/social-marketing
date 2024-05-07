@@ -11,6 +11,8 @@ export type SocialTaskEntity = {
         TaskId: number,
         ResulttaskId?: number,
     }
+    disable?:number
+    status?:string
 }
 export type SocialTaskTypeEntity = {
     id: number,

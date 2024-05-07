@@ -19,5 +19,21 @@ export default {
         extramoduleStatus:"Extra Module Status",
         extramoduleTypes:"Extra Module Types",
         // installedStatues:"Installation Status",
+        installConfirm:"Are you sure you want to install {package}?",
+        uninstallConfirm:"Are you sure you want to uninstall {package}?",
+    },
+    modules:{
+        f2:{
+            name:"f2 video download",
+            describe:"f2 is a module for video download"
+        },
+        youtube_dl:{
+            name:"youtube-dl",
+            describe:"youtube-dl is a moudule for youtube video download" 
+        },
+        openai_whisper:{
+            name:"openai-whisper",
+            describe:"openai-whisper is a module for text generation" 
+        }
     }
 }

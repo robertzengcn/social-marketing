@@ -98,7 +98,7 @@ switch (workerData.action) {
 
 async function runtask(entity:SocialTaskRunEntity){
     //get social task info
-    const socistResp=await this.getTaskbyid(entity.taskId);
+    const socistResp=await this.getTaskbyid(entity.task_id);
     if(!socistResp){
         throw new Error("get social task unknow error");  
     }

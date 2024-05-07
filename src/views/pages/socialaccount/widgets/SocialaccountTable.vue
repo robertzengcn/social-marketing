@@ -23,6 +23,14 @@
       </div>
     <v-data-table-server v-model:items-per-page="itemsPerPage" :search="search" :headers="headers"
         :items-length="totalItems" :items="serverItems" :loading="loading" item-value="name" @update:options="loadItems">
+        <template v-slot:[`item.status`]="{ item }">
+            <v-chip color="red" v-if="item.status=='0'">
+                Disable
+            </v-chip> 
+            <v-chip color="green" v-if="item.status=='1'">
+                Enable
+            </v-chip>          
+        </template>
         <template v-slot:[`item.actions`]="{ item }">
             <v-icon
             size="small"
@@ -92,17 +100,16 @@
         </v-dialog>
     </div>
 
-    
-
-
 </template>
 
 <script setup lang="ts">
 import { getSocialAccountlist,deleteSocialAccount, socialaccountLogin,receiveAccountLoginevent } from '@/views/api/socialaccount'
 import { ref,onMounted } from 'vue'
 import { SearchResult } from '@/views/api/types'
+import {SocialAccountListData} from '@/entity-types/socialaccount-type'
 // import { useRoute } from "vue-router";
 import router from '@/views/router';
+
 const alert = ref(false);
 const alerttitle = ref("");
 const alerttext= ref("");
@@ -117,7 +124,7 @@ type Fetchparam = {
 }
 
 const FakeAPI = {
-    async fetch(fetchparam: Fetchparam): Promise<SearchResult> {
+    async fetch(fetchparam: Fetchparam): Promise<SearchResult<SocialAccountListData>> {
         // console.log(fetchparam.search)
         const fpage=(fetchparam.page-1)*fetchparam.itemsPerPage
         const res=await getSocialAccountlist({ page: fpage, size: fetchparam.itemsPerPage, sortby: fetchparam.sortBy, search: fetchparam.search })
@@ -153,11 +160,12 @@ const headers: Array<any> = [
         sortable: false,
         key: 'pass',
     },
+    { title: 'Status', key: 'status', sortable: false },
     { title: 'Actions', key: 'actions', sortable: false },
 
 ];
 const itemsPerPage = ref(10);
-const serverItems = ref([]);
+const serverItems = ref<Array<SocialAccountListData>>([]);
 const loading = ref(false);
 const totalItems = ref(0);
 const search = ref('');
@@ -178,16 +186,7 @@ function loadItems({ page, itemsPerPage, sortBy }) {
     }
     FakeAPI.fetch(fetchitem).then(
         ({ data, total }) => {
-            //  console.log(data)
-            //  console.log(total)
-            //loop data
-            for(let i=0; i<data.length; i++){
-                if(data[i].Disable == 0){
-                    data[i].Status = "enable"
-                }else{
-                    data[i].Status = "disable"    
-                }
-            }
+            
             console.log(total)
             serverItems.value = data
             totalItems.value = total

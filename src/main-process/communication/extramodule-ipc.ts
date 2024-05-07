@@ -1,20 +1,95 @@
 import { ipcMain } from 'electron';
-import {EXTRAMODULECHANNE_LIST} from "@/config/channellist";
-import {ExtraModuleController} from "@/controller/extramodule-controller";
+import { EXTRAMODULECHANNE_LIST, EXTRAMODULECHANNE_INSTALL, EXTRAMODULECHANNE_UNINSTALL, EXTRAMODULECHANNE_MESSAGE } from "@/config/channellist";
+import { ExtraModuleController } from "@/controller/extramodule-controller";
+import { CommonResponse } from "@/entity-types/common-type"
+import { ExtraPipModule } from "@/entity-types/extramodule-type"
 export function registerExtraModulesIpcHandlers() {
-    ipcMain.handle(EXTRAMODULECHANNE_LIST, async (event, arg) => {
-        const qdata = JSON.parse(arg);
-        if (!qdata.hasOwnProperty("page")) {
-            qdata.page = 0;
+  console.log("extramodules list register")
+  ipcMain.handle(EXTRAMODULECHANNE_LIST, async (event, arg) => {
+    const qdata = JSON.parse(arg);
+    if (!qdata.hasOwnProperty("page")) {
+      qdata.page = 0;
+    }
+    if (!qdata.hasOwnProperty("size")) {
+      qdata.size = 100;
+    }
+    const extraModules = new ExtraModuleController
+    // Handle IPC call
+    const extra = extraModules.getExtraModuleList(qdata.page, qdata.size);
+
+    const res: CommonResponse<ExtraPipModule> = {
+      status: true,
+      msg: "",
+      data: extra
+    }
+    return res
+  });
+
+  ipcMain.on(EXTRAMODULECHANNE_INSTALL, async (event, data) => {
+    const qdata = JSON.parse(data);
+    if (!qdata.hasOwnProperty("name")) {
+      throw new Error("name not found");
+    }
+    const extraCtrl = new ExtraModuleController()
+    try {
+      extraCtrl.installExtraModule(qdata.name, function (message) {
+        event.sender.send(EXTRAMODULECHANNE_MESSAGE, JSON.stringify({
+          status: true,
+          msg: "success",
+          data: {
+            name: qdata.name,
+            message: message
           }
-          if (!qdata.hasOwnProperty("size")) {
-            qdata.size = 100;
+        }))
+      }, function (message) {
+        if (message.legth > 0) {
+          event.sender.send(EXTRAMODULECHANNE_MESSAGE, JSON.stringify({
+            status: false,
+            msg: "failed"
+          }))
+        }
+      })
+    } catch (error) {
+      if (error instanceof Error) {
+        event.sender.send(EXTRAMODULECHANNE_MESSAGE, JSON.stringify({
+          status: false,
+          msg: error.message
+        }))
+      }
+    }
+  });
+
+  ipcMain.on(EXTRAMODULECHANNE_UNINSTALL, async (event, data) => {
+    const qdata = JSON.parse(data);
+    if (!qdata.hasOwnProperty("name")) {
+      throw new Error("name not found");
+    }
+    const extraCtrl = new ExtraModuleController()
+    try {
+      extraCtrl.removeExtraModule(qdata.name, function (message) {
+        event.sender.send(EXTRAMODULECHANNE_MESSAGE, JSON.stringify({
+          status: true,
+          msg: "success",
+          data: {
+            name: qdata.name,
+            message: message
           }
-        const extraModules=new ExtraModuleController
-        // Handle IPC call
-        const extra=extraModules.getExtraModuleList(qdata.page,qdata.size);
-        return extra
-    });
-  
-    // More handlers...
-  }
+        }))
+      }, function (message) {
+        if (message.legth > 0) {
+          event.sender.send(EXTRAMODULECHANNE_MESSAGE, JSON.stringify({
+            status: false,
+            msg: "failed"
+          }))
+        }
+      })
+    } catch (error) {
+      if (error instanceof Error) {
+        event.sender.send(EXTRAMODULECHANNE_MESSAGE, JSON.stringify({
+          status: false,
+          msg: error.message
+        }))
+      }
+    }
+  });
+}

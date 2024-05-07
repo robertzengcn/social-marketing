@@ -1,4 +1,4 @@
-<template>
+campaign:list<template>
     <div class="search_bar mt-4 d-flex jsb">
         <div class="d-flex jsb search_tool">
             <div class="search_wrap mr-4">
@@ -63,10 +63,12 @@
 import { getSocialtasklist } from '@/views/api/socialtask'
 import { ref } from 'vue'
 import { SearchResult } from '@/views/api/types'
+import {SocialTaskEntity} from "@/entity-types/socialtask-type"
 // import { SearchResult } from '@/views/api/types'
 // import type { VDataTable } from 'vuetify/lib/components/index.mjs'
 import { useRoute } from "vue-router";
 import router from '@/views/router';
+
 type Fetchparam = {
     id:number
     page: number,
@@ -76,7 +78,7 @@ type Fetchparam = {
 }
 
 const FakeAPI = {
-    async fetch(fetchparam: Fetchparam): Promise<SearchResult> {
+    async fetch(fetchparam: Fetchparam): Promise<SearchResult<SocialTaskEntity>> {
         const fpage=(fetchparam.page-1)*fetchparam.itemsPerPage
         return await getSocialtasklist({ id:fetchparam.id,page: fpage, size: fetchparam.itemsPerPage, sortby: fetchparam.sortBy, search: fetchparam.search })
     }
@@ -109,11 +111,12 @@ const headers: Array<any> = [
         sortable: false,
         key: 'type',
     },
+    { title: 'Status', key: 'status', sortable: false },
     { title: 'Actions', key: 'actions', sortable: false },
 
 ];
 const itemsPerPage = ref(10);
-const serverItems = ref([]);
+const serverItems = ref<Array<SocialTaskEntity>>([]);
 const loading = ref(false);
 const totalItems = ref(0);
 const search = ref('');
@@ -142,10 +145,10 @@ function loadItems({ page, itemsPerPage, sortBy }) {
              console.log(total)
             //loop data
             for(let i=0; i<data.length; i++){
-                if(data[i].Disable == 0){
-                    data[i].Status = "enable"
+                if(data[i].disable == 0){
+                    data[i].status = "Enable"
                 }else{
-                    data[i].Status = "disable"    
+                    data[i].status = "Disable"    
                 }
             }
             serverItems.value = data

@@ -37,7 +37,7 @@ function initialize() {
         // nodeIntegration: (process.env
         //   .ELECTRON_NODE_INTEGRATION as unknown) as boolean,
         //  contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
-
+        
         // contextIsolation:false,
         nodeIntegration: false,
         contextIsolation: true,
@@ -99,7 +99,7 @@ function initialize() {
     createWindow();
     registerCommunicationIpcHandlers();
     
-   
+
     if (isDevelopment && !process.env.IS_TEST) {
       // Install Vue Devtools
       try {

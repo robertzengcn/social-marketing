@@ -2,6 +2,7 @@ const path = require("path");
 // import { exec } from 'child_process';
 import { execSync } from 'child_process';
 import { Notification } from 'electron'
+import { exec } from 'child_process';
 export type queryParams = {
   page: number,
   size: number,
@@ -119,3 +120,44 @@ export function checkPipPackage(): string {
     return ""
   }
 }
+//install pip package, event driver
+export function installPipPackage(packageName: string,version:string,errorcall?:Function,stdoutCall?:Function,stderrCall?:Function): void {
+  exec(`pip install ${packageName}==${version}`, (error: Error | null, stdout: string, stderr: string) => {
+    if (error) {
+      // console.error(`exec error: ${error}`);
+      if(errorcall){
+        errorcall(error)
+      }
+      // return;
+    }
+    if(stdoutCall){
+      stdoutCall(stdout)
+    }
+    if(stderrCall){
+      stderrCall(stderr)
+    }
+  }
+);
+}
+//uninstall pip package
+export function uninstallPipPackage(packageName: string,errorcall?:Function,stdoutCall?:Function,stderrCall?:Function): void {
+  exec(`pip uninstall ${packageName} -y`, (error: Error | null, stdout: string, stderr: string) => {
+    if (error) {
+      console.error(`exec error: ${error}`);
+      if(errorcall){
+      errorcall(error)
+      }
+      return;
+    }
+    console.log(`stdout: ${stdout}`);
+   console.error(`stderr: ${stderr}`);
+    if(stdoutCall){
+      stdoutCall(stdout)
+    }
+    if(stderrCall){
+      stderrCall(stderr)
+    }
+  }
+);
+}
+

@@ -3,23 +3,8 @@ import url from "url"
 //import request from "@/modules/lib/request"
 // import {queryParams} from "@/modules/lib/function"
 import { HttpClient } from "@/modules/lib/httpclient"
-export type campaignRes = {
-    data: Array<campaign>,
-    num: number,
-}
-export type campaign = {
-    CampaignId: number,
-    CampaignName: string,
-    CampaignDescription: string,
-    Disable: number,
-    Tags: string,
-}
-
-export type campaignResponse = {
-    status: boolean,
-    msg: string,
-    data?: campaign,
-}
+import {campaignEntity} from "@/entity-types/campaign-type"
+import {CommonResponse} from "@/entity-types/common-type"
 export class Campaign {
     private _httpClient: HttpClient
     //construct
@@ -29,25 +14,18 @@ export class Campaign {
     /**
     * get campaign from remote servive
     */
-    async getCampaignlist(queryParams): Promise<campaignResponse | null> {
+    async getCampaignlist(queryParams): Promise<CommonResponse<campaignEntity> | null> {
         const params = new url.URLSearchParams(queryParams);
         const paramstring=params.toString();
         const finalurl='/api/campaign?'+paramstring;
-        // console.log(finalurl)
-        // const campignlistres = await request({
-        //     url: finalurl,
-        //     method: 'get',
-        // }).catch(function (error) {
-        //     throw new Error(error.message);
-        //     // console.error(error);
-        // })
+        
         const campignlistres=await this._httpClient.get(finalurl)
         if (!campignlistres) {
             throw new Error("remote return empty");
         }
         // console.log("campaign list is following")
         // console.log(campignlistres.data)
-        const resp: campaignResponse = {
+        const resp: CommonResponse<campaignEntity> = {
             status: campignlistres.status,
             msg: campignlistres.msg,
             data: campignlistres.data,

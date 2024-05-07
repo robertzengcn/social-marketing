@@ -6,7 +6,7 @@ import { RouteRecordRaw } from 'vue-router';
 export const constantRoutes: RouteRecordRaw[] = [
   {
     path: '/',
-    redirect: '/campaign/list',
+    redirect: '/dashboard/home',
     name: 'Dashboard',
     meta: {
       visible: true,
@@ -27,18 +27,18 @@ export const constantRoutes: RouteRecordRaw[] = [
       //     component: () => import('@/views/dashboard/smartHouse.vue'),
       //     children: [],
       // },
-      // {
-      //     path: '/campaign',
-      //     name: 'Campaign',
-      //     meta: {
-      //         title: 'Campaign',
-      //         icon: 'mdi-alpha-s',
-      //         keepAlive: false,
-      //         visible: true,
-      //     },
-      //     component: () => import('@/views/dashboard/campaign.vue'),
-      //     children: [],
-      // }
+      {
+        path: '/dashboard/home',
+        name: 'home',
+          meta: {
+              title: 'Home',
+              icon: 'mdi-alpha-s',
+              keepAlive: false,
+              visible: true,
+          },
+          component: () => import('@/views/dashboard/home.vue'),
+          children: [],
+      }
     ],
   },
   {
@@ -240,6 +240,50 @@ export const constantRoutes: RouteRecordRaw[] = [
     ]
   },
   {
+    path: '/extramodules',
+    name: 'Modules',
+    meta: {
+      visible: true,
+      title: 'Modules',
+      icon: 'mdi-paw-off'
+    },
+    component: Layout, 
+    children: [
+      {
+        path: 'list',
+        component: () => import(/* webpackChunkName: "staff-list" */ '@/views/pages/extramodules/extramoduleslist.vue'),
+        name: 'Moduleslist',
+        meta: {
+          visible: true,
+          title: 'Modules List',
+          icon: 'list'
+        }
+      }
+    ]
+  },
+  {
+    path: '/video',
+    name: 'Video',
+    meta: {
+      visible: true,
+      title: 'Video',
+      icon: 'mdi-paw-off'
+    },
+    component: Layout, 
+    children: [
+      {
+        path: 'download',
+        component: () => import(/* webpackChunkName: "staff-list" */ '@/views/pages/videodownload/index.vue'),
+        name: 'Videodownload',
+        meta: {
+          visible: true,
+          title: 'Video Download',
+          icon: 'list'
+        }
+      }
+    ]
+  },
+  {
     path: '/login',
     name: 'login',
     meta: {
@@ -268,6 +312,7 @@ export const constantRoutes: RouteRecordRaw[] = [
       },
     ],
   },
+  
 ];
 
 
@@ -285,20 +330,6 @@ export const constantRoutes: RouteRecordRaw[] = [
  * the routes that need to be dynamically loaded based on user roles
 */
 export const asyncRoutes: RouteRecordRaw[] = [];
-
-// const router = createRouter({
-//     // mode: 'history',  // Disabled due to Github Pages doesn't support this, enable this if you need.
-//     scrollBehavior: () => {
-//         return { top: 0 };
-//     },
-//     // base: process.env.BASE_URL,
-//     routes: constantRoutes
-//   })
-// const router = createRouter({
-//     history: createWebHashHistory(),
-//     scrollBehavior() {
-//         return { top: 0 };
-//     })};
 
 const router = createRouter({
   history: createWebHashHistory(),

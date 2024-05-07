@@ -2,6 +2,40 @@ export default {
     common:{
         more:"More",
         actions:"Actions",
+        confirmation:"confirmation",
+        cancel:"cancel",
+        confirm:"confirm",
+        installing:"installing",
+        uninstalling:"uninstalling"
+    },
+    home:{
+        search:"Search Extraction",
+        search_scraper:"Search Scraper",
+        search_description:"Extracting website data from search engines",
+        yellowpage:"Yellow Page",
+        yellowpage_scraper:"Yellow page data scraper",
+        yellowpage_description:"Extracting data from yellow pages",
+        socialmedia:"Social Scraper",
+        socialmedia_scraper:"Social media data scraper",
+        socialmedia_description:"Extracting data from social media",
+        socialshare:"Social Share",
+        socialshare_subtitle:"Social media marketing",
+        socialshare_description:"Share information to social media",
+        emailmarketing:"Email Marketing",
+        emailmarketing_subtitle:"Email marketing",
+        emailmarketing_description:"Send email to customers",
+        tiktok_marketing_title:"Tiktok Marketing",
+        tiktok_marketing_subtitle:"Share to Tiktok",
+        tiktok_marketing_description:"Share video to Tiktok",
+        youtube_marketing_title:"Youtube Marketing",
+        youtube_marketing_subtitle:"Share to Youtube",
+        youtube_marketing_description:"Share video to Youtube",
+        video_translation_title:"Youtube Marketing",
+        video_translation_subtitle:"Share to Youtube",
+        video_translation_description:"Share video to Youtube",
+        video_download_title:"Video Download",
+        video_download_subtitle:"Download video",
+        video_download_description:"Download video from Platform",
     },
     campaign:{
         campaignId:"Campaign ID", 
@@ -18,5 +52,29 @@ export default {
         extramoduleDescription:"Extra Module Description",
         extramoduleStatus:"Extra Module Status",
         extramoduleTypes:"Extra Module Types",
+        installConfirm:"Are you sure you want to install {package}?",
+        uninstallConfirm:"Are you sure you want to uninstall {package}?",
+
+    },
+    modules:{
+        f2:{
+            name:"f2 video download",
+            describe:"f2 is a module for video download"
+        },
+        youtube_dl:{
+            name:"youtube-dl",
+            describe:"youtube-dl is a moudule for youtube video download" 
+        },
+        openai_whisper:{
+            name:"openai-whisper",
+            describe:"openai-whisper is a module for text generation" 
+        }
+    },
+    video:{
+        platform:"platform",
+        saved_path:"saved path",
+        video_url:"video url",
+        input_video_url_hint:"input video url,one per line",
+        input_video_save_path:"input video saved path",
     }
 }

@@ -1,7 +1,7 @@
-import { ipcMain } from 'electron'
+import { ipcMain,dialog,BrowserWindow } from 'electron'
 import { userController, userResponse, userlogin } from '@/controller/user-controller'
 import { CampaignController } from '@/controller/campaign-controller'
-import { campaignResponse } from '@/modules/campaign'
+// import { campaignResponse } from '@/modules/campaign'
 import { SocialTaskController } from '@/controller/socialtask-controller'
 import { SocialTaskResponse, SocialTaskInfoResponse, SocialTaskTypeResponse, TagResponse, SaveSocialTaskResponse } from '@/entity-types/socialtask-type'
 import { SocialTaskRun } from "@/modules/socialtaskrun"
@@ -12,7 +12,10 @@ import { SocialPlatform } from "@/modules/social_platform"
 import { ProxyApi } from '@/modules/proxy_api'
 import { ProxyController } from '@/controller/proxy-controller'
 import { ProxyParseItem } from '@/entity-types/proxy-type'
-export default function SyncMsg() {
+import {CommonResponse} from "@/entity-types/common-type"
+import {campaignEntity} from "@/entity-types/campaign-type"
+import {OPENDIRECTORY} from "@/config/channellist"
+export default function SyncMsg(mainWindow:BrowserWindow) {
   console.log("SyncMsg");
   ipcMain.handle("user:Login", async (event, data) => {
     // console.log("handle user:Login")
@@ -84,12 +87,12 @@ export default function SyncMsg() {
     //console.log("handle campaign:list")
     const camControl = new CampaignController()
     const res = await camControl.getCampaignlist(data).then(function (res) {
-      console.log(res);
-      return {
-        status: true,
-        msg: "get campaign list success",
-        data: res
-      };
+     return res
+      // return {
+      //   status: true,
+      //   msg: "get campaign list success",
+      //   data: res
+      // };
     }).catch(function (err) {
       console.log(err);
       if (err instanceof Error) {
@@ -105,7 +108,7 @@ export default function SyncMsg() {
       }
     });
     console.log(res)
-    return res as campaignResponse;
+    return res as CommonResponse<campaignEntity>;
   });
   //get social task list
   ipcMain.handle("socialtask:list", async (event, data) => {
@@ -595,5 +598,15 @@ export default function SyncMsg() {
       return {status:false,msg:err.message,data:false};
     })
     return res
+  })
+  ipcMain.handle(OPENDIRECTORY, async () => {
+    const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
+      properties: ['openDirectory']
+    })
+    if (canceled) {
+      return {status:false,msg:"canceled"}
+    } else {
+      return {status:true,data:filePaths[0]}
+    }
   })
 }

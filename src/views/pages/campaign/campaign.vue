@@ -161,50 +161,7 @@
 import { ref, onMounted } from 'vue';
 import CampaignTable from '@/views/pages/campaign/widgets/CampaignTable.vue'
 const dialog = ref(false);
-// const list = ref([
-//     {
-//         icon: 'mdi-github',
-//         name: 'GitHub',
-//         net: 'https://github.com',
-//         color: 'secondary',
-//         progress: 0,
-//     },
-//     {
-//         icon: 'mdi-angular',
-//         name: 'Angular',
-//         net: 'https://angular.com',
-//         color: 'red',
-//         progress: 0,
-//     },
-//     {
-//         icon: 'mdi-apple',
-//         name: 'Apple',
-//         net: 'https://apple.com',
-//         color: 'green',
-//         progress: 0,
-//     },
-//     {
-//         icon: 'mdi-blender-software',
-//         name: 'Blender Software',
-//         net: 'https://blender.com',
-//         color: 'pink',
-//         progress: 0,
-//     },
-//     {
-//         icon: 'mdi-facebook',
-//         name: 'Facebook',
-//         net: 'https://facebook.com',
-//         color: 'pink',
-//         progress: 0,
-//     },
-//     {
-//         icon: 'mdi-microsoft-xbox',
-//         name: 'Microsoft Xbox',
-//         net: 'https://xbox.microsoft.com',
-//         color: 'green',
-//         progress: 0,
-//     },
-// ]);
+
 onMounted(() => {
     // setTimeout(() => {
     //     list.value.forEach((item) => {

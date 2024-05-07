@@ -54,7 +54,7 @@
 
 <script setup lang="ts">
 import {useI18n} from "vue-i18n";
-
+import {campaignEntity} from "@/entity-types/campaign-type"
 import { getCampaignlist } from '@/views/api/campaigins'
 import { ref,computed } from 'vue'
 import { SearchResult } from '@/views/api/types'
@@ -71,7 +71,7 @@ type Fetchparam = {
 }
 
 const FakeAPI = {
-    async fetch(fetchparam: Fetchparam): Promise<SearchResult> {
+    async fetch(fetchparam: Fetchparam): Promise<SearchResult<campaignEntity>> {
         const fpage=(fetchparam.page-1)*fetchparam.itemsPerPage
         return await getCampaignlist({ page: fpage, size: fetchparam.itemsPerPage, sortby: fetchparam.sortBy, search: fetchparam.search })
     }
@@ -116,7 +116,7 @@ headers.value = [
 
 ];
 const itemsPerPage = ref(10);
-const serverItems = ref([]);
+const serverItems = ref<Array<campaignEntity>>([]);
 const loading = ref(false);
 const totalItems = ref(0);
 const search = ref('');
@@ -132,7 +132,7 @@ function loadItems({ page, itemsPerPage, sortBy }) {
     }
     FakeAPI.fetch(fetchitem).then(
         ({ data, total }) => {
-            // console.log(data)
+             console.log(data)
             // console.log(total)
             //loop data
             for(let i=0; i<data.length; i++){

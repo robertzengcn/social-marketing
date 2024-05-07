@@ -60,6 +60,7 @@
     "debug": "^4.3.4",
     "dotenv": "^16.0.3",
     "electron-better-ipc": "^2.0.1",
+    "electron-log": "^5.1.2",
     "electron-squirrel-startup": "^1.0.0",
     "electron-store": "^8.1.0",
     "expect.js": "^0.3.1",

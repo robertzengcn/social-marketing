@@ -5,7 +5,7 @@ export type PageSearch={
 export interface CommonResponse <Type>{
     status: boolean
     msg: string
-    data: ListData<Type>
+    data: ListData<Type>|null
 }
 export interface ListData <Type>{
     records: Array<Type>
