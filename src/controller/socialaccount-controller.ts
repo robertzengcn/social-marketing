@@ -2,7 +2,7 @@ import { SocialAccount } from "@/modules/socialaccount";
 import { BrowserWindow, session } from 'electron'
 import { AccountCookiesdb, AccountCookiesEntity } from "@/model/account_cookiesdb";
 import { ProxyController } from "./proxy-controller";
-import { ProxyParseItem } from "@/entity-types/proxy-type";
+import { ProxyParseItem } from "@/entityTypes/proxyType";
 import {showNotification} from "@/modules/lib/function"
 export class SocialAccountController {
     //open open and login social account

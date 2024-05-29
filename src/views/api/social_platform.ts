@@ -1,8 +1,9 @@
 import {windowInvoke} from '@/views/utils/apirequest'
 import {ItemSearchparam} from "./types"
-import {SocialPlatformEntity} from "@/entity-types/social_platform-type"
+import {SocialPlatformEntity} from "@/entityTypes/social_platform-type"
+import {SOCIALPLATFORM_LIST} from "@/config/channellist"
 export async function getSocialPlatformlist(data: ItemSearchparam):Promise<Array<SocialPlatformEntity>>{
-    const resp=await windowInvoke('socialplatform:list',data);
+    const resp=await windowInvoke(SOCIALPLATFORM_LIST,data);
         
         if(!resp){
            throw new Error("unknow error")

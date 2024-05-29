@@ -33,7 +33,7 @@
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { v4 as uuidv4 } from 'uuid';
-import { SocialTaskEntity } from "@/entity-types/socialtask-type";
+import { SocialTaskEntity } from "@/entityTypes/socialtask-type";
 // import * as randomstring from "randomstring";
 import {
     getSocialtaskinfo, startSocialTask,receiveSocialTaskLog

@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron'
-import {EXTRAMODULECHANNE_LIST,EXTRAMODULECHANNE_INSTALL,EXTRAMODULECHANNE_UNINSTALL,EXTRAMODULECHANNE_MESSAGE,OPENDIRECTORY} from "./config/channellist";
+import {EXTRAMODULECHANNE_LIST,EXTRAMODULECHANNE_INSTALL,EXTRAMODULECHANNE_UNINSTALL,EXTRAMODULECHANNE_MESSAGE,OPENDIRECTORY,SYSTEM_MESSAGE,VIDEODOWNLOAD_MESSAGE,VIDEODOWNLOAD,VIDEODOWNLOAD_LIST} from "./config/channellist";
 // window.ipcRenderer = ipcRenderer
 // console.log('preload.js')
 // contextBridge.exposeInMainWorld('electronAPI', {
@@ -8,7 +8,7 @@ import {EXTRAMODULECHANNE_LIST,EXTRAMODULECHANNE_INSTALL,EXTRAMODULECHANNE_UNINS
 contextBridge.exposeInMainWorld('api', {
     send: (channel, data) => {
       // whitelist channels
-      let validChannels = ['user:Login','socialtask:start','socialtask:log','socialaccount:login','socialaccount:login:msg',EXTRAMODULECHANNE_INSTALL,EXTRAMODULECHANNE_MESSAGE,EXTRAMODULECHANNE_UNINSTALL]
+      const validChannels = ['user:Login','socialtask:start','socialtask:log','socialaccount:login','socialaccount:login:msg',EXTRAMODULECHANNE_INSTALL,EXTRAMODULECHANNE_MESSAGE,EXTRAMODULECHANNE_UNINSTALL,SYSTEM_MESSAGE,VIDEODOWNLOAD_MESSAGE,VIDEODOWNLOAD]
       console.log('send',channel,data)
       if (validChannels.includes(channel)) {
         console.log('send2',channel,data)
@@ -16,7 +16,7 @@ contextBridge.exposeInMainWorld('api', {
       }
     },
     receive: (channel, func) => {
-      let validChannels = ['user:Login','socialtask:start','socialtask:log','socialaccount:login:msg',EXTRAMODULECHANNE_INSTALL,EXTRAMODULECHANNE_MESSAGE,EXTRAMODULECHANNE_UNINSTALL]
+      const validChannels = ['user:Login','socialtask:start','socialtask:log','socialaccount:login:msg',EXTRAMODULECHANNE_INSTALL,EXTRAMODULECHANNE_MESSAGE,EXTRAMODULECHANNE_UNINSTALL,SYSTEM_MESSAGE,VIDEODOWNLOAD_MESSAGE,VIDEODOWNLOAD]
       const regex="/^socialtask:log:/"
 
       if (validChannels.includes(channel)||channel.test(regex)) {
@@ -26,7 +26,7 @@ contextBridge.exposeInMainWorld('api', {
     },
     invoke: (channel, data) => {
       // whitelist channels
-      let validChannels = ['user:Login','user:checklogin','user:Signout','campaign:list','socialtask:list','socialtask:info','socialtasktype:list','tag:list','socialtask:save','socialtask:start','socialtaskrun:list','socialtaskresult:list','socialaccount:list','socialaccount:save','socialplatform:list','socialaccount:detail','socialaccount:delete','proxy:list','proxy:delete','proxy:save','proxy:detail','proxy:check','proxy:import',EXTRAMODULECHANNE_LIST,OPENDIRECTORY]
+      const validChannels = ['user:Login','user:checklogin','user:Signout','campaign:list','socialtask:list','socialtask:info','socialtasktype:list','tag:list','socialtask:save','socialtask:start','socialtaskrun:list','socialtaskresult:list','socialaccount:list','socialaccount:save','socialplatform:list','socialaccount:detail','socialaccount:delete','proxy:list','proxy:delete','proxy:save','proxy:detail','proxy:check','proxy:import',EXTRAMODULECHANNE_LIST,OPENDIRECTORY,VIDEODOWNLOAD,VIDEODOWNLOAD_LIST]
       if (validChannels.includes(channel)) {
         return ipcRenderer.invoke(channel, data)
       }

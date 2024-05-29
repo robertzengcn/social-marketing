@@ -63,7 +63,7 @@ campaign:list<template>
 import { getSocialtasklist } from '@/views/api/socialtask'
 import { ref } from 'vue'
 import { SearchResult } from '@/views/api/types'
-import {SocialTaskEntity} from "@/entity-types/socialtask-type"
+import {SocialTaskEntity} from "@/entityTypes/socialtask-type"
 // import { SearchResult } from '@/views/api/types'
 // import type { VDataTable } from 'vuetify/lib/components/index.mjs'
 import { useRoute } from "vue-router";

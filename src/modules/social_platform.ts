@@ -1,6 +1,6 @@
 'use strict';
 import { HttpClient } from "@/modules/lib/httpclient"
-import {SocialPlatformResponse} from "@/entity-types/social_platform-type"
+import {SocialPlatformResponse} from "@/entityTypes/social_platform-type"
 export class SocialPlatform {
     private _httpClient: HttpClient
     constructor() {

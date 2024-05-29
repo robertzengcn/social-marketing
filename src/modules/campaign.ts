@@ -3,8 +3,8 @@ import url from "url"
 //import request from "@/modules/lib/request"
 // import {queryParams} from "@/modules/lib/function"
 import { HttpClient } from "@/modules/lib/httpclient"
-import {campaignEntity} from "@/entity-types/campaign-type"
-import {CommonResponse} from "@/entity-types/common-type"
+import {campaignEntity} from "@/entityTypes/campaign-type"
+import {CommonResponse} from "@/entityTypes/commonType"
 export class Campaign {
     private _httpClient: HttpClient
     //construct

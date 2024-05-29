@@ -1,8 +1,8 @@
 import { ipcMain } from 'electron';
 import { EXTRAMODULECHANNE_LIST, EXTRAMODULECHANNE_INSTALL, EXTRAMODULECHANNE_UNINSTALL, EXTRAMODULECHANNE_MESSAGE } from "@/config/channellist";
 import { ExtraModuleController } from "@/controller/extramodule-controller";
-import { CommonResponse } from "@/entity-types/common-type"
-import { ExtraPipModule } from "@/entity-types/extramodule-type"
+import { CommonResponse } from "@/entityTypes/commonType"
+import { ExtraPipModule } from "@/entityTypes/extramodule-type"
 export function registerExtraModulesIpcHandlers() {
   console.log("extramodules list register")
   ipcMain.handle(EXTRAMODULECHANNE_LIST, async (event, arg) => {
@@ -27,7 +27,7 @@ export function registerExtraModulesIpcHandlers() {
 
   ipcMain.on(EXTRAMODULECHANNE_INSTALL, async (event, data) => {
     const qdata = JSON.parse(data);
-    if (!qdata.hasOwnProperty("name")) {
+    if (!("name" in qdata)) {
       throw new Error("name not found");
     }
     const extraCtrl = new ExtraModuleController()
@@ -61,7 +61,7 @@ export function registerExtraModulesIpcHandlers() {
 
   ipcMain.on(EXTRAMODULECHANNE_UNINSTALL, async (event, data) => {
     const qdata = JSON.parse(data);
-    if (!qdata.hasOwnProperty("name")) {
+    if (!("name" in qdata)) {
       throw new Error("name not found");
     }
     const extraCtrl = new ExtraModuleController()

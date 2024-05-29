@@ -1,6 +1,6 @@
 import { Scraperdb } from "./scraperdb";
 import { Database } from 'better-sqlite3';
-import { VideoInfo } from "@/modules/social_scraper";
+import { VideoInfo } from "@/modules/socialScraper";
 import { getRecorddatetime } from "@/modules/lib/function";
 
 export class Videodb {

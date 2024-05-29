@@ -6,7 +6,10 @@ export default {
         cancel:"cancel",
         confirm:"confirm",
         installing:"installing",
-        uninstalling:"uninstalling"
+        uninstalling:"uninstalling",
+        reset:"reset",
+        submit:"submit",
+        success:"success",
     },
     home:{
         search:"Search Extraction",
@@ -76,5 +79,24 @@ export default {
         video_url:"video url",
         input_video_url_hint:"input video url,one per line",
         input_video_save_path:"input video saved path",
+        video_download_error:"video download error",
+        download_failed:"video download failed",
+        download_success:"video download success",
+        revice_download_command:"revice download command",
+        account_id_not_found:"account id not found",
+        platform_not_found:"platform not found",
+        link_not_found:"link not found",
+        savePath_not_found:"savePath not found",
+        start_download_video:"start download video",
+        new_video_download:"new video download",
+
+    },
+    account:{
+        accountId:"Account ID",
+        type:"Account Type",
+        usename:"Username",
+        useproxy:"Use Proxy",
+        cookies_exist:"Cookies Exist",
+        select_account_hint:"Select account by click the change account button, please select account with cookies exist",
     }
 }

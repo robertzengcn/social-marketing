@@ -1,6 +1,6 @@
 "use strict";
 export {};
-import {VideoInfo} from './social_scraper';
+import {VideoInfo} from './socialScraper';
 
 /**
  * The Subject interface declares a set of methods for managing subscribers.

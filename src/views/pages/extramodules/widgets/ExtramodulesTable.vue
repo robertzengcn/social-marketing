@@ -40,7 +40,7 @@ import { getExtramodulelist,installExtramodule,receiveInExtramoduleLog,removeExt
 import { ref,computed,onMounted } from 'vue'
 import { SearchResult } from '@/views/api/types'
 // import router from '@/views/router';
-import {ExtraPipModule,ExtraPipModuleItem} from "@/entity-types/extramodule-type"
+import {ExtraPipModule,ExtraPipModuleItem} from "@/entityTypes/extramodule-type"
 const {t} = useI18n({inheritLocale: true});
 import {capitalizeFirstLetter} from '@/views/utils/function'
 

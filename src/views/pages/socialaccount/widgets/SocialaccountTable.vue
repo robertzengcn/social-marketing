@@ -106,7 +106,7 @@
 import { getSocialAccountlist,deleteSocialAccount, socialaccountLogin,receiveAccountLoginevent } from '@/views/api/socialaccount'
 import { ref,onMounted } from 'vue'
 import { SearchResult } from '@/views/api/types'
-import {SocialAccountListData} from '@/entity-types/socialaccount-type'
+import {SocialAccountListData} from '@/entityTypes/socialaccount-type'
 // import { useRoute } from "vue-router";
 import router from '@/views/router';
 

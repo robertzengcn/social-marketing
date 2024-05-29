@@ -280,6 +280,16 @@ export const constantRoutes: RouteRecordRaw[] = [
           title: 'Video Download',
           icon: 'list'
         }
+      },
+      {
+        path: 'dowloadlist',
+        component: () => import(/* webpackChunkName: "staff-list" */ '@/views/pages/videodownload/list.vue'),
+        name: 'Videodownloadlist',
+        meta: {
+          visible: true,
+          title: 'Download List',
+          icon: 'list'
+        }
       }
     ]
   },

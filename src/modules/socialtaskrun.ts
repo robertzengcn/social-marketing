@@ -2,9 +2,9 @@ import { getApplogpath, getdate } from "@/modules/lib/function"
 import { Taskrundb } from "@/model/taskrundb"
 // import { v4 as uuidv4 } from 'uuid';
 import * as randomstring from "randomstring";
-import {SocialTaskRunEntity} from "@/entity-types/socialtask-type"
+import {SocialTaskRunEntity} from "@/entityTypes/socialtask-type"
 const path = require("path");
-import {TaskRunEntity} from "@/entity-types/taskrun-type";
+import {TaskRunEntity} from "@/entityTypes/taskrun-type";
 export type taskrunSearchres={
     Total:number
     Records:Array<TaskRunEntity>

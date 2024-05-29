@@ -1,32 +1,32 @@
-import * as path from "path"
-import * as fs from "fs"
+// import * as path from "path"
+// import * as fs from "fs"
 import Papa from 'papaparse';
 import fetch from 'node-fetch';
 import { fetch as undicifetch } from "undici";
 import { HttpsProxyAgent } from 'https-proxy-agent';
-import { ProxyParseItem, ProxyCheckres } from "@/entity-types/proxy-type"
-import * as url from 'url';
+import { ProxyParseItem, ProxyCheckres } from "@/entityTypes/proxyType"
+// import * as url from 'url';
 import { socksDispatcher } from "fetch-socks";
 export class ProxyController {
     //import proxy from csv file
-    public async importProxyfile(filename: string) {
-        //check filename is csv and exist
-        if (!(path.extname(filename) === '.csv')) {
-            throw new Error('File is not a csv');
-        }
-        fs.access(filename, fs.constants.F_OK, async (err) => {
-            if (err) {
-                throw new Error('File does not exist');
-            } else {
+    // public async importProxyfile(filename: string) {
+    //     //check filename is csv and exist
+    //     if (!(path.extname(filename) === '.csv')) {
+    //         throw new Error('File is not a csv');
+    //     }
+    //     fs.access(filename, fs.constants.F_OK, async (err) => {
+    //         if (err) {
+    //             throw new Error('File does not exist');
+    //         } else {
 
-            }
-        });
+    //         }
+    //     });
 
 
-        //return proxy list
-        const response = await fetch(filename);
-        return response;
-    }
+    //     //return proxy list
+    //     const response = await fetch(filename);
+    //     return response;
+    // }
     //handle csv file
     public async handleCsvdata(filename: string) {
         const response = await fetch(filename);

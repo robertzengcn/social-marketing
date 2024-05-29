@@ -5,7 +5,7 @@ import {Login,Searchdata,Downloadvideo,ScrapeConfig,Sqlinit} from "@/modules/scr
 const { ArgumentParser } = require("argparse");
 import {RemoteSource} from "@/modules/remotesource";
 import {SocialTaskRun} from "@/modules/socialtaskrun"
-import {SocialTaskEntity} from "@/entity-types/socialtask-type"
+import {SocialTaskEntity} from "@/entityTypes/socialtask-type"
 import {SocialTask} from "@/modules/socialtask"
 import {default_browser_config,default_scrape_config} from "@/config/puppeteerconfig"
 // const { version } = require("./package.json");

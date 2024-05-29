@@ -11,3 +11,12 @@ export interface ListData <Type>{
     records: Array<Type>
     num: number
 }
+//message used in layout dialog
+export type CommonDialogMsg={
+    status:boolean,
+    code:number,
+    data:{
+        title:string,
+        content:string
+    }
+}

@@ -3,7 +3,7 @@ import { userController, userResponse, userlogin } from '@/controller/user-contr
 import { CampaignController } from '@/controller/campaign-controller'
 // import { campaignResponse } from '@/modules/campaign'
 import { SocialTaskController } from '@/controller/socialtask-controller'
-import { SocialTaskResponse, SocialTaskInfoResponse, SocialTaskTypeResponse, TagResponse, SaveSocialTaskResponse } from '@/entity-types/socialtask-type'
+import { SocialTaskResponse, SocialTaskInfoResponse, SocialTaskTypeResponse, TagResponse, SaveSocialTaskResponse } from '@/entityTypes/socialtask-type'
 import { SocialTaskRun } from "@/modules/socialtaskrun"
 import { SocialTaskResult } from '@/modules/socialtask_result'
 import { User } from '@/modules/user'
@@ -11,10 +11,10 @@ import { SocialAccount } from '@/modules/socialaccount'
 import { SocialPlatform } from "@/modules/social_platform"
 import { ProxyApi } from '@/modules/proxy_api'
 import { ProxyController } from '@/controller/proxy-controller'
-import { ProxyParseItem } from '@/entity-types/proxy-type'
-import {CommonResponse} from "@/entity-types/common-type"
-import {campaignEntity} from "@/entity-types/campaign-type"
-import {OPENDIRECTORY} from "@/config/channellist"
+import { ProxyParseItem } from '@/entityTypes/proxyType'
+import {CommonResponse} from "@/entityTypes/commonType"
+import {campaignEntity} from "@/entityTypes/campaign-type"
+import {OPENDIRECTORY,SOCIALPLATFORM_LIST} from "@/config/channellist"
 export default function SyncMsg(mainWindow:BrowserWindow) {
   console.log("SyncMsg");
   ipcMain.handle("user:Login", async (event, data) => {
@@ -333,13 +333,13 @@ export default function SyncMsg(mainWindow:BrowserWindow) {
   ipcMain.handle("socialaccount:list", async (event, data) => {
     const qdata = JSON.parse(data);
 
-    if (!qdata.hasOwnProperty("page")) {
+    if (!("page" in qdata)) {
       qdata.page = 10;
     }
-    if (!qdata.hasOwnProperty("size")) {
+    if (!("size" in qdata)) {
       qdata.size = 10;
     }
-    if (!qdata.hasOwnProperty("search")) {
+    if (!("search" in qdata)) {
       qdata.search = "";
     }
     const socialaccount = new SocialAccount()
@@ -363,7 +363,7 @@ export default function SyncMsg(mainWindow:BrowserWindow) {
   })
   ipcMain.handle("socialaccount:detail", async (event, data) => {
     const qdata = JSON.parse(data);
-    if (!qdata.hasOwnProperty("id")) {
+    if (!("id" in qdata)) {
       //throw new Error("id not found");
       return {
         status: false,
@@ -391,13 +391,13 @@ export default function SyncMsg(mainWindow:BrowserWindow) {
     return res
   })
   //list social platform
-  ipcMain.handle("socialplatform:list", async (event, data) => {
+  ipcMain.handle(SOCIALPLATFORM_LIST, async (event, data) => {
     const qdata = JSON.parse(data);
 
-    if (!qdata.hasOwnProperty("page")) {
+    if (!("page" in qdata)) {
       qdata.page = 10;
     }
-    if (!qdata.hasOwnProperty("size")) {
+    if (!("size" in qdata)) {
       qdata.size = 10;
     }
 

@@ -59,7 +59,7 @@ export type ImportProxyResp={
     msg:string,
     data:boolean
 }
-export interface SearchProxyResp extends SearchResult{
+export interface SearchProxyResp extends SearchResult<ProxyListEntity>{
     data:ProxyListEntity[]
     total:number
 }

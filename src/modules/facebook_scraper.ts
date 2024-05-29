@@ -1,6 +1,6 @@
 'use strict';
 // import {cheerio} from 'cheerio';
-import { SocialScraper as Scraper,ScrapeOptions} from './social_scraper';
+import { SocialScraper as Scraper,ScrapeOptions} from './socialScraper';
 
 export class FacebookScraper extends Scraper {
 

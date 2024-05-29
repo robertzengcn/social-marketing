@@ -1,6 +1,6 @@
 export { };
 import { HttpClient } from "@/modules/lib/httpclient";
-import { ProxylistResp, ProxyEntity,SaveProxyResp,ProxyParseItem,ImportProxyResp } from "@/entity-types/proxy-type";
+import { ProxylistResp, ProxyEntity,SaveProxyResp,ProxyParseItem,ImportProxyResp } from "@/entityTypes/proxyType";
 export class ProxyApi {
   private _httpClient: HttpClient;
   constructor() {

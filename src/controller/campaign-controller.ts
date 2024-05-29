@@ -1,6 +1,6 @@
 import {Campaign} from '@/modules/campaign'
-import {campaignEntity} from "@/entity-types/campaign-type"
-import {CommonResponse} from "@/entity-types/common-type"
+import {campaignEntity} from "@/entityTypes/campaign-type"
+import {CommonResponse} from "@/entityTypes/commonType"
 
 
 export class CampaignController {

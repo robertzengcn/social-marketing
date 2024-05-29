@@ -22,7 +22,7 @@
 </template>
 <script setup lang="ts">
 import {useI18n} from "vue-i18n";
-import {homecardEntity} from "@/entity-types/homecard-type";
+import {homecardEntity} from "@/entityTypes/homecard-type";
 import router from "../router";
 const {t} = useI18n({inheritLocale: true});
 const cardRouter=(link:string|undefined)=>{

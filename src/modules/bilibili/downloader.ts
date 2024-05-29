@@ -3,7 +3,8 @@ const crypto = require("crypto");
 const http = require("http");
 const https = require("https");
 const progress = require("progress-stream");
-const fetch =require("node-fetch");
+// const fetch =require("node-fetch");
+import * as fetch from 'node-fetch';
 const debug = require("debug")("bilibili-download");
 const debugerror = debug('app:error');
 export interface getAiddata {

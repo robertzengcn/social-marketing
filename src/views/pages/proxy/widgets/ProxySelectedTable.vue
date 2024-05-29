@@ -9,7 +9,7 @@
 <script setup lang="ts">
 import { getProxyList} from "@/views/api/proxy"
 import { ref,watch} from 'vue'
-import { SearchProxyResp,ProxyListEntity } from "@/entity-types/proxy-type";
+import { SearchProxyResp,ProxyListEntity } from "@/entityTypes/proxyType";
 
 
 type Fetchparam = {

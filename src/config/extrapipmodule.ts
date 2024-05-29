@@ -1,4 +1,4 @@
-import { ExtraPipModule } from "@/entity-types/extramodule-type";
+import { ExtraPipModule } from "@/entityTypes/extramodule-type";
 export const extramodules:ExtraPipModule[]=[
     {
         name:"f2",

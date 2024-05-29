@@ -54,7 +54,7 @@
 
 <script setup lang="ts">
 import {useI18n} from "vue-i18n";
-import {campaignEntity} from "@/entity-types/campaign-type"
+import {campaignEntity} from "@/entityTypes/campaign-type"
 import { getCampaignlist } from '@/views/api/campaigins'
 import { ref,computed } from 'vue'
 import { SearchResult } from '@/views/api/types'

@@ -1,32 +1,19 @@
-'use strict';
-
-import {get_ip_data,get_http_headers} from '@/modules/metadata';
-const debug = require('debug')('se-scraper:Scraper');
-import { Linkdata } from "./remotesource"
-import { Page } from 'puppeteer';
-import {TaskResultdb,TaskResultEntity} from "@/model/task_resultdb"
-const appRoot = require('app-root-path');
-const fs = require('fs');
+import debug from 'debug';
 // const resolve = require('path').resolve;
 import * as path from "path";
+import * as fs from "fs";
 // import { Scraperdb } from "../model/scraperdb"
 // const { spawn } = require('child_process');
 import { Subject, Observer } from './subject';
 import {SMconfig} from "@/node_socialmk"
-// import {ScrapeVideo} from './social_scraper';
-// export interface ScrapeOptionsPages {
-//     setViewport: Function,
-//     setRequestInterception: Function,
-//     on: Function,
-//     goto: Function,
-//     screenshot: Function,
-//     setBypassCSP: Function,
-//     click: Function,
-//     waitForSelector: Function,
-//     $x: Function,
-//     cookies: Function,
-// }
+import { Page } from 'puppeteer';
+import { Linkdata } from '@/modules/remotesource';
+import {get_http_headers,get_ip_data} from "@/modules/metadata"
+import {TaskResultdb,TaskResultEntity} from "@/model/taskResultdb"
+import appRoot from 'app-root-path';
+
 // export class ScrapeOptionsPage extends Page{
+const logger = debug('socialScraper');
 export interface ScrapeVideo{
     scrapeinfo:Linkdata,
     video:VideoInfo,
@@ -213,7 +200,7 @@ export class SocialScraper implements Subject {
      */
     async runLogin(runobj: runParameter) {
 
-        debug('worker=%o', runobj.worker, this.config.keywords);
+        logger('worker=%o', runobj.worker, this.config.keywords);
 
         if (runobj.page) {
             this.page = runobj.page;
@@ -294,30 +281,30 @@ export class SocialScraper implements Subject {
   * @returns true if startpage was loaded correctly.
   */
     async load_login_page() {
-
+        //load login page
     }
     /**
     *
     * @returns true if startpage was loaded correctly.
     */
     async load_start_page() {
-
+        //Deprecated
     }
     /**
      * make login action
      */
     async makeloginaction(): Promise<any | boolean> {
-
+        //Deprecated
     }
     /**
      * user login by their hand
      */
     async userloginaction() {
-
+        //Deprecated
     }
 
     async searchdata(seachobj: Searchobject): Promise<any | Array<Linkurl>> {
-
+            //Deprecated
     }
 
     /**
@@ -349,7 +336,7 @@ export class SocialScraper implements Subject {
             // const linkobj: Linkdata = { title: linkItem.title, url: linkItem.link, lang: linkItem.lang, socialtask_id: linkItem.taskid }
             // debug(linkobj)
             try {
-                let taskresultEntity:TaskResultEntity={url:linkItem.link,
+                const taskresultEntity:TaskResultEntity={url:linkItem.link,
                     title: linkItem.title, 
                     lang: linkItem.lang,
                     taskrun_id:this.taskrunid as number,
@@ -386,7 +373,7 @@ export class SocialScraper implements Subject {
             // console.log(index)
             // const lt=linkItem as Linkdata
             // console.log(lt.id)
-            debug(linkItem)
+            logger(linkItem)
             // console.log(Object.getPrototypeOf(linkItem))
             const videoArray = await this.downloadSigleVideo(linkItem.url, videosavepath)
             if (videoArray) {
@@ -407,7 +394,7 @@ export class SocialScraper implements Subject {
      * @param string videopath 
      */
     async downloadSigleVideo(link: string, videopath: string): Promise<Array<string> | void> {
-
+            //dDeprecated
     }
 
 

@@ -1,6 +1,6 @@
 import {windowInvoke,windowSend,windowReceive} from '@/views/utils/apirequest'
-import {SocialTaskEntity,TagEntity} from '@/entity-types/socialtask-type'
-import {TaskRunEntity} from '@/entity-types/taskrun-type'
+import {SocialTaskEntity,TagEntity} from '@/entityTypes/socialtask-type'
+import {TaskRunEntity} from '@/entityTypes/taskrun-type'
 
 export type TaskQuery={
     id:number

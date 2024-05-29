@@ -1,7 +1,7 @@
 import { extramodules } from "@/config/extrapipmodule"
-import { ExtraPipModule } from "@/entity-types/extramodule-type"
+import { ExtraPipModule } from "@/entityTypes/extramodule-type"
 import { checkPipPackage } from "@/modules/lib/function"
-import { ListData } from "@/entity-types/common-type"
+import { ListData } from "@/entityTypes/commonType"
 import { installPipPackage, uninstallPipPackage } from "@/modules/lib/function"
 import log from 'electron-log/node';
 export class ExtraModuleController {

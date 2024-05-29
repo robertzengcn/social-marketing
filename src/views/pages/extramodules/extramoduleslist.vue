@@ -6,13 +6,13 @@
 </template>
 <script setup lang="ts">
 
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 import ExtramodulesTable from '@/views/pages/extramodules/widgets/ExtramodulesTable.vue'
 const dialog = ref(false);
 
-onMounted(() => {
+// onMounted(() => {
     
-});
+// });
 
 const loadItems =({ page, itemsPerPage, sortBy }) =>{
     console.log(page, itemsPerPage, sortBy)

@@ -1,7 +1,7 @@
 'use strict';
 export { };
 import {Observer} from './subject';
-import {ScrapeVideo} from './social_scraper';
+import {ScrapeVideo} from './socialScraper';
 // import {Scraperdb} from "../model/scraperdb";
 import {RemoteSource} from "./remotesource";
 import {Videoedit} from "./videoedit";

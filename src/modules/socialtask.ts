@@ -4,7 +4,7 @@ import { SocialTaskRun } from "@/modules/socialtaskrun"
 //import { spawn } from 'node:child_process';
 // import { Worker } from 'worker_threads';
 // const os = require("os");
-import { SocialTaskEntity, SocialTaskResponse, SocialTaskInfoResponse, SocialTaskTypeResponse, SaveSocialTaskResponse, TagResponse, SocialTaskRunEntity } from "@/entity-types/socialtask-type"
+import { SocialTaskEntity, SocialTaskResponse, SocialTaskInfoResponse, SocialTaskTypeResponse, SaveSocialTaskResponse, TagResponse, SocialTaskRunEntity } from "@/entityTypes/socialtask-type"
 import { utilityProcess, MessageChannelMain} from "electron";
 import * as path from 'path';
 // import { spawn } from 'node:child_process';

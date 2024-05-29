@@ -1,6 +1,6 @@
 import {windowInvoke} from '@/views/utils/apirequest'
 import {ItemSearchparam,SearchResult} from "./types"
-import {ProxyEntity,ProxyParseItem,ProxyListEntity} from "@/entity-types/proxy-type"
+import {ProxyEntity,ProxyParseItem,ProxyListEntity} from "@/entityTypes/proxyType"
 
 export async function getProxyList(data: ItemSearchparam): Promise<SearchResult<ProxyListEntity>> {
     const resp=await windowInvoke('proxy:list',data);

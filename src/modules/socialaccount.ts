@@ -5,10 +5,12 @@ import {
   SocialAccountDetailResponse,
   SocialAccountDetailData,
   SavesocialaccountResp,
-} from "@/entity-types/socialaccount-type";
+} from "@/entityTypes/socialaccount-type";
 // import url from "url"
-// import {PageSearch} from "@/entity-types/common-type"
+// import {PageSearch} from "@/entityTypes/common-type"
 import { URLSearchParams } from "url";
+import { AccountCookiesdb, AccountCookiesEntity } from "@/model/account_cookiesdb";
+
 // import FormData from "form-data";
 export class SocialAccount {
   private _httpClient: HttpClient;
@@ -24,7 +26,7 @@ export class SocialAccount {
     const searchParams: Record<string, any> = new URLSearchParams();
     searchParams.append("page", page);
     searchParams.append("size", size);
-    
+
     if (search.length > 0) {
       searchParams.append("search", search);
     }
@@ -33,18 +35,33 @@ export class SocialAccount {
     // const finalurl='/api/campaign?'+paramstring;
     const finalurl = "/api/socialaccount/list?" + paramstring;
 
-    const sociallistres = await this._httpClient.get(finalurl);
+    const sociallistres = await this._httpClient.get(finalurl) as SocialAccountResponse;
     if (!sociallistres) {
       throw new Error("remote return empty");
     }
-    // console.log("campaign list is following")
-    // console.log(campignlistres.data)
-    const resp: SocialAccountResponse = {
-      status: sociallistres.status,
-      msg: sociallistres.msg,
-      data: sociallistres.data,
-    };
-    return resp;
+
+    // const resp: SocialAccountResponse = {
+    //   status: sociallistres.status,
+    //   msg: sociallistres.msg,
+    //   data: sociallistres.data,
+    // };
+
+    if (sociallistres.data.records && sociallistres.data.records.length > 0) {
+      const accDb = new AccountCookiesdb()
+
+      //loop social list data, add cookies
+      for (const social of sociallistres.data.records) {
+        social.cookies = false
+        const cookisEntity = accDb.getAccountCookies(social.id)
+        if (cookisEntity && cookisEntity.cookies) {
+          const cEntity = JSON.parse(cookisEntity.cookies)
+          if (cEntity && cEntity.length > 0) {
+            social.cookies = true
+          }
+        }
+      }
+    }
+    return sociallistres;
   }
   //get social account detail
   public async getAccountdetail(
@@ -58,7 +75,7 @@ export class SocialAccount {
     if (!socialdetailres) {
       throw new Error("remote return empty");
     }
-   
+
     return socialdetailres as SocialAccountDetailResponse;
   }
   //save social account
@@ -70,28 +87,32 @@ export class SocialAccount {
     if (soc.id) {
       data.append("id", soc.id.toString());
     }
-    data.append("social_type_id", soc.social_type_id.toString());
+    if (soc.social_type_id) {
+      data.append("social_type_id", soc.social_type_id.toString());
+    }
     data.append("user", soc.user);
-    data.append("pass", soc.pass);
+    if (soc.pass) {
+      data.append("pass", soc.pass);
+    }
     data.append("status", soc.status.toString());
     data.append("name", soc.name);
     data.append("phone", soc.phone);
     data.append("email", soc.email);
     if (soc.proxy) {
       for (const proxy of soc.proxy) {
-        if(proxy.id){
+        if (proxy.id) {
           data.append("proxy[]", proxy.id.toString());
-        console.log("proxy id is "+proxy.id.toString())
+          console.log("proxy id is " + proxy.id.toString())
         }
       }
     }
 
-    const resp = await this._httpClient.post("/api/socialaccount",data);
+    const resp = await this._httpClient.post("/api/socialaccount", data);
     return resp as SavesocialaccountResp;
   }
 
   //delete social account
-  public async deleteAccount(id){
+  public async deleteAccount(id) {
     const searchParams: Record<string, any> = new URLSearchParams();
     searchParams.append("id", id);
     const paramstring = searchParams.toString();
@@ -101,6 +122,6 @@ export class SocialAccount {
       throw new Error("remote return empty");
     }
     return socialdetailres;
-    
+
   }
 }

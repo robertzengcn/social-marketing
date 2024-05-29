@@ -1,7 +1,7 @@
 'use strict';
 
 // const cheerio = require('cheerio');
-import {SocialScraper as Scraper,ScrapeOptions} from './social_scraper';
+import {SocialScraper as Scraper,ScrapeOptions} from './socialScraper';
 const fs = require('fs');
 
 export class YoutubeScraper extends Scraper {

@@ -2,7 +2,7 @@
 import { Scraperdb } from "@/model/scraperdb";
 import { getRecorddatetime } from "@/modules/lib/function";
 import { Database } from 'better-sqlite3';
-import {TaskRunEntity} from "@/entity-types/taskrun-type";
+import {TaskRunEntity} from "@/entityTypes/taskrun-type";
 export class Taskrundb {
   db: Database;
   taskrunTable = "task_run";
@@ -50,7 +50,7 @@ export class Taskrundb {
   //check task id and task run number exist
   public checkTaskrunExist(taskid: number, taskrunNum: string, callback: Function | undefined | null) {
     const stmt = this.db.prepare(`SELECT task_id FROM ` + this.taskrunTable + ` WHERE task_id = ? AND taskrun_num = ?`);
-    let exist: boolean = false;
+    let exist = false;
     const taskchekres = stmt.get(taskid, taskrunNum) as { task_id: number }
     
     if (taskchekres&&taskchekres.task_id) {

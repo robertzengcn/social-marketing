@@ -44,7 +44,7 @@
     "tests/**/*.ts",
     "tests/**/*.tsx",
     "typings/*"
-],
+, "src/modules/scrapeindex.ts"],
   "exclude": [
     "node_modules"
   ]

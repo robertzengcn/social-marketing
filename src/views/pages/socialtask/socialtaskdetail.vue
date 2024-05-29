@@ -40,7 +40,7 @@ import {
     getTaglist,
 } from "@/views/api/socialtask";
 import { useRoute } from "vue-router";
-import { SocialTaskEntity } from "@/entity-types/socialtask-type";
+import { SocialTaskEntity } from "@/entityTypes/socialtask-type";
 import { saveSocialTask } from "@/views/api/socialtask";
 const $route = useRoute();
 const FakeAPI = {

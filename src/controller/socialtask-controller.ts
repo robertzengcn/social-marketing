@@ -1,5 +1,5 @@
 import {SocialTask} from "@/modules/socialtask";
-import {SocialTaskResponse,SocialTaskInfoResponse,SocialTaskTypeResponse,TagResponse,SaveSocialTaskResponse,SocialTaskEntity,SocialTaskRunEntity} from "@/entity-types/socialtask-type"
+import {SocialTaskResponse,SocialTaskInfoResponse,SocialTaskTypeResponse,TagResponse,SaveSocialTaskResponse,SocialTaskEntity,SocialTaskRunEntity} from "@/entityTypes/socialtask-type"
 export class SocialTaskController {
     public async getSocialTasklist(id: number,page:number,size:number): Promise<SocialTaskResponse> {
        

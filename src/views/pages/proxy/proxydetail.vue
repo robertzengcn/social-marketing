@@ -87,7 +87,7 @@ import {
 } from "@/views/api/proxy";
 
 import { useRoute } from "vue-router";
-import {ProxyEntity} from "@/entity-types/proxy-type";
+import {ProxyEntity} from "@/entityTypes/proxyType";
 // import { saveSocialTask } from "@/views/api/socialtask";
 const $route = useRoute();
 const FakeAPI = {

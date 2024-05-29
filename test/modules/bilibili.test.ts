@@ -14,8 +14,8 @@ const resolve = require('path').resolve;
 // const Proxy = require('http-mitm-proxy');
 
 const debug = require('debug')('social_market:test');
-import {ScrapeOptions} from "../../src/modules/social_scraper";
-import {BilibiliScraper} from '../../src/modules/bilibili_scraper';
+import {ScrapeOptions} from "../../src/modules/socialScraper";
+import {BilibiliScraper} from '../../src/modules/bilibiliScraper';
 const { dirname } = require('path');
 const fs = require("fs");
 import { Page } from 'puppeteer';

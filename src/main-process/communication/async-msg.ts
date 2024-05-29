@@ -1,9 +1,8 @@
-const { ipcMain } = require('electron')
-// import { SocialTaskController } from '@/controller/socialtask-controller'
-import { SocialTask } from '@/modules/socialtask'
-// import { BrowserWindow } from 'electron'
-import { SocialAccountController } from "@/controller/socialaccount-controller";
-import { ProxyController } from '@/controller/proxy-controller';
+import { ipcMain } from 'electron';
+import { SocialTask } from '@/modules/socialtask';
+import { SocialAccountController } from '@/controller/socialaccount-controller';
+// import { ProxyController } from '@/controller/proxy-controller';
+
 type dataResponse = {
     status: boolean,
     code: number,
@@ -16,11 +15,11 @@ export default function AsyncMsg() {
         console.log("get social task data")
 
         const qdata = JSON.parse(data);
-        if (!qdata.hasOwnProperty("id")) {
+        if (!("id" in qdata)) {
             throw new Error("id not found");
         }
 
-        if (!qdata.hasOwnProperty("runNum")) {
+        if (!("runNum" in qdata)) {
             throw new Error("runNum not found");
         }
         const socialtaskcon = new SocialTask()
@@ -57,7 +56,7 @@ export default function AsyncMsg() {
     //login social account
     ipcMain.on('socialaccount:login', async (event, data) => {
         const qdata = JSON.parse(data);
-        if (!qdata.hasOwnProperty("id")) {
+        if (!("id" in qdata)) {
             throw new Error("id not found");
         }
         const sac = new SocialAccountController()

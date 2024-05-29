@@ -1,4 +1,4 @@
-import {Proxy} from "@/entity-types/proxy-type";
+import {Proxy} from "@/entity-types/proxyType";
 export type SocialAccountResponse = {
     status: string,
     msg: string,
@@ -19,11 +19,13 @@ export type SocialAccountListData={
     user: string,
     pass:string,
     status: number,
+    use_proxy: number,
+    cookies?:boolean
 }
 export type SocialAccountDetailData={
     id?: number,
     social_type?: string,
-    social_type_id: number,
+    social_type_id?: number,
     social_type_url?:string,
     user: string,
     pass:string,

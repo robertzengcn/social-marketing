@@ -1,6 +1,6 @@
 import {ItemSearchparam,SearchResult} from './types'
 import {windowInvoke} from '@/views/utils/apirequest'
-import {campaignEntity} from "@/entity-types/campaign-type"
+import {campaignEntity} from "@/entityTypes/campaign-type"
 export async function getCampaignlist(data: ItemSearchparam):Promise<SearchResult<campaignEntity>>{
      
         const resp=await windowInvoke('campaign:list',data);

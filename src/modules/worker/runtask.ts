@@ -2,7 +2,7 @@
 export {};
 import { parentPort, workerData } from 'worker_threads';
 // import {} from "@/modules/socialtaskrun"
-import {SocialTaskEntity,SocialTaskRunEntity} from "@/entity-types/socialtask-type"
+import {SocialTaskEntity,SocialTaskRunEntity} from "@/entityTypes/socialtask-type"
 import {ScrapeConfig,Searchdata} from "@/modules/scrapeindex";
 
 let scrape_config:ScrapeConfig = {

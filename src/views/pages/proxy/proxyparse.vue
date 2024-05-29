@@ -112,7 +112,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import Papa from "papaparse";
-import { ProxyParseItem } from "@/entity-types/proxy-type";
+import { ProxyParseItem } from "@/entityTypes/proxyType";
 import { checkProxy, importProxydata } from "@/views/api/proxy";
 import { SplitArrayIntoGroups } from "@/views/utils/function";
 const showtable = ref(false);
@@ -170,7 +170,7 @@ const handleFileUpload = async () => {
     loading.value = false;
     return;
   } 
-  var reader = new FileReader();
+  const reader = new FileReader();
   reader.readAsText(files.value[0]);
   reader.onload = () => {
     console.log(reader.result);
@@ -205,7 +205,7 @@ const checkProxyitem = async () => {
   loading.value=true;
   message.value="check proxy"
   console.log(items.value);
-  let promises =items.value.map(async (item) => {
+  const promises =items.value.map(async (item) => {
     const res = await checkProxy(item).catch((err) => {
       console.log(err);
       return false;
@@ -239,7 +239,7 @@ const importProxy = async () => {
     loading.value=false;
     return;
   }
-  let promises = SplitArrayIntoGroups(result, 100).map(async (group) => {
+  const promises = SplitArrayIntoGroups(result, 100).map(async (group) => {
     const res = await importProxydata(group).catch((err) => {
       console.log(err);
       setAlert(err.message, "Import Proxy", "error")
@@ -259,10 +259,10 @@ const importProxy = async () => {
 const outPutcsv = () => {
   const rows = [["host", "port", "protocols", "user", "pass"]];
 
-  let csvContent =
+  const csvContent =
     "data:text/csv;charset=utf-8," + rows.map((e) => e.join(",")).join("\n");
 
-  var encodedUri = encodeURI(csvContent);
+  const encodedUri = encodeURI(csvContent);
   // window.open(encodedUri);
   window.location.href = encodedUri;
 };

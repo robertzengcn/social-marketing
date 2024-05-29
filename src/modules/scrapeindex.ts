@@ -68,7 +68,7 @@ export async function Searchdata(browser_config:SMstruct, scrape_config:ScrapeCo
   // scrape config overwrites the browser_config
   Object.assign(browser_config, scrape_config);
   // debug(browser_config)
-  var scraper = new ScrapeManager(browser_config);
+  const scraper = new ScrapeManager(browser_config);
   // var remoteConfig=await scraper.getRemoteConfig();
   console.log("scraper task id"+scraper.taskid)
   await scraper.start();

@@ -24,8 +24,6 @@
         label="Pass"
         type="input"
         hint="input the pass"
-        :rules="[rules.required]"
-        required
         :readonly="loading"
         clearable
       ></v-text-field>
@@ -122,9 +120,9 @@ import {
 } from "@/views/api/socialaccount";
 import { getSocialPlatformlist } from "@/views/api/social_platform";
 import { useRoute } from "vue-router";
-import { SocialAccountDetailData } from "@/entity-types/socialaccount-type";
+import { SocialAccountDetailData } from "@/entityTypes/socialaccount-type";
 import ProxyTableselected from "@/views/pages/proxy/widgets/ProxySelectedTable.vue";
-import { ProxyListEntity, Proxy } from "@/entity-types/proxy-type";
+import { ProxyListEntity, Proxy } from "@/entityTypes/proxyType";
 
 const $route = useRoute();
 const FakeAPI = {
@@ -142,9 +140,9 @@ const phone = ref("");
 const email = ref("");
 // const proxy = ref(0);
 const socialaccountId = ref(0);
-const social_type_id = ref(0);
+const social_type_id = ref<number>();
 const proxyValue = ref<Array<Proxy>>([]);
-const proxyValueshow = ref<Array<String>>([]);
+const proxyValueshow = ref<Array<string>>([]);
 const loading = ref(false);
 const alert = ref(false);
 const alertContent = ref("");
@@ -152,6 +150,7 @@ const alertcolor = ref("");
 const isEdit = ref(false);
 const platformitems = ref();
 const proxytableshow = ref(false);
+import router from "@/views/router";
 // const selectedProxy = ref<ProxyListEntity>();
 
 const rules = {
@@ -227,6 +226,9 @@ async function onSubmit() {
   loading.value = true;
   if (!valid) {
     console.log("form is not valid");
+    alert.value = true;
+    alertcolor.value = "error";
+    alertContent.value = "form is not valid";
   } else {
     const soacc: SocialAccountDetailData = {
       social_type_id: social_type_id.value,
@@ -238,6 +240,7 @@ async function onSubmit() {
       email: email.value,
       proxy: proxyValue.value,
     };
+
     if ($route.params.id) {
       soacc.id = parseInt($route.params.id.toString());
     }
@@ -259,6 +262,11 @@ async function onSubmit() {
         }
         setTimeout(() => {
           alert.value = false;
+          if (res.id > 0) {
+            router.push({
+              path: "/socialaccount/list",
+            });
+          }
         }, 5000);
       })
       .catch((err) => {

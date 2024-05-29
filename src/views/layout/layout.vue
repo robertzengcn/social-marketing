@@ -109,6 +109,14 @@
                 <RouterView />
             </div>
         </main>
+        <v-dialog absolute right persistent width="300" class="dialog-bottom-right">
+            <v-card>
+              <v-card-title class="headline">{{ dialogTitle }}</v-card-title>
+              <v-card-text>
+               {{ dialogContent }}
+              </v-card-text>
+            </v-card>
+          </v-dialog>
     </v-layout>
 </template>
 <script setup lang="ts">
@@ -121,8 +129,13 @@ import { useMainStore } from '@/views/store/appMain';
 import { Signout } from '@/views/api/users'
 import {setLanguage} from '@/views/utils/cookies'
 import {useI18n} from "vue-i18n";
-
+import { ref,onMounted } from 'vue'
+import {receiveSystemMessage} from '@/views/api/layout'
+import {CommonDialogMsg} from "@/entityTypes/commonType"
 // import {ref, watchEffect} from "vue";
+const dialogStatus=ref(false)
+const dialogTitle=ref('')
+const dialogContent=ref('')
 const mainStore = useMainStore();
 const router = useRouter();
 const navState = reactive({
@@ -177,6 +190,24 @@ const Usersignout = async () => {
     await Signout()
     router.push('/login')
 }
-
+onMounted(() => {
+    receiveSystemMessage((res:CommonDialogMsg)=>{
+        //revice system message
+        showDialog(res.status, res.data.title, res.data.content)
+    })
+}
+)
+const showDialog=(status:boolean, title:string,content:string)=>{
+    dialogTitle.value=title  
+    dialogContent.value=content
+    dialogStatus.value=status;
+  setTimeout(() => {
+    dialogStatus.value= false
+        }, 10000)
+}
 </script>
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.dialog-bottom-right {
+    bottom: 0;
+  }
+</style>

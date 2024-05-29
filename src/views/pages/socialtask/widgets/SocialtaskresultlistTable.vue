@@ -16,7 +16,7 @@ import { ref } from 'vue'
 // import { SearchResult } from '@/views/api/types'
 import { useRoute } from "vue-router";
 // import router from '@/views/router';
-// import { TaskRunEntity } from '@/entity-types/taskrun-types'
+// import { TaskRunEntity } from '@/entityTypes/taskrun-types'
 type Fetchparam = {
     id: number
     page: number,

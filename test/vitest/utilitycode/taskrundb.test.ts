@@ -1,7 +1,7 @@
 'use strict';
 import { expect, test,expectTypeOf } from 'vitest'
 import {Taskrundb} from "@/model/taskrundb"
-import {TaskRunEntity} from "@/entity-types/taskrun-type";
+import {TaskRunEntity} from "@/entityTypes/taskrun-type";
 
 test('insert-task-result-db', async function () {
     //save task run

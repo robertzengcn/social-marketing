@@ -1,7 +1,7 @@
 "use strict";
 
 const cheerio = require("cheerio");
-import { SocialScraper as Scraper, Linkurl, ScrapeOptions, Searchobject } from "./social_scraper";
+import { SocialScraper as Scraper, Linkurl, ScrapeOptions, Searchobject } from "./socialScraper";
 const fs = require("fs");
 import { Downloader } from "@/modules/bilibili/downloader";
 const path = require("path");
@@ -341,25 +341,7 @@ export class BilibiliScraper extends Scraper {
    * @param {string} videopath
    */
   async downloadSigleVideo(link: string, videopath: string): Promise<Array<string>> {
-    // if (page) {
-    //   this.page = page;
-    // }
-
-    // console.log(link)
-    // await this.page.goto(link,{
-    //   waitUntil: 'domcontentloaded',
-    // });
-    // console.log(videopath)
-    // const file = fs.createWriteStream(videopath + "/test.webm");
-    // await page.evaluate(async () => {
-    // const el = document.querySelector('.bpx-player-video-wrap > video:nth-child(1)');
-    // console.log(el);
-    // const {src} = el.querySelector('source');
-    // console.log(src);
-    // });
-    // const html = await page.$eval('#bilibili-player', el => el.outerHTML);
-    // console.log(html)
-    // const src = await page.$eval("#bilibili-player video",el => el.getAttribute("src"))
+   
     if (!link) {
       debug(link)
       throw new Error("link is empty")

@@ -1,7 +1,7 @@
 "use strict";
 export {};
 import { HttpClient } from "@/modules/lib/httpclient"
-import {KeywordResponse} from "@/entity-types/keywords-type"
+import {KeywordResponse} from "@/entityTypes/keywords-type"
 export class Keyword {
     private _httpClient: HttpClient
     //construct               
