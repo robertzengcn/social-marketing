@@ -1,17 +1,39 @@
+import { SMconfig,SMstruct,searchDataParam,ScrapeOptions } from "@/entityTypes/scrapeType"
+import defaults from "lodash/defaults"
+import { Page,Browser } from 'puppeteer';
+import { createLogger, format, transports } from "winston"
+const { combine, timestamp, printf } = format;
+import { Cluster } from "puppeteer-cluster"
+import fs from "fs";
+import {read_keywords_from_file} from "@/modules/lib/function"
+import debug from 'debug';
+import clone from "lodash/clone"
+import times from "lodash/times"
+import map from "lodash/map"
+import {UserAgent} from "user-agents";
+// import { addExtra } from "puppeteer-extra";
+import puppeteer from 'puppeteer-extra';
+import {CustomConcurrency} from "@/modules/concurrency-implementation"
+import {searchEngineFactory} from "@/modules/searchEngineFactory"
+// import * as vanillaPuppeteer from "puppeteer";
+
+const logger = debug('ScrapeManager');
+const MAX_ALLOWED_BROWSERS = 6;
 export class ScrapeManager {
-    cluster: { execute: Function; idle: Function; close: Function };
+    cluster:Cluster<string, number>;
     pluggable: { start_browser?: Function, close_browser?: Function, handle_results?: Function, handle_metadata?: Function };
-    scraper: SocialScraper;
+    // scraper: SocialScraper;
     context: object;
     config: SMconfig;
     logger: { info: Function };
-    browser: { newPage: Function };
+    browser: Browser;
     page: Page;
     numClusters: number;
     tmppath: string;
-    runLogin: Function;
+    // runLogin: Function;
     taskid?: number;
     taskrunId?: number;
+    // chrome_flags=[];
     constructor(config: SMstruct, context = {}) {
       // this.cluster = null;
       // this.pluggable = null;
@@ -20,7 +42,7 @@ export class ScrapeManager {
   
       // await this.getRemoteConfig(campaignId)
   
-      this.config = _.defaults(config, {
+      this.config = defaults(config, {
         // remote_add:endcofig.REMOTEADD,
         // remote_username:endcofig.USERNAME,
         // remote_password:endcofig.PASSWORD,
@@ -52,7 +74,7 @@ export class ScrapeManager {
         // platform: "facebook",
         // keywords: ["nodejs rocks"],
         // whether to start the browser in headless mode
-        // headless: true,
+        headless: true,
         // specify flags passed to chrome here
         // About our defaults values https://peter.sh/experiments/chromium-command-line-switches/
         chrome_flags: [
@@ -158,7 +180,7 @@ export class ScrapeManager {
         );
       }
   
-      debug("this.config=%O", this.config);
+      logger("this.config=%O", this.config);
       //defind task id and task run id
       if (config.taskid) {
         this.taskid = config.taskid;
@@ -174,34 +196,25 @@ export class ScrapeManager {
      * Returns true if the browser was successfully launched. Otherwise will return false.
      */
     async start() {
-      if (this.config.custom_func) {
-        if (fs.existsSync(this.config.custom_func)) {
-          try {
-            const PluggableClass = require(this.config.custom_func);
-            this.pluggable = new PluggableClass({
-              config: this.config,
-              context: this.context,
-            });
-          } catch (exception) {
-            console.error(exception);
-            return false;
-          }
-        } else {
-          console.error(`File "${this.config.custom_func}" does not exist!`);
-          return false;
-        }
-      }
+      //if (this.config.custom_func) {
+      //   import PluggableClass from this.config.custom_func;
+
+      //   this.pluggable = new PluggableClass({
+      //     config: this.config,
+      //     context: this.context,
+      //   });
+      // }
   
-      const chrome_flags = _.clone(this.config.chrome_flags);
+      // const chrome_flags = _.clone(this.config.chrome_flags);
   
-      if (this.pluggable && this.pluggable.start_browser) {
-        // launch_args.config = this.config;
-        this.browser = await this.pluggable.start_browser({
-          config: this.config,
-        });
-        // console.log("229")
-        this.page = await this.browser.newPage();
-      } else {
+      // if (this.pluggable && this.pluggable.start_browser) {
+      //   // launch_args.config = this.config;
+      //   this.browser = await this.pluggable.start_browser({
+      //     config: this.config,
+      //   });
+      //   // console.log("229")
+      //   this.page = await this.browser.newPage();
+      // } else {
   
         // if no custom start_browser functionality was given
         // use puppeteer-cluster for scraping
@@ -219,7 +232,7 @@ export class ScrapeManager {
             this.config.proxies.length + (this.config.use_proxies_only ? 0 : 1),
             MAX_ALLOWED_BROWSERS
           );
-          proxies = _.clone(this.config.proxies);
+          proxies = clone(this.config.proxies);
   
           // Insert a first config without proxy if use_proxy_only is false
           if (this.config.use_proxies_only === false) {
@@ -227,17 +240,17 @@ export class ScrapeManager {
           }
         } else {
           this.numClusters = this.config.puppeteer_cluster_config.maxConcurrency;
-          proxies = _.times(this.numClusters, null);
+          proxies =times(this.numClusters, null);
         }
   
         this.logger.info(`Using ${this.numClusters} clusters.`);
   
         // Give the per browser options
-        const perBrowserOptions = _.map(proxies, (proxy) => {
+        const perBrowserOptions = map(proxies, (proxy) => {
           const userAgent = this.config.random_user_agent
             ? new UserAgent({ deviceCategory: "desktop" }).toString()
             : this.config.user_agent;
-          let args = chrome_flags.concat([`--user-agent=${userAgent}`]);
+          let args = this.config.chrome_flags.concat([`--user-agent=${userAgent}`]);
   
           if (proxy) {
             args = args.concat([`--proxy-server=${proxy}`]);
@@ -250,12 +263,12 @@ export class ScrapeManager {
           };
         });
   
-        debug("perBrowserOptions=%O", perBrowserOptions);
+        this.logger.info("perBrowserOptions=%O", perBrowserOptions);
   
         // puppeteer.use(_StealthPlugin());
         // puppeteer.use(_AdblockerPlugin());
-  
-        const puppeteer = addExtra(vanillaPuppeteer);
+         //currently I not know how to write it in typescript
+        // const puppeteer = addExtra(vanillaPuppeteer);
   
         // Add stealth plugin and use defaults (all tricks to hide puppeteer usage)
         //  puppeteer.use(Stealth());
@@ -264,137 +277,140 @@ export class ScrapeManager {
         // puppeteer.use(AdblockerPlugin({ blockTrackers: true }));
   
         this.cluster = await Cluster.launch({
-          puppeteer,
+          // puppeteer,
           monitor: this.config.puppeteer_cluster_config.monitor,
           timeout: this.config.puppeteer_cluster_config.timeout, // max timeout set to 30 minutes
-          concurrency: CustomConcurrencyImpl,
+          concurrency: CustomConcurrency,
           maxConcurrency: this.numClusters,
-          puppeteerOptions: {
-            // puppeteer:puppeteer,
-            perBrowserOptions: perBrowserOptions,
-          },
+          // puppeteerOptions: {
+          //   // puppeteer:puppeteer,
+          //   perBrowserOptions: perBrowserOptions,
+          // },
+          puppeteerOptions:perBrowserOptions,
         });
-      }
-    }
+        // console.log(this.cluster)
+      //}
+    //}
+  }
   
     /*
      * login the socila media platform
      */
-    async login(scrape_config = {}) {
-      Object.assign(this.config, scrape_config);
+    // async login(scrape_config = {}) {
+    //   Object.assign(this.config, scrape_config);
   
-      // var results = {};
-      // var num_requests = 0;
-      // var metadata = {};
-      // var startTime = Date.now();
+    //   // var results = {};
+    //   // var num_requests = 0;
+    //   // var metadata = {};
+    //   // var startTime = Date.now();
   
-      if (this.pluggable && this.pluggable.start_browser) {
-        // console.log(this.config.platform)
-        this.scraper = getScraper(this.config.platform, {
-          config: this.config,
-          context: this.context,
-          pluggable: this.pluggable,
-          page: this.page,
-          // tmppath: this.tmppath,
-        });
+    //   if (this.pluggable && this.pluggable.start_browser) {
+    //     // console.log(this.config.platform)
+    //     this.scraper = getScraper(this.config.platform, {
+    //       config: this.config,
+    //       context: this.context,
+    //       pluggable: this.pluggable,
+    //       page: this.page,
+    //       // tmppath: this.tmppath,
+    //     });
   
-        await this.scraper.runLogin({ page: this.page });
-      } else {
-        // Each browser will get N/(K+1) keywords and will issue N/(K+1) * M total requests to the search engine.
-        // https://github.com/GoogleChrome/puppeteer/issues/678
-        // The question is: Is it possible to set proxies per Page? Per Browser?
-        // as far as I can see, puppeteer cluster uses the same puppeteerOptions
-        // for every browser instance. We will use our custom puppeteer-cluster version.
-        // https://www.npmjs.com/package/proxy-chain
-        // this answer looks nice: https://github.com/GoogleChrome/puppeteer/issues/678#issuecomment-389096077
-        const chunks: [][] = [];
-        for (let n = 0; n < this.numClusters; n++) {
-          chunks.push([]);
-        }
-        for (let k = 0; k < this.config.keywords.length; k++) {
-          chunks[k % this.numClusters].push(this.config.keywords[k] as never);
-        }
+    //     await this.scraper.runLogin({ page: this.page });
+    //   } else {
+    //     // Each browser will get N/(K+1) keywords and will issue N/(K+1) * M total requests to the search engine.
+    //     // https://github.com/GoogleChrome/puppeteer/issues/678
+    //     // The question is: Is it possible to set proxies per Page? Per Browser?
+    //     // as far as I can see, puppeteer cluster uses the same puppeteerOptions
+    //     // for every browser instance. We will use our custom puppeteer-cluster version.
+    //     // https://www.npmjs.com/package/proxy-chain
+    //     // this answer looks nice: https://github.com/GoogleChrome/puppeteer/issues/678#issuecomment-389096077
+    //     const chunks: [][] = [];
+    //     for (let n = 0; n < this.numClusters; n++) {
+    //       chunks.push([]);
+    //     }
+    //     for (let k = 0; k < this.config.keywords.length; k++) {
+    //       chunks[k % this.numClusters].push(this.config.keywords[k] as never);
+    //     }
   
-        debug("chunks=%o", chunks);
+    //     debug("chunks=%o", chunks);
   
-        const execPromises = [];
-        for (let c = 0; c < chunks.length; c++) {
-          const config = _.clone(this.config);
-          config.keywords = chunks[c];
+    //     const execPromises = [];
+    //     for (let c = 0; c < chunks.length; c++) {
+    //       const config = _.clone(this.config);
+    //       config.keywords = chunks[c];
   
-          const obj = getScraper(this.config.platform, {
-            config: config,
-            context: {},
-            pluggable: this.pluggable,
-          });
+    //       const obj = getScraper(this.config.platform, {
+    //         config: config,
+    //         context: {},
+    //         pluggable: this.pluggable,
+    //       });
   
-          const boundMethod = obj.runLogin.bind(obj);
-          execPromises.push(this.cluster.execute({}, boundMethod) as never);
-        }
+    //       const boundMethod = obj.runLogin.bind(obj);
+    //       execPromises.push(this.cluster.execute({}, boundMethod) as never);
+    //     }
   
-        await Promise.all(execPromises);
+    //     await Promise.all(execPromises);
   
-        // Merge results and metadata per keyword
-        // for (let promiseReturn of promiseReturns) {
-        //     Object.assign(results, promiseReturn.results);
-        //     Object.assign(metadata, promiseReturn.metadata);
-        //     num_requests += promiseReturn.num_requests;
-        // }
-      }
+    //     // Merge results and metadata per keyword
+    //     // for (let promiseReturn of promiseReturns) {
+    //     //     Object.assign(results, promiseReturn.results);
+    //     //     Object.assign(metadata, promiseReturn.metadata);
+    //     //     num_requests += promiseReturn.num_requests;
+    //     // }
+    //   }
   
-      // let timeDelta = Date.now() - startTime;
-      // let ms_per_request = timeDelta/num_requests;
+    //   // let timeDelta = Date.now() - startTime;
+    //   // let ms_per_request = timeDelta/num_requests;
   
-      // this.logger.info(`Scraper took ${timeDelta}ms to perform ${num_requests} requests.`);
-      // this.logger.info(`On average ms/request: ${ms_per_request}ms/request`);
+    //   // this.logger.info(`Scraper took ${timeDelta}ms to perform ${num_requests} requests.`);
+    //   // this.logger.info(`On average ms/request: ${ms_per_request}ms/request`);
   
-      // if (this.pluggable && this.pluggable.handle_results) {
-      //     await this.pluggable.handle_results(results);
-      // }
+    //   // if (this.pluggable && this.pluggable.handle_results) {
+    //   //     await this.pluggable.handle_results(results);
+    //   // }
   
-      // metadata.elapsed_time = timeDelta.toString();
-      // metadata.ms_per_keyword = ms_per_request.toString();
-      // metadata.num_requests = num_requests;
+    //   // metadata.elapsed_time = timeDelta.toString();
+    //   // metadata.ms_per_keyword = ms_per_request.toString();
+    //   // metadata.num_requests = num_requests;
   
-      // debug('metadata=%O', metadata);
+    //   // debug('metadata=%O', metadata);
   
-      // if (this.pluggable && this.pluggable.handle_metadata) {
-      //     await this.pluggable.handle_metadata(metadata);
-      // }
+    //   // if (this.pluggable && this.pluggable.handle_metadata) {
+    //   //     await this.pluggable.handle_metadata(metadata);
+    //   // }
   
-      // if (this.config.output_file) {
-      //     this.logger.info(`Writing results to ${this.config.output_file}`);
-      //     write_results(this.config.output_file, JSON.stringify(results, null, 4));
-      // }
+    //   // if (this.config.output_file) {
+    //   //     this.logger.info(`Writing results to ${this.config.output_file}`);
+    //   //     write_results(this.config.output_file, JSON.stringify(results, null, 4));
+    //   // }
   
-      // return {
-      //     results: results,
-      //     metadata: metadata || {},
-      // };
-    }
+    //   // return {
+    //   //     results: results,
+    //   //     metadata: metadata || {},
+    //   // };
+    // }
   
     /*
-     * get data url from platform
+     * get data from search engine
      */
-    async searchdata(scrape_config = {}) {
-      Object.assign(this.config, scrape_config);
+    async searchdata(param:searchDataParam) {
+      // Object.assign(this.config, scrape_config);
   
-      if (this.pluggable && this.pluggable.start_browser) {
+      // if (this.pluggable && this.pluggable.start_browser) {
         // console.log(this.config.platform)
-        this.scraper = getScraper(this.config.platform, {
-          config: this.config,
-          context: this.context,
-          pluggable: this.pluggable,
-          page: this.page,
-          taskid: this.taskid,
-          taskrunid: this.taskrunId,
-          // taskid?: number,
-          // taskrunid?:number,
-          // tmppath: this.tmppath,
-        });
-        const searobj: WosearchObj = { page: this.page };
-        await this.scraper.workersearchdata(searobj);
-      } else {
+      //   this.scraper = getScraper(this.config.platform, {
+      //     config: this.config,
+      //     context: this.context,
+      //     pluggable: this.pluggable,
+      //     page: this.page,
+      //     // taskid: this.taskid,
+      //     // taskrunid: this.taskrunId,
+      //     // taskid?: number,
+      //     // taskrunid?:number,
+      //     // tmppath: this.tmppath,
+      //   });
+      //   const searobj: WosearchObj = { page: this.page };
+      //   await this.scraper.workersearchdata(searobj);
+      // } else {
         // Each browser will get N/(K+1) keywords and will issue N/(K+1) * M total requests to the search engine.
         // https://github.com/GoogleChrome/puppeteer/issues/678
         // The question is: Is it possible to set proxies per Page? Per Browser?
@@ -406,28 +422,36 @@ export class ScrapeManager {
         for (let n = 0; n < this.numClusters; n++) {
           chunks.push([] as never);
         }
-        for (let k = 0; k < this.config.keywords.length; k++) {
-          chunks[k % this.numClusters].push(this.config.keywords[k] as never);
+        for (let k = 0; k < param.keywords.length; k++) {
+          chunks[k % this.numClusters].push(param.keywords[k] as never);
         }
   
-        debug("chunks=%o", chunks);
-  
+        this.logger.info("chunks=%o", chunks);
+        const engineFactory=new searchEngineFactory()
         const execPromises = [];
+       
         for (let c = 0; c < chunks.length; c++) {
-          const config = _.clone(this.config);
-          config.keywords = chunks[c];
-          console.log("task run id is" + config.taskrunid)
-          const obj = getScraper(this.config.platform, {
-            config: config,
-            context: {},
+          // const config = clone(this.config);
+          // config.keywords = chunks[c];
+          // console.log("task run id is" + config.taskrunid)
+          // const obj = getScraper(this.config.platform, {
+          //   config: config,
+          //   context: {},
+          //   pluggable: this.pluggable,
+          //   taskid: config.taskid,
+          //   taskrunid: config.taskrunid,
+  
+          // });
+          const scop:ScrapeOptions={
+            config:this.config,
+            context:this.context,
             pluggable: this.pluggable,
-            taskid: config.taskid,
-            taskrunid: config.taskrunid,
-  
-          });
-  
-          const boundMethod = obj.workersearchdata.bind(obj);
-          execPromises.push(this.cluster.execute({}, boundMethod) as never);
+            page: this.page,
+          }
+          const obj =engineFactory.getSearchEngine(param.engine,scop)
+          
+          const boundMethod = obj.searchData.bind(obj);
+          execPromises.push(this.cluster.execute("", boundMethod) as never);
         }
   
         await Promise.all(execPromises);
@@ -440,36 +464,36 @@ export class ScrapeManager {
         // }
       }
   
-      // let timeDelta = Date.now() - startTime;
-      // let ms_per_request = timeDelta/num_requests;
+    //   // let timeDelta = Date.now() - startTime;
+    //   // let ms_per_request = timeDelta/num_requests;
   
-      // this.logger.info(`Scraper took ${timeDelta}ms to perform ${num_requests} requests.`);
-      // this.logger.info(`On average ms/request: ${ms_per_request}ms/request`);
+    //   // this.logger.info(`Scraper took ${timeDelta}ms to perform ${num_requests} requests.`);
+    //   // this.logger.info(`On average ms/request: ${ms_per_request}ms/request`);
   
-      // if (this.pluggable && this.pluggable.handle_results) {
-      //     await this.pluggable.handle_results(results);
-      // }
+    //   // if (this.pluggable && this.pluggable.handle_results) {
+    //   //     await this.pluggable.handle_results(results);
+    //   // }
   
-      // metadata.elapsed_time = timeDelta.toString();
-      // metadata.ms_per_keyword = ms_per_request.toString();
-      // metadata.num_requests = num_requests;
+    //   // metadata.elapsed_time = timeDelta.toString();
+    //   // metadata.ms_per_keyword = ms_per_request.toString();
+    //   // metadata.num_requests = num_requests;
   
-      // debug('metadata=%O', metadata);
+    //   // debug('metadata=%O', metadata);
   
-      // if (this.pluggable && this.pluggable.handle_metadata) {
-      //     await this.pluggable.handle_metadata(metadata);
-      // }
+    //   // if (this.pluggable && this.pluggable.handle_metadata) {
+    //   //     await this.pluggable.handle_metadata(metadata);
+    //   // }
   
-      // if (this.config.output_file) {
-      //     this.logger.info(`Writing results to ${this.config.output_file}`);
-      //     write_results(this.config.output_file, JSON.stringify(results, null, 4));
-      // }
+    //   // if (this.config.output_file) {
+    //   //     this.logger.info(`Writing results to ${this.config.output_file}`);
+    //   //     write_results(this.config.output_file, JSON.stringify(results, null, 4));
+    //   // }
   
-      // return {
-      //     results: results,
-      //     metadata: metadata || {},
-      // };
-    }
+    //   // return {
+    //   //     results: results,
+    //   //     metadata: metadata || {},
+    //   // };
+    // }
   
     /*
      * Quit the puppeteer cluster/browser.
@@ -482,27 +506,27 @@ export class ScrapeManager {
         await this.cluster.close();
       }
     }
-    async downloadPlatomvideo(links: Array<Linkdata>) {
-      //check whether user send correct platform parameter 
-      const availPlatform = ["bilibili"];
-      if (!availPlatform.includes(this.config.platform)) {
-        throw new Error("download video function not work at platform " + this.config.platform)
-      }
-      this.scraper = getScraper(this.config.platform, {
-        config: this.config,
-        context: this.context,
-        pluggable: this.pluggable,
-        page: this.page,
-        // tmppath: this.tmppath,
-      });
-      debug("links=%o", links)
-      //console.log(this.scraper)
+    // async downloadPlatomvideo(links: Array<Linkdata>) {
+    //   //check whether user send correct platform parameter 
+    //   const availPlatform = ["bilibili"];
+    //   if (!availPlatform.includes(this.config.platform)) {
+    //     throw new Error("download video function not work at platform " + this.config.platform)
+    //   }
+    //   this.scraper = getScraper(this.config.platform, {
+    //     config: this.config,
+    //     context: this.context,
+    //     pluggable: this.pluggable,
+    //     page: this.page,
+    //     // tmppath: this.tmppath,
+    //   });
+    //   debug("links=%o", links)
+    //   //console.log(this.scraper)
   
-      //add observer before download video
-      const videodownObser = new videodownloadObserver();
-      this.scraper.attach(videodownObser);
-      await this.scraper.downloadvideo(links)
+    //   //add observer before download video
+    //   const videodownObser = new videodownloadObserver();
+    //   this.scraper.attach(videodownObser);
+    //   await this.scraper.downloadvideo(links)
   
   
-    }
+    // }
   }

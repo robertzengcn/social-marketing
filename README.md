@@ -56,6 +56,12 @@ test for single module, for example, save single link to remote
 npx mocha test test/modules --grep video-url-list
 ```
 
+test google scraper
+
+```
+yarn vitest-googlescraper
+```
+
 
 
 

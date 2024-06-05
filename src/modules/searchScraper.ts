@@ -64,6 +64,9 @@ export class SearchScrape implements searchEngineImpl {
             }
         }
     }
+    async searchData(): Promise<void> {
+        //achieve it in child
+    }
 
     /**
     * Action that runs only once in the beginning of the
@@ -149,12 +152,21 @@ export class SearchScrape implements searchEngineImpl {
         // Implement the logic to parse the HTML asynchronously here
     }
 
-    search_keyword() {
+    search_keyword(keywords:string) {
         // Implement the logic to perform a keyword search here
     }
 
-    next_page() {
-        // Implement the logic to navigate to the next page here
+    async set_input_value(selector:string, value:string) {
+        await this.page.waitForSelector(selector);
+        await this.page.evaluate((value, selector) => {
+            const inputElement = document.querySelector(selector) as HTMLInputElement;
+            if (inputElement) {
+                inputElement.value = value;
+            }
+        }, value, selector);
+    }
+    next_page(){
+        //implemet in sub class
     }
 
     // Add the missing properties here

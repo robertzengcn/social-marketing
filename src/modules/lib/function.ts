@@ -5,6 +5,7 @@ import * as yaml from 'js-yaml';
 import * as fs from 'fs';
 import { CommonDialogMsg } from "@/entityTypes/commonType";
 import { Page } from 'puppeteer';
+import os from "os";
 
 export type queryParams = {
   page: number,
@@ -323,6 +324,14 @@ export async function evadeChromeHeadlessDetection(page:Page) {
           return null;
       };
   });
+}
+export function read_keywords_from_file(fname) {
+  let kws = fs.readFileSync(fname).toString().split(os.EOL);
+  // clean keywords
+  kws = kws.filter((kw) => {
+    return kw.trim().length > 0;
+  });
+  return kws;
 }
 
 

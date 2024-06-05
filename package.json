@@ -42,7 +42,8 @@
     "testhttpclient": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register -r tsconfig-paths/register 'test/modules/httpclient.test.ts'",
     "testmain": "vitest --config vite.main.config.mjs",
     "vitest-puppeteer": "vitest --config vite.utilityCode.config.mjs",
-    "vitest-bibiliscraper": "vitest --config vite.utilityCode.config.mjs -t bibili-scraper"
+    "vitest-bibiliscraper": "vitest --config vite.utilityCode.config.mjs -t bibili-scraper",
+    "vitest-googlescraper": "vitest --config vite.utilityCode.config.mjs -t google-scraper"
   },
   "dependencies": {
     "@mdi/font": "5.9.55",
