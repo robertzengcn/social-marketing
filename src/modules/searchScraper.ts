@@ -1,6 +1,6 @@
 import { searchEngineImpl } from "@/modules/interface/searchEngineImpl"
 import { Page } from 'puppeteer';
-import { SMconfig, ScrapeOptions } from "@/entityTypes/scrapeType"
+import { SMconfig, ScrapeOptions,clusterData } from "@/entityTypes/scrapeType"
 import { evadeChromeHeadlessDetection } from "@/modules/lib/function"
 import { get_http_headers, get_ip_data } from "@/modules/metadata"
 import debug from 'debug';
@@ -64,7 +64,7 @@ export class SearchScrape implements searchEngineImpl {
             }
         }
     }
-    async searchData(): Promise<void> {
+    async searchData(data: clusterData): Promise<void> {
         //achieve it in child
     }
 

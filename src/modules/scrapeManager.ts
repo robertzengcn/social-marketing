@@ -1,4 +1,4 @@
-import { SMconfig,SMstruct,searchDataParam,ScrapeOptions } from "@/entityTypes/scrapeType"
+import { SMconfig,SMstruct,searchDataParam,ScrapeOptions,clusterData } from "@/entityTypes/scrapeType"
 import defaults from "lodash/defaults"
 import { Page,Browser } from 'puppeteer';
 import { createLogger, format, transports } from "winston"
@@ -15,12 +15,13 @@ import {UserAgent} from "user-agents";
 import puppeteer from 'puppeteer-extra';
 import {CustomConcurrency} from "@/modules/concurrency-implementation"
 import {searchEngineFactory} from "@/modules/searchEngineFactory"
+
 // import * as vanillaPuppeteer from "puppeteer";
 
 const logger = debug('ScrapeManager');
 const MAX_ALLOWED_BROWSERS = 6;
 export class ScrapeManager {
-    cluster:Cluster<string, number>;
+    cluster:Cluster<clusterData,any>;
     pluggable: { start_browser?: Function, close_browser?: Function, handle_results?: Function, handle_metadata?: Function };
     // scraper: SocialScraper;
     context: object;
@@ -232,6 +233,7 @@ export class ScrapeManager {
             this.config.proxies.length + (this.config.use_proxies_only ? 0 : 1),
             MAX_ALLOWED_BROWSERS
           );
+
           proxies = clone(this.config.proxies);
   
           // Insert a first config without proxy if use_proxy_only is false
@@ -242,7 +244,7 @@ export class ScrapeManager {
           this.numClusters = this.config.puppeteer_cluster_config.maxConcurrency;
           proxies =times(this.numClusters, null);
         }
-  
+        
         this.logger.info(`Using ${this.numClusters} clusters.`);
   
         // Give the per browser options
@@ -262,7 +264,7 @@ export class ScrapeManager {
             args,
           };
         });
-  
+        this.logger.info(this.config)
         this.logger.info("perBrowserOptions=%O", perBrowserOptions);
   
         // puppeteer.use(_StealthPlugin());
@@ -286,7 +288,8 @@ export class ScrapeManager {
           //   // puppeteer:puppeteer,
           //   perBrowserOptions: perBrowserOptions,
           // },
-          puppeteerOptions:perBrowserOptions,
+          perBrowserOptions:perBrowserOptions,
+          // puppeteerOptions:perBrowserOptions,
         });
         // console.log(this.cluster)
       //}
@@ -393,6 +396,7 @@ export class ScrapeManager {
      * get data from search engine
      */
     async searchdata(param:searchDataParam) {
+      await this.start();
       // Object.assign(this.config, scrape_config);
   
       // if (this.pluggable && this.pluggable.start_browser) {
@@ -442,16 +446,19 @@ export class ScrapeManager {
           //   taskrunid: config.taskrunid,
   
           // });
-          const scop:ScrapeOptions={
-            config:this.config,
-            context:this.context,
+          const scop: ScrapeOptions = {
+            config: this.config,
+            context: this.context,
             pluggable: this.pluggable,
             page: this.page,
           }
-          const obj =engineFactory.getSearchEngine(param.engine,scop)
-          
+          const obj = engineFactory.getSearchEngine(param.engine, scop)
           const boundMethod = obj.searchData.bind(obj);
-          execPromises.push(this.cluster.execute("", boundMethod) as never);
+          const Cludata:clusterData={
+            page:this.page
+          }
+          // const boundMethod = (data: string,res:any) => obj.searchData(data, page);
+          execPromises.push(this.cluster.execute(Cludata, boundMethod) as never);
         }
   
         await Promise.all(execPromises);
@@ -462,6 +469,7 @@ export class ScrapeManager {
         //     Object.assign(metadata, promiseReturn.metadata);
         //     num_requests += promiseReturn.num_requests;
         // }
+        await this.quit()
       }
   
     //   // let timeDelta = Date.now() - startTime;

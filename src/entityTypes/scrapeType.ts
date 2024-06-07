@@ -104,3 +104,6 @@ export type SMstruct = {
     keywords:Array<string>,
     engine:string,
   }
+ export interface clusterData {
+    page: Page
+}

@@ -1,8 +1,9 @@
 'use strict';
 import {SearchScrape} from "@/modules/searchScraper"
-import {ScrapeOptions} from "@/entityTypes/scrapeType"
+import {ScrapeOptions,clusterData} from "@/entityTypes/scrapeType"
 import {CustomError} from "@/modules/customError"
 import debug from 'debug';
+import { Page} from 'puppeteer';
 const logger = debug('SearchScrape');
 
 type googleAdobjLinks={
@@ -48,8 +49,12 @@ export class GoogleScraper extends SearchScrape {
     constructor(options: ScrapeOptions) {
         super(options);
     }
-    async searchData(): Promise<void> {
+    async searchData(data: clusterData): Promise<void> {
         logger("search data in google")
+        if(data.page){
+            this.page=data.page
+        }
+        await this.load_start_page()
     }
     async parse_async() {
 

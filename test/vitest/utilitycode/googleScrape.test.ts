@@ -7,15 +7,15 @@ test('google-scraper', async function () {
         headless:false,
         debug_level:1,
         puppeteer_cluster_config:{
-            timeout: 10, // max timeout set to 10 minutes
+            timeout: 0, // max timeout set to 10 minutes
             monitor: true,
             concurrency: 10, // one scraper per tab
-            maxConcurrency: 10, // scrape with 1 tab
+            maxConcurrency: 1, // scrape with 1 tab
         }   
     }
     const keywords=['test']
     const scraper=new ScrapeManager(smConfig)
-    await scraper.start()
+    // await scraper.start()
     const searchDataParam={
     keywords:keywords,
     engine:"google",
