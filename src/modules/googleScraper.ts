@@ -1,6 +1,6 @@
 'use strict';
 import {SearchScrape} from "@/modules/searchScraper"
-import {ScrapeOptions,clusterData} from "@/entityTypes/scrapeType"
+import {ScrapeOptions,clusterData,ClusterSearchData} from "@/entityTypes/scrapeType"
 import {CustomError} from "@/modules/customError"
 import debug from 'debug';
 import { Page} from 'puppeteer';
@@ -49,13 +49,14 @@ export class GoogleScraper extends SearchScrape {
     constructor(options: ScrapeOptions) {
         super(options);
     }
-    async searchData(data: clusterData): Promise<void> {
-        logger("search data in google")
-        if(data.page){
-            this.page=data.page
-        }
-        await this.load_start_page()
-    }
+    // async searchData(data: ClusterSearchData): Promise<void> {
+    //     // logger("search data in google")
+    //     if(data.page){
+    //         this.page=data.page
+    //     }
+    //     await this.load_start_page()
+    //     await this.search_keyword(data.keywords)
+    // }
     async parse_async() {
 
         const results = await this.page.evaluate(() => {
@@ -271,7 +272,7 @@ export class GoogleScraper extends SearchScrape {
     }
 
     async load_start_page() {
-        const startUrl = 'https://www.google.com';
+        const startUrl = 'https://www.google.com/ncr';//ncr means no country redirect
 
         // if (this.config.google_settings) {
         //     startUrl = `https://www.${this.config.google_settings.google_domain}/search?q=`;
@@ -289,18 +290,18 @@ export class GoogleScraper extends SearchScrape {
         // }
 
         this.logger.info('Using startUrl: ' + startUrl);
-
+        
         this.last_response = await this.page.goto(startUrl);
 
-        await this.page.waitForSelector('input[name="q"]', { timeout: this.STANDARD_TIMEOUT });
+        await this.page.waitForSelector('textarea[name="q"]', { timeout: this.STANDARD_TIMEOUT });
 
         // return true;
     }
 
-    async search_keyword(keyword) {
-        const input = await this.page.$('input[name="q"]');
+    async search_keyword(keyword:string) {
+        const input = await this.page.$('textarea[name="q"]');
         if(input){
-        await this.set_input_value(`input[name="q"]`, keyword);
+        await this.set_input_value(`textarea[name="q"]`, keyword);
         // await this.page.waitForTimeout(50);
         await this.page.evaluate(async() => {
             await new Promise(function(resolve) { 

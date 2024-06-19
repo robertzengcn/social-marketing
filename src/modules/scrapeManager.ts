@@ -1,4 +1,4 @@
-import { SMconfig,SMstruct,searchDataParam,ScrapeOptions,clusterData } from "@/entityTypes/scrapeType"
+import { SMconfig,SMstruct,SearchDataParam,ScrapeOptions,ClusterSearchData } from "@/entityTypes/scrapeType"
 import defaults from "lodash/defaults"
 import { Page,Browser } from 'puppeteer';
 import { createLogger, format, transports } from "winston"
@@ -15,14 +15,16 @@ import {UserAgent} from "user-agents";
 import puppeteer from 'puppeteer-extra';
 import {CustomConcurrency} from "@/modules/concurrency-implementation"
 import {searchEngineFactory} from "@/modules/searchEngineFactory"
+// import { Keyword } from "./keyword";
+import {pluggableType} from "@/entityTypes/scrapeType"
 
 // import * as vanillaPuppeteer from "puppeteer";
 
 const logger = debug('ScrapeManager');
 const MAX_ALLOWED_BROWSERS = 6;
 export class ScrapeManager {
-    cluster:Cluster<clusterData,any>;
-    pluggable: { start_browser?: Function, close_browser?: Function, handle_results?: Function, handle_metadata?: Function };
+    cluster:Cluster<ClusterSearchData>;
+    pluggable: pluggableType;
     // scraper: SocialScraper;
     context: object;
     config: SMconfig;
@@ -395,7 +397,7 @@ export class ScrapeManager {
     /*
      * get data from search engine
      */
-    async searchdata(param:searchDataParam) {
+    async searchdata(param:SearchDataParam) {
       await this.start();
       // Object.assign(this.config, scrape_config);
   
@@ -422,14 +424,14 @@ export class ScrapeManager {
         // for every browser instance. We will use our custom puppeteer-cluster version.
         // https://www.npmjs.com/package/proxy-chain
         // this answer looks nice: https://github.com/GoogleChrome/puppeteer/issues/678#issuecomment-389096077
-        const chunks: [][] = [];
+        const chunks: Array<Array<string>> = []; // Initialize the 'chunks' variable
         for (let n = 0; n < this.numClusters; n++) {
-          chunks.push([] as never);
+          chunks.push([]);
         }
         for (let k = 0; k < param.keywords.length; k++) {
-          chunks[k % this.numClusters].push(param.keywords[k] as never);
+          chunks[k % this.numClusters].push(param.keywords[k]);
         }
-  
+
         this.logger.info("chunks=%o", chunks);
         const engineFactory=new searchEngineFactory()
         const execPromises = [];
@@ -449,16 +451,17 @@ export class ScrapeManager {
           const scop: ScrapeOptions = {
             config: this.config,
             context: this.context,
-            pluggable: this.pluggable,
+            // pluggable: this.pluggable,
             page: this.page,
           }
           const obj = engineFactory.getSearchEngine(param.engine, scop)
-          const boundMethod = obj.searchData.bind(obj);
-          const Cludata:clusterData={
-            page:this.page
+        const boundMethod = obj.run.bind(obj);
+          const cludata:ClusterSearchData={
+            page:this.page,
+            // keywords:chunks[c]
           }
           // const boundMethod = (data: string,res:any) => obj.searchData(data, page);
-          execPromises.push(this.cluster.execute(Cludata, boundMethod) as never);
+          execPromises.push(this.cluster.execute(cludata, boundMethod(cludata,chunks[c])) as never);
         }
   
         await Promise.all(execPromises);

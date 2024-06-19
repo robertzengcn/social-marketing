@@ -1,6 +1,6 @@
 import { Page } from 'puppeteer';
 export type SMconfig = {
-    logger: { info: (data: string) => void, error: (error: Error) => void };
+    logger: { info: (data: string) => void, error: (error: Error) => void,warn:(data:string)=>void };
     keywords: Array<string>;
     proxies: Array<string>;
     keyword_file: string;
@@ -22,6 +22,34 @@ export type SMconfig = {
     test_evasion?: boolean;
     log_http_headers?: boolean;
     log_ip_address?: boolean;
+    scrape_from_file?:string;
+    sleep_range?:{
+      min:number,
+      max:number
+    };
+    screen_output?:boolean;
+    html_output?:boolean;
+    clean_html_output?:boolean;
+    clean_data_images?:boolean;
+    num_pages: number;
+    take_screenshot_on_error?:boolean;
+    search_engine_name?:string;
+    is_local?:boolean;
+    throw_on_detection?:boolean;
+  }
+  export type pluginType = {
+    results: object,
+    num_keywords: number,
+    num_requests: number,
+    keyword: string
+  }
+
+  export interface pluggableType{
+    start_browser?:()=>void,
+    close_browser?:()=>void,
+    handle_results?:()=>void,
+    handle_metadata?:()=>void,
+    before_keyword_scraped?:()=>void
   }
 
   export interface ScrapeOptions {
@@ -31,7 +59,7 @@ export type SMconfig = {
     // },
     config:SMconfig,
     context?: object,
-    pluggable?: object,
+    // pluggable?: pluggableType,
     page?: Page,
     // platform:string
 }  
@@ -100,10 +128,14 @@ export type SMstruct = {
     taskid?: number,
     taskrunId?: number
   }
-  export type searchDataParam={
+  export type SearchDataParam={
     keywords:Array<string>,
     engine:string,
   }
  export interface clusterData {
     page: Page
+}
+export interface ClusterSearchData{
+  page: Page
+  // keywords: Array<string>
 }

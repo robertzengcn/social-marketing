@@ -1,4 +1,4 @@
-const cheerio = require('cheerio');
+import cheerio from 'cheerio'
 
 // module.exports = {
 //     get_ip_data: get_ip_data,
