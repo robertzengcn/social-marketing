@@ -1,9 +1,10 @@
 import { searchEngineImpl } from "@/modules/interface/searchEngineImpl"
 import { Page } from 'puppeteer';
-import { SMconfig, ScrapeOptions,clusterData,ClusterSearchData } from "@/entityTypes/scrapeType"
+import { SMconfig, ScrapeOptions,clusterData,RunResult,ParseType,SearchData,ResultParseType } from "@/entityTypes/scrapeType"
 import { evadeChromeHeadlessDetection } from "@/modules/lib/function"
 import { get_http_headers, get_ip_data } from "@/modules/metadata"
 import debug from 'debug';
+import { map } from "jquery";
 const logger = debug('SearchScrape');
 
 export class SearchScrape implements searchEngineImpl {
@@ -18,7 +19,9 @@ export class SearchScrape implements searchEngineImpl {
     keywords: Array<string>;
     STANDARD_TIMEOUT: number;
     SOLVE_CAPTCHA_TIME: number;
-    results: object;
+    results; // change it to map:
+    // https://stackoverflow.com/questions/40976536/how-to-define-typescript-map-of-key-value-pair-where-key-is-a-number-and-value
+    // https://howtodoinjava.com/typescript/maps/ 
     result_rank: number;
     num_requests: number;
     num_keywords: number;
@@ -51,7 +54,7 @@ export class SearchScrape implements searchEngineImpl {
         this.STANDARD_TIMEOUT = 10000;
         this.SOLVE_CAPTCHA_TIME = 45000;
 
-        this.results = {};
+        // this.results = new Map();
         this.result_rank = 1;
         // keep track of the requests done
         this.num_requests = 0;
@@ -65,15 +68,17 @@ export class SearchScrape implements searchEngineImpl {
                 this.config[`${this.config.platform}_settings`] = settings;
             }
         }
+       this.results=new Map<string,ParseType>();
     }
 
-    async run(data: ClusterSearchData) {
+    async run(data:{page:Page, data, worker}):Promise<RunResult> {
 
         // debug('worker=%o', worker, this.config.keywords);
 
         if (data.page) {
             this.page = data.page;
         }
+        this.keywords=data.data.keywords
 
         await this.page.setViewport({ width: 1920, height: 1040 });
         let do_continue:boolean|void = true;
@@ -243,6 +248,7 @@ export class SearchScrape implements searchEngineImpl {
             this.num_keywords++;
             this.keyword = keyword;
             this.results[keyword] = {};
+            // this.results.set(keyword, {});
             this.result_rank = 1;
 
             try {
@@ -278,10 +284,29 @@ export class SearchScrape implements searchEngineImpl {
                     if (this.config.sleep_range) {
                         await this.random_sleep();
                     }
-
+                    this.results[keyword][this.page_num] = {};
                     const html = await this.page.content();
                     const parsed = this.parse(html);
-                    this.results[keyword][this.page_num] = parsed ? parsed : await this.parse_async(html);
+                    if(parsed){
+                        //this.results[keyword][this.page_num].value = parsed 
+                        //const setdata:ParseType=new map();
+
+                        // setdata.value=parsed;
+                        this.results[keyword][this.page_num].value=parsed
+                    }else{
+                        // this.results[keyword][this.page_num] = await this.parse_async(html);
+                        const pareseres: SearchData|void = await this.parse_async();
+                        if(pareseres){
+                            this.results[keyword][this.page_num].value = pareseres.results;
+                            //this.results[keyword].set(this.page_num,{value:pareseres.results})
+                        }else{
+                            this.logger.warn(`No results found for keyword "${keyword}" on page ${this.page_num}`);
+                           // this.results[keyword][this.page_num].value =""
+                            this.results[keyword][this.page_num].value=null
+                        }
+                    }
+                    // this.results[keyword][this.page_num] = parsed ? parsed : await this.parse_async(html);
+
 
                     if (this.config.screen_output) {
                         this.results[keyword][this.page_num].screenshot = await this.page.screenshot({
@@ -423,8 +448,9 @@ export class SearchScrape implements searchEngineImpl {
         // Implement the logic to parse the HTML here
     }
 
-    parse_async(html: any) {
-        // Implement the logic to parse the HTML asynchronously here
+    async parse_async(): Promise<SearchData|void> {
+
+        // Implement the logic to parse the HTML asynchronously here     
     }
 
     async search_keyword(keywords:string) {

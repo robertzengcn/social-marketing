@@ -36,6 +36,7 @@ export type SMconfig = {
     search_engine_name?:string;
     is_local?:boolean;
     throw_on_detection?:boolean;
+    output_file?:string;
   }
   export type pluginType = {
     results: object,
@@ -47,8 +48,8 @@ export type SMconfig = {
   export interface pluggableType{
     start_browser?:()=>void,
     close_browser?:()=>void,
-    handle_results?:()=>void,
-    handle_metadata?:()=>void,
+    handle_results?:(result:object)=>void,
+    handle_metadata?:(data:MetadataType)=>void,
     before_keyword_scraped?:()=>void
   }
 
@@ -59,7 +60,7 @@ export type SMconfig = {
     // },
     config:SMconfig,
     context?: object,
-    // pluggable?: pluggableType,
+    pluggable?: pluggableType,
     page?: Page,
     // platform:string
 }  
@@ -125,8 +126,9 @@ export type SMstruct = {
     },
     sleep_range?: Array<number>,
     headless:false,
-    taskid?: number,
-    taskrunId?: number
+    num_pages?: number,
+    // taskid?: number,
+    // taskrunId?: number
   }
   export type SearchDataParam={
     keywords:Array<string>,
@@ -136,6 +138,60 @@ export type SMstruct = {
     page: Page
 }
 export interface ClusterSearchData{
-  page: Page
-  // keywords: Array<string>
+  
+  keywords: Array<string>
 }
+export type ClusterFunctionparam={
+  page:Page,
+  data:ClusterSearchData,
+  worker:{
+      id:number
+  }
+}
+export type metadataObj={ 
+  http_headers?: object, 
+  ipinfo?: { ip: string }, 
+  scraping_detected?: boolean|void 
+};
+export type RunResult={
+  results: object,
+  metadata: metadataObj,
+  num_requests: number,
+}
+export type MetadataType={
+  elapsed_time?:string,
+  ms_per_keyword?:string,
+  num_requests?:number,
+}
+export type ParseObg={
+  value:SearchData,
+  screenshot:string,
+  html:string
+}
+export type ParseType={
+  [key:number]:ParseObg
+}
+export type ResultParseType={
+  [key:string]:ParseType
+}
+
+export type SearchResult={
+  link: string;
+  title: string;
+  snippet: string;
+  visible_link: string;
+  date?: string;
+}
+export type SearchData={
+  num_results: string,
+  no_results: boolean,
+  effective_query: string,
+  right_info: object,
+  results: Array<SearchResult>,
+  top_products: [],
+  right_products: [],
+  top_ads: [],
+  bottom_ads: [],
+  // places: Array<googlePlaces>,
+}
+

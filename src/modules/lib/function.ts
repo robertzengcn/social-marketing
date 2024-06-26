@@ -333,5 +333,8 @@ export function read_keywords_from_file(fname) {
   });
   return kws;
 }
+export function writeResults(fname, data) {
+  fs.writeFileSync(fname, data, 'utf8');
+}
 
 

@@ -11,7 +11,8 @@ test('google-scraper', async function () {
             monitor: true,
             concurrency: 10, // one scraper per tab
             maxConcurrency: 1, // scrape with 1 tab
-        }   
+        },
+        num_pages:3,
     }
     const keywords=['test']
     const scraper=new ScrapeManager(smConfig)
