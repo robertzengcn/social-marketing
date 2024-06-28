@@ -14,13 +14,13 @@ test('google-scraper', async function () {
         },
         num_pages:3,
     }
-    const keywords=['test']
+    const keywords=['test','doctor']
     const scraper=new ScrapeManager(smConfig)
     // await scraper.start()
     const searchDataParam:SearchDataParam={
     keywords:keywords,
     engine:"google",
     }
-    await scraper.searchdata(searchDataParam)
-
+    const results=await scraper.searchdata(searchDataParam)
+    console.log(results)
 },500000)

@@ -1,7 +1,8 @@
-import { SMconfig, SMstruct, SearchDataParam, ScrapeOptions, ClusterSearchData,MetadataType } from "@/entityTypes/scrapeType"
+import { SMconfig, SMstruct, SearchDataParam, ScrapeOptions, ClusterSearchData,MetadataType,ResultParseType,SearchDataRun } from "@/entityTypes/scrapeType"
 import defaults from "lodash/defaults"
 import { Page, Browser } from 'puppeteer';
 import { createLogger, format, transports } from "winston"
+import winston from "winston"
 const { combine, timestamp, printf } = format;
 import { Cluster } from "puppeteer-cluster"
 import fs from "fs";
@@ -12,11 +13,13 @@ import times from "lodash/times"
 import map from "lodash/map"
 import { UserAgent } from "user-agents";
 // import { addExtra } from "puppeteer-extra";
-import puppeteer from 'puppeteer-extra';
+// import puppeteer from 'puppeteer-extra';
 import { CustomConcurrency } from "@/modules/concurrency-implementation"
 import { searchEngineFactory } from "@/modules/searchEngineFactory"
 // import { Keyword } from "./keyword";
 import { pluggableType } from "@/entityTypes/scrapeType"
+// import { app } from 'electron'
+// import * as path from 'path'
 
 // import * as vanillaPuppeteer from "puppeteer";
 
@@ -28,7 +31,7 @@ export class ScrapeManager {
   // scraper: SocialScraper;
   context: object;
   config: SMconfig;
-  logger: { info: (data) => void };
+  logger: winston.Logger;
   // logger: { info: Function };
   browser: Browser;
   page: Page;
@@ -73,7 +76,12 @@ export class ScrapeManager {
             return `${timestamp} [${level}] ${message}`;
           })
         ),
-        transports: [new transports.Console()],
+        transports: [new transports.Console(),
+    //       new winston.transports.File({ filename: path.join(app.getPath("logs"),'error.log'), level: 'error' }),
+    // new winston.transports.File({ filename: path.join(app.getPath("logs"),'combined.log') }),
+    //       new winston.transports.File({ filename: 'error.log', level: 'error' }),
+    // new winston.transports.File({ filename: 'combined.log' }),
+        ],
       }),
       // platform: "facebook",
       // keywords: ["nodejs rocks"],
@@ -398,10 +406,10 @@ export class ScrapeManager {
   /*
    * get data from search engine
    */
-  async searchdata(param: SearchDataParam) {
+  async searchdata(param: SearchDataParam):Promise<SearchDataRun> {
     await this.start();
 
-    const results = {};
+    const results:ResultParseType = {};
     let num_requests = 0;
     const metadata:MetadataType = {};
     const startTime = Date.now();

@@ -1,6 +1,7 @@
 import { Page } from 'puppeteer';
+import winston from "winston"
 export type SMconfig = {
-    logger: { info: (data: string) => void, error: (error: Error) => void,warn:(data:string)=>void };
+    logger: winston.Logger;
     keywords: Array<string>;
     proxies: Array<string>;
     keyword_file: string;
@@ -127,6 +128,7 @@ export type SMstruct = {
     sleep_range?: Array<number>,
     headless:false,
     num_pages?: number,
+    logger:winston.Logger
     // taskid?: number,
     // taskrunId?: number
   }
@@ -194,4 +196,11 @@ export type SearchData={
   bottom_ads: [],
   // places: Array<googlePlaces>,
 }
+
+export type SearchDataRun={
+  results: ResultParseType,
+   metadata: MetadataType,
+}
+
+
 

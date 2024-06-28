@@ -381,6 +381,7 @@ export class SearchScrape implements searchEngineImpl {
             } catch (e) {
 
                 this.logger.warn(`Problem with scraping ${keyword} in search engine: ${(e as Error).message}`);
+                this.logger.warn((e as Error).stack);
                 //debug('this.last_response=%O', this.last_response);
 
                 if (this.config.take_screenshot_on_error) {
@@ -400,16 +401,18 @@ export class SearchScrape implements searchEngineImpl {
                         if (this.config.throw_on_detection === true) {
                             throw( e );
                         } else {
-                            return;
+                            continue;
                         }
                     }
                 } else {
                     // some other error, quit scraping process if stuff is broken
-                    if (this.config.throw_on_detection === true) {
-                        throw( e );
-                    } else {
-                        return;
-                    }
+                    // if (this.config.throw_on_detection === true) {
+                    //     throw( e );
+                    // } else {
+                    //     return;
+                    // }
+                    //continue to next keyword
+                    continue;
                 }
             }
         }

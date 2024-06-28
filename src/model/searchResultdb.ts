@@ -1,0 +1,30 @@
+import { Database } from 'better-sqlite3';
+import { getRecorddatetime } from "@/modules/lib/function";
+import { Scraperdb } from "@/model/scraperdb";
+export class SearchResultdb {
+    db: Database;
+    searchResultTable = "search_result";
+    constructor() {
+        const scraperModel = Scraperdb.getInstance();
+        this.db = scraperModel.getdb();
+    }
+    //save search task
+    public saveResult(keywordId: number,link:string,title:string,snippet:string,visible_link:string): number | bigint {
+        const recordtime = getRecorddatetime();
+        const stmt = this.db.prepare(
+            `INSERT INTO ` +
+            this.searchResultTable +
+            `(keyword_id,link,title,snippet,visible_link,record_time) VALUES (?,?,?,?,?,?)`
+        );
+        const info = stmt.run(
+            keywordId,
+            link,
+            title,
+            snippet,
+            visible_link,
+            recordtime
+        );
+        return info.lastInsertRowid;
+    }
+
+}
