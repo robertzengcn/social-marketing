@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS search_result(
 id INTEGER PRIMARY KEY AUTOINCREMENT,
-keyword_id INTEGER NULL
+keyword_id INTEGER NULL,
 link TEXT NULL,
 title TEXT NULL,
 snippet TEXT NULL,

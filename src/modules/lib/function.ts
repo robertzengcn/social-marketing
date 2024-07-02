@@ -336,5 +336,11 @@ export function read_keywords_from_file(fname) {
 export function writeResults(fname, data) {
   fs.writeFileSync(fname, data, 'utf8');
 }
+const StringIsNumber = value => isNaN(Number(value)) === false;
+export function ToArray(enumme) {
+  return Object.keys(enumme)
+      .filter(StringIsNumber)
+      .map(key => enumme[key]);
+}
 
 

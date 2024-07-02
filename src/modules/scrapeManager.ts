@@ -468,7 +468,7 @@ export class ScrapeManager {
         // pluggable: this.pluggable,
         page: this.page,
       }
-      const obj = engineFactory.getSearchEngine(param.engine, scop)
+      const obj = engineFactory.getSearchEngine(param.engine.toLowerCase(), scop)
       const boundMethod = obj.run.bind(obj);
       const cludata: ClusterSearchData = {
         // page:this.page,

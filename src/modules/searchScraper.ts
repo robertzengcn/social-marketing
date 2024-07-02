@@ -75,9 +75,14 @@ export class SearchScrape implements searchEngineImpl {
 
         // debug('worker=%o', worker, this.config.keywords);
 
+        
+
         if (data.page) {
             this.page = data.page;
         }
+
+       // await this.exposeFunction()
+
         this.keywords=data.data.keywords
 
         await this.page.setViewport({ width: 1920, height: 1040 });
@@ -98,6 +103,33 @@ export class SearchScrape implements searchEngineImpl {
             metadata: this.metadata,
             num_requests: this.num_requests,
         }
+    }
+
+    async exposeFunction(){
+        const _text = async (el, s) => {
+            const n = await el.$eval(s);
+    
+            if (n) {
+                return n.innerText;
+            } else {
+                return '';
+            }
+        };
+        
+        const _attr = async (el, s, attr) => {
+            const n = await el.$eval(s);
+    
+            if (n) {
+                return n.getAttribute(attr);
+            } else {
+                return null;
+            }
+        };
+
+        //set common function
+
+        await this.page.exposeFunction("_text", _text);
+        await this.page.exposeFunction("_attr", _attr);
     }
 
       /**

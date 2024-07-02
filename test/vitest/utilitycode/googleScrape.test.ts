@@ -14,7 +14,7 @@ test('google-scraper', async function () {
         },
         num_pages:3,
     }
-    const keywords=['test','doctor']
+    const keywords=['Williams','doctor']
     const scraper=new ScrapeManager(smConfig)
     // await scraper.start()
     const searchDataParam:SearchDataParam={
