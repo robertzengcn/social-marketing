@@ -98,5 +98,15 @@ export default {
         useproxy:"Use Proxy",
         cookies_exist:"Cookies Exist",
         select_account_hint:"Select account by click the change account button, please select account with cookies exist",
+    },
+    search:{
+        platform:"platform",
+        keyword:"keyword",
+        search_enginer:"search enginer",
+        input_keywords_hint:"input keywords, per one per line",
+        show_in_Browser:"show in browser",
+        use_hint:"Input the keyword you want to search in follow textarea, the system will use required search engine to scrape the keyword",
+        concurrent_quantity:"concurrent quantity",
+        
     }
 }

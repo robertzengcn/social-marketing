@@ -294,6 +294,28 @@ export const constantRoutes: RouteRecordRaw[] = [
     ]
   },
   {
+    path: '/search',
+    name: 'Search',
+    meta: {
+      visible: true,
+      title: 'Search',
+      icon: 'mdi-paw-off'
+    },
+    component: Layout, 
+    children: [
+      {
+        path: 'form',
+        component: () => import(/* webpackChunkName: "staff-list" */ '@/views/pages/search/index.vue'),
+        name: 'Searchform',
+        meta: {
+          visible: true,
+          title: 'Search Scraper',
+          icon: 'list'
+        }
+      }
+    ]
+  },
+  {
     path: '/login',
     name: 'login',
     meta: {

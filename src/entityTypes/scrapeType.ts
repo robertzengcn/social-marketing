@@ -201,13 +201,7 @@ export type SearchDataRun = {
   results: ResultParseType,
   metadata: MetadataType,
 }
-export type Usersearchdata = {
-  searchEnginer: number,
-  keywords: Array<string>,
-  num_pages: number,
-  concurrency: number,
-  notShowBrowser: boolean
-}
+
 export type SearchResEntity = {
   keywordId: number, 
   link: string, 

@@ -1,9 +1,9 @@
-import { Usersearchdata } from '@/entityTypes/scrapeType';
-import { SMstruct, SearchDataParam } from "@/entityTypes/scrapeType"
+// import { Usersearchdata } from '@/entityTypes/scrapeType';
+import { SMstruct, SearchDataParam,SearchResEntity } from "@/entityTypes/scrapeType"
 import { ScrapeManager } from "@/modules/scrapeManager"
-import { SearhEnginer } from "@/model/searchTaskdb"
+import {SearhEnginer} from "@/config/searchSetting"
 import { ToArray } from "@/modules/lib/function"
-import { SearchResponse } from "@/entityTypes/searchControlType"
+import { SearchResponse,Usersearchdata } from "@/entityTypes/searchControlType"
 import {SearchTaskdb} from "@/model/searchTaskdb"
 import {SearchKeyworddb} from "@/model/searchKeyworddb"
 import {SearchResultdb} from "@/model/searchResultdb"
@@ -65,7 +65,7 @@ export class SearchController {
         for(const key in result.results){
             //save search result
             const keywordId=keywordDb.saveSearchKeyword(key,Number(taskId))
-            serachres.saveResult(result.results[key],Number(keywordId))
+            const st=result.results[key]
         }
 
     }

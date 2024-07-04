@@ -42,7 +42,8 @@ const homeCardlist: homecardEntity[] = [
         title: t('home.search'),
         subtitle: t('home.search_scraper'),
         prependIcon: 'mdi-account',
-        description: t('home.search_description')
+        description: t('home.search_description'),
+        link:'/search/form'
     },
     {
         title: t('home.yellowpage'),

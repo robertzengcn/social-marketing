@@ -1,10 +1,7 @@
 import { Database } from 'better-sqlite3';
 import { getRecorddatetime } from "@/modules/lib/function";
 import { Scraperdb } from "@/model/scraperdb";
-export enum SearhEnginer{
-  Google=0,
-  Bing=1
-}
+import {SearhEnginer} from "@/config/searchSetting"
 
 export class SearchTaskdb {
     db: Database;

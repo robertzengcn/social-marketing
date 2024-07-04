@@ -14,7 +14,7 @@ export class Token {
     private useSafestore: boolean;
 
     constructor() {
-        let option = {
+       const option = {
             encryptionKey: "social-market-key",//对配置文件进行加密
             clearInvalidConfig: true, // 发生 SyntaxError  则清空配置,
         }

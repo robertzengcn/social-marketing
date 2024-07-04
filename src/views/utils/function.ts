@@ -1,6 +1,6 @@
 //split array into groups
 export function SplitArrayIntoGroups<Type>(array: Type[], groupSize: number):Type[][] {
-        let groups:Type[][] = [];
+        const groups:Type[][] = [];
         for (let i = 0; i < array.length; i += groupSize) {
             // array.slice(i, i + groupSize)
             groups.push(array.slice(i, i + groupSize));
@@ -10,3 +10,12 @@ export function SplitArrayIntoGroups<Type>(array: Type[], groupSize: number):Typ
 export function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
+const StringIsNumber = value => isNaN(Number(value)) === false;
+export function ToArray(enumme) {
+    return Object.keys(enumme)
+        .filter(StringIsNumber)
+        .map(key => enumme[key]);
+  }
+export  function CapitalizeFirstLetter(string:string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}  

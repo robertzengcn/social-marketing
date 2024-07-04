@@ -1,12 +1,12 @@
-const fs = require("fs");
-const crypto = require("crypto");
-const http = require("http");
-const https = require("https");
-const progress = require("progress-stream");
+import fs from "fs";
+import crypto from "crypto";
+import http from "http";
+import https from "https";
+import progress from "progress-stream";
 // const fetch =require("node-fetch");
-import * as fetch from 'node-fetch';
-const debug = require("debug")("bilibili-download");
-const debugerror = debug('app:error');
+import fetch from 'node-fetch';
+// const debug = require("debug")("bilibili-download");
+// const debugerror = debug('app:error');
 export interface getAiddata {
 	videoData: {
 		aid: number;
@@ -255,7 +255,7 @@ export class Downloader {
 				proStream.setLength(res.headers["content-length"]);
 				//先pipe到proStream再pipe到文件的写入流中
 				res.pipe(proStream).pipe(stream).on("error", error => {
-					debugerror(error);
+					// debugerror(error);
 				});
 			});
 		}
