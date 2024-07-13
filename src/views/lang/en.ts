@@ -107,6 +107,9 @@ export default {
         show_in_Browser:"show in browser",
         use_hint:"Input the keyword you want to search in follow textarea, the system will use required search engine to scrape the keyword",
         concurrent_quantity:"concurrent quantity",
-        
+        scraper_failed:"search enginer scrape failed",
+        search_enginer_empty:"search enginer empty",
+        keywords_empty:"keywords empty",
+        page_number:"page number",
     }
 }

@@ -5,8 +5,8 @@ export class SearchKeyworddb {
     db: Database;
     searchKeywordTable = "search_keyword";
    
-    constructor() {
-      const scraperModel = Scraperdb.getInstance();
+    constructor(filepath:string) {
+      const scraperModel = Scraperdb.getInstance(filepath);
       this.db = scraperModel.getdb();
     }
     

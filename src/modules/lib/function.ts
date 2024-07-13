@@ -1,12 +1,12 @@
 import path from "path";
 import { execSync,exec } from 'child_process';
-import { Notification } from 'electron'
+import { Notification,app } from 'electron'
 import * as yaml from 'js-yaml';
 import * as fs from 'fs';
 import { CommonDialogMsg } from "@/entityTypes/commonType";
 import { Page } from 'puppeteer';
 import os from "os";
-
+//import { utilityProcess, MessageChannelMain} from "electron";
 export type queryParams = {
   page: number,
   size: number,
@@ -341,6 +341,32 @@ export function ToArray(enumme) {
   return Object.keys(enumme)
       .filter(StringIsNumber)
       .map(key => enumme[key]);
+}
+
+// export function forkScript(scriptName:string,command:Array<string>):Electron.UtilityProcess{
+//   //fork a process use electron
+//   const childPath = path.join(__dirname, scriptName)
+//         if (!fs.existsSync(childPath)) {
+//             throw new Error("child js path not exist for the path " + childPath);
+//         }
+//         const { port1, port2 } = new MessageChannelMain()
+
+//         return utilityProcess.fork(childPath, command,{stdio:"pipe",execArgv:["puppeteer-cluster:*"]} )
+// }
+//return user's db path
+export function getUserpath(username:string):string{
+  return path.join(app.getPath("appData"),'socialmarket',username)
+}
+// check and create path
+export async function checkAndCreatePath(pathToCheck: string): Promise<void> {
+  try {
+    await fs.promises.access(pathToCheck, fs.constants.F_OK);
+    console.log('Path exists.');
+  } catch {
+    console.log('Path does not exist. Creating...');
+    await fs.promises.mkdir(pathToCheck, { recursive: true });
+    console.log('Path created.');
+  }
 }
 
 

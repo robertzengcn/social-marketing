@@ -1,44 +1,50 @@
 "use strict";
-export {};
+export { };
 // const se_scraper = require("./index");
 // import {Login,Searchdata,Downloadvideo,ScrapeConfig,Sqlinit} from "@/modules/scrapeindex";
-// const { ArgumentParser } = require("argparse");
-// import {RemoteSource} from "@/modules/remotesource";
-// import {SocialTaskRun} from "@/modules/socialtaskrun"
-// import {SocialTaskEntity} from "@/entityTypes/socialtask-type"
-// import {SocialTask} from "@/modules/socialtask"
-// import {default_browser_config,default_scrape_config} from "@/config/puppeteerconfig"
+const { ArgumentParser } = require("argparse");
+import { RemoteSource } from "@/modules/remotesource";
+import { SocialTaskRun } from "@/modules/socialtaskrun"
+import { SocialTaskEntity } from "@/entityTypes/socialtask-type"
+import { SocialTask } from "@/modules/socialtask"
+import { default_browser_config, default_scrape_config } from "@/config/puppeteerconfig"
 // // const { version } = require("./package.json");
-// const fs = require('fs');
-// const resolve = require('path').resolve;
+import fs from "fs";
+import * as path from 'path';
 // const debug = require('debug')('runcli');
-// import {Keyword} from "@/modules/keyword"
+import debug from 'debug';
+import { Keyword } from "@/modules/keyword"
 
-// // const { data } = require("cheerio/lib/api/attributes.js");
+// const { data } = require("cheerio/lib/api/attributes.js");
 
-// const parser = new ArgumentParser({
-//   description: "Social martketing",
-// });
+const parser = new ArgumentParser({
+    description: "Social martketing",
+});
 
 // // parser.add_argument("-v", "--version", { action: "version", version });
-// parser.add_argument("-a", "--action", {
-//   help: "Tha action you want to the program to take",
-// });
-// parser.add_argument("-c", "--campaign", {
-//   help: "Tha campaign id you want to program to take",
-// });
-// parser.add_argument("-t", "--taskrunnum", {
-//   help: "Tha task run number you want to program to take",
-// });
-// parser.add_argument("-head", "--headless", {
-//     help: "Tha task run number you want to program to take",
-// });
+parser.add_argument("-a", "--action", {
+    help: "Tha action you want to the program to take",
+});
+parser.add_argument("-c", "--campaign", {
+    help: "Tha campaign id you want to program to take",
+});
+parser.add_argument("-t", "--taskrunnum", {
+    help: "Tha task run number you want to program to take",
+});
+parser.add_argument("-head", "--headless", {
+    help: "Tha task run number you want to program to take",
+});
 
-// let parearg = parser.parse_args();
+const parearg = parser.parse_args();
 
-// those options need to be provided on startup
-// and cannot give to se-scraper on scrape() calls
-// let browser_config = {
+process.parentPort.once('message', (e) => {
+    const [port] = e.ports
+    // ...
+    console.log(e.data)
+})
+console.log("hello man")
+
+// const browser_config = {
 //   // the user agent to scrape with
 //   user_agent:
 //     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36",
@@ -76,30 +82,30 @@ export {};
 //     maxConcurrency: 1, // scrape with 1 tab
 //   },
 // };
-// let browser_config=default_browser_config;
-// let scrape_config=default_scrape_config;
+// // let browser_config=default_browser_config;
+// // let scrape_config=default_scrape_config;
 
-// let scrape_config:ScrapeConfig = {
-//   // which search engine to scrape
-//   // platform: "facebook",
-//   // an array of keywords to scrape
-//   // keywords: ["cloud service test"],
-//   // the number of pages to scrape for each keyword
-//   // num_pages: 1,
+// const scrape_config:ScrapeConfig = {
+// //   // which search engine to scrape
+// //   // platform: "facebook",
+// //   // an array of keywords to scrape
+// //   // keywords: ["cloud service test"],
+// //   // the number of pages to scrape for each keyword
+// //   // num_pages: 1,
 
-//   // OPTIONAL PARAMS BELOW:
-//   // google_settings: {
-//   //     gl: 'us', // The gl parameter determines the Google country to use for the query.
-//   //     hl: 'fr', // The hl parameter determines the Google UI language to return results.
-//   //     start: 0, // Determines the results offset to use, defaults to 0.
-//   //     num: 100, // Determines the number of results to show, defaults to 10. Maximum is 100.
-//   // },
-//   // instead of keywords you can specify a keyword_file. this overwrites the keywords array
-//   // keyword_file: "",
-//   // how long to sleep between requests. a random sleep interval within the range [a,b]
-//   // is drawn before every request. empty string for no sleeping.
-//   // sleep_range: "",
-//   // path to output file, data will be stored in JSON
+// //   // OPTIONAL PARAMS BELOW:
+// //   // google_settings: {
+// //   //     gl: 'us', // The gl parameter determines the Google country to use for the query.
+// //   //     hl: 'fr', // The hl parameter determines the Google UI language to return results.
+// //   //     start: 0, // Determines the results offset to use, defaults to 0.
+// //   //     num: 100, // Determines the number of results to show, defaults to 10. Maximum is 100.
+// //   // },
+// //   // instead of keywords you can specify a keyword_file. this overwrites the keywords array
+// //   // keyword_file: "",
+// //   // how long to sleep between requests. a random sleep interval within the range [a,b]
+// //   // is drawn before every request. empty string for no sleeping.
+// //   // sleep_range: "",
+// //   // path to output file, data will be stored in JSON
 //   output_file: "/tmp/test/test.json",
 //   // whether to prevent images, css, fonts from being loaded
 //   // will speed up scraping a great deal
@@ -119,34 +125,36 @@ export {};
 //   taskid:0,
 // };
 
-// function get(object:Array<string>, key:string, default_value) {
-//   var result = object[key];
-//   return typeof result !== "undefined" ? result : default_value;
-// }
+function get(object: Array<string>, key: string, default_value) {
+    const result = object[key];
+    return typeof result !== "undefined" ? result : default_value;
+}
 
-// async function runCommand(parearg) {
-//   let action = get(parearg, "action", false);
-//   if (!action) {
-//     console.log("no parameter action been passed");
-//   }
- 
-//   switch (action) {
-//     case "login":
-//       login();
-//       break;
-//     case "runtask":
-//       const taskrunnum = get(parearg, "taskrunnum", false);
-//       if(!taskrunnum){
-//         throw new Error("task run number is empty")
-//       }
-//       runTask(taskrunnum)
-//       break; 
-//     case "sqlinit":
-//       Sqlinit();
-//     break;  
+async function runCommand(parearg) {
+    const action = get(parearg, "action", false);
+    if (!action) {
+        console.log("no parameter action been passed");
+    }
 
-//   }
-// }
+    switch (action) {
+        case "searchscraper":{
+
+            break;
+        }
+        case "runtask": {
+            const taskrunnum = get(parearg, "taskrunnum", false);
+            if (!taskrunnum) {
+                throw new Error("task run number is empty")
+            }
+            //   runTask(taskrunnum)
+            break;
+        }
+        // case "sqlinit":{
+        //   Sqlinit();
+        //     break;
+        // }
+    }
+}
 //get campaign
 // async function getcampaign():Promise<void> {
 //   var remotesource =RemoteSource.getInstance();
@@ -230,7 +238,7 @@ export {};
 //         if(!scrape_config.keywords){
 //           throw new Error("can not get keywords,keywords is undefined");
 //         }
-        
+
 //         await Searchdata(browser_config, scrape_config);
 //         break;
 //       case 'bilibilidownload':
@@ -246,11 +254,11 @@ export {};
 //         break;
 //   }
 //   });
-  
+
 
 
 // }
-// //login to facebook
+//login to facebook
 // async function login() {
 //   let campaignId = get(parearg, "campaign", false);
 //   var remotesource =new RemoteSource();
@@ -264,7 +272,7 @@ export {};
 //   scrape_config.pass = sosetting.socialpass;
 //   console.log(sosetting);
 //   //create a tmp folder
-//   const tmppath = resolve("./tmp/" + scrape_config.platform + "/" + sosetting.socialuser);
+//   const tmppath = path.join("/tmp/", scrape_config.platform, sosetting.socialuser);
 //   await createPath(tmppath);
 //   scrape_config.tmppath=tmppath
 
@@ -283,4 +291,4 @@ export {};
 //   }, "");
 // }
 
-// runCommand(parearg);
+runCommand(parearg);

@@ -26,17 +26,17 @@ export class ExtraModuleController {
         if (!valid) {
             throw new Error("package name not valid:" + packagename)
         }
-        const filePath = ""
+        // const filePath = ""
         //install package
         installPipPackage(
             valid.packagename,
             valid.version,
             (error) => {
-                throw new Error(error)
+                throw new Error(error.message)
             },
             (message) => {
                 const formattedMessage = `${new Date().toISOString()}: ${message}\n`;
-
+        
                 log.info(formattedMessage)
                 if (strout) {
                     strout(message)
@@ -61,7 +61,7 @@ export class ExtraModuleController {
         //uninstall package
         uninstallPipPackage(valid.packagename, (error) => {
             log.error(error)
-            throw new Error(error)
+            throw new Error(error.message)
         },
             (message) => {
                 const formattedMessage = `${new Date().toISOString()}: ${message}\n`;

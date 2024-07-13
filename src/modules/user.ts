@@ -1,12 +1,13 @@
 import { Token } from "@/modules/token"
 import { RemoteSource } from "@/modules/remotesource"
+import {USERSDBPATH,TOKENNAME} from '@/config/usersetting';
 export class User {
-    private tokenname: string = "social-market-token";
+    //private tokenname= "social-market-token";
     public async Signout(){
          const remoteModel=new RemoteSource()
        await remoteModel.removeRemoteToken()
         const token = new Token();
-        token.setValue(this.tokenname, "");
-        
+        token.setValue(TOKENNAME, "");
+        token.setValue(USERSDBPATH, "");
     }
 }

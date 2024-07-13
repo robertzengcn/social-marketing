@@ -1,6 +1,7 @@
 import axios from 'axios'
 // const axios = require('axios/dist/node/axios.cjs');
 import {Token} from "@/modules/token"
+import {TOKENNAME} from "@/config/usersetting"
 // import { Message, MessageBox } from 'element-ui'
 // import { UserModule } from '@/store/modules/user'
 // import http from 'axios/lib/adapters/http'
@@ -18,7 +19,7 @@ service.interceptors.request.use(
   (config) => {
     //console.log("get token...")
     const tokenModel=new Token()
-    const tokenval=tokenModel.getValue("social-market-token")
+    const tokenval=tokenModel.getValue(TOKENNAME)
     // Add X-Access-Token header to every request, you can add other custom headers here
     if (tokenval) {
       config.headers.Authorization = 'Bearer ' + tokenval

@@ -11,8 +11,8 @@ export class Videodb {
     { id: 1, name: "en-us" },
     { id: 2, name: "zh-cn" },
   ];
-  constructor() {
-    const scraperModel = Scraperdb.getInstance();
+  constructor(filepath:string) {
+    const scraperModel = Scraperdb.getInstance(filepath);
     this.db = scraperModel.getdb();
   }
 

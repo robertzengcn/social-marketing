@@ -13,8 +13,8 @@ export enum DownloadStatus {
 export class VideoDownloaddb {
     db: Database;
     videoDownloadTable = "video_download";
-    constructor() {
-        const scraperModel = Scraperdb.getInstance();
+    constructor(filepath:string) {
+        const scraperModel = Scraperdb.getInstance(filepath);
         this.db = scraperModel.getdb();
       }
       public saveVideoDownload(videoDownloadTask:videoDownloadEntity){

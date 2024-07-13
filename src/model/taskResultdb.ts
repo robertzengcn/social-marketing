@@ -18,8 +18,8 @@ export type TaskResultSearchres={
 export class TaskResultdb {
   db: Database;
   taskresultTable = "task_result";
-  constructor() {
-    const scraperModel = Scraperdb.getInstance();
+  constructor(filepath:string) {
+    const scraperModel = Scraperdb.getInstance(filepath);
     this.db = scraperModel.getdb();
   }
   //save task result

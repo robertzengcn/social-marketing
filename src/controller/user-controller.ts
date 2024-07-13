@@ -1,7 +1,15 @@
 import { RemoteSource, jwtUser } from '@/modules/remotesource'
+// import Store,{ Schema } from 'electron-store';
+import {getUserpath,checkAndCreatePath} from "@/modules/lib/function"
+import { Scraperdb } from "@/model/scraperdb";
+// import * as fs from 'fs';
+// import * as path from 'path';
+import {USERSDBPATH} from '@/config/usersetting';
+import { Token } from "@/modules/token"
+
 // import {Token} from "@/modules/token"
 
-const debug = require('debug')('user-controller');
+// const debug = require('debug')('user-controller');
 export type userlogin = {
     user: string,
     pass: string,
@@ -11,6 +19,9 @@ export type userResponse = {
     msg: string,
     data?: jwtUser,
 }
+// interface SchemaData {
+//     userPath: string;
+//   }
 export class userController {
 
     // private user: string;
@@ -21,10 +32,35 @@ export class userController {
 
         const remoteSourmodel = new RemoteSource;
         //console.log(data)
-        const jwtuser = await remoteSourmodel.Login(data.user, data.pass).then(function (res) {
+        const jwtuser = await remoteSourmodel.Login(data.user, data.pass).then(async function (res) {
             //console.log(res);
+            res as jwtUser
+            if(res.email.length>0){
+                
+                //check db exist, create one if not exist
+                
+                console.log('test')
+                // store.set('useremail',res.email)
+                const userdataPath=getUserpath(res.email)
+                console.log(userdataPath)
+                // const schema: Schema<SchemaData> = {
+                //     // type: 'object',                 
+                //  userPath: { type: 'string' }
+     
+                // };
+                // // const store = new Store<SchemaData>({ schema });
+                // store.set('userPath',userdataPath)
+                await checkAndCreatePath(userdataPath)
+                const tokenService=new Token()
+                //tokenService.setValue('useremail',res.email)
+                tokenService.setValue(USERSDBPATH,userdataPath)
+                const scraperModel = Scraperdb.getInstance(userdataPath);
+                scraperModel.init()
+               // if()
+            }
             return res;
         }).catch(function (error) {
+            console.log(error.stack)
                 //debug(error);
                 throw new Error(error.message);
         });

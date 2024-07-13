@@ -6,9 +6,9 @@ import {TaskRunEntity} from "@/entityTypes/taskrun-type";
 export class Taskrundb {
   db: Database;
   taskrunTable = "task_run";
-  constructor() {
+  constructor(filepath:string) {
     // this.db = new Database('foobar.db');
-    const scraperModel = Scraperdb.getInstance();
+    const scraperModel = Scraperdb.getInstance(filepath);
     this.db = scraperModel.getdb();
   }
   //save task run

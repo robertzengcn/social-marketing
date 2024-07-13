@@ -19,3 +19,6 @@ export function ToArray(enumme) {
 export  function CapitalizeFirstLetter(string:string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }  
+export function convertNumberToBoolean(num: number): boolean {
+    return num !== 0;
+  }

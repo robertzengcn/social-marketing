@@ -10,8 +10,8 @@ export interface AccountCookiesEntity {
 }
 export class AccountCookiesdb {
     db: Database;
-    constructor() {
-        const scraperModel = Scraperdb.getInstance();
+    constructor(filepath:string) {
+        const scraperModel = Scraperdb.getInstance(filepath);
         this.db = scraperModel.getdb();
     }
     //save account cookies

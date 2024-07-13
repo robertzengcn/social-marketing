@@ -7,6 +7,7 @@ import { Token } from "@/modules/token"
 // import { decode } from "punycode";
 const debug = require('debug')('RemoteSource');
 import {User} from "@/modules/user"
+import {TOKENNAME} from '@/config/usersetting';
 // const url = require("url");
 // const FormData = require('form-data');
 type sosetting = {
@@ -67,7 +68,7 @@ type jwtTokenUser = {
 }
 
 export class RemoteSource {
-  private tokenname: string = "social-market-token";
+  private tokenname= TOKENNAME;
   // private static instance: RemoteSource;
   REMOTEADD: string;
   // REMOTEUSERNAME: string;

@@ -4,8 +4,9 @@ export { };
 // const os = require('os');
 import Store from 'electron-store';
 import { safeStorage } from 'electron';
-import { CryptoSource } from './cryptosource';
+import { CryptoSource } from '@/modules/cryptosource';
 import {StoreService} from "@/modules/storeservice"
+import {USERSERVICE} from '@/config/usersetting';
 
 export class Token {
 
@@ -19,7 +20,7 @@ export class Token {
             clearInvalidConfig: true, // 发生 SyntaxError  则清空配置,
         }
 
-        this.store = new StoreService("social-market-token");
+        this.store = new StoreService(USERSERVICE);
         // this.useSafestore=safeStorage?.isEncryptionAvailable();  
         this.useSafestore = false;
     }

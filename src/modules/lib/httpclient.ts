@@ -6,6 +6,7 @@ export type HttpClientOptions = {
 // }
 //import { AuthInterceptor } from '@/modules/lib/authInterceptor';
 import {Token} from "@/modules/token"
+import {TOKENNAME} from '@/config/usersetting';
 // export type RemoteResp = {
 //   status: boolean,
 //   msg: string,
@@ -28,8 +29,8 @@ export class HttpClient {
 
     public async setheaderToken(){
       const tokenModel=new Token()
-      const tokenval=await tokenModel.getValue("social-market-token")
-      console.log("prepare to set token:"+tokenval)
+      const tokenval=await tokenModel.getValue(TOKENNAME)
+      //console.log("prepare to set token:"+tokenval)
       if (tokenval) {
         //config.headers.Authorization = 'Bearer ' + tokenval
         this.setHeader('Authorization', 'Bearer ' + tokenval)

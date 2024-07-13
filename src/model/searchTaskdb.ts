@@ -7,8 +7,8 @@ export class SearchTaskdb {
     db: Database;
     searchTaskTable = "search_task";
    
-    constructor() {
-      const scraperModel = Scraperdb.getInstance();
+    constructor(filepath:string) {
+      const scraperModel = Scraperdb.getInstance(filepath);
       this.db = scraperModel.getdb();
     }
     //save search task

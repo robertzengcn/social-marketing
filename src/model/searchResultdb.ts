@@ -5,8 +5,8 @@ import {SearchResEntity} from "@/entityTypes/scrapeType"
 export class SearchResultdb {
     db: Database;
     searchResultTable = "search_result";
-    constructor() {
-        const scraperModel = Scraperdb.getInstance();
+    constructor(filepath:string) {
+        const scraperModel = Scraperdb.getInstance(filepath);
         this.db = scraperModel.getdb();
     }
     //save search task
