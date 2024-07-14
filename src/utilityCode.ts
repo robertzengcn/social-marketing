@@ -290,5 +290,27 @@ async function runCommand(parearg) {
 //     return directories;
 //   }, "");
 // }
-
+process.on('SIGINT', gracefulShutdown);
+process.on('SIGTERM', gracefulShutdown);
+ 
+function gracefulShutdown() {
+    console.log('Shutting down gracefully...');
+    // Clear any timers or intervals
+    // clearTimeout(timeoutId);
+    // clearInterval(intervalId);
+  
+    // Close database connections
+    // db.close(() => {
+    //   console.log('Database connection closed.');
+    // });
+  
+    // Optionally, force exit if the graceful shutdown takes too long
+    setTimeout(() => {
+      console.error('Could not close connections in time, forcefully shutting down');
+      process.exit(1);
+    }, 10000); // 10 seconds
+  
+    // If everything is cleaned up, exit cleanly
+    process.exit(0);
+  }
 runCommand(parearg);

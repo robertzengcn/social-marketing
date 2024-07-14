@@ -84,7 +84,7 @@ export class SearchController {
         
         // child.postMessage({ message: 'hello' }, [port1])
         child.on("spawn", () => {
-            
+            console.log("child id is"+child.pid)
             child.postMessage({ message: 'hello' }, [port1])
         })
         child.stdout?.on('data', (data) => {
