@@ -70,7 +70,7 @@ export class Scraperdb {
             // debug(files)
             if(files){
             files.forEach(file => {
-                this.db.exec(fs.readFileSync(path.join(tablepath,path.sep, file), 'utf8').toString());
+                this.db.exec(fs.readFileSync(path.join(sqlFilePath, file), 'utf8').toString());
                 console.log(file+"created")
             });
         }
