@@ -37,10 +37,10 @@ parser.add_argument("-head", "--headless", {
 
 const parearg = parser.parse_args();
 
-process.parentPort.once('message', (e) => {
-    const [port] = e.ports
+process.once('message', (e) => {
+    //const [port] = e.ports
     // ...
-    console.log(e.data)
+    console.log("get message")
 })
 console.log("hello man")
 
