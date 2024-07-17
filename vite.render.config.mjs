@@ -3,7 +3,7 @@ import alias from "@rollup/plugin-alias";
 import * as path from 'path';
 import vue from '@vitejs/plugin-vue'
 import vuetify from 'vite-plugin-vuetify'
-
+import ClosePlugin from './vite-plugin-close.ts'
 
 export default defineConfig({
   build: {
@@ -14,7 +14,9 @@ export default defineConfig({
     vuetify({
       autoImport: true,
     }),
-    alias()],
+    alias(),
+    ClosePlugin()
+  ],
     define: { 'process.env': {} },
   resolve: {
     alias: {

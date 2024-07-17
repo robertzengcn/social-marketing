@@ -153,10 +153,13 @@ export class ScrapeManager {
       puppeteer_cluster_config: {
         timeout: 30 * 60 * 1000, // max timeout set to 30 minutes
         monitor: false,
-        concurrency: Cluster.CONCURRENCY_BROWSER,
+        // concurrency: Cluster.CONCURRENCY_BROWSER,
         maxConcurrency: 1,
       },
     });
+    // if(!this.config.puppeteer_cluster_config.concurrency){
+    //   this.config.puppeteer_cluster_config.concurrency = Cluster.CONCURRENCY_BROWSER
+    // }
 
     this.logger = this.config.logger;
 

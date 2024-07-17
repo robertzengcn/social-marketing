@@ -122,7 +122,7 @@ export type SMstruct = {
   puppeteer_cluster_config: {
     timeout: number, // max timeout set to 10 minutes
     monitor: boolean,
-    concurrency: number, // one scraper per tab
+    concurrency?: number, // one scraper per tab
     maxConcurrency: number, // scrape with 1 tab
   },
   sleep_range?: Array<number>,

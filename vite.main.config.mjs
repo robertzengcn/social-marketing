@@ -4,6 +4,7 @@ import alias from "@rollup/plugin-alias";
 import * as path from 'path';
 import copy from 'rollup-plugin-copy'
 // import { viteStaticCopy } from 'vite-plugin-static-copy'
+import ClosePlugin from './vite-plugin-close'
 
 export default ({ mode }) => {
     process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
@@ -14,7 +15,8 @@ export default ({ mode }) => {
                 targets: [
                     { src: 'src/sql/**/*', dest: 'dist/sql' }   
                 ]  
-            })
+            }),
+            ClosePlugin()
         ],
         resolve: {
             alias: {

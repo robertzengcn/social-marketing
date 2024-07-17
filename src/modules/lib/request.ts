@@ -1,5 +1,4 @@
 import axios from 'axios'
-// const axios = require('axios/dist/node/axios.cjs');
 import {Token} from "@/modules/token"
 import {TOKENNAME} from "@/config/usersetting"
 // import { Message, MessageBox } from 'element-ui'
