@@ -4,9 +4,11 @@ import { VideoInfo } from "@/modules/socialScraper";
 import { getRecorddatetime } from "@/modules/lib/function";
 
 export class Videodb {
+  
   db: Database;
   videoTable = "video";
   videoDescriptionTable = "video_description";
+
   language: Array<{ id: number; name: string }> = [
     { id: 1, name: "en-us" },
     { id: 2, name: "zh-cn" },
@@ -20,7 +22,7 @@ export class Videodb {
    * save video
    * @param url string
    */
-  saveVideo(videoinfo: VideoInfo, callback: Function | undefined | null) {
+  saveVideo(videoinfo: VideoInfo) {
     // saveVideo(url: string, localpath:string,title: string, description: string, language: string) {
     let languageid = 0;
     for (let i = 0; i < this.language.length; i++) {
@@ -47,14 +49,14 @@ export class Videodb {
         this.videoTable +
         ` (url,localpath,record_time) VALUES (?,?,?)`);
 
-    const component = this;
+    // const component = this;
     const res = stmt.run(videoinfo.url, videoinfo.localpath, recordtime)
 
 
     if (res.changes) {
       const videodesc =
         this.db.prepare(`INSERT INTO ` +
-          component.videoDescriptionTable +
+          this.videoDescriptionTable +
           ` (video_id,language_id,title,description) VALUES (?,?,?,?)`);
       videodesc.run(
         res.lastInsertRowid, languageid, videoinfo.title, videoinfo.description)

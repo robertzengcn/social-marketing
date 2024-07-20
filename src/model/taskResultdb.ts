@@ -25,7 +25,7 @@ export class TaskResultdb {
   //save task result
   public saveTaskresult(
     taskresult: TaskResultEntity,
-    callback: Function | undefined | null
+    callback: ((arg: any) => void) | undefined | null
   ):number|bigint {
     if (!taskresult.taskrun_id) {
       throw new Error(`task run id empty`);
@@ -56,7 +56,7 @@ export class TaskResultdb {
     taskrunId: number,
     page: number,
     size: number,
-    callback: Function | undefined | null
+    callback?: ((res: TaskResultSearchres) => void) | undefined | null
   ): TaskResultSearchres {
     const stmt = this.db.prepare(
       `SELECT * FROM ` +

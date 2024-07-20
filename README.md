@@ -62,6 +62,12 @@ test google scraper
 yarn vitest-googlescraper
 ```
 
+### Type check
+run a parallel task doing checks, i.e. for typescript:
+```
+tsc --noEmit --watch
+```
+
 
 
 

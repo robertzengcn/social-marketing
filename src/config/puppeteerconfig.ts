@@ -1,4 +1,4 @@
-import {ScrapeConfig} from "@/modules/scrapeindex";
+//import {ScrapeConfig} from "@/modules/scrapeindex";
 export const default_browser_config = {
     // the user agent to scrape with
     user_agent:
@@ -38,7 +38,7 @@ export const default_browser_config = {
     },
   };
 
-export const default_scrape_config:ScrapeConfig = {
+export const default_scrape_config = {
     // which search engine to scrape
     // platform: "facebook",
     // an array of keywords to scrape

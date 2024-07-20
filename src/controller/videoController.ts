@@ -2,6 +2,9 @@ import { videoFactory } from "@/modules/videoFactory";
 import { downloadVideoparam,videoDownloadTaskEntity,videoDownloadEntity,videoDownloadList } from "@/entityTypes/videoType";
 import { VideoDownloadTaskdb } from "@/model/videoDownloadTaskdb";
 import {VideoDownloaddb,DownloadStatus} from "@/model/videoDownloaddb"
+import { Token } from "@/modules/token"
+import {USERSDBPATH} from '@/config/usersetting';
+
 export class videoController {
     
     public async downloadVideo(param:downloadVideoparam){
@@ -14,8 +17,13 @@ export class videoController {
             
             throw new Error("video tool not found")
         }
+        const tokenService=new Token()
+        const dbpath=await tokenService.getValue(USERSDBPATH)
+        if(!dbpath){
+            throw new Error("user db path not exist")
+        }
         //save log to download task table
-        const videoTaskdb=new VideoDownloadTaskdb()
+        const videoTaskdb=new VideoDownloadTaskdb(dbpath)
         const videoEntity:videoDownloadTaskEntity={
             platform:param.platform,
             url:JSON.stringify(param.link),
@@ -24,7 +32,9 @@ export class videoController {
         const taskId=videoTaskdb.saveVideoDownloadTask(videoEntity)
         console.log("task id:"+taskId)
         const res=videoTool.checkRequirement()
-        const videoDownloaddb=new VideoDownloaddb()
+        
+
+        const videoDownloaddb=new VideoDownloaddb(dbpath)
         if(res){
         for (const link of param.link) {
             const vdentity:videoDownloadEntity={ 
@@ -54,11 +64,16 @@ export class videoController {
 
     }
     //get video download list
-    public videoDownloadlist(page:number,size:number):videoDownloadList{
-        const videoDownloaddb=new VideoDownloaddb()
+    public async videoDownloadlist(page:number,size:number):Promise<videoDownloadList>{
+        const tokenService=new Token()
+        const dbpath=await tokenService.getValue(USERSDBPATH)
+        if(!dbpath){
+            throw new Error("user db path not exist")
+        }
+        const videoDownloaddb=new VideoDownloaddb(dbpath)
        const list=videoDownloaddb.getVideoDownloadList(page,size)
        const count=videoDownloaddb.countVideoDownloadList()
-       return { records:list,total:count}
+       return { records:list,total:count} as videoDownloadList
     }
 
 }

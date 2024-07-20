@@ -5,6 +5,8 @@ import {CookiesType} from "@/entityTypes/cookiesType"
 import {bilibiliVideo} from "@/modules/bilibiliVideo"
 import { Video } from '@/modules/video';
 import { SocialAccount } from "@/modules/socialaccount"
+import { Token } from "@/modules/token"
+import {USERSDBPATH} from '@/config/usersetting';
 
 
 export class videoFactory {
@@ -15,8 +17,13 @@ export class videoFactory {
         if(!accountdetail){
             throw new Error("account not found")
         }
+        const tokenService=new Token()
+        const dbpath=await tokenService.getValue(USERSDBPATH)
+        if(!dbpath){
+            throw new Error("user path not exist")
+        }
         //get account cookies
-        const accountCookiesModel=new AccountCookiesdb()
+        const accountCookiesModel=new AccountCookiesdb(dbpath)
         const cookiesEntity=accountCookiesModel.getAccountCookies(accountId)
         if(!cookiesEntity.cookies){
             throw new Error("cookies not found for the account, you need login first")
@@ -32,9 +39,9 @@ export class videoFactory {
         if(accountdetail.data.proxy&&(accountdetail.data.proxy.length>0)){
             //get random proxy from array
             const randomIndex=Math.floor(Math.random() * accountdetail.data.proxy.length)
-            if(accountdetail.data.proxy[randomIndex].id&&(accountdetail.data.proxy[randomIndex].id>0)){
+            //if((accountdetail.data.proxy[randomIndex]!=undefined)&&accountdetail.data.proxy[randomIndex].id&&(accountdetail.data.proxy[randomIndex].id>0)){
             videoScraper.proxy=accountdetail.data.proxy[randomIndex]
-            }
+            //}
         }
         switch(sitename){
            

@@ -4,7 +4,8 @@ import * as path from 'path';
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import commonjs from 'vite-plugin-commonjs'
 import ClosePlugin from './vite-plugin-close.ts'
-
+import { esbuildCommonjs } from '@originjs/vite-plugin-commonjs'
+import checker from 'vite-plugin-checker'
 export default ({ mode }) => {
     process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
 
@@ -12,7 +13,11 @@ export default ({ mode }) => {
         plugins: [alias(),
             nodePolyfills(),
             commonjs(),
-            ClosePlugin()
+            ClosePlugin(),
+            checker({
+                // e.g. use TypeScript check
+                typescript: true,
+              }),
         ],
         resolve: {
             alias: {
@@ -29,6 +34,13 @@ export default ({ mode }) => {
         },
         test: {
             include:['test/vitest/utilitycode/*.test.ts'],
-        }
+        },
+        optimizeDeps:{
+            esbuildOptions:{
+              plugins:[
+                esbuildCommonjs(['puppeteer-cluster']) 
+              ]
+            }
+          }
     })
 }

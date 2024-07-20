@@ -1,4 +1,4 @@
-import {Proxy} from "@/entity-types/proxyType";
+import {Proxy} from "@/entityTypes/proxyType";
 export type SocialAccountResponse = {
     status: string,
     msg: string,

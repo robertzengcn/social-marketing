@@ -5,6 +5,7 @@ import * as path from 'path';
 import copy from 'rollup-plugin-copy'
 // import { viteStaticCopy } from 'vite-plugin-static-copy'
 import ClosePlugin from './vite-plugin-close'
+import checker from 'vite-plugin-checker'
 
 export default ({ mode }) => {
     process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
@@ -16,7 +17,11 @@ export default ({ mode }) => {
                     { src: 'src/sql/**/*', dest: 'dist/sql' }   
                 ]  
             }),
-            ClosePlugin()
+            ClosePlugin(),
+            checker({
+                // e.g. use TypeScript check
+                typescript: true,
+              }),
         ],
         resolve: {
             alias: {

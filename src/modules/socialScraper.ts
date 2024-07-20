@@ -5,12 +5,15 @@ import * as fs from "fs";
 // import { Scraperdb } from "../model/scraperdb"
 // const { spawn } = require('child_process');
 import { Subject, Observer } from './subject';
-import {SMconfig} from "@/node_socialmk"
+import {SMconfig} from "@/entityTypes/scrapeType"
 import { Page } from 'puppeteer';
 import { Linkdata } from '@/modules/remotesource';
 import {get_http_headers,get_ip_data} from "@/modules/metadata"
 import {TaskResultdb,TaskResultEntity} from "@/model/taskResultdb"
 import appRoot from 'app-root-path';
+import { Token } from "@/modules/token"
+import {USERSDBPATH} from '@/config/usersetting';
+
 
 // export class ScrapeOptionsPage extends Page{
 const logger = debug('socialScraper');
@@ -47,8 +50,8 @@ interface runParameter {
     worker?: object
 }
 interface logType {
-    info: Function,
-    error: Function
+    info: (message: string) => void,
+    error: (error: Error) => void
 }
 
 export interface WosearchObj {
@@ -326,8 +329,13 @@ export class SocialScraper implements Subject {
             return
         }
         const links = await this.searchdata({ keyword: this.config.keywords })
+        const tokenService=new Token()
+        const dbpath=await tokenService.getValue(USERSDBPATH)
+        if(!dbpath){
+            throw new Error("user db path not exist")
+        }
         //save link to local db
-        const taskresultModel=new TaskResultdb()
+        const taskresultModel=new TaskResultdb(dbpath)
         
         // const remoteSourmodel = new RemoteSource();
         // debug('links=%o',links)

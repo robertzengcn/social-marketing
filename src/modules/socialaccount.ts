@@ -9,7 +9,9 @@ import {
 // import url from "url"
 // import {PageSearch} from "@/entityTypes/common-type"
 import { URLSearchParams } from "url";
-import { AccountCookiesdb, AccountCookiesEntity } from "@/model/account_cookiesdb";
+import { AccountCookiesdb } from "@/model/account_cookiesdb";
+import { Token } from "@/modules/token"
+import {USERSDBPATH} from '@/config/usersetting';
 
 // import FormData from "form-data";
 export class SocialAccount {
@@ -47,7 +49,12 @@ export class SocialAccount {
     // };
 
     if (sociallistres.data.records && sociallistres.data.records.length > 0) {
-      const accDb = new AccountCookiesdb()
+      const tokenService=new Token()
+      const dbpath=await tokenService.getValue(USERSDBPATH)
+      if(!dbpath){
+          throw new Error("user path not exist")
+      }
+      const accDb = new AccountCookiesdb(dbpath)
 
       //loop social list data, add cookies
       for (const social of sociallistres.data.records) {

@@ -3,7 +3,11 @@ import { BrowserWindow, session } from 'electron'
 import { AccountCookiesdb, AccountCookiesEntity } from "@/model/account_cookiesdb";
 import { ProxyController } from "./proxy-controller";
 import { ProxyParseItem } from "@/entityTypes/proxyType";
-import {showNotification} from "@/modules/lib/function"
+// import {showNotification} from "@/modules/lib/function"
+import { Token } from "@/modules/token"
+import {USERSDBPATH} from '@/config/usersetting';
+import {CustomError} from '@/modules/customError'
+
 export class SocialAccountController {
     //open open and login social account
     public async loginSocialaccount(id: number): Promise<void> {
@@ -16,8 +20,13 @@ export class SocialAccountController {
         if (!accinfo.status) {
             throw new Error(accinfo.msg)
         }
+        const tokenService=new Token()
+        const dbpath=await tokenService.getValue(USERSDBPATH)
+        if(!dbpath){
+            throw new CustomError("user path not exist",20240719112326)
+        }
         //get account cookies
-        const accoutndb = new AccountCookiesdb()
+        const accoutndb = new AccountCookiesdb(dbpath)
         const cookies = accoutndb.getAccountCookies(accinfo.data.id)
         let partition_path = "persist:path/" + Date.now() + '-' + Math.random().toString(36).slice(2, 9)
         if (cookies) {
@@ -90,7 +99,12 @@ export class SocialAccountController {
                     cookies: cookiesstr,
                     partition_path: partition_path
                 }
-                const acdb = new AccountCookiesdb()
+                const tokenService=new Token()
+                const dbpath=await tokenService.getValue(USERSDBPATH)
+                if(!dbpath){
+                    throw new CustomError("user path not exist",202407171402105)
+                }
+                const acdb = new AccountCookiesdb(dbpath)
                 acdb.saveAccountCookies(ace)
             }
         });

@@ -64,12 +64,12 @@ export class Taskrundb {
     //return exist;
   }
   //get task run list
-  public getTaskrunlist(taskId: number, page:number,size:number,callback: Function | undefined | null):Array<TaskRunEntity> {
+  public getTaskrunlist(taskId: number, page:number,size:number,callback?: (reslist: Array<TaskRunEntity>) => void):Array<TaskRunEntity> {
     const stmt =this.db.prepare( `SELECT id,task_id,taskrun_num,log_path, record_time FROM ` + this.taskrunTable + ` WHERE task_id = ? ORDER BY id desc LIMIT ?,? `);
     const reslist=stmt.all(taskId,page,size)as Array<TaskRunEntity> 
      
       if (callback) {
-        return callback(reslist)
+        callback(reslist)
       }
       return reslist
     // });

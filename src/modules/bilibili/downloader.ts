@@ -100,8 +100,12 @@ export class Downloader {
 		return fetch(url)
 			.then(response => response.text())
 			.then(result => {
-				const data = result.match(/__INITIAL_STATE__=(.*?);\(function\(\)/)[1];
+				const match = result.match(/__INITIAL_STATE__=(.*?);\(function\(\)/);
+				const data = match ? match[1] : null;
 				// data =  cast(JSON.parse(data),r("User"));
+				if(!data){
+					throw new Error("get video aid error");
+				}
 				const aiddata: getAiddata = JSON.parse(data)
 				//debug("INITIAL STATE", data);
 				if (type === "BV" || type === "bv" || type === "av") {
@@ -207,7 +211,9 @@ export class Downloader {
 		return result;
 	}
 
-	downloadByIndex(part, file, callback = (progress: any, index: any) => { }) {
+	downloadByIndex(part, file, callback = (progress: any, index: any) => { 
+		console.log(progress)
+	}) {
 		const { url } = this;
 
 		if (this.tasks.some(item => item.url === this.links[part])) return "DUPLICATE";
@@ -217,6 +223,7 @@ export class Downloader {
 			state = fs.statSync(file);
 		}
 		catch (error) {
+			console.log(error)
 		}
 		const options = {
 			url: this.links[part],

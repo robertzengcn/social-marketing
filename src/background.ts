@@ -97,7 +97,7 @@ function initialize() {
   // Some APIs can only be used after this event occurs.
   app.on('ready', async () => {
     createWindow();
-    registerCommunicationIpcHandlers();
+    registerCommunicationIpcHandlers(win);
     
 
     if (isDevelopment && !process.env.IS_TEST) {

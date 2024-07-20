@@ -1,6 +1,6 @@
 // import {TaskFunction} from "puppeteer-cluster/dist/Cluster"
 // import { Page} from 'puppeteer';
-import {ClusterSearchData,ClusterFunctionparam,RunResult,SearchData} from "@/entityTypes/scrapeType"
+import {ClusterFunctionparam,RunResult,SearchData} from "@/entityTypes/scrapeType"
 export interface searchEngineImpl{
     // Each scraper basically iterates over a list of
     // keywords and a list of pages. This is the generic

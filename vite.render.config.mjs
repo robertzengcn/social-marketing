@@ -4,7 +4,7 @@ import * as path from 'path';
 import vue from '@vitejs/plugin-vue'
 import vuetify from 'vite-plugin-vuetify'
 import ClosePlugin from './vite-plugin-close.ts'
-
+import checker from 'vite-plugin-checker'
 export default defineConfig({
   build: {
     sourcemap: true},
@@ -15,7 +15,11 @@ export default defineConfig({
       autoImport: true,
     }),
     alias(),
-    ClosePlugin()
+    ClosePlugin(),
+    checker({
+      // e.g. use TypeScript check
+      typescript: true,
+    }),
   ],
     define: { 'process.env': {} },
   resolve: {

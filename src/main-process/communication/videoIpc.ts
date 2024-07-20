@@ -115,7 +115,7 @@ export function registerVideoIpcHandlers() {
         }
         //return video download list
         const videoCtrl = new videoController()
-        const res = videoCtrl.videoDownloadlist(qdata.page, qdata.size)
+        const res = await videoCtrl.videoDownloadlist(qdata.page, qdata.size)
         const resp:videoDownloadListResp={
             status:true,
             msg:"video.download_list",

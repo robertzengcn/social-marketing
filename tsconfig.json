@@ -16,6 +16,7 @@
     "forceConsistentCasingInFileNames": true,
     "useDefineForClassFields": true,
     "sourceMap": true,
+    "isolatedModules":true,
     "baseUrl": ".",
     "types": [
       "vuetify",
@@ -43,8 +44,7 @@
     "test/**/*.ts",
     "tests/**/*.ts",
     "tests/**/*.tsx",
-    "typings/*"
-, "src/modules/scrapeindex.ts"],
+    "typings/*"],
   "exclude": [
     "node_modules"
   ]

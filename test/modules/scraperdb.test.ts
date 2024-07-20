@@ -2,7 +2,8 @@
 import {Scraperdb} from '../../src/model/scraperdb'
 
 describe('Module Scraperdb', function(){
-    const scraperdb=Scraperdb.getInstance();
+    const dbpath=""
+    const scraperdb=Scraperdb.getInstance(dbpath);
     it('init', function(){
         scraperdb.init();
     });
