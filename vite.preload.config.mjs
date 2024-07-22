@@ -1,7 +1,17 @@
-import { defineConfig } from 'vite';
+/// <reference types="vitest" />
+import { defineConfig,loadEnv} from 'vite';
+import checker from 'vite-plugin-checker'
 
+export default ({ mode }) => {
+  process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
 
-export default defineConfig({
+  return defineConfig({
+    plugins: [
+      checker({
+        // e.g. use TypeScript check
+        typescript: true,
+      }),
+    ],
   build: {
     sourcemap: true,
     rollupOptions: {
@@ -10,4 +20,5 @@ export default defineConfig({
       ]
     }
   }
-});
+})
+}

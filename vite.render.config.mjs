@@ -19,6 +19,7 @@ export default defineConfig({
     checker({
       // e.g. use TypeScript check
       typescript: true,
+      vueTsc: true
     }),
   ],
     define: { 'process.env': {} },

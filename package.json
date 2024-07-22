@@ -44,7 +44,8 @@
     "vitest-puppeteer": "vitest --config vite.utilityCode.config.mjs",
     "vitest-bibiliscraper": "vitest --config vite.utilityCode.config.mjs -t bibili-scraper",
     "vitest-googlescraper": "vitest --config vite.utilityCode.config.mjs -t google-scraper",
-    "tsc": "tsc --noEmit --watch"
+    "tsc": "tsc --noEmit --watch",
+    "vue-tsc":"vue-tsc --noEmit && vite build"
   },
   "dependencies": {
     "@mdi/font": "5.9.55",
@@ -86,7 +87,7 @@
     "papaparse": "^5.4.1",
     "pinia": "^2.1.7",
     "progress-stream": "^2.0.0",
-    "puppeteer": "21.11.0",
+    "puppeteer": "22.13.1",
     "puppeteer-cluster": "^0.23.0",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-adblocker": "^2.13.6",
@@ -127,8 +128,9 @@
     "@electron-forge/maker-squirrel": "^7.2.0",
     "@electron-forge/maker-zip": "^7.2.0",
     "@electron-forge/plugin-auto-unpack-natives": "^7.2.0",
-    "@electron-forge/plugin-vite": "^7.2.0",
+    "@electron-forge/plugin-vite": "7.4.0",
     "@originjs/vite-plugin-commonjs": "^1.0.3",
+    "@rollup/plugin-node-resolve": "^15.2.3",
     "@types/chai": "^4.3.5",
     "@types/electron-devtools-installer": "^2.2.0",
     "@types/expect": "^24.3.0",
@@ -140,7 +142,7 @@
     "@types/webfontloader": "^1.0.0",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^6.12.0",
-    "@vitejs/plugin-vue": "^5.0.3",
+    "@vitejs/plugin-vue": "^5.0.5",
     "@vitejs/plugin-vue-jsx": "^3.1.0",
     "@vue/cli-plugin-router": "^5.0.8",
     "@vue/eslint-config-prettier": "^8.0.0",
@@ -180,7 +182,7 @@
     "vue-cli-plugin-vuetify": "~2.5.8",
     "vue-loader": "^15.11.1",
     "vue-template-compiler": "^2.7.14",
-    "vue-tsc": "^2.0.26"
+    "vue-tsc": "^2.0.28"
   },
   "eslintConfig": {
     "root": true,

@@ -27,7 +27,8 @@ export class CustomConcurrency extends Browser {
         return {
             jobInstance: async () => {
                 await timeoutExecute(BROWSER_TIMEOUT, (async () => {
-                    context = await chrome.createIncognitoBrowserContext();
+                    //context = await chrome.createIncognitoBrowserContext();
+                    context = await chrome.createBrowserContext();
                     page = await context.newPage();
                     //page = await context.Page();
                 })());
