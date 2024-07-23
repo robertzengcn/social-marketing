@@ -8,6 +8,7 @@ import ClosePlugin from './vite-plugin-close'
 import checker from 'vite-plugin-checker'
 // import vue from '@vitejs/plugin-vue'
 // import vuetify from 'vite-plugin-vuetify'
+import { nodeResolve } from '@rollup/plugin-node-resolve';
 export default ({ mode }) => {
     process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
 
@@ -36,11 +37,19 @@ export default ({ mode }) => {
         },
         build: {
             sourcemap: true,
-            // rollupOptions: {
-            //     // external: [
-            //     //     'sqlite3'
-            //     // ]
-            // }
+            rollupOptions: {
+                plugins: [
+                    alias({
+                      entries: [
+                        { find: '@', replacement: path.resolve(__dirname, 'src') }
+                      ]
+                    }),
+                    nodeResolve({
+                      browser: true,
+                      extensions: ['.js', '.jsx', '.ts', '.tsx', '.vue']
+                    }), 
+                  ]
+            }
         },
         test: {
             include:['test/vitest/main/*.test.ts'],
