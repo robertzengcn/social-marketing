@@ -73,13 +73,13 @@
     
       <v-data-table :items="items" :headers="headers" class="mt-2"  :search="search">
         <template v-slot:[`item.status`]="{ item }">
-          <v-chip v-if="item.status == '0'" class="mx-2" color="grey">
+          <v-chip v-if="item.status === 0" class="mx-2" color="grey">
             Not check
           </v-chip>
-          <v-chip v-if="item.status == '1'" class="mx-2" color="secondary">
+          <v-chip v-if="item.status === 1" class="mx-2" color="secondary">
             pass
           </v-chip>
-          <v-chip v-if="item.status == '2'" class="mx-2" color="pink">
+          <v-chip v-if="item.status === 2" class="mx-2" color="pink">
             fail
           </v-chip>
         </template>

@@ -102,7 +102,7 @@ export default {
     search:{
         platform:"platform",
         keyword:"keyword",
-        search_enginer:"search enginer",
+        search_enginer_name:"search enginer",
         input_keywords_hint:"input keywords, per one per line",
         show_in_Browser:"show in browser",
         use_hint:"Input the keyword you want to search in follow textarea, the system will use required search engine to scrape the keyword",

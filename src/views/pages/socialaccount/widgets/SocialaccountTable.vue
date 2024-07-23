@@ -24,10 +24,10 @@
     <v-data-table-server v-model:items-per-page="itemsPerPage" :search="search" :headers="headers"
         :items-length="totalItems" :items="serverItems" :loading="loading" item-value="name" @update:options="loadItems">
         <template v-slot:[`item.status`]="{ item }">
-            <v-chip color="red" v-if="item.status=='0'">
+            <v-chip color="red" v-if="item.status===0">
                 Disable
             </v-chip> 
-            <v-chip color="green" v-if="item.status=='1'">
+            <v-chip color="green" v-if="item.status===1">
                 Enable
             </v-chip>          
         </template>

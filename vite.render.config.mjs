@@ -5,16 +5,32 @@ import vue from '@vitejs/plugin-vue'
 import vuetify from 'vite-plugin-vuetify'
 import ClosePlugin from './vite-plugin-close.ts'
 import checker from 'vite-plugin-checker'
+import { nodeResolve } from '@rollup/plugin-node-resolve';
+
 export default defineConfig({
   build: {
-    sourcemap: true},
+    sourcemap: true,
+    rollupOptions: {
+      plugins: [
+        alias({
+          entries: [
+            { find: '@', replacement: path.resolve(__dirname, 'src') }
+          ]
+        }),
+        nodeResolve({
+          browser: true,
+          extensions: ['.js', '.jsx', '.ts', '.tsx', '.vue']
+        }), 
+      ]
+  },
+  },
   plugins: [
     vue(),
     // https://github.com/vuetifyjs/vuetify-loader/tree/next/packages/vite-plugin
     vuetify({
       autoImport: true,
     }),
-    alias(),
+    
     ClosePlugin(),
     checker({
       // e.g. use TypeScript check
@@ -22,7 +38,7 @@ export default defineConfig({
       vueTsc: true
     }),
   ],
-    define: { 'process.env': {} },
+  define: { 'process.env': {} },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

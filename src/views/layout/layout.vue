@@ -22,7 +22,7 @@
 
                     <v-list-group v-if="item.meta?.visible && item.children && item.children.length > 0" class="mx-1">
                         <template v-slot:activator="{ props }">
-                            <v-list-item v-bind="props" :prepend-icon="item.meta.icon" :title="item.meta.title" />
+                            <v-list-item v-bind="props" :prepend-icon="item.meta.icon" :title="item.meta.title as string" />
                         </template>
                         <template v-for="(row, i) in item.children">
                             <v-list-item v-if="(row.meta?.visible as any)" :title="(row.meta?.title as any)"

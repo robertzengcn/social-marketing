@@ -11,10 +11,10 @@
               </v-chip>
         </template>
         <template v-slot:[`item.use_proxy`]="{ item }">
-            <v-chip v-if="item.use_proxy == '0'" class="mx-2" color="secondary">
+            <v-chip v-if="item.use_proxy === 0" class="mx-2" color="secondary">
                 yes
               </v-chip>
-              <v-chip v-if="item.use_proxy == '1'" class="mx-2" color="pink">
+              <v-chip v-if="item.use_proxy === 1" class="mx-2" color="pink">
                 no
               </v-chip>
         </template>

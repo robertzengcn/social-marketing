@@ -6,17 +6,17 @@ import copy from 'rollup-plugin-copy'
 // import { viteStaticCopy } from 'vite-plugin-static-copy'
 import ClosePlugin from './vite-plugin-close'
 import checker from 'vite-plugin-checker'
-import vue from '@vitejs/plugin-vue'
-import vuetify from 'vite-plugin-vuetify'
+// import vue from '@vitejs/plugin-vue'
+// import vuetify from 'vite-plugin-vuetify'
 export default ({ mode }) => {
     process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
 
     return defineConfig({
         plugins: [
-            vue(),
-            vuetify({
-                autoImport: true,
-              }),
+            // vue(),
+            // vuetify({
+            //     autoImport: true,
+            //   }),
             alias(),
             copy({
                 targets: [
@@ -36,11 +36,11 @@ export default ({ mode }) => {
         },
         build: {
             sourcemap: true,
-            rollupOptions: {
-                // external: [
-                //     'sqlite3'
-                // ]
-            }
+            // rollupOptions: {
+            //     // external: [
+            //     //     'sqlite3'
+            //     // ]
+            // }
         },
         test: {
             include:['test/vitest/main/*.test.ts'],

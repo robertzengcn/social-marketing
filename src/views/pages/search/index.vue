@@ -3,7 +3,7 @@
     <v-form ref="form" @submit.prevent="onSubmit">
       <h3>{{$t('search.use_hint')}}</h3>
       <v-textarea class="mt-3" v-model="keywords" :label="$t('search.input_keywords_hint')"></v-textarea>
-      <v-select v-model="enginer" :items="searchplatform" :label="$t('search.search_enginer')" required :readonly="loading"
+      <v-select v-model="enginer" :items="searchplatform" :label="$t('search.search_enginer_name') as string" required :readonly="loading"
         :rules="[rules.required]" class="mt-3"></v-select>
         <v-text-field v-model="concurrent_quantity"
         :label="$t('search.concurrent_quantity')"
@@ -57,7 +57,7 @@ const loading = ref(false);
 const rules = {
   required: (value) => !!value || "Field is required",
 };
-const enginer = ref(1);
+const enginer = ref();
 const keywords= ref();
 const searchplatform=ref<Array<string>>();
 const showinbrwoser = ref(0);

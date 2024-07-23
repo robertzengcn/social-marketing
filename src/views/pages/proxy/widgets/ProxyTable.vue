@@ -83,6 +83,7 @@
 import { getProxyList,deleteProxy} from '@/views/api/proxy'
 import { ref } from 'vue'
 import { SearchResult } from '@/views/api/types'
+import {ProxyListEntity} from "@/entityTypes/proxyType"
 // import { useRoute } from "vue-router";
 import router from '@/views/router';
 type Fetchparam = {
@@ -94,7 +95,7 @@ type Fetchparam = {
 }
 
 const FakeAPI = {
-    async fetch(fetchparam: Fetchparam): Promise<SearchResult> {
+    async fetch(fetchparam: Fetchparam): Promise<SearchResult<ProxyListEntity>> {
         // console.log(fetchparam.search)
         const fpage=(fetchparam.page-1)*fetchparam.itemsPerPage
         const res=await getProxyList({ page: fpage, size: fetchparam.itemsPerPage, sortby: fetchparam.sortBy, search: fetchparam.search })
@@ -139,7 +140,7 @@ const headers: Array<any> = [
 
 ];
 const itemsPerPage = ref(10);
-const serverItems = ref([]);
+const serverItems = ref<Array<ProxyListEntity>>();
 const loading = ref(false);
 const totalItems = ref(0);
 const search = ref('');
