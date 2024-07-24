@@ -355,7 +355,7 @@ export const constantRoutes: RouteRecordRaw[] = [
 // router.afterEach(() => {
 //     checkVersion();
 // });
-// export default router;
+
 
 /**
  * asyncRoutes

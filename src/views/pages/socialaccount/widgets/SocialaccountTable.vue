@@ -132,8 +132,7 @@ const FakeAPI = {
         return res
     }
 }
-// export default {
-// data: () => ({
+
 
 const headers: Array<any> = [
     {

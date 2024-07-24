@@ -76,9 +76,7 @@ const FakeAPI = {
         return await getCampaignlist({ page: fpage, size: fetchparam.itemsPerPage, sortby: fetchparam.sortBy, search: fetchparam.search })
     }
 }
-// export default {
-// data: () => ({
-// const langCampaign=${this.$t("welcomeMsg")}
+
 const headers=ref<Array<any>>([])
 headers.value = [
     {

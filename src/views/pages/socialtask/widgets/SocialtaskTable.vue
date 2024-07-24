@@ -83,8 +83,7 @@ const FakeAPI = {
         return await getSocialtasklist({ id:fetchparam.id,page: fpage, size: fetchparam.itemsPerPage, sortby: fetchparam.sortBy, search: fetchparam.search })
     }
 }
-// export default {
-// data: () => ({
+
 
 const headers: Array<any> = [
     {

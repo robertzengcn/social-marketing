@@ -1,31 +1,21 @@
 import { defineConfig } from 'vite';
 import alias from "@rollup/plugin-alias";
-import * as path from 'path';
+import path from 'path';
 import vue from '@vitejs/plugin-vue'
 import vuetify from 'vite-plugin-vuetify'
 import ClosePlugin from './vite-plugin-close.ts'
 import checker from 'vite-plugin-checker'
 import { nodeResolve } from '@rollup/plugin-node-resolve';
+import PluginVue from 'rollup-plugin-vue'
 
 export default defineConfig({
-  build: {
-    sourcemap: true,
-    rollupOptions: {
-      plugins: [
-        alias({
-          entries: [
-            { find: '@', replacement: path.resolve(__dirname, 'src') }
-          ]
-        }),
-        nodeResolve({
-          browser: true,
-          extensions: ['.js', '.jsx', '.ts', '.tsx', '.vue']
-        }), 
-      ]
-  },
-  },
+  // resolve: {
+  //   alias: {
+  //     "@": path.resolve(__dirname, "./src"),
+  //   },
+  // },
   plugins: [
-    vue(),
+    vue({customElement: true}),
     vuetify({
       autoImport: true,
     }),
@@ -38,9 +28,21 @@ export default defineConfig({
     }),
   ],
   define: { 'process.env': {} },
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
-  }
+  build: {
+    sourcemap: true,
+    rollupOptions:{
+      plugins: [
+        alias({
+          entries: [
+            { find: '@', replacement: path.resolve(__dirname, './src') }
+          ]
+        }),
+        PluginVue(),
+        nodeResolve({
+          browser: true,
+          extensions: ['.js', '.jsx', '.ts', '.tsx', '.vue']
+        }), 
+      ]
+  },
+},
 });

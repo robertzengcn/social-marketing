@@ -6,7 +6,7 @@ import copy from 'rollup-plugin-copy'
 // import { viteStaticCopy } from 'vite-plugin-static-copy'
 import ClosePlugin from './vite-plugin-close'
 import checker from 'vite-plugin-checker'
-// import vue from '@vitejs/plugin-vue'
+import vue from '@vitejs/plugin-vue'
 // import vuetify from 'vite-plugin-vuetify'
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 export default ({ mode }) => {
@@ -14,7 +14,6 @@ export default ({ mode }) => {
 
     return defineConfig({
         plugins: [
-            // vue(),
             // vuetify({
             //     autoImport: true,
             //   }),
@@ -37,19 +36,6 @@ export default ({ mode }) => {
         },
         build: {
             sourcemap: true,
-            rollupOptions: {
-                plugins: [
-                    alias({
-                      entries: [
-                        { find: '@', replacement: path.resolve(__dirname, 'src') }
-                      ]
-                    }),
-                    nodeResolve({
-                      browser: true,
-                      extensions: ['.js', '.jsx', '.ts', '.tsx', '.vue']
-                    }), 
-                  ]
-            }
         },
         test: {
             include:['test/vitest/main/*.test.ts'],
