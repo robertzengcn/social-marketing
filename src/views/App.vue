@@ -9,5 +9,5 @@ import { useMainStore } from '@/views/store/appMain';
 const mainStore = useMainStore();
 </script>
 <style scoped lang="scss">
-@import '@/views/styles/index.scss';
+
 </style>

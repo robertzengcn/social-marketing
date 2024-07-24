@@ -43,7 +43,8 @@
     "testmain": "vitest --config vite.main.config.mjs",
     "vitest-puppeteer": "vitest --config vite.utilityCode.config.mjs",
     "vitest-bibiliscraper": "vitest --config vite.utilityCode.config.mjs -t bibili-scraper",
-    "vitest-googlescraper": "vitest --config vite.utilityCode.config.mjs -t google-scraper"
+    "vitest-googlescraper": "vitest --config vite.utilityCode.config.mjs -t google-scraper",
+     "tsc": "tsc --noEmit --watch"
   },
   "dependencies": {
     "@mdi/font": "5.9.55",
@@ -85,7 +86,7 @@
     "papaparse": "^5.4.1",
     "pinia": "^2.1.7",
     "progress-stream": "^2.0.0",
-    "puppeteer": "21.11.0",
+    "puppeteer": "22.13.1",
     "puppeteer-cluster": "^0.23.0",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-adblocker": "^2.13.6",
@@ -96,6 +97,7 @@
     "request": "^2.88.2",
     "roboto-fontface": "*",
     "socks5-http-client": "^1.0.4",
+    "source-map": "^0.7.4",
     "sqlite3": "^5.1.6",
     "undici": "^6.10.2",
     "user-agents": "^1.0.1354",

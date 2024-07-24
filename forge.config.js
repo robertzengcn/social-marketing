@@ -44,10 +44,10 @@ module.exports = {
             entry: 'src/preload.js',
             config: 'vite.preload.config.mjs'
           },
-          // {
-          //   entry: 'src/utilityCode.ts',
-          //   config: 'vite.utilityCode.config.mjs'
-          // }
+          {
+            entry: 'src/utilityCode.ts',
+            config: 'vite.utilityCode.config.mjs'
+          }
 
         ],
         renderer: [
