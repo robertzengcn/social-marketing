@@ -10,19 +10,23 @@ import checker from 'vite-plugin-checker'
 import requireTransform from 'vite-plugin-require-transform';
 import commonjs from '@rollup/plugin-commonjs';
 import copy from 'rollup-plugin-copy'
+import { nodeResolve } from '@rollup/plugin-node-resolve';
 export default ({ mode }) => {
     process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
 
     return defineConfig({
         plugins: [alias(),
         nodePolyfills(),
-        commonjs(),
+        nodeResolve(),
+        commonjs({
+            include: 'node_modules/**',
+        }),
         requireTransform({fileRegex:/.ts$|.tsx$|.js$|.cjs$/}),
-        // copy({
-        //     targets: [
-        //         { src: 'node_modules/@puppeteer/browsers/node_modules/yargs/build', dest: '.vite/build/index.cjs' }   
-        //     ]  
-        // }),
+        copy({
+            targets: [
+                { src: 'node_modules/@puppeteer/browsers/node_modules/yargs/build/index.cjs', dest: '.vite/build/build' }   
+            ]  
+        }),
         ClosePlugin(),
         checker({
             // e.g. use TypeScript check
