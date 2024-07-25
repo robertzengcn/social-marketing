@@ -1,4 +1,4 @@
-//import { Browser } from 'puppeteer-cluster/dist/concurrency/builtInConcurrency';
+//import ConcurrencyImplementation from 'puppeteer-cluster/dist/concurrency/ConcurrencyImplementation';
 import ConcurrencyImplementation from 'puppeteer-cluster/dist/concurrency/ConcurrencyImplementation';
 import * as puppeteer from 'puppeteer';
 // const debug = require('debug')('se-scraper:CustomConcurrency');
