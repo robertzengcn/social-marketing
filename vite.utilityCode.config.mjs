@@ -7,13 +7,22 @@ import ClosePlugin from './vite-plugin-close.ts'
 // import { esbuildCommonjs } from '@originjs/vite-plugin-commonjs'
 import checker from 'vite-plugin-checker'
 //import { nodeResolve } from '@rollup/plugin-node-resolve';
-
+import requireTransform from 'vite-plugin-require-transform';
+import commonjs from '@rollup/plugin-commonjs';
+import copy from 'rollup-plugin-copy'
 export default ({ mode }) => {
     process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
 
     return defineConfig({
         plugins: [alias(),
         nodePolyfills(),
+        commonjs(),
+        requireTransform({fileRegex:/.ts$|.tsx$|.js$|.cjs$/}),
+        // copy({
+        //     targets: [
+        //         { src: 'node_modules/@puppeteer/browsers/node_modules/yargs/build', dest: '.vite/build/index.cjs' }   
+        //     ]  
+        // }),
         ClosePlugin(),
         checker({
             // e.g. use TypeScript check

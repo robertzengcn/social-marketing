@@ -44,7 +44,7 @@
     "vitest-puppeteer": "vitest --config vite.utilityCode.config.mjs",
     "vitest-bibiliscraper": "vitest --config vite.utilityCode.config.mjs -t bibili-scraper",
     "vitest-googlescraper": "vitest --config vite.utilityCode.config.mjs -t google-scraper",
-     "tsc": "tsc --noEmit --watch"
+    "tsc": "tsc --noEmit --watch"
   },
   "dependencies": {
     "@mdi/font": "5.9.55",
@@ -129,6 +129,7 @@
     "@electron-forge/maker-zip": "^7.2.0",
     "@electron-forge/plugin-auto-unpack-natives": "^7.2.0",
     "@electron-forge/plugin-vite": "^7.2.0",
+    "@rollup/plugin-commonjs": "^26.0.1",
     "@types/chai": "^4.3.5",
     "@types/electron-devtools-installer": "^2.2.0",
     "@types/expect": "^24.3.0",
@@ -174,6 +175,7 @@
     "vite": "^5.0.12",
     "vite-plugin-checker": "^0.7.2",
     "vite-plugin-node-polyfills": "^0.21.0",
+    "vite-plugin-require-transform": "^1.0.21",
     "vite-plugin-vuetify": "^2.0.1",
     "vitest": "^1.2.2",
     "vue-cli-plugin-vuetify": "~2.5.8",

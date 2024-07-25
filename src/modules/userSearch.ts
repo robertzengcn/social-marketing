@@ -21,20 +21,20 @@ export class UserSearch {
         }
         const keywords = data.keywords
          const scraper = new ScrapeManager(smConfig)
-    //     const SeachEnginArr = ToArray(SearhEnginer)
-    //     let enginer = ""
-    //     SeachEnginArr.forEach(async (value, key) => {
-    //         if (data.searchEnginer == key) {
-    //             enginer = value
-    //         }
-    //     })
-    //     // await scraper.start()
-    //     const searchDataParam: SearchDataParam = {
-    //         keywords: keywords,
-    //         engine: enginer,
-    //     }
-    //    const results = await scraper.searchdata(searchDataParam)
-    //     console.log(results)
+        const SeachEnginArr = ToArray(SearhEnginer)
+        let enginer = ""
+        SeachEnginArr.forEach(async (value, key) => {
+            if (data.searchEnginer == value) {
+                enginer = value
+            }
+        })
+        // await scraper.start()
+        const searchDataParam: SearchDataParam = {
+            keywords: keywords,
+            engine: enginer,
+        }
+       const results = await scraper.searchdata(searchDataParam)
+        console.log(results)
     }
 
 }

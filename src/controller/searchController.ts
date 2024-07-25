@@ -20,10 +20,14 @@ export class SearchController {
 
         const SeachEnginArr = ToArray(SearhEnginer)
 
-        const iterator = SeachEnginArr.keys();
+        const iterator = SeachEnginArr.values();
+        console.log(iterator)
+        console.log("search enginer is"+data.searchEnginer)
         //check data.searchEngin exist in iterator
         let correct = false
         for (const key of iterator) {
+            console.log("key is "+key)
+            console.log("value is"+iterator[key])
             if (data.searchEnginer == key) {
                 correct = true
                 break
@@ -39,6 +43,7 @@ export class SearchController {
 
 
         const jsonData=JSON.stringify(data);
+        console.log(jsonData)
        const childPath = path.join(__dirname, 'utilityCode.js')
         if (!fs.existsSync(childPath)) {
             throw new Error("child js path not exist for the path " + childPath);

@@ -57,7 +57,7 @@ const loading = ref(false);
 const rules = {
   required: (value) => !!value || "Field is required",
 };
-const enginer = ref();
+const enginer = ref<number>();
 const keywords= ref();
 const searchplatform=ref<Array<string>>();
 const showinbrwoser = ref(0);
