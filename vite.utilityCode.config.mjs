@@ -24,7 +24,7 @@ export default ({ mode }) => {
             include: ['node_modules/@puppeteer/browsers/node_modules/yargs/build/*.cjs',
             ],
             //include: 'node_modules/**',
-            exclude: ['node_modules/@colors/colors/lib/colors.js','node_modules/winston/dist/winston/config/index.js','node_modules/winston-transport/legacy.js'],
+            exclude: ['node_modules/@colors/colors/lib/colors.js','node_modules/winston/dist/winston/config/index.js'],
         }),
         requireTransform({fileRegex:/.ts$|.tsx$|.js$|.cjs$/}),
         // copy({
@@ -43,8 +43,8 @@ export default ({ mode }) => {
                 "@": path.resolve(__dirname, "./src"),
             },
         },
-        optimizeDeps: {
-            //include: ['node_modules/@puppeteer/browsers/node_modules'],
+        optimizeDeps: {     
+                include: ['winston-transport']          
         },
         build: {
             sourcemap: true,
