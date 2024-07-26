@@ -20,9 +20,11 @@ export default ({ mode }) => {
         nodeResolve(),
         commonjs({
             //strictRequires:true,
-            dynamicRequireTargets: ['node_modules/@puppeteer/browsers/node_modules/yargs/build/*.cjs'],
+            //dynamicRequireTargets: ['node_modules/@puppeteer/browsers/node_modules/yargs/build/*.cjs'],
+            include: ['node_modules/@puppeteer/browsers/node_modules/yargs/build/*.cjs',
+            ],
             //include: 'node_modules/**',
-            exclude: ['node_modules/@colors/colors/lib/colors.js'],
+            exclude: ['node_modules/@colors/colors/lib/colors.js','node_modules/winston/dist/winston/config/index.js','node_modules/winston-transport/legacy.js'],
         }),
         requireTransform({fileRegex:/.ts$|.tsx$|.js$|.cjs$/}),
         // copy({
