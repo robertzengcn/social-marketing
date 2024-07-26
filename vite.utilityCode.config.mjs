@@ -19,14 +19,17 @@ export default ({ mode }) => {
         nodePolyfills(),
         nodeResolve(),
         commonjs({
-            include: 'node_modules/**',
+            //strictRequires:true,
+            dynamicRequireTargets: ['node_modules/@puppeteer/browsers/node_modules/yargs/build/*.cjs'],
+            //include: 'node_modules/**',
+            exclude: ['node_modules/@colors/colors/lib/colors.js'],
         }),
         requireTransform({fileRegex:/.ts$|.tsx$|.js$|.cjs$/}),
-        copy({
-            targets: [
-                { src: 'node_modules/@puppeteer/browsers/node_modules/yargs/build/index.cjs', dest: '.vite/build/build' }   
-            ]  
-        }),
+        // copy({
+        //     targets: [
+        //         { src: 'node_modules/@puppeteer/browsers/node_modules/yargs/build', dest: '.vite/build/' }   
+        //     ]  
+        // }),
         ClosePlugin(),
         checker({
             // e.g. use TypeScript check
@@ -39,13 +42,13 @@ export default ({ mode }) => {
             },
         },
         optimizeDeps: {
-            include: ['node_modules/@puppeteer/browsers/node_modules/yargs/build/index.cjs'],
+            //include: ['node_modules/@puppeteer/browsers/node_modules'],
         },
         build: {
             sourcemap: true,
-            commonjsOptions: {
-                include: ["node_modules/@puppeteer/browsers/node_modules/yargs/build/index.cjs"],
-              },
+            // commonjsOptions: {
+            //     include: ["node_modules/@puppeteer/browsers/node_modules/yargs/build/index.cjs"],
+            //   },
             // rollupOptions: {
             //     plugins: [
             //         alias({

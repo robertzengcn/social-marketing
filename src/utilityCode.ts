@@ -15,8 +15,16 @@ async function runCommand(parameter) {
             if(!parameter){
                 throw new Error("parameter is empty")
             }
-            const userSearchdata:Usersearchdata=JSON.parse(data)
-            console.log(userSearchdata)
+            // const userSearchdata:Usersearchdata=JSON.parse(data)
+
+            // console.log(userSearchdata)
+            const userSearchdata:Usersearchdata={
+                searchEnginer: 1,
+                keywords: ['test'],
+                num_pages: 1,
+                concurrency: 1,
+                notShowBrowser: false
+            }
             const userSer=new UserSearch()
             await userSer.searchData(userSearchdata)
             
