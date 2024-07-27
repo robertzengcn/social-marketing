@@ -6,7 +6,7 @@ import sourceMap from 'source-map';
 import { expect, test } from 'vitest'
 
 test('make-file-back', async function () {
- const relativePath = '.vite/build/utilityCode.js';
+ const relativePath = '.vite/build/utilityCode-23c3416e.js';
   // const writepath='./tmp/example.ts'
   const absolutePath = path.resolve(relativePath);
   // // console.log(absolutePath)
@@ -29,7 +29,7 @@ test('make-file-back', async function () {
   //   consumer.destroy();
 
   // });
-await findOriginalPosition(absolutePath, 33, 91345);
+await findOriginalPosition(absolutePath, 770, 5294);
 },500000)
 
 

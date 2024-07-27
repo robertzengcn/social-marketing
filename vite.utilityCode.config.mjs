@@ -7,26 +7,36 @@ import ClosePlugin from './vite-plugin-close.ts'
 // import { esbuildCommonjs } from '@originjs/vite-plugin-commonjs'
 import checker from 'vite-plugin-checker'
 //import { nodeResolve } from '@rollup/plugin-node-resolve';
-import requireTransform from 'vite-plugin-require-transform';
+//import requireTransform from 'vite-plugin-require-transform';
 import commonjs from '@rollup/plugin-commonjs';
-import copy from 'rollup-plugin-copy'
+//import copy from 'rollup-plugin-copy'
 import { nodeResolve } from '@rollup/plugin-node-resolve';
+import typescript from 'rollup-plugin-typescript2'
+
 export default ({ mode }) => {
     process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
-
+    // Object.defineProperty(process, 'stdout', {
+    //     get: function() {
+    //         return null; // Set the desired number of columns
+    //     }
+    // });
     return defineConfig({
+        //include: ['node_modules/@puppeteer/browsers/node_modules/yargs/build/*.cjs'],
         plugins: [alias(),
-        nodePolyfills(),
+        nodePolyfills(
+            {globals: { global: true, process: true }}
+        ),
         nodeResolve(),
+        //typescript(),
         commonjs({
             //strictRequires:true,
             //dynamicRequireTargets: ['node_modules/@puppeteer/browsers/node_modules/yargs/build/*.cjs'],
-            include: ['node_modules/@puppeteer/browsers/node_modules/yargs/build/*.cjs',
-            ],
+             include: ['node_modules/@puppeteer/browsers/node_modules/yargs/build/*.cjs',
+             ],
             //include: 'node_modules/**',
             exclude: ['node_modules/@colors/colors/lib/colors.js','node_modules/winston/dist/winston/config/index.js'],
         }),
-        requireTransform({fileRegex:/.ts$|.tsx$|.js$|.cjs$/}),
+        //requireTransform({fileRegex:/.ts$|.tsx$|.js$|.cjs$/}),
         // copy({
         //     targets: [
         //         { src: 'node_modules/@puppeteer/browsers/node_modules/yargs/build', dest: '.vite/build/' }   
@@ -47,6 +57,7 @@ export default ({ mode }) => {
                 include: ['winston-transport']          
         },
         build: {
+            target: 'es6',
             sourcemap: true,
             // commonjsOptions: {
             //     include: ["node_modules/@puppeteer/browsers/node_modules/yargs/build/index.cjs"],
