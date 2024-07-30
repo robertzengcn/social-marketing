@@ -4,7 +4,7 @@ import { Page, Browser } from 'puppeteer';
 import { createLogger, format, transports } from "winston"
 import winston from "winston"
 const { combine, timestamp, printf } = format;
-import { Cluster } from "puppeteer-cluster"
+import { Cluster} from "puppeteer-cluster"
 import fs from "fs";
 import { read_keywords_from_file,writeResults } from "@/modules/lib/function"
 import debug from 'debug';

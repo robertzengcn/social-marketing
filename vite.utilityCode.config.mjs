@@ -7,11 +7,12 @@ import ClosePlugin from './vite-plugin-close.ts'
 // import { esbuildCommonjs } from '@originjs/vite-plugin-commonjs'
 import checker from 'vite-plugin-checker'
 //import { nodeResolve } from '@rollup/plugin-node-resolve';
-//import requireTransform from 'vite-plugin-require-transform';
+import requireTransform from 'vite-plugin-require-transform';
 import commonjs from '@rollup/plugin-commonjs';
 import copy from 'rollup-plugin-copy'
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import typescript from 'rollup-plugin-typescript2'
+import sourcemaps from 'rollup-plugin-sourcemaps';
 
 export default ({ mode }) => {
     process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
@@ -36,12 +37,13 @@ export default ({ mode }) => {
             //include: 'node_modules/**',
             exclude: ['node_modules/@colors/colors/lib/colors.js','node_modules/winston/dist/winston/config/index.js'],
         }),
-        //requireTransform({fileRegex:/.ts$|.tsx$|.js$|.cjs$/}),
+        requireTransform({fileRegex:/.ts$|.tsx$|.js$|.cjs$/}),
         copy({
             targets: [
                 { src: 'node_modules/@puppeteer/browsers/node_modules/yargs/build', dest: '.vite/build/' }   
             ]  
         }),
+        sourcemaps(),
         ClosePlugin(),
         checker({
             // e.g. use TypeScript check
@@ -51,14 +53,18 @@ export default ({ mode }) => {
         resolve: {
             alias: {
                 "@": path.resolve(__dirname, "./src"),
+                "ws": './node_modules/ws/index.js',
+                "bufferutil": path.resolve(__dirname, "./node_modules/bufferutil"),
+                "utf-8-validate": path.resolve(__dirname, "./node_modules/utf-8-validate"),
             },
         },
         optimizeDeps: {     
-                include: ['winston-transport']          
+                include: ['winston-transport','bufferutil', 'utf-8-validate']          
         },
         build: {
             target: 'es6',
             sourcemap: true,
+            ssr:true,
             // commonjsOptions: {
             //     include: ["node_modules/@puppeteer/browsers/node_modules/yargs/build/index.cjs"],
             //   },

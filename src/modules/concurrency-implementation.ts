@@ -1,5 +1,6 @@
 //import ConcurrencyImplementation from 'puppeteer-cluster/dist/concurrency/ConcurrencyImplementation';
-import ConcurrencyImplementation from 'puppeteer-cluster/dist/concurrency/ConcurrencyImplementation';
+//import ConcurrencyImplementation from 'puppeteer-cluster/dist/concurrency/ConcurrencyImplementation';
+import Browser from 'puppeteer-cluster/dist/concurrency/built-in/Browser';
 import * as puppeteer from 'puppeteer';
 // const debug = require('debug')('se-scraper:CustomConcurrency');
 import debug from 'debug';
@@ -8,7 +9,7 @@ import {WorkerInstance} from 'puppeteer-cluster/dist/concurrency/ConcurrencyImpl
 
 const BROWSER_TIMEOUT = 5000;
 
-export class CustomConcurrency extends ConcurrencyImplementation {
+export class CustomConcurrency extends Browser {
 
     async init() {
         //init
