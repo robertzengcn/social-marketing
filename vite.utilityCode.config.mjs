@@ -9,7 +9,7 @@ import checker from 'vite-plugin-checker'
 //import { nodeResolve } from '@rollup/plugin-node-resolve';
 //import requireTransform from 'vite-plugin-require-transform';
 import commonjs from '@rollup/plugin-commonjs';
-//import copy from 'rollup-plugin-copy'
+import copy from 'rollup-plugin-copy'
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import typescript from 'rollup-plugin-typescript2'
 
@@ -23,9 +23,9 @@ export default ({ mode }) => {
     return defineConfig({
         //include: ['node_modules/@puppeteer/browsers/node_modules/yargs/build/*.cjs'],
         plugins: [alias(),
-        nodePolyfills(
-            {globals: { global: true, process: true }}
-        ),
+        // nodePolyfills(
+        //     {globals: { global: true, process: true }}
+        // ),
         nodeResolve(),
         //typescript(),
         commonjs({
@@ -37,11 +37,11 @@ export default ({ mode }) => {
             exclude: ['node_modules/@colors/colors/lib/colors.js','node_modules/winston/dist/winston/config/index.js'],
         }),
         //requireTransform({fileRegex:/.ts$|.tsx$|.js$|.cjs$/}),
-        // copy({
-        //     targets: [
-        //         { src: 'node_modules/@puppeteer/browsers/node_modules/yargs/build', dest: '.vite/build/' }   
-        //     ]  
-        // }),
+        copy({
+            targets: [
+                { src: 'node_modules/@puppeteer/browsers/node_modules/yargs/build', dest: '.vite/build/' }   
+            ]  
+        }),
         ClosePlugin(),
         checker({
             // e.g. use TypeScript check
