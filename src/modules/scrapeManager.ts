@@ -10,16 +10,17 @@ import { read_keywords_from_file,writeResults } from "@/modules/lib/function"
 import debug from 'debug';
 import clone from "lodash/clone"
 import times from "lodash/times"
-import map from "lodash/map"
+import map from "lodash/map";
 import { UserAgent } from "user-agents";
 // import { addExtra } from "puppeteer-extra";
 // import puppeteer from 'puppeteer-extra';
-import { CustomConcurrency } from "@/modules/concurrency-implementation"
+import {CustomConcurrency} from "@/modules/concurrency-implementation"
 import { searchEngineFactory } from "@/modules/searchEngineFactory"
 // import { Keyword } from "./keyword";
 import { pluggableType } from "@/entityTypes/scrapeType"
 // import { app } from 'electron'
 // import * as path from 'path'
+//import BrowserImple from "@/modules/BrowseImple"
 
 // import * as vanillaPuppeteer from "puppeteer";
 
@@ -296,7 +297,8 @@ export class ScrapeManager {
       // puppeteer,
       monitor: this.config.puppeteer_cluster_config.monitor,
       timeout: this.config.puppeteer_cluster_config.timeout, // max timeout set to 30 minutes
-      concurrency: CustomConcurrency,
+     concurrency: CustomConcurrency,
+      //concurrency: Cluster.CustomConcurrency,
       maxConcurrency: this.numClusters,
       // puppeteerOptions: {
       //   // puppeteer:puppeteer,

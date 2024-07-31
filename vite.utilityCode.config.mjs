@@ -35,9 +35,9 @@ export default ({ mode }) => {
              include: ['node_modules/@puppeteer/browsers/node_modules/yargs/build/*.cjs',
              ],
             //include: 'node_modules/**',
-            exclude: ['node_modules/@colors/colors/lib/colors.js','node_modules/winston/dist/winston/config/index.js'],
+            // exclude: ['node_modules/@colors/colors/lib/colors.js','node_modules/winston/dist/winston/config/index.js'],
         }),
-        requireTransform({fileRegex:/.ts$|.tsx$|.js$|.cjs$/}),
+        //requireTransform({fileRegex:/.ts$|.tsx$|.js$|.cjs$/}),
         copy({
             targets: [
                 { src: 'node_modules/@puppeteer/browsers/node_modules/yargs/build', dest: '.vite/build/' }   
@@ -58,13 +58,18 @@ export default ({ mode }) => {
                 "utf-8-validate": path.resolve(__dirname, "./node_modules/utf-8-validate"),
             },
         },
-        optimizeDeps: {     
+        optimizeDeps: {    
+                // disabled:false,
                 include: ['winston-transport','bufferutil', 'utf-8-validate']          
         },
         build: {
-            target: 'es6',
+            // target: 'es6',
             sourcemap: true,
             ssr:true,
+            commonjsOptions:{
+                transformMixedEsModules: true,
+                // include:[]   
+            },
             // commonjsOptions: {
             //     include: ["node_modules/@puppeteer/browsers/node_modules/yargs/build/index.cjs"],
             //   },

@@ -1,15 +1,15 @@
 //import ConcurrencyImplementation from 'puppeteer-cluster/dist/concurrency/ConcurrencyImplementation';
 //import ConcurrencyImplementation from 'puppeteer-cluster/dist/concurrency/ConcurrencyImplementation';
-import Browser from 'puppeteer-cluster/dist/concurrency/built-in/Browser';
-import * as puppeteer from 'puppeteer';
+import ConcurrencyImplementation, { WorkerInstance } from 'puppeteer-cluster/dist/concurrency/ConcurrencyImplementation';
 // const debug = require('debug')('se-scraper:CustomConcurrency');
-import debug from 'debug';
+import * as puppeteer from 'puppeteer';
+// import debug from 'debug';
 import { timeoutExecute } from 'puppeteer-cluster/dist/util';
-import {WorkerInstance} from 'puppeteer-cluster/dist/concurrency/ConcurrencyImplementation'
+// import {WorkerInstance} from 'puppeteer-cluster/dist/concurrency/ConcurrencyImplementation'
 
 const BROWSER_TIMEOUT = 5000;
 
-export class CustomConcurrency extends Browser {
+export class CustomConcurrency extends ConcurrencyImplementation {
 
     async init() {
         //init
@@ -51,7 +51,7 @@ export class CustomConcurrency extends Browser {
             },
 
             repair: async () => {
-                debug('Starting repair');
+                // debug('Starting repair');
                 try {
                     // will probably fail, but just in case the repair was not necessary
                     // await chrome.close();
@@ -68,5 +68,5 @@ export class CustomConcurrency extends Browser {
         };
     }
 }
+export default CustomConcurrency;
 
-// module.exports = CustomConcurrency;
