@@ -6,6 +6,7 @@ import copy from 'rollup-plugin-copy'
 // import { viteStaticCopy } from 'vite-plugin-static-copy'
 import ClosePlugin from './vite-plugin-close'
 import checker from 'vite-plugin-checker'
+import sourcemaps from 'rollup-plugin-sourcemaps';
 // import vue from '@vitejs/plugin-vue'
 // import vuetify from 'vite-plugin-vuetify'
 // import { nodeResolve } from '@rollup/plugin-node-resolve';
@@ -23,6 +24,7 @@ export default ({ mode }) => {
                     { src: 'src/sql/**/*', dest: 'dist/sql' }   
                 ]  
             }),
+            sourcemaps(),
             ClosePlugin(),
             checker({
                 // e.g. use TypeScript check

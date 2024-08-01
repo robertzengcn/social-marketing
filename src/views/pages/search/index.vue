@@ -79,11 +79,13 @@ async function onSubmit() {
   } else {
     const subdata:Usersearchdata={
       searchEnginer: enginer.value,
-    keywords: keywords.value,
+    // keywords: keywords.value,
     num_pages: page_number.value,
     concurrency: concurrent_quantity.value,
     notShowBrowser: convertNumberToBoolean(showinbrwoser.value)
     }
+    //split keywords one line per one
+    subdata.keywords=keywords.value.split('\n').map(keyword => keyword.trim());
      //submit form
   submitScraper(subdata)
 

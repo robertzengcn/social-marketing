@@ -4,8 +4,11 @@ import { SMstruct, SearchDataParam } from "@/entityTypes/scrapeType"
 import { Cluster } from "puppeteer-cluster"
 import { SearhEnginer } from "@/config/searchSetting"
 import { ToArray } from "@/modules/lib/function"
+import { i } from "vitest/dist/reporters-1evA5lom"
+import { CustomError } from "@/modules/customError"
+import {SearchDataRun} from "@/entityTypes/scrapeType"
 export class UserSearch {
-    public async searchData(data: Usersearchdata) {
+    public async searchData(data: Usersearchdata,callback?: (arg: SearchDataRun) => void):Promise<SearchDataRun> {
         //search data in search engineer
         const smConfig: SMstruct = {
             headless: data.notShowBrowser,
@@ -28,13 +31,21 @@ export class UserSearch {
                 enginer = value
             }
         })
+        if(!enginer){
+            throw new CustomError("search enginer is incorrect",20240801112434)
+        }
+
         // await scraper.start()
         const searchDataParam: SearchDataParam = {
             keywords: keywords,
             engine: enginer,
         }
        const results = await scraper.searchdata(searchDataParam)
-        console.log(results)
+        //console.log(results)
+        if(callback){
+            callback(results)
+        }
+        return results
     }
 
 }

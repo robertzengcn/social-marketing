@@ -10,8 +10,8 @@ import {SearchResultdb} from "@/model/searchResultdb"
 import { utilityProcess, MessageChannelMain} from "electron";
 import * as path from 'path';
 import * as fs from 'fs';
-import { Token } from "@/modules/token"
-import {USERSDBPATH} from '@/config/usersetting';
+// import { Token } from "@/modules/token"
+// import {USERSDBPATH} from '@/config/usersetting';
 
 export class SearchController {
 
@@ -42,30 +42,31 @@ export class SearchController {
         }
 
 
-        const jsonData=JSON.stringify(data);
-        console.log(jsonData)
+        // const jsonData=JSON.stringify(data);
+        //console.log(jsonData)
        const childPath = path.join(__dirname, 'utilityCode.js')
         if (!fs.existsSync(childPath)) {
             throw new Error("child js path not exist for the path " + childPath);
         }
-        // const { port1, port2 } = new MessageChannelMain()
-        const tokenService=new Token()
-        const dbpath=await tokenService.getValue(USERSDBPATH)
-        if(!dbpath){
-            throw new Error("user path not exist")
-        }
-        console.log(jsonData)
-        const child = utilityProcess.fork(path.join(__dirname, 'utilityCode.js'), ['searchscraper',jsonData],{stdio:"pipe",execArgv:["puppeteer-cluster:*"]} )
+        const { port1, port2 } = new MessageChannelMain()
+        // const tokenService=new Token()
+        // const dbpath=await tokenService.getValue(USERSDBPATH)
+        // if(!dbpath){
+        //     throw new Error("user path not exist")
+        // }
+       // console.log(jsonData)
+        const child = utilityProcess.fork(path.join(__dirname, 'utilityCode.js'), [],{stdio:"pipe",execArgv:["puppeteer-cluster:*"]} )
         console.log(path.join(__dirname, 'utilityCode.js'))
         
         // child.postMessage({ message: 'hello' }, [port1])
         child.on("spawn", () => {
             console.log("child process satart, pid is"+child.pid)
-            
-            setInterval(() => {
-                child.postMessage({ message: 'hello from parent' })
+            child.postMessage(JSON.stringify({action:"searchscraper",data:data}),[port1])
+            // setInterval(() => {
+            //     child.postMessage({ message: 'hello from parent' })
+            //     child.postMessage({ data: jsonData })
                 
-              }, 1000); 
+            //   }, 1000); 
         })
         
         child.stdout?.on('data', (data) => {
@@ -76,18 +77,22 @@ export class SearchController {
             console.log(`Received error chunk ${data}`)
           
         })
-        child.on("exit", () => {
-            console.log(`child process exited `)
+        child.on("exit", (code) => {
+            if (code !== 0) {
+                console.error(`Child process exited with code ${code}`);
+            } else {
+                console.log('Child process exited successfully');
+            }
         })
-        // port2.start()
-        // port2.on("message", (e) => {
-        //     console.log("port receive:", e.data);
-        //     port2.postMessage("I receive your messages:")
-        // })
-        
-        // child.on("message", (e) => {
-        //     console.log("接收到消息了：", e);
-        // })
+        child.on('message', (message) => {
+            console.log("get message from child")
+            console.log('Message from child:', JSON.parse(message));
+            const childdata=JSON.parse(message)
+            if(childdata.action=="searchres"){
+                //save result
+            }
+        });
+    
 
 
     }
