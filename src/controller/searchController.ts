@@ -10,8 +10,10 @@ import {SearchResultdb} from "@/model/searchResultdb"
 import { utilityProcess, MessageChannelMain} from "electron";
 import * as path from 'path';
 import * as fs from 'fs';
+import {searhModel} from "@/modules/searchModel"
 // import { Token } from "@/modules/token"
 // import {USERSDBPATH} from '@/config/usersetting';
+import {SearchDataParam} from "@/entityTypes/scrapeType"
 
 export class SearchController {
 
@@ -40,8 +42,13 @@ export class SearchController {
                 data: null
             }
         }
-
-
+        const seModel=new searhModel()
+        const enginName=seModel.convertNumtoSE(data.searchEnginer)
+        const dp:SearchDataParam={
+            engine:enginName,
+            keywords:data.keywords
+        }
+        seModel.saveSearchtask(dp)
         // const jsonData=JSON.stringify(data);
         //console.log(jsonData)
        const childPath = path.join(__dirname, 'utilityCode.js')
@@ -88,7 +95,7 @@ export class SearchController {
             console.log("get message from child")
             console.log('Message from child:', JSON.parse(message));
             const childdata=JSON.parse(message)
-            if(childdata.action=="searchres"){
+            if(childdata.action=="saveres"){
                 //save result
             }
         });

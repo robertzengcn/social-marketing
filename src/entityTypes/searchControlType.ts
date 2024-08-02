@@ -10,3 +10,8 @@ export type Usersearchdata = {
     concurrency: number,
     notShowBrowser: boolean
   }
+export type SearchDataParam={
+    searchEnginer: number,
+    keywords: Array<string>,
+   
+}

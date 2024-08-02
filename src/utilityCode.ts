@@ -2,7 +2,7 @@
 export {};
 import {Usersearchdata} from "@/entityTypes/searchControlType"
 import {UserSearch} from "@/modules/userSearch"
-import { resolveCname } from "node:dns";
+// import { resolveCname } from "node:dns";
 import {ProcessMessage} from "@/entityTypes/processMessage-type"
 // import { argv } from 'node:process';
 // import {SearchDataRun} from "@/entityTypes/scrapeType"
@@ -57,7 +57,7 @@ process.parentPort.on('message', async (e) => {
                 const res=await userSer.searchData(userSearchdata)
                     console.log(res)
                     const message:ProcessMessage={
-                        action:"searchres",
+                        action:"saveres",
                         data:res
                     }
                     console.log(port)
