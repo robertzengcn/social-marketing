@@ -26,4 +26,17 @@ export class SearchKeyworddb {
         );
         return info.lastInsertRowid;
     }
+
+    //get keyword id by keyword
+    public getKeywordId(keyword: string): number | bigint {
+      const stmt = this.db.prepare(
+        `SELECT task_id FROM ` + this.searchKeywordTable + ` WHERE keyword=?`
+      );
+      const info = stmt.get(keyword) as {task_id:number};
+      if(info){
+      return info.task_id;
+      }else{
+        return 0
+      }
+    }
 }

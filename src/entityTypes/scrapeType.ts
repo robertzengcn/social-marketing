@@ -166,7 +166,7 @@ export type MetadataType = {
   num_requests?: number,
 }
 export type ParseObg = {
-  value: SearchData,
+  value: Array<SearchResult>,
   screenshot: string,
   html: string
 }
@@ -205,9 +205,9 @@ export type SearchDataRun = {
 export type SearchResEntity = {
   keywordId: number, 
   link: string, 
-  title: string, 
-  snippet: string, 
-  visible_link: string
+  title: string|null|undefined, 
+  snippet: string|null|undefined, 
+  visible_link: string|null|undefined
 }
 
 

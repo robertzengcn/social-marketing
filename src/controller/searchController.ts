@@ -4,9 +4,9 @@
 import {SearhEnginer} from "@/config/searchSetting"
 import { ToArray } from "@/modules/lib/function"
 import { SearchResponse,Usersearchdata } from "@/entityTypes/searchControlType"
-import {SearchTaskdb} from "@/model/searchTaskdb"
-import {SearchKeyworddb} from "@/model/searchKeyworddb"
-import {SearchResultdb} from "@/model/searchResultdb"
+// import {SearchTaskdb} from "@/model/searchTaskdb"
+// import {SearchKeyworddb} from "@/model/searchKeyworddb"
+// import {SearchResultdb} from "@/model/searchResultdb"
 import { utilityProcess, MessageChannelMain} from "electron";
 import * as path from 'path';
 import * as fs from 'fs';
@@ -97,6 +97,7 @@ export class SearchController {
             const childdata=JSON.parse(message)
             if(childdata.action=="saveres"){
                 //save result
+                seModel.saveSearchResult(childdata.data)
             }
         });
     

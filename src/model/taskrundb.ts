@@ -12,7 +12,7 @@ export class Taskrundb {
     this.db = scraperModel.getdb();
   }
   //save task run
-  public saveTaskrun(taskrun:TaskRunEntity, callback: Function | undefined | null):number|bigint {
+  public saveTaskrun(taskrun: TaskRunEntity, callback?: (info: number) => void | undefined | null): number | bigint {
     const recordtime = getRecorddatetime();
     const stmt = this.db.prepare(
       `INSERT INTO ` +
@@ -20,17 +20,18 @@ export class Taskrundb {
       ` (task_id,taskrun_num,log_path,record_time) VALUES (?,?,?,?)`);
     const info = stmt.run(
       taskrun.task_id, taskrun.taskrun_num, taskrun.log_path, recordtime);
-    if (callback) {
-      callback(info)
-    }
+    
     if(info){
+      if (callback) {
+        callback(Number(info.lastInsertRowid))
+      }
       return info.lastInsertRowid;
     }else{
       return 0;
     }
   }
   //get task id by task run number
-  public getTaskidbytaskrunNum(taskrunNum: string, callback: Function | undefined | null) {
+  public getTaskidbytaskrunNum(taskrunNum: string, callback?: (id: number, taskid: number) => void | undefined | null) {
     const stmt = this.db.prepare(`SELECT id,task_id FROM ` + this.taskrunTable + ` WHERE taskrun_num = ?`);
     // let taskid: number = 0;
     const taskrun = stmt.get(taskrunNum) as { id: number, task_id: number }
@@ -48,7 +49,7 @@ export class Taskrundb {
     //return taskid;
   }
   //check task id and task run number exist
-  public checkTaskrunExist(taskid: number, taskrunNum: string, callback: Function | undefined | null) {
+  public checkTaskrunExist(taskid: number, taskrunNum: string, callback: (exist: boolean) => void | undefined | null) {
     const stmt = this.db.prepare(`SELECT task_id FROM ` + this.taskrunTable + ` WHERE task_id = ? AND taskrun_num = ?`);
     let exist = false;
     const taskchekres = stmt.get(taskid, taskrunNum) as { task_id: number }

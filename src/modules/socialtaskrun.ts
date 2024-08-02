@@ -34,7 +34,7 @@ export class SocialTaskRun {
             log_path: logfile
         }
         // const taskrunNum = this.gentaskrunNum(socailtaskId)
-        taskrunmodel.saveTaskrun(taskentity, null)
+        taskrunmodel.saveTaskrun(taskentity)
         const socialtaskRun: SocialTaskRunEntity = {
             task_id: socailtaskId,
             taskrun_num: taskrunNum,
