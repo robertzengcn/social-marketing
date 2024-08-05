@@ -11,10 +11,10 @@ describe('Module Token', function(){
         const token =await tokenmodel.getValue("token");
         console.log(token);
     });
-    it('check-encry-available', function(){
-        const availe=tokenmodel.checkEncryavaile("token");
-        console.log(availe);
+    // it('check-encry-available', function(){
+    //     const availe=tokenmodel.checkEncryavaile("token");
+    //     console.log(availe);
         
-    });
+    // });
 
 })

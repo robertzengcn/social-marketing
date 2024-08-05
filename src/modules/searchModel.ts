@@ -11,9 +11,9 @@ import { SearchResEntity } from "@/entityTypes/scrapeType"
 //import {SearchTaskdb} from "@/model/searchTaskdb"
 export class searhModel {
     private dbpath: string
-    public async init(){
+    constructor(){
         const tokenService = new Token()
-        const dbpath = await tokenService.getValue(USERSDBPATH)
+        const dbpath = tokenService.getValue(USERSDBPATH)
         if (!dbpath) {
             throw new Error("user path not exist")
         }

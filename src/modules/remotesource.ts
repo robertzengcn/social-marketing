@@ -317,7 +317,7 @@ export class RemoteSource {
     const tokenModel = new Token()
     //console.log("token name:"+this.tokenname)
 
-    const token = await tokenModel.getValue(this.tokenname);
+    const token = tokenModel.getValue(this.tokenname);
     //const thisobj=this
     if (token == null || token.length < 1) {
       return null;

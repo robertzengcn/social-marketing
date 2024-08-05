@@ -16,8 +16,14 @@ import {USERSDBPATH} from '@/config/usersetting';
 // import FormData from "form-data";
 export class SocialAccount {
   private _httpClient: HttpClient;
+  private dbpath:string
   constructor() {
     this._httpClient = new HttpClient();
+    const tokenService=new Token()
+    const dbpath=tokenService.getValue(USERSDBPATH)
+    if(!dbpath){
+        throw new Error("user path not exist")
+    }
   }
   //get social account list from remote
   public async getSocialaccountlist(
@@ -49,12 +55,12 @@ export class SocialAccount {
     // };
 
     if (sociallistres.data.records && sociallistres.data.records.length > 0) {
-      const tokenService=new Token()
-      const dbpath=await tokenService.getValue(USERSDBPATH)
-      if(!dbpath){
-          throw new Error("user path not exist")
-      }
-      const accDb = new AccountCookiesdb(dbpath)
+      // const tokenService=new Token()
+      // const dbpath=await tokenService.getValue(USERSDBPATH)
+      // if(!dbpath){
+      //     throw new Error("user path not exist")
+      // }
+      const accDb = new AccountCookiesdb(this.dbpath)
 
       //loop social list data, add cookies
       for (const social of sociallistres.data.records) {

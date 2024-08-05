@@ -2,16 +2,17 @@
 export { };
 // const keytar = require('keytar')
 // const os = require('os');
-import Store from 'electron-store';
+// import Store from 'electron-store';
 import { safeStorage } from 'electron';
 import { CryptoSource } from '@/modules/cryptosource';
 import {StoreService} from "@/modules/storeservice"
 import {USERSERVICE} from '@/config/usersetting';
+import {ElectronStoreService} from "@/modules/electronstoreservice"
 
 export class Token {
 
     // private keytarService = 'SocialScraper-token';
-    private store: StoreService;
+    private store: ElectronStoreService;
     private useSafestore: boolean;
 
     constructor() {
@@ -20,7 +21,8 @@ export class Token {
             clearInvalidConfig: true, // 发生 SyntaxError  则清空配置,
         }
 
-        this.store = new StoreService(USERSERVICE);
+        //this.store = new StoreService(USERSERVICE);
+        this.store = new ElectronStoreService(USERSERVICE);
         // this.useSafestore=safeStorage?.isEncryptionAvailable();  
         this.useSafestore = false;
     }
@@ -32,38 +34,38 @@ export class Token {
     public setValue(key: string, token: string): void {
         // console.log("encrypt token "+token)
         // console.log(safeStorage)
-        if (this.useSafestore) {
-            const buffer = safeStorage.encryptString(token);
-            // this.store.set(key, buffer.toString());
-            this.store.setPassword(key, buffer.toString());
-        } else {
+        // if (this.useSafestore) {
+        //     const buffer = safeStorage.encryptString(token);
+        //     // this.store.set(key, buffer.toString());
+        //     this.store.setValue(key, buffer.toString());
+        // } else {
             //if system not support safe storage
             const cryptModel = new CryptoSource();
             const encrytoken = cryptModel.encrypt(token)
-            this.store.setPassword(key, JSON.stringify(encrytoken));
-        }
+            this.store.setValue(key, JSON.stringify(encrytoken));
+        // }
         // keytar.setPassword(this.keytarService, this.getaccountname(), token)
     }
     //get user token
-    public async getValue(key: string): Promise<string|null> {
+    public getValue(key: string): string {
         // console.log("the key is"+key);
         // const token=await keytar.getPassword(this.keytarService, this.getaccountname())
         // const buffer = this.store.get(key) as string;
-        const buffer =await this.store.getPassword(key);
+        const buffer =this.store.getValue(key) as string;
         if (!buffer) {
             return "";
         }
-        if (this.useSafestore) {
-            return safeStorage.decryptString(Buffer.from(buffer))
-        } else {
+        // if (this.useSafestore) {
+        //     return safeStorage.decryptString(Buffer.from(buffer))
+        // } else {
             //if system not support safe storage
             const cryptModel = new CryptoSource();
             return cryptModel.decrypt(JSON.parse(buffer))
-        }
+        //}
     }
     //check encryption is available
-    public checkEncryavaile(key: string): boolean {
-        return safeStorage.isEncryptionAvailable()
-    }
+    // public checkEncryavaile(key: string): boolean {
+    //     return safeStorage.isEncryptionAvailable()
+    // }
 }
 

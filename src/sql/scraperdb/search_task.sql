@@ -3,5 +3,5 @@ id INTEGER PRIMARY KEY AUTOINCREMENT,
 enginer_id TEXT NULL,
 error_log TEXT NULL,
 record_time INTEGER NULL,
-status INTEGER NULL,
+status INTEGER NULL
 )
