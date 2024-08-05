@@ -16,6 +16,9 @@ import {searhModel} from "@/modules/searchModel"
 import {SearchDataParam} from "@/entityTypes/scrapeType"
 
 export class SearchController {
+    private searhModel:searhModel;
+    
+
 
     public async searchData(data: Usersearchdata) {
         //search data
@@ -107,8 +110,10 @@ export class SearchController {
 
     }
 
-    public async listSearchresult():Promise<null>{
+    public async listSearchresult(){
         const seModel=new searhModel()
+        await seModel.init();
+        await seModel.listSearchtask()
         
     }
 

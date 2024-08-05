@@ -10,19 +10,28 @@ import { SearchResultdb } from "@/model/searchResultdb"
 import { SearchResEntity } from "@/entityTypes/scrapeType"
 //import {SearchTaskdb} from "@/model/searchTaskdb"
 export class searhModel {
-
-    //save search task, call it when user start search keyword
-    public async saveSearchtask(data: SearchDataParam):Promise<number> {
-        console.log("save search task")
+    private dbpath: string
+    public async init(){
         const tokenService = new Token()
         const dbpath = await tokenService.getValue(USERSDBPATH)
         if (!dbpath) {
             throw new Error("user path not exist")
         }
-        const searchtask = new SearchTaskdb(dbpath)
+        this.dbpath=dbpath
+    }
+
+    //save search task, call it when user start search keyword
+    public async saveSearchtask(data: SearchDataParam):Promise<number> {
+        console.log("save search task")
+        // const tokenService = new Token()
+        // const dbpath = await tokenService.getValue(USERSDBPATH)
+        // if (!dbpath) {
+        //     throw new Error("user path not exist")
+        // }
+        const searchtask = new SearchTaskdb(this.dbpath)
         const enginId = this.convertSEtoNum(data.engine)
         const taskId = searchtask.saveSearchTask(enginId)
-        const searshdb = new SearchKeyworddb(dbpath)
+        const searshdb = new SearchKeyworddb(this.dbpath)
         data.keywords.forEach(async (keyword) => {
             searshdb.saveSearchKeyword(keyword, Number(taskId))
         })
@@ -52,18 +61,18 @@ export class searhModel {
     }
     //save search result
     public async saveSearchResult(data: SearchDataRun) {
-        const tokenService = new Token()
-        const dbpath = await tokenService.getValue(USERSDBPATH)
-        if (!dbpath) {
-            throw new Error("user path not exist")
-        }
-        const serkeyModel = new SearchKeyworddb(dbpath)
+        // const tokenService = new Token()
+        // const dbpath = await tokenService.getValue(USERSDBPATH)
+        // if (!dbpath) {
+        //     throw new Error("user path not exist")
+        // }
+        const serkeyModel = new SearchKeyworddb(this.dbpath)
         console.log("save search result")
         //loop map of SearchDataRun and save it to db
         // Ensure data.results is a Map
         const resultsMap = new Map(Object.entries(data.results));
         console.log(resultsMap);
-        const serResultModel = new SearchResultdb(dbpath)
+        const serResultModel = new SearchResultdb(this.dbpath)
         for (const [key, value] of resultsMap) {
             console.log(key)
             //get keyword id
@@ -102,12 +111,22 @@ export class searhModel {
     }
 
     public async saveTaskerrorlog(taskId:number, errorLog:string){
-        const tokenService = new Token()
-        const dbpath = await tokenService.getValue(USERSDBPATH)
-        if (!dbpath) {
-            throw new Error("user path not exist")
-        }
-        const taskdbModel=new SearchTaskdb(dbpath)
+        // const tokenService = new Token()
+        // const dbpath = await tokenService.getValue(USERSDBPATH)
+        // if (!dbpath) {
+        //     throw new Error("user path not exist")
+        // }
+        const taskdbModel=new SearchTaskdb(this.dbpath)
         taskdbModel.updatetasklog(taskId,errorLog)
+    }
+    public async listSearchtask(){
+        // const tokenService = new Token()
+        // const dbpath = await tokenService.getValue(USERSDBPATH)
+        // if (!dbpath) {
+        //     throw new Error("user path not exist")
+        // }
+        const taskdbModel=new SearchTaskdb(this.dbpath)
+        const tasklist=taskdbModel.listTask()
+        return tasklist
     }
 }
