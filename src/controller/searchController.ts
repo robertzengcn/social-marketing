@@ -48,7 +48,7 @@ export class SearchController {
             engine:enginName,
             keywords:data.keywords
         }
-        seModel.saveSearchtask(dp)
+        const taskId=await seModel.saveSearchtask(dp)
         // const jsonData=JSON.stringify(data);
         //console.log(jsonData)
        const childPath = path.join(__dirname, 'utilityCode.js')
@@ -81,12 +81,14 @@ export class SearchController {
            // child.kill()
         })
         child.stderr?.on('data', (data) => {
+            seModel.saveTaskerrorlog(taskId,data)
             console.log(`Received error chunk ${data}`)
           
         })
         child.on("exit", (code) => {
             if (code !== 0) {
                 console.error(`Child process exited with code ${code}`);
+                
             } else {
                 console.log('Child process exited successfully');
             }
@@ -103,6 +105,11 @@ export class SearchController {
     
 
 
+    }
+
+    public async listSearchresult():Promise<null>{
+        const seModel=new searhModel()
+        
     }
 
 }

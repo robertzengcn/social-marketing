@@ -8,10 +8,11 @@ import { SearchKeyworddb } from "@/model/searchKeyworddb"
 import { SearchDataRun } from "@/entityTypes/scrapeType"
 import { SearchResultdb } from "@/model/searchResultdb"
 import { SearchResEntity } from "@/entityTypes/scrapeType"
+//import {SearchTaskdb} from "@/model/searchTaskdb"
 export class searhModel {
 
     //save search task, call it when user start search keyword
-    public async saveSearchtask(data: SearchDataParam) {
+    public async saveSearchtask(data: SearchDataParam):Promise<number> {
         console.log("save search task")
         const tokenService = new Token()
         const dbpath = await tokenService.getValue(USERSDBPATH)
@@ -25,6 +26,7 @@ export class searhModel {
         data.keywords.forEach(async (keyword) => {
             searshdb.saveSearchKeyword(keyword, Number(taskId))
         })
+        return Number(taskId)
     }
     //convert search enginer name to number
     public convertSEtoNum(enginerName: string): number {
@@ -97,5 +99,15 @@ export class searhModel {
             console.log(`Saving result for key: ${key}, value: ${value}`);
             // Add your database save logic here
         }
+    }
+
+    public async saveTaskerrorlog(taskId:number, errorLog:string){
+        const tokenService = new Token()
+        const dbpath = await tokenService.getValue(USERSDBPATH)
+        if (!dbpath) {
+            throw new Error("user path not exist")
+        }
+        const taskdbModel=new SearchTaskdb(dbpath)
+        taskdbModel.updatetasklog(taskId,errorLog)
     }
 }

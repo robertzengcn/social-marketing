@@ -4,7 +4,7 @@ const Database = require('better-sqlite3');
 // import DatabaseConstructor,{Database}from 'better-sqlite3';
 import * as fs from 'fs';
 // const debug = require("debug")("scraperdb");
-import appRoot from 'app-root-path';
+//import appRoot from 'app-root-path';
 import * as path from 'path';
 
 
