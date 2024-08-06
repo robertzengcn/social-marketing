@@ -5,7 +5,7 @@ import { HttpClient } from "@/modules/lib/httpclient"
 import jwt_decode from "jwt-decode";
 import { Token } from "@/modules/token"
 // import { decode } from "punycode";
-const debug = require('debug')('RemoteSource');
+// const debug = require('debug')('RemoteSource');
 import {User} from "@/modules/user"
 import {TOKENNAME} from '@/config/usersetting';
 // const url = require("url");
@@ -170,7 +170,7 @@ export class RemoteSource {
    */
   async saveLinkremote(link: Linkdata): Promise<number> {
     const FormData = require('form-data');
-    debug(link)
+    // debug(link)
     let data = new FormData();
     data.append('title', link.title);
     if (link.content) {
@@ -203,7 +203,7 @@ export class RemoteSource {
     const linkdaarr = this._httpClient.get(
       "/api/getscrapeinfolist?sotaskid=" + taskId + "&limit=" + limit
     ).then(function (res) {
-      debug(res);
+      // debug(res);
       // console.log(res)
       if (res.data.data) {
         return res.data.data as Array<Linkdata>;

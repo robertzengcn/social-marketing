@@ -10,6 +10,15 @@ import {USERSDBPATH} from '@/config/usersetting';
 
 
 export class videoFactory {
+    private dbpath:string
+    constructor() {
+        const tokenService=new Token()
+        const dbpath=tokenService.getValue(USERSDBPATH)
+        if(!dbpath){
+            throw new Error("user path not exist")
+        }
+        this.dbpath=dbpath;
+    }
     public async getVideotool(sitename: string,accountId:number):Promise<Video|null> {
         //get account detail
         const socialAccount=new SocialAccount();
@@ -17,13 +26,9 @@ export class videoFactory {
         if(!accountdetail){
             throw new Error("account not found")
         }
-        const tokenService=new Token()
-        const dbpath=await tokenService.getValue(USERSDBPATH)
-        if(!dbpath){
-            throw new Error("user path not exist")
-        }
+       
         //get account cookies
-        const accountCookiesModel=new AccountCookiesdb(dbpath)
+        const accountCookiesModel=new AccountCookiesdb(this.dbpath)
         const cookiesEntity=accountCookiesModel.getAccountCookies(accountId)
         if(!cookiesEntity.cookies){
             throw new Error("cookies not found for the account, you need login first")

@@ -3,7 +3,7 @@
 // import { ScrapeManager } from "@/modules/scrapeManager"
 import {SearhEnginer} from "@/config/searchSetting"
 import { ToArray } from "@/modules/lib/function"
-import { SearchResponse,Usersearchdata } from "@/entityTypes/searchControlType"
+import {Usersearchdata,SearchtaskdbEntity,SearchtaskEntityNum } from "@/entityTypes/searchControlType"
 // import {SearchTaskdb} from "@/model/searchTaskdb"
 // import {SearchKeyworddb} from "@/model/searchKeyworddb"
 // import {SearchResultdb} from "@/model/searchResultdb"
@@ -14,6 +14,7 @@ import {searhModel} from "@/modules/searchModel"
 // import { Token } from "@/modules/token"
 // import {USERSDBPATH} from '@/config/usersetting';
 import {SearchDataParam} from "@/entityTypes/scrapeType"
+
 
 export class SearchController {
     private searhModel:searhModel;
@@ -109,12 +110,12 @@ export class SearchController {
 
 
     }
-
-    public async listSearchresult(){
+    //return search result
+    public listSearchresult():SearchtaskEntityNum{
         const seModel=new searhModel()
-        await seModel.init();
-        await seModel.listSearchtask()
-        
+        // await seModel.init();
+        const res=seModel.listSearchtask()
+        return res;
     }
 
 }

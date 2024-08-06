@@ -111,5 +111,11 @@ export default {
         search_enginer_empty:"search enginer empty",
         keywords_empty:"keywords empty",
         page_number:"page number",
+    },
+    searchresult:{
+        id:"Result Id",
+        record_time:"Record Time",
+        keyword:"keyword",
+        status:"Status",
     }
 }

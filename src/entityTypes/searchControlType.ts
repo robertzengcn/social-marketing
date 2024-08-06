@@ -15,3 +15,14 @@ export type SearchDataParam={
     keywords: Array<string>,
    
 }
+export type SearchtaskdbEntity = {
+    id: number,
+    enginer_id: number,
+    error_log: string,
+    record_time?: string,
+    status: number
+}
+export type SearchtaskEntityNum = {
+    total: number,
+    records: Array<SearchtaskdbEntity>
+}

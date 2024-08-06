@@ -9,6 +9,8 @@ import { SearchDataRun } from "@/entityTypes/scrapeType"
 import { SearchResultdb } from "@/model/searchResultdb"
 import { SearchResEntity } from "@/entityTypes/scrapeType"
 //import {SearchTaskdb} from "@/model/searchTaskdb"
+import {SearchtaskdbEntity,SearchtaskEntityNum} from "@/entityTypes/searchControlType"
+
 export class searhModel {
     private dbpath: string
     constructor(){
@@ -119,7 +121,8 @@ export class searhModel {
         const taskdbModel=new SearchTaskdb(this.dbpath)
         taskdbModel.updatetasklog(taskId,errorLog)
     }
-    public async listSearchtask(){
+    //return data for search list 
+    public listSearchtask():SearchtaskEntityNum{
         // const tokenService = new Token()
         // const dbpath = await tokenService.getValue(USERSDBPATH)
         // if (!dbpath) {
@@ -127,6 +130,12 @@ export class searhModel {
         // }
         const taskdbModel=new SearchTaskdb(this.dbpath)
         const tasklist=taskdbModel.listTask()
-        return tasklist
+        //check number
+        const number=taskdbModel.getTaskTotal()
+        const data:SearchtaskEntityNum={
+            total:number,
+            records:tasklist
+        }
+        return data
     }
 }

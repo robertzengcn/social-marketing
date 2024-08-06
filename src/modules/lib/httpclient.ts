@@ -29,7 +29,7 @@ export class HttpClient {
 
     public async setheaderToken(){
       const tokenModel=new Token()
-      const tokenval=await tokenModel.getValue(TOKENNAME)
+      const tokenval=tokenModel.getValue(TOKENNAME)
       //console.log("prepare to set token:"+tokenval)
       if (tokenval) {
         //config.headers.Authorization = 'Bearer ' + tokenval

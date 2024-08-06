@@ -39,26 +39,17 @@
         </template>
     </v-data-table-server>
     
-    <!-- <v-dialog width="30%">
-        <v-card title="Dialog">
-            <v-card-text>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-                incididunt ut labore et dolore magna aliqua.
-            </v-card-text>
-            <v-card-actions>
-                <v-btn color="primary" block>Close Dialog</v-btn>
-            </v-card-actions>
-        </v-card>
-    </v-dialog> -->
+    
 </template>
 
 <script setup lang="ts">
 import {useI18n} from "vue-i18n";
-import { getCampaignlist } from '@/views/api/campaigins'
+import { listSearchresult } from '@/views/api/search'
 import { ref,computed } from 'vue'
 import { SearchResult } from '@/views/api/types'
 // import type { VDataTable } from 'vuetify/lib/components/index.mjs'
 import router from '@/views/router';
+import { SearchtaskdbEntity } from "@/entityTypes/searchControlType"
 const {t} = useI18n({inheritLocale: true});
 
 // const campaignId = i18n.t("campaignId");
@@ -70,46 +61,38 @@ type Fetchparam = {
 }
 
 const FakeAPI = {
-    async fetch(fetchparam: Fetchparam): Promise<SearchResult<campaignEntity>> {
+    async fetch(fetchparam: Fetchparam): Promise<SearchResult<SearchtaskdbEntity>> {
         const fpage=(fetchparam.page-1)*fetchparam.itemsPerPage
-        return await getCampaignlist({ page: fpage, size: fetchparam.itemsPerPage, sortby: fetchparam.sortBy, search: fetchparam.search })
+        return await listSearchresult({ page: fpage, size: fetchparam.itemsPerPage, sortby: fetchparam.sortBy, search: fetchparam.search })
     }
 }
 
 const headers=ref<Array<any>>([])
 headers.value = [
     {
-        title: computed(_ => t("campaign.campaignId")),
+        title: computed(_ => t("searchresult.id")),
         align: 'start',
         sortable: false,
-        key: 'CampaignId',
+        key: 'id',
     },
     {
-        title: computed(_ => t("campaign.campaignName")),
+        title: computed(_ => t("search.search_enginer_name")),
         align: 'start',
         sortable: false,
-        key: 'CampaignName',
+        key: 'enginerName',
     },
     {
-        title: computed(_ => t("campaign.campaignDescription")),
+        title: computed(_ => t("search.keyword")),
         align: 'start',
         sortable: false,
-        key: 'CampaignDescription',
+        key: 'keyword',
     },
     {
-        title: computed(_ => t("campaign.campaignStatus")),
+        title: computed(_ => t("searchresult.status")),
         align: 'start',
         sortable: false,
-        key: 'Disable',
-        value: value=>value.Disable == 0 ? 'enable' : 'disable'
+        key: 'status',
     },
-    {
-        title: computed(_ => t("campaign.campaignTypes")),
-        align: 'start',
-        sortable: false,
-        key: 'Types',
-    },
-    { title: computed(_ => t("common.actions")), key: 'actions', sortable: false },
 
 ];
 const itemsPerPage = ref(10);

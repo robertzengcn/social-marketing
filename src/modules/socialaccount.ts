@@ -24,6 +24,7 @@ export class SocialAccount {
     if(!dbpath){
         throw new Error("user path not exist")
     }
+    this.dbpath=dbpath;
   }
   //get social account list from remote
   public async getSocialaccountlist(

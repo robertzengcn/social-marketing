@@ -24,7 +24,7 @@ module.exports = defineConfig({
   },
   pluginOptions: {
     electronBuilder: {
-      preload: 'src/preload.js',
+      preload: 'src/preload.ts',
       // nodeIntegration:true,
       // removeElectronJunk: false
       // Or, for multiple preload files:

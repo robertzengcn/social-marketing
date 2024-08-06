@@ -11,8 +11,8 @@ export type SocialTaskEntity = {
         TaskId: number,
         ResulttaskId?: number,
     }
-    disable?:number
-    status?:string
+    disable?: number
+    status?: string
 }
 export type SocialTaskTypeEntity = {
     id: number,
@@ -49,7 +49,7 @@ export type SaveSocialTaskResponse = {
     data?: { id: number },
 }
 export type SocialTaskRunEntity = {
-    id?:number
+    id?: number
     task_id: number
     taskrun_num: string
     log_path: string

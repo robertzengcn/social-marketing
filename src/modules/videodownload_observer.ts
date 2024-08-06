@@ -27,20 +27,21 @@ export class videodownloadObserver implements Observer {
         // debug(data);
         //save data to video db
         // const scraperDb = Scraperdb.getInstance(); 
-        const tokenService = new Token()
-        const dbpath = await tokenService.getValue(USERSDBPATH)
-        if (dbpath) {
-            const videoDb = new Videodb(dbpath);
-            //const vemodel=new Videoedit();
-            //const outputpath=path.resolve(appRoot+"/tmp/video/filterwater/")
-            //const outputpathfilename=outputpath+path.sep+Math.random().toString(16).slice(2)+".mp4"
-            //save video data to db
-            videoDb.saveVideo(data.video)
-            //update remote data
-            const remoteSourmodel = new RemoteSource();
-            if (data.scrapeinfo.id) {
-                remoteSourmodel.Updateprocesstime(data.scrapeinfo.id);
-            }
-        }
+        //move follow code to main process
+        // const tokenService = new Token()
+        // const dbpath = await tokenService.getValue(USERSDBPATH)
+        // if (dbpath) {
+        //     const videoDb = new Videodb(dbpath);
+        //     //const vemodel=new Videoedit();
+        //     //const outputpath=path.resolve(appRoot+"/tmp/video/filterwater/")
+        //     //const outputpathfilename=outputpath+path.sep+Math.random().toString(16).slice(2)+".mp4"
+        //     //save video data to db
+        //     videoDb.saveVideo(data.video)
+        //     //update remote data
+        //     const remoteSourmodel = new RemoteSource();
+        //     if (data.scrapeinfo.id) {
+        //         remoteSourmodel.Updateprocesstime(data.scrapeinfo.id);
+        //     }
+        // }
     }
 }

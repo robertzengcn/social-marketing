@@ -329,35 +329,37 @@ export class SocialScraper implements Subject {
             return
         }
         const links = await this.searchdata({ keyword: this.config.keywords })
-        const tokenService=new Token()
-        const dbpath=await tokenService.getValue(USERSDBPATH)
-        if(!dbpath){
-            throw new Error("user db path not exist")
-        }
+         //move follow code to main process
+        // const tokenService=new Token()
+        // const dbpath=await tokenService.getValue(USERSDBPATH)
+        // if(!dbpath){
+        //     throw new Error("user db path not exist")
+        // }
+       
         //save link to local db
-        const taskresultModel=new TaskResultdb(dbpath)
+        // const taskresultModel=new TaskResultdb(dbpath)
         
-        // const remoteSourmodel = new RemoteSource();
-        // debug('links=%o',links)
-        //handle the links
-        links?.map(async linkItem => {
-            // const linkobj: Linkdata = { title: linkItem.title, url: linkItem.link, lang: linkItem.lang, socialtask_id: linkItem.taskid }
-            // debug(linkobj)
-            try {
-                const taskresultEntity:TaskResultEntity={url:linkItem.link,
-                    title: linkItem.title, 
-                    lang: linkItem.lang,
-                    taskrun_id:this.taskrunid as number,
-                }
-                if(linkItem.content){
-                    taskresultEntity.content=linkItem.content  
-                }
-                taskresultModel.saveTaskresult(taskresultEntity,null)
-                // await remoteSourmodel.saveLinkremote(linkobj)
-            } catch (error) {
-                console.error(error);
-            }
-        })
+        // // const remoteSourmodel = new RemoteSource();
+        // // debug('links=%o',links)
+        // //handle the links
+        // links?.map(async linkItem => {
+        //     // const linkobj: Linkdata = { title: linkItem.title, url: linkItem.link, lang: linkItem.lang, socialtask_id: linkItem.taskid }
+        //     // debug(linkobj)
+        //     try {
+        //         const taskresultEntity:TaskResultEntity={url:linkItem.link,
+        //             title: linkItem.title, 
+        //             lang: linkItem.lang,
+        //             taskrun_id:this.taskrunid as number,
+        //         }
+        //         if(linkItem.content){
+        //             taskresultEntity.content=linkItem.content  
+        //         }
+        //         taskresultModel.saveTaskresult(taskresultEntity,null)
+        //         // await remoteSourmodel.saveLinkremote(linkobj)
+        //     } catch (error) {
+        //         console.error(error);
+        //     }
+        // })
 
     }
     /**
