@@ -41,7 +41,31 @@
     </v-form>
     <div>
 </div>
+
   </v-sheet>
+  <div>
+
+    <!-- Define the alert dialog component -->
+    <v-dialog
+    v-model="alert"
+    width="auto"
+  >
+    <v-card
+      max-width="400"
+      prepend-icon="mdi-update"
+      :text="alerttext"
+      :title="alerttitle"
+    >
+      <template v-slot:actions>
+        <v-btn
+          class="ms-auto"
+          text="Ok"
+          @click="alert = false"
+        ></v-btn>
+      </template>
+    </v-card>
+  </v-dialog>
+  </div>
 </template>
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
@@ -52,6 +76,13 @@ import { ToArray,CapitalizeFirstLetter } from "@/views/utils/function"
 import {submitScraper} from "@/views/api/search"
 import { Usersearchdata } from "@/entityTypes/searchControlType"
 import {convertNumberToBoolean} from "@/views/utils/function"
+const {t} = useI18n({inheritLocale: true});
+const alert = ref(false);
+const alerttext = ref("");
+const alerttitle = ref("");
+const alerttype = ref<"success" | "error" | "warning" | "info" | undefined>(
+  "success"
+);
 const form = ref<HTMLFormElement>();
 const loading = ref(false);
 const rules = {
@@ -66,6 +97,19 @@ const concurrent_quantity=ref(1);
 const initialize = () => {
   searchplatform.value = ToArray(SearhEnginer);
 };
+const setAlert = (
+  text: string,
+  title: string,
+  type: "success" | "error" | "warning" | "info" | undefined
+) => {
+  alerttext.value = text;
+  alerttitle.value = title;
+  alerttype.value = type;
+  alert.value = true;
+  setTimeout(() => {
+    alert.value = false;
+  }, 5000);
+};
 
 onMounted(() => {
   initialize();
@@ -75,20 +119,41 @@ async function onSubmit() {
   if (!form.value) return;
   const { valid } = await form.value.validate();
   if (!valid) {
-    console.log("form is not valid");
+    //console.log("form is not valid");
+    setAlert("Please fill all required fields", "Error", "error");
   } else {
+    if(!enginer.value){
+      //return; 
+      setAlert(t("search.search_enginer_empty"), "Error", "error");
+      return
+    }
+    if(!keywords.value){
+       setAlert(t("search.keywords_empty"), "Error", "error");
+      return
+    }
+    const subkeyword=keywords.value.split('\n').map(keyword => keyword.trim());
     const subdata:Usersearchdata={
-      searchEnginer: enginer.value,
-    // keywords: keywords.value,
+    searchEnginer: enginer.value,
+    keywords: subkeyword,
     num_pages: page_number.value,
     concurrency: concurrent_quantity.value,
     notShowBrowser: convertNumberToBoolean(showinbrwoser.value)
     }
     //split keywords one line per one
-    subdata.keywords=keywords.value.split('\n').map(keyword => keyword.trim());
+    // subdata.keywords=
      //submit form
-  submitScraper(subdata)
-
+    
+    const res=await submitScraper(subdata).catch(function(err){
+      //catch error
+      setAlert(err.message, "Error", "error");
+      return null
+    })
+    if(res){
+      router.push({
+          path: '/search/tasklist'
+        });
+    }
+    
   }
 
  

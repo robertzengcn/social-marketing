@@ -117,5 +117,6 @@ export default {
         record_time:"Record Time",
         keyword:"keyword",
         status:"Status",
+        
     }
 }

@@ -312,6 +312,16 @@ export const constantRoutes: RouteRecordRaw[] = [
           title: 'Search Scraper',
           icon: 'list'
         }
+      },
+      {
+        path: 'tasklist',
+        component: () => import(/* webpackChunkName: "staff-list" */ '@/views/pages/search/resultlist.vue'),
+        name: 'Searchtasklist',
+        meta: {
+          visible: true,
+          title: 'Search Task list',
+          icon: 'list'
+        }
       }
     ]
   },

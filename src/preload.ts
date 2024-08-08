@@ -27,7 +27,7 @@ contextBridge.exposeInMainWorld('api', {
     },
     invoke: (channel, data) => {
       // whitelist channels
-      const validChannels = ['user:Login','user:checklogin','user:Signout','campaign:list','socialtask:list','socialtask:info','socialtasktype:list','tag:list','socialtask:save','socialtask:start','socialtaskrun:list','socialtaskresult:list','socialaccount:list','socialaccount:save','socialplatform:list','socialaccount:detail','socialaccount:delete','proxy:list','proxy:delete','proxy:save','proxy:detail','proxy:check','proxy:import',EXTRAMODULECHANNE_LIST,OPENDIRECTORY,VIDEODOWNLOAD,VIDEODOWNLOAD_LIST,LISTSESARCHRESUT]
+      const validChannels = ['user:Login','user:checklogin','user:Signout','campaign:list','socialtask:list','socialtask:info','socialtasktype:list','tag:list','socialtask:save','socialtask:start','socialtaskrun:list','socialtaskresult:list','socialaccount:list','socialaccount:save','socialplatform:list','socialaccount:detail','socialaccount:delete','proxy:list','proxy:delete','proxy:save','proxy:detail','proxy:check','proxy:import',EXTRAMODULECHANNE_LIST,OPENDIRECTORY,VIDEODOWNLOAD,VIDEODOWNLOAD_LIST,LISTSESARCHRESUT,SEARCHSCRAPERAPI]
       if (validChannels.includes(channel)) {
         return ipcRenderer.invoke(channel, data)
       }

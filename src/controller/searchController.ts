@@ -3,7 +3,7 @@
 // import { ScrapeManager } from "@/modules/scrapeManager"
 import {SearhEnginer} from "@/config/searchSetting"
 import { ToArray } from "@/modules/lib/function"
-import {Usersearchdata,SearchtaskdbEntity,SearchtaskEntityNum } from "@/entityTypes/searchControlType"
+import {Usersearchdata,SearchtaskEntityNum } from "@/entityTypes/searchControlType"
 // import {SearchTaskdb} from "@/model/searchTaskdb"
 // import {SearchKeyworddb} from "@/model/searchKeyworddb"
 // import {SearchResultdb} from "@/model/searchResultdb"

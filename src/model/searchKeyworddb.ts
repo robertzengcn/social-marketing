@@ -27,7 +27,7 @@ export class SearchKeyworddb {
         return info.lastInsertRowid;
     }
 
-    //get keyword id by keyword
+    //get task id by keyword
     public getKeywordId(keyword: string): number | bigint {
       const stmt = this.db.prepare(
         `SELECT task_id FROM ` + this.searchKeywordTable + ` WHERE keyword=?`
@@ -38,5 +38,19 @@ export class SearchKeyworddb {
       }else{
         return 0
       }
+    }
+    //get keywords by task id
+    public getkeywrodsbyTask(taskId:number):Array<string>{
+      const stmt = this.db.prepare(
+        `SELECT keyword FROM ` + this.searchKeywordTable + ` WHERE task_id=?`
+      );
+      const keywordArr=stmt.all(taskId) as Array<{keyword:string}>;
+      const res:Array<string>=[]
+      keywordArr.forEach((item)=>{
+     //   console.log(item)
+        res.push(item.keyword)
+      })
+      console.log(res)
+      return res;
     }
 }

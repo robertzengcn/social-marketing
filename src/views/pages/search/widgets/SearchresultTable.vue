@@ -49,7 +49,7 @@ import { ref,computed } from 'vue'
 import { SearchResult } from '@/views/api/types'
 // import type { VDataTable } from 'vuetify/lib/components/index.mjs'
 import router from '@/views/router';
-import { SearchtaskdbEntity } from "@/entityTypes/searchControlType"
+import { SearchtaskdbEntity,SearchtaskItem } from "@/entityTypes/searchControlType"
 const {t} = useI18n({inheritLocale: true});
 
 // const campaignId = i18n.t("campaignId");
@@ -61,7 +61,7 @@ type Fetchparam = {
 }
 
 const FakeAPI = {
-    async fetch(fetchparam: Fetchparam): Promise<SearchResult<SearchtaskdbEntity>> {
+    async fetch(fetchparam: Fetchparam): Promise<SearchResult<SearchtaskItem>> {
         const fpage=(fetchparam.page-1)*fetchparam.itemsPerPage
         return await listSearchresult({ page: fpage, size: fetchparam.itemsPerPage, sortby: fetchparam.sortBy, search: fetchparam.search })
     }
@@ -79,13 +79,14 @@ headers.value = [
         title: computed(_ => t("search.search_enginer_name")),
         align: 'start',
         sortable: false,
-        key: 'enginerName',
+        key: 'enginer_name',
     },
     {
         title: computed(_ => t("search.keyword")),
         align: 'start',
         sortable: false,
-        key: 'keyword',
+        key: 'keywordline',
+        // value: computed(value => value.join(', '))
     },
     {
         title: computed(_ => t("searchresult.status")),
@@ -96,7 +97,7 @@ headers.value = [
 
 ];
 const itemsPerPage = ref(10);
-const serverItems = ref<Array<campaignEntity>>([]);
+const serverItems = ref<Array<SearchtaskItem>>([]);
 const loading = ref(false);
 const totalItems = ref(0);
 const search = ref('');
@@ -114,14 +115,7 @@ function loadItems({ page, itemsPerPage, sortBy }) {
         ({ data, total }) => {
              console.log(data)
             // console.log(total)
-            //loop data
-            for(let i=0; i<data.length; i++){
-                if(data[i].Disable == 0){
-                    data[i].Status = "enable"
-                }else{
-                    data[i].Status = "disable"    
-                }
-            }
+        
             serverItems.value = data
             totalItems.value = total
             loading.value = false
@@ -142,11 +136,7 @@ const editItem = (item) => {
 };
 const openfolder=(item)=>{
     // console.log(item)
-    if(item.Types=="social task"){
-        router.push({
-            name: 'SocialtaskList',params: { id: item.CampaignId } 
-        });
-    }
+    
 }
 
 </script>

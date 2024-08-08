@@ -69,5 +69,16 @@ export class SearchTaskdb {
       const total = (result as { total: number }).total;
       return total
     }
+
+    public taskStatusToString(status: TaskStatus): string {
+      switch (status) {
+        case TaskStatus.Processing:
+          return "Processing";
+        case TaskStatus.Stop:
+          return "Stop";
+        default:
+          return "Unknown";
+      }
+    }
     
 }

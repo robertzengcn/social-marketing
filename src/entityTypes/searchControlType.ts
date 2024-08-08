@@ -24,5 +24,15 @@ export type SearchtaskdbEntity = {
 }
 export type SearchtaskEntityNum = {
     total: number,
-    records: Array<SearchtaskdbEntity>
+    records: Array<SearchtaskItem>
+}
+export type SearchtaskItem = {
+    id: number,
+    enginer_name: string,
+    error_log?: string,
+    record_time?: string,
+    keywords:Array<string>,
+    keywordline?:string,
+    status: string,
+
 }

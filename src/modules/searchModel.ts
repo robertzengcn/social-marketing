@@ -9,7 +9,7 @@ import { SearchDataRun } from "@/entityTypes/scrapeType"
 import { SearchResultdb } from "@/model/searchResultdb"
 import { SearchResEntity } from "@/entityTypes/scrapeType"
 //import {SearchTaskdb} from "@/model/searchTaskdb"
-import {SearchtaskdbEntity,SearchtaskEntityNum} from "@/entityTypes/searchControlType"
+import {SearchtaskdbEntity,SearchtaskEntityNum,SearchtaskItem} from "@/entityTypes/searchControlType"
 
 export class searhModel {
     private dbpath: string
@@ -130,11 +130,26 @@ export class searhModel {
         // }
         const taskdbModel=new SearchTaskdb(this.dbpath)
         const tasklist=taskdbModel.listTask()
+        const searchKeydb=new SearchKeyworddb(this.dbpath)
+        const taskdata:Array<SearchtaskItem>=[]
+        //convert task list to search item list
+        tasklist.forEach((item)=>{
+            const data:SearchtaskItem={
+                id:item.id,
+                enginer_name:this.convertNumtoSE(item.enginer_id),
+                status:taskdbModel.taskStatusToString(item.status),
+                keywords:searchKeydb.getkeywrodsbyTask(item.id),
+                record_time:item.record_time
+            }
+            data.keywordline=data.keywords.join(',')
+            
+            taskdata.push(data) 
+        });
         //check number
         const number=taskdbModel.getTaskTotal()
         const data:SearchtaskEntityNum={
             total:number,
-            records:tasklist
+            records:taskdata
         }
         return data
     }
