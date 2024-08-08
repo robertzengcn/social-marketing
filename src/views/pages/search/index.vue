@@ -73,9 +73,10 @@ import { useI18n } from "vue-i18n";
 import router from '@/views/router';
 import {SearhEnginer} from "@/config/searchSetting"
 import { ToArray,CapitalizeFirstLetter } from "@/views/utils/function"
-import {submitScraper} from "@/views/api/search"
+import {submitScraper,receiveSearchevent} from "@/views/api/search"
 import { Usersearchdata } from "@/entityTypes/searchControlType"
 import {convertNumberToBoolean} from "@/views/utils/function"
+import {SEARCHEVENT} from "@/config/channellist"
 const {t} = useI18n({inheritLocale: true});
 const alert = ref(false);
 const alerttext = ref("");
@@ -114,6 +115,12 @@ const setAlert = (
 onMounted(() => {
   initialize();
 })
+
+const receiveMsg=()=>{
+  receiveSearchevent(SEARCHEVENT,function (value) {
+        
+  })  
+}
 const capletter=CapitalizeFirstLetter
 async function onSubmit() {
   if (!form.value) return;
@@ -143,16 +150,16 @@ async function onSubmit() {
     // subdata.keywords=
      //submit form
     
-    const res=await submitScraper(subdata).catch(function(err){
+    submitScraper(subdata).catch(function(err){
       //catch error
       setAlert(err.message, "Error", "error");
       return null
     })
-    if(res){
-      router.push({
-          path: '/search/tasklist'
-        });
-    }
+    // if(res){
+    //   router.push({
+    //       path: '/search/tasklist'
+    //     });
+    // }
     
   }
 

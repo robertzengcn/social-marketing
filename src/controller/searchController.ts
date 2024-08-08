@@ -14,13 +14,12 @@ import {searhModel} from "@/modules/searchModel"
 // import { Token } from "@/modules/token"
 // import {USERSDBPATH} from '@/config/usersetting';
 import {SearchDataParam} from "@/entityTypes/scrapeType"
+import {SEARCHEVENT} from "@/config/channellist"
 
 
 export class SearchController {
     private searhModel:searhModel;
     
-
-
     public async searchData(data: Usersearchdata) {
         //search data
 
@@ -106,9 +105,6 @@ export class SearchController {
                 seModel.saveSearchResult(childdata.data)
             }
         });
-    
-
-
     }
     //return search result
     public listSearchresult():SearchtaskEntityNum{

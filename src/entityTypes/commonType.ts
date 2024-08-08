@@ -20,3 +20,10 @@ export type CommonDialogMsg={
         content:string
     }
 }
+export type CommonActionMsg={
+    status:boolean,
+    code:number,
+    data:{
+        action:string,       
+    }
+}

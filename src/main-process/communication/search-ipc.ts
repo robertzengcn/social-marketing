@@ -1,7 +1,7 @@
 import { ipcMain } from 'electron';
-import {SEARCHSCRAPERAPI,LISTSESARCHRESUT} from '@/config/channellist'
-import { CommonDialogMsg } from "@/entityTypes/commonType";
-import {Usersearchdata,SearchtaskdbEntity,SearchtaskEntityNum,SearchtaskItem } from "@/entityTypes/searchControlType"
+import {SEARCHSCRAPERAPI,LISTSESARCHRESUT,SEARCHEVENT} from '@/config/channellist'
+import { CommonDialogMsg,CommonActionMsg } from "@/entityTypes/commonType";
+import {Usersearchdata,SearchtaskItem } from "@/entityTypes/searchControlType"
 import {SearchController} from "@/controller/searchController"
 import {CommonResponse} from "@/entityTypes/commonType"
 export function registerSearchIpcHandlers() {
@@ -17,7 +17,7 @@ export function registerSearchIpcHandlers() {
                     content: "search.search_enginer_empty"
                 }
             }
-            event.sender.send(SEARCHSCRAPERAPI, comMsgs)
+            event.sender.send(SEARCHEVENT, comMsgs)
             return comMsgs
         }
         if (!("keywords" in qdata)) {
@@ -29,7 +29,7 @@ export function registerSearchIpcHandlers() {
                     content: "search.search_enginer_empty"
                 }
             }
-            event.sender.send(SEARCHSCRAPERAPI, comMsgs)
+            event.sender.send(SEARCHEVENT, comMsgs)
             return comMsgs
         }
         const searchcon=new SearchController()
@@ -38,7 +38,8 @@ export function registerSearchIpcHandlers() {
             status: true,
             code: 0,
         }
-        return comMsgs
+        event.sender.send(SEARCHEVENT, comMsgs)
+        //return comMsgs
     })
     ipcMain.handle(LISTSESARCHRESUT, async (event, data) => {
         //console.log("handle campaign:list")

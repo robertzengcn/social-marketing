@@ -3,16 +3,16 @@ import { windowSend } from '@/views/utils/apirequest'
 import { SEARCHSCRAPERAPI } from '@/config/channellist'
 import { SearchtaskItem } from "@/entityTypes/searchControlType"
 import { SearchResult, ItemSearchparam } from '@/views/api/types'
-import { windowInvoke } from '@/views/utils/apirequest'
+import { windowInvoke,windowReceive } from '@/views/utils/apirequest'
 import {LISTSESARCHRESUT} from "@/config/channellist";
 //import {CommonDialogMsg} from "@/entityTypes/commonType";
 // import { ipcMain} from 'electron'
 
 export async function submitScraper(data: Usersearchdata) {
     
-    const resp = await windowInvoke(SEARCHSCRAPERAPI, data) 
+    windowSend(SEARCHSCRAPERAPI, data) 
     
-    return resp 
+    // return resp 
 }
 
 export async function listSearchresult(data: ItemSearchparam): Promise<SearchResult<SearchtaskItem>> {
@@ -26,6 +26,9 @@ export async function listSearchresult(data: ItemSearchparam): Promise<SearchRes
         total: resp.num,
     }
     return resdata;
+}
+export function receiveSearchevent(channel:string,cb:(data:any)=>void){
+    windowReceive(channel,cb)
 }
 
 
