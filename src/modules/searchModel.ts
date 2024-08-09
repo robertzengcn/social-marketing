@@ -1,5 +1,5 @@
 import { SearchDataParam } from "@/entityTypes/scrapeType"
-import { SearchTaskdb } from "@/model/searchTaskdb"
+import { SearchTaskdb,SearchTaskStatus } from "@/model/searchTaskdb"
 import { Token } from "@/modules/token"
 import { USERSDBPATH } from '@/config/usersetting';
 import { SearhEnginer } from "@/config/searchSetting"
@@ -9,10 +9,12 @@ import { SearchDataRun } from "@/entityTypes/scrapeType"
 import { SearchResultdb } from "@/model/searchResultdb"
 import { SearchResEntity } from "@/entityTypes/scrapeType"
 //import {SearchTaskdb} from "@/model/searchTaskdb"
-import {SearchtaskdbEntity,SearchtaskEntityNum,SearchtaskItem} from "@/entityTypes/searchControlType"
+import {SearchtaskEntityNum,SearchtaskItem} from "@/entityTypes/searchControlType"
+import {getEnumKeyByValue,getEnumValueByNumber} from "@/modules/lib/function"
 
 export class searhModel {
     private dbpath: string
+    private taskdbModel:SearchTaskdb
     constructor(){
         const tokenService = new Token()
         const dbpath = tokenService.getValue(USERSDBPATH)
@@ -20,6 +22,7 @@ export class searhModel {
             throw new Error("user path not exist")
         }
         this.dbpath=dbpath
+        this.taskdbModel=new SearchTaskdb(this.dbpath)
     }
 
     //save search task, call it when user start search keyword
@@ -30,9 +33,12 @@ export class searhModel {
         // if (!dbpath) {
         //     throw new Error("user path not exist")
         // }
-        const searchtask = new SearchTaskdb(this.dbpath)
+        //const searchtask = new SearchTaskdb(this.dbpath)
         const enginId = this.convertSEtoNum(data.engine)
-        const taskId = searchtask.saveSearchTask(enginId)
+        if(!enginId){
+            throw new Error("enginerId empty")
+        }
+        const taskId = this.taskdbModel.saveSearchTask(enginId)
         const searshdb = new SearchKeyworddb(this.dbpath)
         data.keywords.forEach(async (keyword) => {
             searshdb.saveSearchKeyword(keyword, Number(taskId))
@@ -40,26 +46,28 @@ export class searhModel {
         return Number(taskId)
     }
     //convert search enginer name to number
-    public convertSEtoNum(enginerName: string): number {
-        const SeachEnginArr = ToArray(SearhEnginer)
-        let enginer = 0
-        SeachEnginArr.forEach(async (value, key) => {
-            if (enginerName == value) {
-                enginer = key
-            }
-        })
-        return enginer
+    public convertSEtoNum(enginerName: string): number|undefined {
+        // const SeachEnginArr = ToArray(SearhEnginer)
+        // let enginer = 0
+        // SeachEnginArr.forEach((value, key) => {
+        //     if (enginerName == value) {
+        //         enginer = key
+        //     }
+        // })
+        const enginId=getEnumKeyByValue(SearhEnginer,enginerName)
+        return enginId
     }
     //convert search enginer number to name
-    public convertNumtoSE(enginerNum: number): string {
-        const SeachEnginArr = ToArray(SearhEnginer)
-        let enginer = ""
-        SeachEnginArr.forEach(async (value, key) => {
-            if (enginerNum == key) {
-                enginer = value
-            }
-        })
-        return enginer
+    public convertNumtoSE(enginerNum: number): string|undefined {
+        // const SeachEnginArr = ToArray(SearhEnginer)
+        // let enginer = ""
+        // SeachEnginArr.forEach((value, key) => {
+        //     if (enginerNum == key) {
+        //         enginer = value
+        //     }
+        // })
+        const enginerName=getEnumValueByNumber(SearhEnginer,enginerNum)
+        return enginerName
     }
     //save search result
     public async saveSearchResult(data: SearchDataRun) {
@@ -118,8 +126,8 @@ export class searhModel {
         // if (!dbpath) {
         //     throw new Error("user path not exist")
         // }
-        const taskdbModel=new SearchTaskdb(this.dbpath)
-        taskdbModel.updatetasklog(taskId,errorLog)
+        //const taskdbModel=new SearchTaskdb(this.dbpath)
+        this.taskdbModel.updatetasklog(taskId,errorLog)
     }
     //return data for search list 
     public listSearchtask():SearchtaskEntityNum{
@@ -128,8 +136,8 @@ export class searhModel {
         // if (!dbpath) {
         //     throw new Error("user path not exist")
         // }
-        const taskdbModel=new SearchTaskdb(this.dbpath)
-        const tasklist=taskdbModel.listTask()
+        //const taskdbModel=new SearchTaskdb(this.dbpath)
+        const tasklist=this.taskdbModel.listTask()
         const searchKeydb=new SearchKeyworddb(this.dbpath)
         const taskdata:Array<SearchtaskItem>=[]
         //convert task list to search item list
@@ -137,7 +145,7 @@ export class searhModel {
             const data:SearchtaskItem={
                 id:item.id,
                 enginer_name:this.convertNumtoSE(item.enginer_id),
-                status:taskdbModel.taskStatusToString(item.status),
+                status:this.taskdbModel.taskStatusToString(item.status),
                 keywords:searchKeydb.getkeywrodsbyTask(item.id),
                 record_time:item.record_time
             }
@@ -146,11 +154,16 @@ export class searhModel {
             taskdata.push(data) 
         });
         //check number
-        const number=taskdbModel.getTaskTotal()
+        const number=this.taskdbModel.getTaskTotal()
         const data:SearchtaskEntityNum={
             total:number,
             records:taskdata
         }
         return data
     }
+    //upate task status
+    public updateTaskStatus(taskId:number,status:SearchTaskStatus){
+        this.taskdbModel.updatetaskstatus(taskId,status)
+    }
+    
 }

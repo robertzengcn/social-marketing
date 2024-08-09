@@ -15,7 +15,8 @@ import {searhModel} from "@/modules/searchModel"
 // import {USERSDBPATH} from '@/config/usersetting';
 import {SearchDataParam} from "@/entityTypes/scrapeType"
 import {SEARCHEVENT} from "@/config/channellist"
-
+import { SearchTaskStatus } from "@/model/searchTaskdb"
+import { CustomError } from "@/modules/customError";
 
 export class SearchController {
     private searhModel:searhModel;
@@ -23,34 +24,40 @@ export class SearchController {
     public async searchData(data: Usersearchdata) {
         //search data
 
-        const SeachEnginArr = ToArray(SearhEnginer)
+        // const SeachEnginArr = ToArray(SearhEnginer)
 
-        const iterator = SeachEnginArr.values();
-        console.log(iterator)
-        console.log("search enginer is"+data.searchEnginer)
-        //check data.searchEngin exist in iterator
-        let correct = false
-        for (const key of iterator) {
-            console.log("key is "+key)
-            console.log("value is"+iterator[key])
-            if (data.searchEnginer == key) {
-                correct = true
-                break
-            }
-        }
-        if (!correct) {
-            return {
-                status: false,
-                msg: "searchEnginer not exist",
-                data: null
-            }
-        }
+        // const iterator = SeachEnginArr.values();
+        // console.log(iterator)
+        // console.log("search enginer is"+data.searchEnginer)
+        // //check data.searchEngin exist in iterator
+        // let correct = false
+        // for (const key of iterator) {
+        //     console.log("key is "+key)
+        //     //console.log("value is"+iterator[key])
+        //     if (data.searchEnginer == key) {
+        //         correct = true
+        //         break
+        //     }
+        // }
+        // if (!correct) {
+        //     console.log("searchEnginer not exist")
+        //     throw new Error("searchEnginer not exist")
+        //     // return {
+        //     //     status: false,
+        //     //     msg: "searchEnginer not exist",
+        //     //     data: null
+        //     // }
+        // }
         const seModel=new searhModel()
         const enginName=seModel.convertNumtoSE(data.searchEnginer)
+        if(!enginName){
+            throw new CustomError("enginer name error",20240809160454)
+        }
         const dp:SearchDataParam={
             engine:enginName,
             keywords:data.keywords
         }
+        console.log(dp)
         const taskId=await seModel.saveSearchtask(dp)
         // const jsonData=JSON.stringify(data);
         //console.log(jsonData)
@@ -103,6 +110,8 @@ export class SearchController {
             if(childdata.action=="saveres"){
                 //save result
                 seModel.saveSearchResult(childdata.data)
+                seModel.updateTaskStatus(taskId,SearchTaskStatus.Complete)
+                child.kill()
             }
         });
     }

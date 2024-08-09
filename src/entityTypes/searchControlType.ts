@@ -28,7 +28,7 @@ export type SearchtaskEntityNum = {
 }
 export type SearchtaskItem = {
     id: number,
-    enginer_name: string,
+    enginer_name: string|undefined,
     error_log?: string,
     record_time?: string,
     keywords:Array<string>,

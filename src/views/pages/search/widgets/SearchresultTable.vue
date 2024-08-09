@@ -94,6 +94,12 @@ headers.value = [
         sortable: false,
         key: 'status',
     },
+    {
+        title: computed(_ => t("searchresult.record_time")),
+        align: 'start',
+        sortable: false,
+        key: 'record_time',
+    },
 
 ];
 const itemsPerPage = ref(10);

@@ -3,9 +3,9 @@ import { getRecorddatetime } from "@/modules/lib/function";
 import { Scraperdb } from "@/model/scraperdb";
 import {SearhEnginer} from "@/config/searchSetting"
 import {SearchtaskdbEntity} from "@/entityTypes/searchControlType"
-export enum TaskStatus{
+export enum SearchTaskStatus{
   Processing=1,
-  Stop=2
+  Complete=2
 }
 export class SearchTaskdb {
     db: Database;
@@ -23,12 +23,13 @@ export class SearchTaskdb {
         const stmt = this.db.prepare(
           `INSERT INTO ` +
             this.searchTaskTable +
-            ` (enginer_id,record_time) VALUES (?,?)`
+            ` (enginer_id,record_time,status) VALUES (?,?,?)`
         );
         const info = stmt.run(
           
           enginerId,
-          recordtime
+          recordtime,
+          SearchTaskStatus.Processing
         );
         return info.lastInsertRowid;
     }
@@ -42,7 +43,7 @@ export class SearchTaskdb {
       stmt.run(log,taskId)
     }
     //update task status
-    public updatetaskstatus(taskId:number,status:TaskStatus){
+    public updatetaskstatus(taskId:number,status:SearchTaskStatus){
       const stmt = this.db.prepare(
         `UPDATE ` +
           this.searchTaskTable +
@@ -70,12 +71,12 @@ export class SearchTaskdb {
       return total
     }
 
-    public taskStatusToString(status: TaskStatus): string {
+    public taskStatusToString(status: SearchTaskStatus): string {
       switch (status) {
-        case TaskStatus.Processing:
+        case SearchTaskStatus.Processing:
           return "Processing";
-        case TaskStatus.Stop:
-          return "Stop";
+        case SearchTaskStatus.Complete:
+          return "Complete";
         default:
           return "Unknown";
       }
