@@ -1,6 +1,6 @@
 import { ipcMain } from 'electron';
 import {SEARCHSCRAPERAPI,LISTSESARCHRESUT,SEARCHEVENT} from '@/config/channellist'
-import { CommonDialogMsg,CommonActionMsg } from "@/entityTypes/commonType";
+import { CommonDialogMsg } from "@/entityTypes/commonType";
 import {Usersearchdata,SearchtaskItem } from "@/entityTypes/searchControlType"
 import {SearchController} from "@/controller/searchController"
 import {CommonResponse} from "@/entityTypes/commonType"
@@ -13,11 +13,12 @@ export function registerSearchIpcHandlers() {
                 status: false,
                 code: 20240705103811,
                 data: {
+                    action:"",
                     title: "search.scraper_failed",
                     content: "search.search_enginer_empty"
                 }
             }
-            event.sender.send(SEARCHEVENT, comMsgs)
+            event.sender.send(SEARCHEVENT, JSON.stringify(comMsgs))
             return comMsgs
         }
         if (!("keywords" in qdata)) {
@@ -25,11 +26,12 @@ export function registerSearchIpcHandlers() {
                 status: false,
                 code: 20240705104323,
                 data: {
+                    action:"",
                     title: "search.scraper_failed",
                     content: "search.search_enginer_empty"
                 }
             }
-            event.sender.send(SEARCHEVENT, comMsgs)
+            event.sender.send(SEARCHEVENT, JSON.stringify(comMsgs))
             return comMsgs
         }
         const searchcon=new SearchController()
@@ -37,8 +39,13 @@ export function registerSearchIpcHandlers() {
         const comMsgs: CommonDialogMsg = {
             status: true,
             code: 0,
+            data:{
+                action:"search_task _start",
+                title:"",
+                content:"" 
+            }
         }
-        event.sender.send(SEARCHEVENT, comMsgs)
+        event.sender.send(SEARCHEVENT, JSON.stringify(comMsgs))
         //return comMsgs
     })
     ipcMain.handle(LISTSESARCHRESUT, async (event, data) => {

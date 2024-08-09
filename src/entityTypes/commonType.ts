@@ -16,14 +16,8 @@ export type CommonDialogMsg={
     status:boolean,
     code:number,
     data?:{
+        action?:string,  
         title:string,
         content:string
-    }
-}
-export type CommonActionMsg={
-    status:boolean,
-    code:number,
-    data:{
-        action:string,       
     }
 }
