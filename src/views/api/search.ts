@@ -28,6 +28,7 @@ export async function listSearchresult(data: ItemSearchparam): Promise<SearchRes
     return resdata;
 }
 export function receiveSearchevent(channel:string,cb:(data:any)=>void){
+   
     windowReceive(channel,cb)
 }
 

@@ -97,6 +97,7 @@ onMounted(() => {
 
 const receiveMsg = () => {
   receiveSearchevent(SEARCHEVENT, function (res) {
+    console.log(res)
     const obj = JSON.parse(res) as CommonDialogMsg
     if (obj.status) {
       if (obj.data) {

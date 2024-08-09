@@ -5,7 +5,8 @@ import {Usersearchdata,SearchtaskItem } from "@/entityTypes/searchControlType"
 import {SearchController} from "@/controller/searchController"
 import {CommonResponse} from "@/entityTypes/commonType"
 export function registerSearchIpcHandlers() {
-    ipcMain.handle(SEARCHSCRAPERAPI, async (event, arg) => {
+    ipcMain.on(SEARCHSCRAPERAPI, async (event, arg) => {
+        
         //handle search event
         const qdata = JSON.parse(arg) as Usersearchdata;
         if (!("searchEnginer" in qdata)) {
