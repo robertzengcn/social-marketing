@@ -3,11 +3,10 @@ import { SearchTaskdb,SearchTaskStatus } from "@/model/searchTaskdb"
 import { Token } from "@/modules/token"
 import { USERSDBPATH } from '@/config/usersetting';
 import { SearhEnginer } from "@/config/searchSetting"
-import { ToArray } from "@/modules/lib/function"
+// import { ToArray } from "@/modules/lib/function"
 import { SearchKeyworddb } from "@/model/searchKeyworddb"
-import { SearchDataRun } from "@/entityTypes/scrapeType"
 import { SearchResultdb } from "@/model/searchResultdb"
-import { SearchResEntity } from "@/entityTypes/scrapeType"
+import { SearchResEntity,SearchResEntityDisplay,SearchDataRun } from "@/entityTypes/scrapeType"
 //import {SearchTaskdb} from "@/model/searchTaskdb"
 import {SearchtaskEntityNum,SearchtaskItem} from "@/entityTypes/searchControlType"
 import {getEnumKeyByValue,getEnumValueByNumber} from "@/modules/lib/function"
@@ -166,11 +165,27 @@ export class searhModel {
         this.taskdbModel.updatetaskstatus(taskId,status)
     }
     //get search result list by task id
-    public listSearchResult(taskId:number):Array<SearchResEntity>{
+    public listSearchResult(taskId:number):Array<SearchResEntityDisplay>{
        
         const serResultModel=new SearchResultdb(this.dbpath)
         const res=serResultModel.listSearchresult([taskId])
-        return res
+        const datas:Array<SearchResEntityDisplay>=[]
+        const SearchKeyDb=new SearchKeyworddb(this.dbpath)
+        
+        res.forEach((item)=>{
+           const keyEntity= SearchKeyDb.getkeywrodsEntitybyId(item.keywordId)
+            const data:SearchResEntityDisplay={
+                keywordId:item.keywordId,
+                title:item.title,
+                link:item.link,
+                snippet:item.snippet,
+                record_time:item.record_time,
+                visible_link:item.visible_link,
+                keyword:keyEntity.keyword
+            }
+            datas.push(data)
+        })
+        return datas
     }
     
 }

@@ -1,8 +1,8 @@
 // import { Usersearchdata } from '@/entityTypes/scrapeType';
 //import { SMstruct, SearchDataParam,SearchResEntity } from "@/entityTypes/scrapeType"
 // import { ScrapeManager } from "@/modules/scrapeManager"
-import {SearhEnginer} from "@/config/searchSetting"
-import { ToArray } from "@/modules/lib/function"
+// import {SearhEnginer} from "@/config/searchSetting"
+// import { ToArray } from "@/modules/lib/function"
 import {Usersearchdata,SearchtaskEntityNum } from "@/entityTypes/searchControlType"
 // import {SearchTaskdb} from "@/model/searchTaskdb"
 // import {SearchKeyworddb} from "@/model/searchKeyworddb"
@@ -14,9 +14,11 @@ import {searhModel} from "@/modules/searchModel"
 // import { Token } from "@/modules/token"
 // import {USERSDBPATH} from '@/config/usersetting';
 import {SearchDataParam} from "@/entityTypes/scrapeType"
-import {SEARCHEVENT} from "@/config/channellist"
+// import {SEARCHEVENT} from "@/config/channellist"
 import { SearchTaskStatus } from "@/model/searchTaskdb"
+import { SearchKeyworddb } from "@/model/searchKeyworddb";
 import { CustomError } from "@/modules/customError";
+import { SearchResEntityRecord,SearchResEntityDisplay } from "@/entityTypes/scrapeType"
 
 export class SearchController {
     private searhModel:searhModel;
@@ -121,6 +123,18 @@ export class SearchController {
         // await seModel.init();
         const res=seModel.listSearchtask()
         return res;
+    }   
+    //list task search result
+    public listtaskSearchResult(taskId:number):SearchResEntityRecord{
+        const seModel=new searhModel()
+        const res=seModel.listSearchResult(taskId)
+
+        const data:SearchResEntityRecord={
+            total:res.length,
+            record:res
+        }
+        return data
     }
+
 
 }

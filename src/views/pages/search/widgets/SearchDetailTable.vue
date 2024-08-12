@@ -10,28 +10,7 @@
     </div>
     <v-data-table-server v-model:items-per-page="itemsPerPage" :search="search" :headers="headers"
         :items-length="totalItems" :items="serverItems" :loading="loading" item-value="name" @update:options="loadItems">
-        <template v-slot:[`item.actions`]="{ item }">
-            <v-icon
-            size="small"
-            class="me-2"
-            @click="openfolder(item)"
-          >
-            mdi-folder
-          </v-icon>
-            <v-icon
-            size="small"
-            class="me-2"
-            @click="editItem(item)"
-          >
-            mdi-pencil
-          </v-icon>
-          <v-icon
-            size="small"
-           
-          >
-            mdi-delete
-          </v-icon>
-        </template>
+        
     </v-data-table-server>
     
     
@@ -39,26 +18,36 @@
 
 <script setup lang="ts">
 import {useI18n} from "vue-i18n";
-import { listSearchresult } from '@/views/api/search'
-import { ref,computed } from 'vue'
+import { gettaskresult } from '@/views/api/search'
+import { ref,computed,onMounted } from 'vue'
 import { SearchResult } from '@/views/api/types'
-// import type { VDataTable } from 'vuetify/lib/components/index.mjs'
+import {SearchResEntityDisplay} from "@/entityTypes/scrapeType"
 import router from '@/views/router';
-import { SearchtaskdbEntity,SearchtaskItem } from "@/entityTypes/searchControlType"
+import { useRoute } from "vue-router";
+const $route = useRoute();
 const {t} = useI18n({inheritLocale: true});
+const taskid = ref<number>();
 
+const initialize = async () => {
+  if ($route.params.id) {
+    taskid.value = parseInt($route.params.id.toString());
+  }
+}
+onMounted(() => {
+  initialize();
+});
 // const campaignId = i18n.t("campaignId");
 type Fetchparam = {
     page: number,
     itemsPerPage: number,
     sortBy: string,
-    search: string
+    taskId: number
 }
 
 const FakeAPI = {
-    async fetch(fetchparam: Fetchparam): Promise<SearchResult<SearchtaskItem>> {
-        const fpage=(fetchparam.page-1)*fetchparam.itemsPerPage
-        return await listSearchresult({ page: fpage, size: fetchparam.itemsPerPage, sortby: fetchparam.sortBy, search: fetchparam.search })
+    async fetch(fetchparam: Fetchparam): Promise<SearchResult<SearchResEntityDisplay>> {
+        //const fpage=(fetchparam.page-1)*fetchparam.itemsPerPage
+        return await gettaskresult(fetchparam.taskId)
     }
 }
 
@@ -71,23 +60,23 @@ headers.value = [
         key: 'id',
     },
     {
-        title: computed(_ => t("search.search_enginer_name")),
+        title: computed(_ => t("searchresult.title")),
         align: 'start',
         sortable: false,
-        key: 'enginer_name',
+        key: 'title',
     },
     {
-        title: computed(_ => t("search.keyword")),
+        title: computed(_ => t("searchresult.link")),
         align: 'start',
         sortable: false,
-        key: 'keywordline',
+        key: 'link',
         // value: computed(value => value.join(', '))
     },
     {
-        title: computed(_ => t("searchresult.status")),
+        title: computed(_ => t("searchresult.keyword")),
         align: 'start',
         sortable: false,
-        key: 'status',
+        key: 'keyword',
     },
     {
         title: computed(_ => t("searchresult.record_time")),
@@ -98,19 +87,23 @@ headers.value = [
 
 ];
 const itemsPerPage = ref(10);
-const serverItems = ref<Array<SearchtaskItem>>([]);
+const serverItems = ref<Array<SearchResEntityDisplay>>([]);
 const loading = ref(false);
 const totalItems = ref(0);
 const search = ref('');
 
 function loadItems({ page, itemsPerPage, sortBy }) {
     loading.value = true
+    if(!taskid.value){
+        return
+    }
     // console.log(page);
     const fetchitem: Fetchparam = {
         page: page,
         itemsPerPage: itemsPerPage,
         sortBy: sortBy,
-        search: search.value
+        taskId:taskid.value
+        // search: search.value
     }
     FakeAPI.fetch(fetchitem).then(
         ({ data, total }) => {
@@ -126,12 +119,12 @@ function loadItems({ page, itemsPerPage, sortBy }) {
 }
 // },
 // }
-const editItem = (item) => {
+// const editItem = (item) => {
  
-};
-const openfolder=(item)=>{
-    // console.log(item)
+// };
+// const openfolder=(item)=>{
+//     // console.log(item)
     
-}
+// }
 
 </script>

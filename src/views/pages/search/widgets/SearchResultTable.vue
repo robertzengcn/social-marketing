@@ -70,7 +70,7 @@ const FakeAPI = {
 const headers=ref<Array<any>>([])
 headers.value = [
     {
-        title: computed(_ => t("searchresult.id")),
+        title: computed(_ => t("search.searchtask.id")),
         align: 'start',
         sortable: false,
         key: 'id',

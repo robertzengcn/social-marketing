@@ -146,7 +146,9 @@ onMounted(() => {
         });
       }
     } else {
+      if(res.data){
       setAlert(t(res.data.content), t('common.success'), "error");
+      }
       //handle failure
       //append msg to logs with red color
       // logs.value += res.data.content + "\n";

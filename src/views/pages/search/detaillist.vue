@@ -7,8 +7,8 @@
 <script setup lang="ts">
 
 import { ref } from 'vue';
-import SearchDetailTable from '@/views/pages/search/widgets/SearchresultTable.vue'
-const dialog = ref(false);
+import SearchDetailTable from '@/views/pages/search/widgets/SearchDetailTable.vue'
+//const dialog = ref(false);
 
 // onMounted(() => {
     

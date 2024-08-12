@@ -1,9 +1,10 @@
 import { ipcMain } from 'electron';
-import {SEARCHSCRAPERAPI,LISTSESARCHRESUT,SEARCHEVENT} from '@/config/channellist'
+import {SEARCHSCRAPERAPI,LISTSESARCHRESUT,SEARCHEVENT,TASKSEARCHRESULTLIST} from '@/config/channellist'
 import { CommonDialogMsg } from "@/entityTypes/commonType";
 import {Usersearchdata,SearchtaskItem } from "@/entityTypes/searchControlType"
 import {SearchController} from "@/controller/searchController"
 import {CommonResponse} from "@/entityTypes/commonType"
+import {SearchResEntity} from "@/entityTypes/scrapeType"
 export function registerSearchIpcHandlers() {
     ipcMain.on(SEARCHSCRAPERAPI, async (event, arg) => {
         
@@ -63,5 +64,19 @@ export function registerSearchIpcHandlers() {
         }
         return resp
         // return res as CommonResponse<SearchtaskEntityNum>;
+      });
+      //return the result list in search task
+      ipcMain.handle(TASKSEARCHRESULTLIST, async (event, data) => {
+        const searchControl = new SearchController()
+        const res=searchControl.listtaskSearchResult(data)
+        const resp:CommonResponse<SearchResEntity>={
+            status:true,
+            msg:"",
+            data:{
+                records: res.record,
+                num: res.total
+            }
+        }
+        return resp       
       });
 }

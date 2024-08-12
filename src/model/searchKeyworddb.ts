@@ -62,4 +62,12 @@ export class SearchKeyworddb {
       const keywordArr=stmt.all(taskId) as Array<KeywordEntity>;
       return keywordArr;
     }
+    //get keywords entity by keyword id
+    public getkeywrodsEntitybyId(keywordId:number):KeywordEntity{
+      const stmt = this.db.prepare(
+        `SELECT * FROM ` + this.searchKeywordTable + ` WHERE id=?`
+      );
+      const keyword=stmt.get(keywordId) as KeywordEntity;
+      return keyword;
+    }
 }

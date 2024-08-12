@@ -112,11 +112,15 @@ export default {
         keywords_empty:"keywords empty",
         page_number:"page number",
     },
+    searchtask:{
+        id:"Task Id",
+    },
     searchresult:{
         id:"Result Id",
+        link:"Link",
+        title:"title",
         record_time:"Record Time",
         keyword:"keyword",
         status:"Status",
-        
     }
 }
