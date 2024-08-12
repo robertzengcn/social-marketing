@@ -3,3 +3,8 @@ export type KeywordResponse = {
     msg: string,
     data?: Array<string>,
 }
+export type KeywordEntity = {
+    id: number,
+    keyword: string,
+    task_id: number,
+}

@@ -1,6 +1,7 @@
 import { Database } from 'better-sqlite3';
 //import { getRecorddatetime } from "@/modules/lib/function";
 import { Scraperdb } from "@/model/scraperdb";
+import {KeywordEntity} from "@/entityTypes/keywords-type"
 export class SearchKeyworddb {
     db: Database;
     searchKeywordTable = "search_keyword";
@@ -52,5 +53,13 @@ export class SearchKeyworddb {
       })
       console.log(res)
       return res;
+    }
+    //get keywords entity by task id
+    public getkeywrodsEntitybyTask(taskId:number):Array<KeywordEntity>{
+      const stmt = this.db.prepare(
+        `SELECT * FROM ` + this.searchKeywordTable + ` WHERE task_id=?`
+      );
+      const keywordArr=stmt.all(taskId) as Array<KeywordEntity>;
+      return keywordArr;
     }
 }

@@ -27,5 +27,13 @@ export class SearchResultdb {
         );
         return info.lastInsertRowid;
     }
-
+    public listSearchresult(keywords:Array<number>): SearchResEntity[] {
+        //join search keyword array with comma
+        const keywordStr = keywords.join(",");
+        const stmt = this.db.prepare(
+            `SELECT * FROM ` + this.searchResultTable+` WHERE keyword_id IN (?)` 
+        );
+        const res = stmt.all(keywordStr) as SearchResEntity[];
+        return res;
+    }
 }

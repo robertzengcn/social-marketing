@@ -165,5 +165,12 @@ export class searhModel {
     public updateTaskStatus(taskId:number,status:SearchTaskStatus){
         this.taskdbModel.updatetaskstatus(taskId,status)
     }
+    //get search result list by task id
+    public listSearchResult(taskId:number):Array<SearchResEntity>{
+       
+        const serResultModel=new SearchResultdb(this.dbpath)
+        const res=serResultModel.listSearchresult([taskId])
+        return res
+    }
     
 }
