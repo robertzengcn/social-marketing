@@ -139,11 +139,15 @@ export class searhModel {
         const tasklist=this.taskdbModel.listTask()
         const searchKeydb=new SearchKeyworddb(this.dbpath)
         const taskdata:Array<SearchtaskItem>=[]
+
         //convert task list to search item list
+        
         tasklist.forEach((item)=>{
+            console.log("item is follow")
+            console.log(item)
             const data:SearchtaskItem={
                 id:item.id,
-                enginer_name:this.convertNumtoSE(item.enginer_id),
+                enginer_name:this.convertNumtoSE(Math.round(item.enginer_id)),
                 status:this.taskdbModel.taskStatusToString(item.status),
                 keywords:searchKeydb.getkeywrodsbyTask(item.id),
                 record_time:item.record_time

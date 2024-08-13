@@ -36,3 +36,6 @@ export type SearchtaskItem = {
     status: string,
 
 }
+export type SearchDetailquery = {
+taskId: number
+}

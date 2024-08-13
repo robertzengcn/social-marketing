@@ -6,6 +6,7 @@ import * as fs from 'fs';
 import { CommonDialogMsg } from "@/entityTypes/commonType";
 import { Page } from 'puppeteer';
 import os from "os";
+import { contextIsolated } from "process";
 //import { utilityProcess, MessageChannelMain} from "electron";
 export type queryParams = {
   page: number,
@@ -378,6 +379,9 @@ export function getEnumKeyByValue(enumObj: any, value: string): number | undefin
   return undefined;
 }
 export function getEnumValueByNumber(enumObj: any, value: number): string | undefined {
+  // console.log(value)
+  // console.log(enumObj)
+  // console.log(enumObj[value])
   return enumObj[value];
 }
 

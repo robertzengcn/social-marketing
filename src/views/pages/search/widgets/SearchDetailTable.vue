@@ -22,16 +22,17 @@ import { gettaskresult } from '@/views/api/search'
 import { ref,computed,onMounted } from 'vue'
 import { SearchResult } from '@/views/api/types'
 import {SearchResEntityDisplay} from "@/entityTypes/scrapeType"
-import router from '@/views/router';
+//import router from '@/views/router';
 import { useRoute } from "vue-router";
 const $route = useRoute();
 const {t} = useI18n({inheritLocale: true});
-const taskid = ref<number>();
+const taskid = parseInt($route.params.id.toString());
 
 const initialize = async () => {
-  if ($route.params.id) {
-    taskid.value = parseInt($route.params.id.toString());
-  }
+console.log($route.params.id)
+//   if ($route.params.id) {
+//     taskid.value = parseInt($route.params.id.toString());
+//   }
 }
 onMounted(() => {
   initialize();
@@ -45,7 +46,9 @@ type Fetchparam = {
 }
 
 const FakeAPI = {
+
     async fetch(fetchparam: Fetchparam): Promise<SearchResult<SearchResEntityDisplay>> {
+        console.log(fetchparam)
         //const fpage=(fetchparam.page-1)*fetchparam.itemsPerPage
         return await gettaskresult(fetchparam.taskId)
     }
@@ -94,7 +97,8 @@ const search = ref('');
 
 function loadItems({ page, itemsPerPage, sortBy }) {
     loading.value = true
-    if(!taskid.value){
+    console.log(taskid)
+    if(!taskid){
         return
     }
     // console.log(page);
@@ -102,7 +106,7 @@ function loadItems({ page, itemsPerPage, sortBy }) {
         page: page,
         itemsPerPage: itemsPerPage,
         sortBy: sortBy,
-        taskId:taskid.value
+        taskId:taskid
         // search: search.value
     }
     FakeAPI.fetch(fetchitem).then(

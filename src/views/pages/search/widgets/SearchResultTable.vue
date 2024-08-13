@@ -23,19 +23,7 @@
           >
             mdi-folder
           </v-icon>
-            <v-icon
-            size="small"
-            class="me-2"
-            @click="editItem(item)"
-          >
-            mdi-pencil
-          </v-icon>
-          <v-icon
-            size="small"
-           
-          >
-            mdi-delete
-          </v-icon>
+
         </template>
     </v-data-table-server>
     
@@ -45,11 +33,11 @@
 <script setup lang="ts">
 import {useI18n} from "vue-i18n";
 import { listSearchresult } from '@/views/api/search'
-import { ref,computed } from 'vue'
+import { ref,computed,onMounted,onUnmounted } from 'vue'
 import { SearchResult } from '@/views/api/types'
 // import type { VDataTable } from 'vuetify/lib/components/index.mjs'
 import router from '@/views/router';
-import { SearchtaskdbEntity,SearchtaskItem } from "@/entityTypes/searchControlType"
+import {SearchtaskItem } from "@/entityTypes/searchControlType"
 const {t} = useI18n({inheritLocale: true});
 
 // const campaignId = i18n.t("campaignId");
@@ -68,10 +56,12 @@ const FakeAPI = {
 }
 
 const headers=ref<Array<any>>([])
+let refreshInterval:ReturnType<typeof setInterval> | undefined;
+
 headers.value = [
     {
         title: computed(_ => t("search.searchtask.id")),
-        align: 'start',
+        align: 'center',
         sortable: false,
         key: 'id',
     },
@@ -100,15 +90,26 @@ headers.value = [
         sortable: false,
         key: 'record_time',
     },
-
+    { title: 'Actions', key: 'actions', sortable: false },
 ];
 const itemsPerPage = ref(10);
 const serverItems = ref<Array<SearchtaskItem>>([]);
 const loading = ref(false);
 const totalItems = ref(0);
 const search = ref('');
+const startAutoRefresh = () => {
+    refreshInterval = setInterval(function(){
+        loadItems({ page: 1, itemsPerPage: 10, sortBy: "" });
+    }, 5000); // Refresh every 5 seconds
+}
+const stopAutoRefresh = () => {
+  if (refreshInterval) {
+    clearInterval(refreshInterval);
+    refreshInterval= undefined;
+  }
+};
 
-function loadItems({ page, itemsPerPage, sortBy }) {
+function loadItems({ page=1, itemsPerPage=10, sortBy="" }) {
     loading.value = true
     // console.log(page);
     const fetchitem: Fetchparam = {
@@ -131,7 +132,7 @@ function loadItems({ page, itemsPerPage, sortBy }) {
 }
 // },
 // }
-const editItem = (item) => {
+// const editItem = (item) => {
  
     // else if(item.Types=="social task"){
         
@@ -139,10 +140,20 @@ const editItem = (item) => {
     // router.push({
     //     path: '/graphics/oasis-engine',
     // });
-};
+// };
 const openfolder=(item)=>{
     // console.log(item)
-    
+    router.push({
+            name: 'Searchtaskdetail',params: { id: item.id } 
+     });
 }
+onMounted(() => {
+  
+  startAutoRefresh();
+});
+
+onUnmounted(() => {
+  stopAutoRefresh();
+});
 
 </script>
