@@ -39,3 +39,11 @@ export type SearchtaskItem = {
 export type SearchDetailquery = {
 taskId: number
 }
+
+export type SearchResultFetchparam = {
+    page: number,
+    itemsPerPage: number,
+    sortBy: string,
+    search: string
+    taskId:number
+}

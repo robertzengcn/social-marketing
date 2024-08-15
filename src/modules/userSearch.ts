@@ -10,6 +10,8 @@ import {SearchDataRun} from "@/entityTypes/scrapeType"
 export class UserSearch {
     public async searchData(data: Usersearchdata,callback?: (arg: SearchDataRun) => void):Promise<SearchDataRun> {
         //search data in search engineer
+       console.log(data)
+       console.log("show browser value is "+data.notShowBrowser)
         const smConfig: SMstruct = {
             headless: data.notShowBrowser,
             debug_level: 1,

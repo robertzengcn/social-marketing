@@ -38,6 +38,7 @@ import { SearchResult } from '@/views/api/types'
 // import type { VDataTable } from 'vuetify/lib/components/index.mjs'
 import router from '@/views/router';
 import {SearchtaskItem } from "@/entityTypes/searchControlType"
+import {CapitalizeFirstLetter} from "@/views/utils/function"
 const {t} = useI18n({inheritLocale: true});
 
 // const campaignId = i18n.t("campaignId");
@@ -60,32 +61,32 @@ let refreshInterval:ReturnType<typeof setInterval> | undefined;
 
 headers.value = [
     {
-        title: computed(_ => t("search.searchtask.id")),
+        title: computed(_ => CapitalizeFirstLetter(t("searchtask.id"))),
         align: 'center',
         sortable: false,
         key: 'id',
     },
     {
-        title: computed(_ => t("search.search_enginer_name")),
+        title: computed(_ => CapitalizeFirstLetter(t("search.search_enginer_name"))),
         align: 'start',
         sortable: false,
         key: 'enginer_name',
     },
     {
-        title: computed(_ => t("search.keyword")),
+        title: computed(_ => CapitalizeFirstLetter(t("search.keyword"))),
         align: 'start',
         sortable: false,
         key: 'keywordline',
         // value: computed(value => value.join(', '))
     },
     {
-        title: computed(_ => t("searchresult.status")),
+        title: computed(_ => CapitalizeFirstLetter(t("searchresult.status"))),
         align: 'start',
         sortable: false,
         key: 'status',
     },
     {
-        title: computed(_ => t("searchresult.record_time")),
+        title: computed(_ => CapitalizeFirstLetter(t("searchresult.record_time"))),
         align: 'start',
         sortable: false,
         key: 'record_time',

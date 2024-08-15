@@ -111,7 +111,7 @@ export class SearchController {
             const childdata=JSON.parse(message)
             if(childdata.action=="saveres"){
                 //save result
-                seModel.saveSearchResult(childdata.data)
+                seModel.saveSearchResult(childdata.data,taskId)
                 seModel.updateTaskStatus(taskId,SearchTaskStatus.Complete)
                 child.kill()
             }
@@ -125,9 +125,9 @@ export class SearchController {
         return res;
     }   
     //list task search result
-    public listtaskSearchResult(taskId:number):SearchResEntityRecord{
+    public listtaskSearchResult(taskId:number,page:number,size:number):SearchResEntityRecord{
         const seModel=new searhModel()
-        const res=seModel.listSearchResult(taskId)
+        const res=seModel.listSearchResult(taskId,page,size)
 
         const data:SearchResEntityRecord={
             total:res.length,

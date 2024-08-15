@@ -204,7 +204,7 @@ export type SearchDataRun = {
 
 export type SearchResEntity = {
   id?: number,
-  keywordId: number, 
+  keyword_id: number, 
   link: string, 
   title: string|null|undefined, 
   snippet: string|null|undefined, 
@@ -213,7 +213,7 @@ export type SearchResEntity = {
 }
 export interface SearchResEntityDisplay extends SearchResEntity {
   keyword:string, 
-
+  index?:number
 }
 export type SearchResEntityRecord = {
  record:Array<SearchResEntityDisplay>

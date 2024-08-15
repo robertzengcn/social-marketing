@@ -1,10 +1,11 @@
 import { ipcMain } from 'electron';
 import {SEARCHSCRAPERAPI,LISTSESARCHRESUT,SEARCHEVENT,TASKSEARCHRESULTLIST} from '@/config/channellist'
 import { CommonDialogMsg } from "@/entityTypes/commonType";
-import {Usersearchdata,SearchtaskItem,SearchDetailquery } from "@/entityTypes/searchControlType"
+import {Usersearchdata,SearchtaskItem,SearchDetailquery,SearchResultFetchparam } from "@/entityTypes/searchControlType"
 import {SearchController} from "@/controller/searchController"
 import {CommonResponse} from "@/entityTypes/commonType"
 import {SearchResEntity} from "@/entityTypes/scrapeType"
+
 export function registerSearchIpcHandlers() {
     ipcMain.on(SEARCHSCRAPERAPI, async (event, arg) => {
         
@@ -67,7 +68,7 @@ export function registerSearchIpcHandlers() {
       });
       //return the result list in search task
       ipcMain.handle(TASKSEARCHRESULTLIST, async (event, data) => {
-        const qdata = JSON.parse(data) as SearchDetailquery;
+        const qdata = JSON.parse(data) as SearchResultFetchparam;
         if (!("taskId" in qdata)) {
             const resp:CommonResponse<SearchResEntity>={
                 status:false,
@@ -78,7 +79,7 @@ export function registerSearchIpcHandlers() {
         }
         
         const searchControl = new SearchController()
-        const res=searchControl.listtaskSearchResult(qdata.taskId)
+        const res=searchControl.listtaskSearchResult(qdata.taskId,qdata.page,qdata.itemsPerPage)
         const resp:CommonResponse<SearchResEntity>={
             status:true,
             msg:"",

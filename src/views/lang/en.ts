@@ -101,7 +101,7 @@ export default {
     },
     search:{
         platform:"platform",
-        keyword:"keyword",
+        keyword:"Keyword",
         search_enginer_name:"search enginer",
         input_keywords_hint:"input keywords, per one per line",
         show_in_Browser:"show in browser",
@@ -116,11 +116,11 @@ export default {
         id:"Task Id",
     },
     searchresult:{
-        id:"Result Id",
-        link:"Link",
+        id:"id",
+        link:"link",
         title:"title",
-        record_time:"Record Time",
+        record_time:"record Time",
         keyword:"keyword",
-        status:"Status",
+        status:"status",
     }
 }

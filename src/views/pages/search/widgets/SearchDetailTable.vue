@@ -8,9 +8,9 @@
             <v-btn class="btn" variant="flat" prepend-icon="mdi-filter-variant"><span> {{$t('common.more')}}</span></v-btn>
         </div>     
     </div>
-    <v-data-table-server v-model:items-per-page="itemsPerPage" :search="search" :headers="headers"
+    <v-data-table-server v-model:items-per-page="itemsPerPage" :search="search" :headers="headers" 
         :items-length="totalItems" :items="serverItems" :loading="loading" item-value="name" @update:options="loadItems">
-        
+         
     </v-data-table-server>
     
     
@@ -24,6 +24,9 @@ import { SearchResult } from '@/views/api/types'
 import {SearchResEntityDisplay} from "@/entityTypes/scrapeType"
 //import router from '@/views/router';
 import { useRoute } from "vue-router";
+import { SearchResultFetchparam } from "@/entityTypes/searchControlType"
+import {CapitalizeFirstLetter} from "@/views/utils/function"
+
 const $route = useRoute();
 const {t} = useI18n({inheritLocale: true});
 const taskid = parseInt($route.params.id.toString());
@@ -42,47 +45,56 @@ type Fetchparam = {
     page: number,
     itemsPerPage: number,
     sortBy: string,
-    taskId: number
+    taskId: number,
+    search: string
 }
 
 const FakeAPI = {
 
     async fetch(fetchparam: Fetchparam): Promise<SearchResult<SearchResEntityDisplay>> {
         console.log(fetchparam)
-        //const fpage=(fetchparam.page-1)*fetchparam.itemsPerPage
-        return await gettaskresult(fetchparam.taskId)
+        const fpage=(fetchparam.page-1)*fetchparam.itemsPerPage
+        const param:SearchResultFetchparam={
+            page: fpage,
+            itemsPerPage: fetchparam.itemsPerPage,
+            sortBy: fetchparam.sortBy,
+            search: fetchparam.search,
+            taskId:fetchparam.taskId
+        }
+        return await gettaskresult(param)
+       
     }
 }
 
 const headers=ref<Array<any>>([])
 headers.value = [
     {
-        title: computed(_ => t("searchresult.id")),
+        title: computed(_ => CapitalizeFirstLetter(t("searchresult.id"))),
         align: 'start',
         sortable: false,
-        key: 'id',
+        key: 'index',
     },
     {
-        title: computed(_ => t("searchresult.title")),
+        title: computed(_ => CapitalizeFirstLetter(t("searchresult.title"))),
         align: 'start',
         sortable: false,
         key: 'title',
     },
     {
-        title: computed(_ => t("searchresult.link")),
+        title: computed(_ => CapitalizeFirstLetter(t("searchresult.link"))),
         align: 'start',
         sortable: false,
         key: 'link',
         // value: computed(value => value.join(', '))
     },
     {
-        title: computed(_ => t("searchresult.keyword")),
+        title: computed(_ => CapitalizeFirstLetter(t("searchresult.keyword"))),
         align: 'start',
         sortable: false,
         key: 'keyword',
     },
     {
-        title: computed(_ => t("searchresult.record_time")),
+        title: computed(_ => CapitalizeFirstLetter(t("searchresult.record_time"))),
         align: 'start',
         sortable: false,
         key: 'record_time',
@@ -97,7 +109,7 @@ const search = ref('');
 
 function loadItems({ page, itemsPerPage, sortBy }) {
     loading.value = true
-    console.log(taskid)
+    //console.log(taskid)
     if(!taskid){
         return
     }
@@ -106,13 +118,16 @@ function loadItems({ page, itemsPerPage, sortBy }) {
         page: page,
         itemsPerPage: itemsPerPage,
         sortBy: sortBy,
-        taskId:taskid
-        // search: search.value
+        taskId:taskid,
+        search: search.value
     }
     FakeAPI.fetch(fetchitem).then(
         ({ data, total }) => {
              console.log(data)
             // console.log(total)
+            data.map((item, index) => {
+                item.index = index + 1
+            })
         
             serverItems.value = data
             totalItems.value = total

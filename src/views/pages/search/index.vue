@@ -6,7 +6,7 @@
       <v-select v-model="enginer" :items="searchplatform" :label="$t('search.search_enginer_name') as string" required
         :readonly="loading" :rules="[rules.required]" class="mt-3"></v-select>
       <v-text-field v-model="concurrent_quantity" :label="$t('search.concurrent_quantity')" clearable
-        class="mt-3"></v-text-field>
+         class="mt-3"></v-text-field>
 
       <v-text-field v-model="page_number" :label="$t('search.page_number')" clearable class="mt-3"></v-text-field>
 

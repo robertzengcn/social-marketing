@@ -28,14 +28,14 @@ export class SearchKeyworddb {
         return info.lastInsertRowid;
     }
 
-    //get task id by keyword
-    public getKeywordId(keyword: string): number | bigint {
+    //get keyword id by keyword string and task id
+    public getKeywordId(keyword: string,taskId:number): number | bigint {
       const stmt = this.db.prepare(
-        `SELECT task_id FROM ` + this.searchKeywordTable + ` WHERE keyword=?`
+        `SELECT id FROM ` + this.searchKeywordTable + ` WHERE keyword=? and task_id=?`
       );
-      const info = stmt.get(keyword) as {task_id:number};
+      const info = stmt.get(keyword,taskId) as {id:number};
       if(info){
-      return info.task_id;
+      return info.id;
       }else{
         return 0
       }

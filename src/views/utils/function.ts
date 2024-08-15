@@ -7,9 +7,7 @@ export function SplitArrayIntoGroups<Type>(array: Type[], groupSize: number):Typ
         }
         return groups;
 }
-export function capitalizeFirstLetter(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
-}
+
 const StringIsNumber = value => isNaN(Number(value)) === false;
 export function ToArray(enumme) {
     return Object.keys(enumme)
@@ -22,3 +20,5 @@ export  function CapitalizeFirstLetter(string:string) {
 export function convertNumberToBoolean(num: number): boolean {
     return num !== 0;
   }
+
+

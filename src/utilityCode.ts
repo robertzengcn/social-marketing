@@ -55,7 +55,7 @@ process.parentPort.on('message', async (e) => {
                     return
                 }
                 const res=await userSer.searchData(userSearchdata)
-                    console.log(res)
+                    //console.log(res)
                     const message:ProcessMessage={
                         action:"saveres",
                         data:res

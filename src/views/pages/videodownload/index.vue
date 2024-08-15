@@ -133,7 +133,9 @@ onMounted(() => {
     if (res.status) {
       // if (res.code == 200) {
         //show message to user
+        if(res.data){
         setAlert(t(res.data.content), t('common.success'), "success");
+        }
       // } else {
       //   //handle other message
       //   //append msg to logs
