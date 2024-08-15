@@ -1,10 +1,10 @@
 import { RemoteSource, jwtUser } from '@/modules/remotesource'
 // import Store,{ Schema } from 'electron-store';
-import {getUserpath,checkAndCreatePath} from "@/modules/lib/function"
+import {getUserpath,checkAndCreatePath,getApplogspath} from "@/modules/lib/function"
 import { Scraperdb } from "@/model/scraperdb";
 // import * as fs from 'fs';
 // import * as path from 'path';
-import {USERSDBPATH} from '@/config/usersetting';
+import {USERSDBPATH,USERLOGPATH,USEREMAIL} from '@/config/usersetting';
 import { Token } from "@/modules/token"
 
 // import {Token} from "@/modules/token"
@@ -39,21 +39,20 @@ export class userController {
                 
                 //check db exist, create one if not exist
                 
-                console.log('test')
+                //console.log('test')
                 // store.set('useremail',res.email)
                 const userdataPath=getUserpath(res.email)
                 console.log(userdataPath)
                 // const schema: Schema<SchemaData> = {
                 //     // type: 'object',                 
-                //  userPath: { type: 'string' }
-     
-                // };
-                // // const store = new Store<SchemaData>({ schema });
-                // store.set('userPath',userdataPath)
+                const logPath=getApplogspath(res.email)
+
                 await checkAndCreatePath(userdataPath)
                 const tokenService=new Token()
                 //tokenService.setValue('useremail',res.email)
+                tokenService.setValue(USEREMAIL,res.email)
                 tokenService.setValue(USERSDBPATH,userdataPath)
+                tokenService.setValue(USERLOGPATH,logPath)
                 const scraperModel = Scraperdb.getInstance(userdataPath);
                 scraperModel.init()
                // if()

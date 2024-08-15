@@ -135,12 +135,12 @@ async function onSubmit() {
       keywords: subkeyword,
       num_pages: page_number.value,
       concurrency: concurrent_quantity.value,
-      notShowBrowser: convertNumberToBoolean(showinbrwoser.value)
+      notShowBrowser: !convertNumberToBoolean(showinbrwoser.value)
     }
     //split keywords one line per one
     // subdata.keywords=
     //submit form
-
+    console.log(subdata)
     submitScraper(subdata).catch(function (err) {
       //catch error
       setAlert(err.message, "Error", "error");

@@ -11,15 +11,17 @@ import { utilityProcess, MessageChannelMain} from "electron";
 import * as path from 'path';
 import * as fs from 'fs';
 import {searhModel} from "@/modules/searchModel"
-// import { Token } from "@/modules/token"
+import { Token } from "@/modules/token"
 // import {USERSDBPATH} from '@/config/usersetting';
 import {SearchDataParam} from "@/entityTypes/scrapeType"
 // import {SEARCHEVENT} from "@/config/channellist"
 import { SearchTaskStatus } from "@/model/searchTaskdb"
-import { SearchKeyworddb } from "@/model/searchKeyworddb";
+// import { SearchKeyworddb } from "@/model/searchKeyworddb";
 import { CustomError } from "@/modules/customError";
-import { SearchResEntityRecord,SearchResEntityDisplay } from "@/entityTypes/scrapeType"
-
+import { SearchResEntityRecord } from "@/entityTypes/scrapeType"
+import {USERLOGPATH,USEREMAIL} from '@/config/usersetting';
+import {WriteLog,getApplogspath,getRandomValues} from "@/modules/lib/function"
+import { v4 as uuidv4 } from 'uuid';
 export class SearchController {
     private searhModel:searhModel;
     
@@ -68,15 +70,21 @@ export class SearchController {
             throw new Error("child js path not exist for the path " + childPath);
         }
         const { port1, port2 } = new MessageChannelMain()
-        // const tokenService=new Token()
-        // const dbpath=await tokenService.getValue(USERSDBPATH)
-        // if(!dbpath){
-        //     throw new Error("user path not exist")
-        // }
-       // console.log(jsonData)
+        const tokenService=new Token()
+        
         const child = utilityProcess.fork(path.join(__dirname, 'utilityCode.js'), [],{stdio:"pipe",execArgv:["puppeteer-cluster:*"]} )
         console.log(path.join(__dirname, 'utilityCode.js'))
-        
+        let logpath=tokenService.getValue(USERLOGPATH)
+        if(!logpath){
+            const useremail=tokenService.getValue(USEREMAIL)
+            //create log path
+            logpath=getApplogspath(useremail)
+        }
+        console.log(logpath)
+        const uuid=uuidv4({random: getRandomValues(new Uint8Array(16))})
+        const errorLogfile=path.join(logpath,'search_',taskId.toString(),'_'+uuid,'.error.log')
+        const runLogfile=path.join(logpath,'search_',taskId.toString(),'_'+uuid,'.runtime.log')
+        console.log(errorLogfile)
         // child.postMessage({ message: 'hello' }, [port1])
         child.on("spawn", () => {
             console.log("child process satart, pid is"+child.pid)
@@ -90,11 +98,13 @@ export class SearchController {
         
         child.stdout?.on('data', (data) => {
             console.log(`Received data chunk ${data}`)
+            WriteLog(runLogfile,data)
            // child.kill()
         })
         child.stderr?.on('data', (data) => {
             seModel.saveTaskerrorlog(taskId,data)
             console.log(`Received error chunk ${data}`)
+            WriteLog(errorLogfile,data)
           
         })
         child.on("exit", (code) => {
@@ -128,9 +138,9 @@ export class SearchController {
     public listtaskSearchResult(taskId:number,page:number,size:number):SearchResEntityRecord{
         const seModel=new searhModel()
         const res=seModel.listSearchResult(taskId,page,size)
-
+        const total=seModel.countSearchResult(taskId)
         const data:SearchResEntityRecord={
-            total:res.length,
+            total:total,
             record:res
         }
         return data

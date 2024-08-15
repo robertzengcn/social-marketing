@@ -3,10 +3,11 @@ import { execSync,exec } from 'child_process';
 import { Notification,app } from 'electron'
 import * as yaml from 'js-yaml';
 import * as fs from 'fs';
-import { CommonDialogMsg } from "@/entityTypes/commonType";
+// import { CommonDialogMsg } from "@/entityTypes/commonType";
 import { Page } from 'puppeteer';
 import os from "os";
-import { contextIsolated } from "process";
+import * as crypto from 'crypto';
+// import { contextIsolated } from "process";
 //import { utilityProcess, MessageChannelMain} from "electron";
 export type queryParams = {
   page: number,
@@ -356,7 +357,10 @@ export function ToArray(enumme) {
 // }
 //return user's db path
 export function getUserpath(username:string):string{
-  return path.join(app.getPath("appData"),'socialmarket',username)
+  return path.join(app.getPath("userData"),username)
+}
+export function getApplogspath(username:string):string{
+  return path.join(app.getPath("logs"),username)
 }
 // check and create path
 export async function checkAndCreatePath(pathToCheck: string): Promise<void> {
@@ -383,6 +387,17 @@ export function getEnumValueByNumber(enumObj: any, value: number): string | unde
   // console.log(enumObj)
   // console.log(enumObj[value])
   return enumObj[value];
+}
+export function WriteLog(logPath:string,data: string): void {
+  const logEntry = `${new Date().toISOString()} - ${data}\n`;
+  fs.appendFile(logPath, logEntry, (err) => {
+    if (err) {
+      console.error('Failed to write to log file:', err);
+    }
+  });
+}
+export function getRandomValues(buf: Uint8Array): Uint8Array {
+  return crypto.randomFillSync(buf);
 }
 
 
