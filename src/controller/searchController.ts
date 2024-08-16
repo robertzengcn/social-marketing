@@ -82,18 +82,14 @@ export class SearchController {
         }
         console.log(logpath)
         const uuid=uuidv4({random: getRandomValues(new Uint8Array(16))})
-        const errorLogfile=path.join(logpath,'search_',taskId.toString(),'_'+uuid,'.error.log')
-        const runLogfile=path.join(logpath,'search_',taskId.toString(),'_'+uuid,'.runtime.log')
+        const errorLogfile=path.join(logpath,'search_'+taskId.toString()+'_'+uuid+'.error.log')
+        const runLogfile=path.join(logpath,'search_'+taskId.toString()+'_'+uuid+'.runtime.log')
         console.log(errorLogfile)
         // child.postMessage({ message: 'hello' }, [port1])
         child.on("spawn", () => {
             console.log("child process satart, pid is"+child.pid)
             child.postMessage(JSON.stringify({action:"searchscraper",data:data}),[port1])
-            // setInterval(() => {
-            //     child.postMessage({ message: 'hello from parent' })
-            //     child.postMessage({ data: jsonData })
-                
-            //   }, 1000); 
+            seModel.updateTaskLog(taskId,errorLogfile,runLogfile)
         })
         
         child.stdout?.on('data', (data) => {
@@ -105,7 +101,8 @@ export class SearchController {
             seModel.saveTaskerrorlog(taskId,data)
             console.log(`Received error chunk ${data}`)
             WriteLog(errorLogfile,data)
-          
+            seModel.updateTaskStatus(taskId,SearchTaskStatus.Error)
+            child.kill()
         })
         child.on("exit", (code) => {
             if (code !== 0) {

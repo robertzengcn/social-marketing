@@ -48,6 +48,7 @@ export class userController {
                 const logPath=getApplogspath(res.email)
 
                 await checkAndCreatePath(userdataPath)
+                await checkAndCreatePath(logPath)
                 const tokenService=new Token()
                 //tokenService.setValue('useremail',res.email)
                 tokenService.setValue(USEREMAIL,res.email)

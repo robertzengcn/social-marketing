@@ -10,8 +10,8 @@ import {SearchDataRun} from "@/entityTypes/scrapeType"
 export class UserSearch {
     public async searchData(data: Usersearchdata,callback?: (arg: SearchDataRun) => void):Promise<SearchDataRun> {
         //search data in search engineer
-    //    console.log(data)
-    //    console.log("show browser value is "+data.notShowBrowser)
+console.log(data)
+    console.log("concurrency value is "+data.concurrency)
         const smConfig: SMstruct = {
             headless: data.notShowBrowser,
             debug_level: 1,
@@ -19,8 +19,8 @@ export class UserSearch {
                 timeout: 30 * 60 * 1000, // max timeout set to 10 minutes
                 monitor: true,
                 concurrency: Cluster.CONCURRENCY_BROWSER,
-                // concurrency:data.concurrency, // one scraper per tab
-                maxConcurrency: data.concurrency, // scrape with 1 tab
+                //concurrency:data.concurrency, // one scraper per tab
+               maxConcurrency: data.concurrency, // scrape with 1 tab
             },
             num_pages: data.num_pages,
         }

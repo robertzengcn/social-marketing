@@ -154,8 +154,8 @@ export class searhModel {
         //convert task list to search item list
 
         tasklist.forEach((item) => {
-            console.log("item is follow")
-            console.log(item)
+            //console.log("item is follow")
+            //console.log(item)
             const data: SearchtaskItem = {
                 id: item.id,
                 enginer_name: this.convertNumtoSE(Math.round(item.enginer_id)),
@@ -220,6 +220,15 @@ export class searhModel {
             res.push(item.id)
         })
         return res
+    }
+    //update task runtime log and error log path
+    public updateTaskLog(taskId: number, runtimeLog: string, errorLog: string) {
+        if(runtimeLog){
+        this.taskdbModel.updateruntimelog(taskId, runtimeLog)
+        }
+        if(errorLog){
+        this.taskdbModel.updatetasklog(taskId, errorLog)
+        }
     }
 
 

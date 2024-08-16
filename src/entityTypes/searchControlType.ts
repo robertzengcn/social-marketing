@@ -8,7 +8,8 @@ export type Usersearchdata = {
     keywords: Array<string>,
     num_pages: number,
     concurrency: number,
-    notShowBrowser: boolean
+    notShowBrowser: boolean,
+    // maxConcurrent: number,
   }
 export type SearchDataParam={
     searchEnginer: number,

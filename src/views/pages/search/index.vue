@@ -135,7 +135,8 @@ async function onSubmit() {
       keywords: subkeyword,
       num_pages: page_number.value,
       concurrency: concurrent_quantity.value,
-      notShowBrowser: !convertNumberToBoolean(showinbrwoser.value)
+      notShowBrowser: !convertNumberToBoolean(showinbrwoser.value),
+      // maxConcurrent:concurrent_quantity.value
     }
     //split keywords one line per one
     // subdata.keywords=

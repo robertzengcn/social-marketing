@@ -5,7 +5,8 @@ import {SearhEnginer} from "@/config/searchSetting"
 import {SearchtaskdbEntity} from "@/entityTypes/searchControlType"
 export enum SearchTaskStatus{
   Processing=1,
-  Complete=2
+  Complete=2,
+  Error=3
 }
 export class SearchTaskdb {
     db: Database;
@@ -33,12 +34,21 @@ export class SearchTaskdb {
         );
         return info.lastInsertRowid;
     }
-    //update task error log
+    //update task error log path
     public updatetasklog(taskId:number,log:string){
       const stmt = this.db.prepare(
         `UPDATE ` +
           this.searchTaskTable +
           ` SET error_log=? WHERE id=?`
+      );
+      stmt.run(log,taskId)
+    }
+    //update task runtime log path
+    public updateruntimelog(taskId:number,log:string){
+      const stmt = this.db.prepare(
+        `UPDATE ` +
+          this.searchTaskTable +
+          ` SET runtime_log=? WHERE id=?`
       );
       stmt.run(log,taskId)
     }
@@ -77,6 +87,8 @@ export class SearchTaskdb {
           return "Processing";
         case SearchTaskStatus.Complete:
           return "Complete";
+        case SearchTaskStatus.Error:
+          return "Error";  
         default:
           return "Unknown";
       }
