@@ -4,14 +4,13 @@ import { SMstruct, SearchDataParam } from "@/entityTypes/scrapeType"
 import { Cluster } from "puppeteer-cluster"
 import { SearhEnginer } from "@/config/searchSetting"
 import { ToArray } from "@/modules/lib/function"
-import { i } from "vitest/dist/reporters-1evA5lom"
 import { CustomError } from "@/modules/customError"
 import {SearchDataRun} from "@/entityTypes/scrapeType"
 export class UserSearch {
     public async searchData(data: Usersearchdata,callback?: (arg: SearchDataRun) => void):Promise<SearchDataRun> {
         //search data in search engineer
-console.log(data)
-    console.log("concurrency value is "+data.concurrency)
+// console.log(data)
+    // console.log("concurrency value is "+data.concurrency)
         const smConfig: SMstruct = {
             headless: data.notShowBrowser,
             debug_level: 1,

@@ -1,6 +1,6 @@
 'use strict';
 import { expect, test } from 'vitest'
-import {UserSearch} from "@/modules/userSearch"
+import {UserSearch} from "@/childprocess/userSearch"
 import {Usersearchdata } from "@/entityTypes/searchControlType"
 
 test('user-search', async function () {

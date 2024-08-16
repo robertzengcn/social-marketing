@@ -1,7 +1,7 @@
 "use strict";
 export {};
 import {Usersearchdata} from "@/entityTypes/searchControlType"
-import {UserSearch} from "@/modules/userSearch"
+import {UserSearch} from "@/childprocess/userSearch"
 // import { resolveCname } from "node:dns";
 import {ProcessMessage} from "@/entityTypes/processMessage-type"
 // import { argv } from 'node:process';

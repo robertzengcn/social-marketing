@@ -2,26 +2,7 @@
 import { SearchScrape } from "@/modules/searchScraper"
 import { ScrapeOptions, SearchData,SearchResult } from "@/entityTypes/scrapeType"
 import { CustomError } from "@/modules/customError"
-// import debug from 'debug';
-// import { e } from "vitest/dist/reporters-1evA5lom";
-//import { R } from "vitest/dist/reporters-1evA5lom";
-// import { Page } from 'puppeteer';
-// import { promises } from "dns";
-// const logger = debug('SearchScrape');
 
-// type googleAdobjLinks = {
-//     tracking_link: string;
-//     link: string;
-//     title: string;
-// }
-// type googleAdobj = {
-//     visible_link?: string;
-//     tracking_link?: string;
-//     link: string;
-//     title: string;
-//     snippet: string;
-//     links?: Array<googleAdobjLinks>,
-// }
 
 export type googlePlaces = {
     heading: string;
@@ -236,7 +217,7 @@ export class BingScraper extends SearchScrape {
     }
 
     async load_start_page(): Promise<boolean | void> {
-        const startUrl = 'https://www.google.com/ncr';//ncr means no country redirect
+        const startUrl = 'https://www.bing.com';//ncr means no country redirect
 
         // if (this.config.google_settings) {
         //     startUrl = `https://www.${this.config.google_settings.google_domain}/search?q=`;
