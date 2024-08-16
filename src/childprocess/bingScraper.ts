@@ -219,20 +219,6 @@ export class BingScraper extends SearchScrape {
     async load_start_page(): Promise<boolean | void> {
         const startUrl = 'https://www.bing.com';//ncr means no country redirect
 
-        // if (this.config.google_settings) {
-        //     startUrl = `https://www.${this.config.google_settings.google_domain}/search?q=`;
-        //     if (this.config.google_settings.google_domain) {
-        //         startUrl = `https://www.${this.config.google_settings.google_domain}/search?`;
-        //     } else {
-        //         startUrl = `https://www.google.com/search?`;
-        //     }
-
-        //     for (var key in this.config.google_settings) {
-        //         if (key !== 'google_domain') {
-        //             startUrl += `${key}=${this.config.google_settings[key]}&`
-        //         }
-        //     }
-        // }
 
         this.logger.info('Using startUrl: ' + startUrl);
 
