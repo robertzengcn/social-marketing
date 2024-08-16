@@ -37,6 +37,22 @@ export function registerSearchIpcHandlers() {
             event.sender.send(SEARCHEVENT, JSON.stringify(comMsgs))
             return comMsgs
         }
+        if (typeof qdata.concurrency === 'string') {
+            qdata.concurrency = parseInt(qdata.concurrency, 10);
+            if (isNaN(qdata.concurrency)) {
+               // throw new Error("Invalid number format");
+               qdata.concurrency=1
+            }
+        }
+        if (typeof qdata.num_pages === 'string') {
+            qdata.num_pages = parseInt(qdata.num_pages, 10);
+            if (isNaN(qdata.num_pages)) {
+               // throw new Error("Invalid number format");
+               qdata.num_pages=1
+            }
+        }
+        
+
         const searchcon=new SearchController()
         await searchcon.searchData(qdata)
         const comMsgs: CommonDialogMsg = {

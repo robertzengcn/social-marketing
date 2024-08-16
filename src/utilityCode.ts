@@ -68,6 +68,6 @@ process.parentPort.on('message', async (e) => {
 
     }
   })
-setInterval(() => {
-    //do  nothing
-}, 1 << 30);
+// setInterval(() => {
+//     //do  nothing
+// }, 1 << 30);

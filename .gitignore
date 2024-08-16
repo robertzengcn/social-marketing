@@ -92,3 +92,5 @@ yt-auth/*
 dist
 .env.development
 .vite/*
+vite.main.config.mjs.timestamp-*.mjs
+vite.utilityCode.config.mjs.*.mjs

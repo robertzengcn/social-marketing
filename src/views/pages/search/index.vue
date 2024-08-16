@@ -3,13 +3,16 @@
     <v-form ref="form" @submit.prevent="onSubmit">
       <h3>{{ $t('search.use_hint') }}</h3>
       <v-textarea class="mt-3" v-model="keywords" :label="$t('search.input_keywords_hint')"></v-textarea>
-      <v-select v-model="enginer" :items="searchplatform" :label="$t('search.search_enginer_name') as string" required
+      <v-select 
+      v-model="enginer" :items="searchplatform" :label="$t('search.search_enginer_name') as string" required
         :readonly="loading" :rules="[rules.required]" class="mt-3"></v-select>
-      <v-text-field v-model="concurrent_quantity" :label="$t('search.concurrent_quantity')" clearable
-         class="mt-3"></v-text-field>
+      
 
       <v-text-field v-model="page_number" :label="$t('search.page_number')" clearable class="mt-3"></v-text-field>
-
+      
+      <v-text-field 
+      v-model="concurrent_quantity" :label="$t('search.concurrent_quantity')" clearable
+      class="mt-3"></v-text-field>
       <p>{{ capletter($t('search.show_in_Browser')) }}:</p>
       <v-btn-toggle v-model="showinbrwoser" mandatory class="mt-3">
         <v-btn :value="0" color="primary">No</v-btn>

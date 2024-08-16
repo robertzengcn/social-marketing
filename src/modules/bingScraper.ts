@@ -30,7 +30,7 @@ export type googlePlaces = {
     hours: string;
 }
 
-export class GoogleScraper extends SearchScrape {
+export class BingScraper extends SearchScrape {
     constructor(options: ScrapeOptions) {
         super(options);
     }

@@ -84,7 +84,8 @@ export class SearchController {
         const uuid=uuidv4({random: getRandomValues(new Uint8Array(16))})
         const errorLogfile=path.join(logpath,'search_'+taskId.toString()+'_'+uuid+'.error.log')
         const runLogfile=path.join(logpath,'search_'+taskId.toString()+'_'+uuid+'.runtime.log')
-        console.log(errorLogfile)
+       // console.log(errorLogfile)
+        console.log(data)
         // child.postMessage({ message: 'hello' }, [port1])
         child.on("spawn", () => {
             console.log("child process satart, pid is"+child.pid)
@@ -98,11 +99,15 @@ export class SearchController {
            // child.kill()
         })
         child.stderr?.on('data', (data) => {
+            if((!data.includes("Debugger attached"))&&(!data.includes("Waiting for the debugger to disconnect"))){
+                    
             seModel.saveTaskerrorlog(taskId,data)
             console.log(`Received error chunk ${data}`)
             WriteLog(errorLogfile,data)
             seModel.updateTaskStatus(taskId,SearchTaskStatus.Error)
-            child.kill()
+            //child.kill()
+            }
+            
         })
         child.on("exit", (code) => {
             if (code !== 0) {
