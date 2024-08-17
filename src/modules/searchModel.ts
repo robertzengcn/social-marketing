@@ -10,6 +10,8 @@ import { SearchResEntity, SearchResEntityDisplay, SearchDataRun } from "@/entity
 //import {SearchTaskdb} from "@/model/searchTaskdb"
 import { SearchtaskEntityNum, SearchtaskItem } from "@/entityTypes/searchControlType"
 import { getEnumKeyByValue, getEnumValueByNumber } from "@/modules/lib/function"
+import * as path from 'path';
+import * as fs from 'fs';
 
 export class searhModel {
     private dbpath: string
@@ -229,6 +231,24 @@ export class searhModel {
         if(errorLog){
         this.taskdbModel.updatetasklog(taskId, errorLog)
         }
+    }
+    //get task log by task id
+    public getTaskErrorLog(taskId: number): string  {
+        const task = this.taskdbModel.getTaskEntity(taskId)
+        if(!task){
+            throw new Error("task not exist")
+        }
+        try {
+            console.log(task)
+            const absolutePath = path.resolve(task.error_log);
+            const content = fs.readFileSync(absolutePath, 'utf-8');
+            return content;
+        } catch (error) {
+            console.error(`Error reading file at ${task.error_log}:`, error);
+            throw error;
+        }
+
+
     }
 
 

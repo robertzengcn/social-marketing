@@ -141,12 +141,18 @@ export class BingScraper extends SearchScrape {
                 bottom_ads: [],
                 // places: [],
             };
-         const searchRes= await this.page.$$eval('#search .MjjYud', elements =>
+         const searchRes= await this.page.$$eval('#b_results .b_algo', elements =>
             elements.map(el => {
-                const link=el.querySelector('.yuRUbf a')?.getAttribute('href')
+                const link=el.querySelector('.b_tpcn a')?.getAttribute('href')
                 
-                const title=el.querySelector('.yuRUbf a h3')?.textContent
-                
+                let title=el.querySelector('h2 a')?.textContent
+                if(!title){
+                    title=el.querySelector('.b_topTitle')?.textContent
+                }
+                let visible_link=el.querySelector('.tptt')?.textContent
+                if(!visible_link){
+                    visible_link=el.querySelector('.tptxt cite')?.textContent
+                }
                
                         const serp_obj:SearchResult  = {
                             // link: await (window as any)._attr(el, '.yuRUbf a', 'href'),
@@ -155,9 +161,10 @@ export class BingScraper extends SearchScrape {
                             // title: await (window as any)._text(el, '.yuRUbf a h3'),
                             title:title,
                             //snippet: await (window as any)._text(el, '.VwiC3b span'),
-                            snippet: el.querySelector('.VwiC3b span')?.textContent,
+                            snippet: el.querySelector('.b_caption p')?.textContent,
                             //visible_link: await (window as any)._text(el, '.yuRUbf cite'),
-                            visible_link: el.querySelector('.yuRUbf cite')?.textContent,
+                            visible_link: visible_link,
+                            
                             // date: _text(el, 'span.f'),
                         }
                         return serp_obj 
@@ -168,47 +175,47 @@ export class BingScraper extends SearchScrape {
             result.results.push(resValue);
         }
 
-        const topad=await this.page.$$eval('#tvcap .uEierd', elements =>elements.map(
-            el => async () =>{
-                const ad_obj: SearchResult = {
-                    // visible_link: _text(el, '.ads-visurl cite'),
-                    // tracking_link: _attr(el, 'a:first-child', 'href'),
-                    // link: await (window as any)._attr(el, 'a', 'href'),
-                    link: el.querySelector('a')?.getAttribute('href'),
-                    //title: await (window as any)._text(el, 'span:nth-child(2)'),
-                    title: el.querySelector('span:nth-child(2)')?.textContent,
-                    //snippet: await (window as any)._text(el, '.Va3FIb span'),
-                    snippet: el.querySelector('.Va3FIb span')?.textContent,
-                    // links: [],
-                };
+        // const topad=await this.page.$$eval('#tvcap .uEierd', elements =>elements.map(
+        //     el => async () =>{
+        //         const ad_obj: SearchResult = {
+        //             // visible_link: _text(el, '.ads-visurl cite'),
+        //             // tracking_link: _attr(el, 'a:first-child', 'href'),
+        //             // link: await (window as any)._attr(el, 'a', 'href'),
+        //             link: el.querySelector('a')?.getAttribute('href'),
+        //             //title: await (window as any)._text(el, 'span:nth-child(2)'),
+        //             title: el.querySelector('span:nth-child(2)')?.textContent,
+        //             //snippet: await (window as any)._text(el, '.Va3FIb span'),
+        //             snippet: el.querySelector('.Va3FIb span')?.textContent,
+        //             // links: [],
+        //         };
                
-                return ad_obj
-            }
-        ))
-        for( const tValue of topad){
-            const atValue = await tValue();
-            result.results.push(atValue)
-        }
-        const bottomAd=await this.page.$$eval('#tadsb .uEierd', elements =>elements.map(
-            el => async () =>{
-                const ad_obj: SearchResult = {
-                    // visible_link: _text(el, '.ads-visurl cite'),
-                    // tracking_link: _attr(el, 'a:first-child', 'href'),
-                    //link: await (window as any)._attr(el, 'a', 'href'),
-                    link: el.querySelector('a')?.getAttribute('href'),
-                    title:el.querySelector('span:nth-child(2)')?.textContent,
-                    //snippet: await (window as any)._text(el, '.Va3FIb span'),
-                    snippet: el.querySelector('.Va3FIb span')?.textContent,
-                    // links: [],
-                };
+        //         return ad_obj
+        //     }
+        // ))
+        // for( const tValue of topad){
+        //     const atValue = await tValue();
+        //     result.results.push(atValue)
+        // }
+        // const bottomAd=await this.page.$$eval('#tadsb .uEierd', elements =>elements.map(
+        //     el => async () =>{
+        //         const ad_obj: SearchResult = {
+        //             // visible_link: _text(el, '.ads-visurl cite'),
+        //             // tracking_link: _attr(el, 'a:first-child', 'href'),
+        //             //link: await (window as any)._attr(el, 'a', 'href'),
+        //             link: el.querySelector('a')?.getAttribute('href'),
+        //             title:el.querySelector('span:nth-child(2)')?.textContent,
+        //             //snippet: await (window as any)._text(el, '.Va3FIb span'),
+        //             snippet: el.querySelector('.Va3FIb span')?.textContent,
+        //             // links: [],
+        //         };
                
-                return ad_obj
-            }
-        ))
-        for( const tValue of bottomAd){
-            const atValue= await tValue();
-            result.results.push(atValue)
-        }
+        //         return ad_obj
+        //     }
+        // ))
+        // for( const tValue of bottomAd){
+        //     const atValue= await tValue();
+        //     result.results.push(atValue)
+        // }
         // const num=await this.page.$eval('#resultStats', el => el.textContent);
         // if(num){
         //     result.num_results = num;
@@ -250,7 +257,7 @@ export class BingScraper extends SearchScrape {
     }
     //click next page
     async next_page(): Promise<boolean | void> {
-        const next_page_link = await this.page.$('#pnnext');
+        const next_page_link = await this.page.$('.sb_pagN');
         if (!next_page_link) {
             //return false;
             const targetElement = await this.page.$('.RVQdVd')
@@ -270,7 +277,7 @@ export class BingScraper extends SearchScrape {
     }
 
     async wait_for_results() {
-        await this.page.waitForSelector('#fbar', { timeout: this.STANDARD_TIMEOUT });
+        await this.page.waitForSelector('#b_tween', { timeout: this.STANDARD_TIMEOUT });
     }
 
     async detected() {

@@ -23,6 +23,14 @@
           >
             mdi-folder
           </v-icon>
+          <v-icon 
+          size="small"
+          class="me-2"
+          v-if="item.status=='Error'" 
+          @click="downloadErrorlog(item)"
+          >
+          mdi-download
+          </v-icon>
 
         </template>
     </v-data-table-server>
@@ -32,7 +40,7 @@
 
 <script setup lang="ts">
 import {useI18n} from "vue-i18n";
-import { listSearchresult } from '@/views/api/search'
+import { listSearchresult,Errorlogquery } from '@/views/api/search'
 import { ref,computed,onMounted,onUnmounted } from 'vue'
 import { SearchResult } from '@/views/api/types'
 // import type { VDataTable } from 'vuetify/lib/components/index.mjs'
@@ -147,6 +155,15 @@ const openfolder=(item)=>{
     router.push({
             name: 'Searchtaskdetail',params: { id: item.id } 
      });
+    }
+const downloadErrorlog=(item)=>{
+    // console.log(item)
+    Errorlogquery(item.id).then((res)=>{
+        console.log(res)
+        // const url = window.URL.createObjectURL(new Blob([res.data]));
+        // const link = document.createElement('a');
+        // link.href
+    })
 }
 onMounted(() => {
   

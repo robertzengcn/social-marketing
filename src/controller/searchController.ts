@@ -90,7 +90,7 @@ export class SearchController {
         child.on("spawn", () => {
             console.log("child process satart, pid is"+child.pid)
             child.postMessage(JSON.stringify({action:"searchscraper",data:data}),[port1])
-            seModel.updateTaskLog(taskId,errorLogfile,runLogfile)
+            seModel.updateTaskLog(taskId,runLogfile,errorLogfile)
         })
         
         child.stdout?.on('data', (data) => {
@@ -101,7 +101,7 @@ export class SearchController {
         child.stderr?.on('data', (data) => {
             if((!data.includes("Debugger attached"))&&(!data.includes("Waiting for the debugger to disconnect"))){
                     
-            seModel.saveTaskerrorlog(taskId,data)
+            // seModel.saveTaskerrorlog(taskId,data)
             console.log(`Received error chunk ${data}`)
             WriteLog(errorLogfile,data)
             seModel.updateTaskStatus(taskId,SearchTaskStatus.Error)
@@ -146,6 +146,11 @@ export class SearchController {
             record:res
         }
         return data
+    }
+    public getTaskErrorlog(taskId:number):string{
+        const seModel=new searhModel()
+        const log=seModel.getTaskErrorLog(taskId)
+        return log
     }
 
 

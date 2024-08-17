@@ -93,5 +93,13 @@ export class SearchTaskdb {
           return "Unknown";
       }
     }
+    //get task by id
+    public getTaskEntity(taskId:number):SearchtaskdbEntity{
+      const stmt = this.db.prepare(
+        `SELECT * FROM ` +
+          this.searchTaskTable+` WHERE id=?`
+      );
+      return stmt.get(taskId) as SearchtaskdbEntity
+    }
     
 }
