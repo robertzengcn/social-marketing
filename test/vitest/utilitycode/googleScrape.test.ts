@@ -1,6 +1,6 @@
 'use strict';
 import { expect, test } from 'vitest'
-import {ScrapeManager} from "@/modules/scrapeManager"
+import {ScrapeManager} from "@/childprocess/scrapeManager"
 import {SMstruct,SearchDataParam} from "@/entityTypes/scrapeType"
 test('google-scraper', async function () {
     const smConfig:SMstruct={

@@ -63,7 +63,7 @@ export interface ScrapeOptions {
   context?: object,
   pluggable?: pluggableType,
   page?: Page,
-  browser:Browser
+  // browser:Browser
   // platform:string
 }
 // export type SMconfig = {

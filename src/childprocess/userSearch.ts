@@ -1,5 +1,5 @@
 import { Usersearchdata } from "@/entityTypes/searchControlType"
-import { ScrapeManager } from "@/modules/scrapeManager"
+import { ScrapeManager } from "@/childprocess/scrapeManager"
 import { SMstruct, SearchDataParam } from "@/entityTypes/scrapeType"
 import { Cluster } from "puppeteer-cluster"
 import { SearhEnginer } from "@/config/searchSetting"

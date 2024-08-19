@@ -473,7 +473,7 @@ export class ScrapeManager {
         context: this.context,
         // pluggable: this.pluggable,
         page: this.page,
-        browser: this.browser
+        // browser: this.browser
       }
       const obj = engineFactory.getSearchEngine(param.engine.toLowerCase(), scop)
       const boundMethod = obj.run.bind(obj);

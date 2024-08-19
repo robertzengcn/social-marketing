@@ -33,9 +33,9 @@ export class SearchScrape implements searchEngineImpl {
         if (options.page) {
             this.page = options.page;
         }
-        if(options.browser){
-            this.browser=options.browser;
-        }
+        // if(options.browser){
+        //     this.browser=options.browser;
+        // }
         this.last_response = null; // the last response object
         this.metadata = {
             scraping_detected: false,

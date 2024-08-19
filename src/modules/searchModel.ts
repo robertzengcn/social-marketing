@@ -100,7 +100,7 @@ export class searhModel {
                 // console.log(rvvalue)
                 console.log(rvvalue.value)
                 //defined an link array, for remove duplicate item
-
+                if(rvvalue.value){
                 rvvalue.value.forEach((item) => {
                     console.log(item)
                     if (item.link) {
@@ -119,6 +119,7 @@ export class searhModel {
                     }
 
                 })
+            }
                 // for (const [itemkey,itemvalue] of rvvalue){
                 //     console.log(itemkey)
                 //     console.log(itemvalue)
