@@ -1,15 +1,17 @@
 import { searchEngineImpl } from "@/modules/interface/searchEngineImpl"
-import { Page } from 'puppeteer';
+import { Page,Browser } from 'puppeteer';
 import { SMconfig, ScrapeOptions,clusterData,RunResult,ParseType,SearchData,ResultParseType } from "@/entityTypes/scrapeType"
 import { evadeChromeHeadlessDetection } from "@/modules/lib/function"
 import { get_http_headers, get_ip_data } from "@/modules/metadata"
 import debug from 'debug';
-import { map } from "jquery";
-const logger = debug('SearchScrape');
+
+
+// const logger = debug('SearchScrape');
 
 export class SearchScrape implements searchEngineImpl {
     config: SMconfig;
     page: Page
+    browser: Browser
     last_response: object | null;
     metadata: { http_headers?: object, ipinfo?: { ip: string }, scraping_detected?: boolean|void };
     pluggable?: ScrapeOptions["pluggable"];
@@ -30,6 +32,9 @@ export class SearchScrape implements searchEngineImpl {
     constructor(options: ScrapeOptions) {
         if (options.page) {
             this.page = options.page;
+        }
+        if(options.browser){
+            this.browser=options.browser;
         }
         this.last_response = null; // the last response object
         this.metadata = {

@@ -39,8 +39,8 @@ export class ScrapeManager {
   numClusters: number;
   tmppath: string;
   // runLogin: Function;
-  taskid?: number;
-  taskrunId?: number;
+  // taskid?: number;
+  // taskrunId?: number;
   // chrome_flags=[];
   constructor(config: SMstruct, context = {}) {
     // this.cluster = null;
@@ -467,11 +467,13 @@ export class ScrapeManager {
       //   taskrunid: config.taskrunid,
 
       // });
+      // const browser=this.browser
       const scop: ScrapeOptions = {
         config: this.config,
         context: this.context,
         // pluggable: this.pluggable,
         page: this.page,
+        browser: this.browser
       }
       const obj = engineFactory.getSearchEngine(param.engine.toLowerCase(), scop)
       const boundMethod = obj.run.bind(obj);

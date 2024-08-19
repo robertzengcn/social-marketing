@@ -142,8 +142,8 @@ export class BingScraper extends SearchScrape {
                 // places: [],
             };
          const searchRes= await this.page.$$eval('#b_results .b_algo', elements =>
-            elements.map(el => {
-                const link=el.querySelector('.b_tpcn a')?.getAttribute('href')
+            Promise.all(elements.map(async el =>  {
+                let link=el.querySelector('.b_tpcn a')?.getAttribute('href')
                 
                 let title=el.querySelector('h2 a')?.textContent
                 if(!title){
@@ -152,6 +152,18 @@ export class BingScraper extends SearchScrape {
                 let visible_link=el.querySelector('.tptt')?.textContent
                 if(!visible_link){
                     visible_link=el.querySelector('.tptxt cite')?.textContent
+                }
+                if(link?.indexOf('www.bing.com')==-1){
+                    // const response = await fetch(link, { method: 'GET' });
+                    // if(response.status==200){
+                    //     link=response.url
+                    // }
+                    const newPage = await this.browser.newPage();
+                    const response = await newPage.goto(link, { waitUntil: 'domcontentloaded' });
+                    if (response && response.status() === 200) {
+                        link = response.url();
+                    }
+                    await newPage.close();
                 }
                
                         const serp_obj:SearchResult  = {
@@ -169,9 +181,9 @@ export class BingScraper extends SearchScrape {
                         }
                         return serp_obj 
                     }
-        ))
-        for( const resValue of searchRes){
-           
+        )))
+        for( const resValuePromise of searchRes){
+            const resValue = await resValuePromise;
             result.results.push(resValue);
         }
 
@@ -234,25 +246,46 @@ export class BingScraper extends SearchScrape {
             timeout: 60000
           });
 
-        await this.page.waitForSelector('textarea[name="q"]', { timeout: this.STANDARD_TIMEOUT });
-
+        // await this.page.waitForSelector('textarea[name="q"]', { timeout: this.STANDARD_TIMEOUT });
+          
         return true;
     }
 
     async search_keyword(keyword: string) {
-        const input = await this.page.$('textarea[name="q"]');
-        if (input) {
-            await this.set_input_value(`textarea[name="q"]`, keyword);
+        const textareaSearch = await this.page.$('textarea[name="q"]');
+        if (textareaSearch) {
+
+            // await this.set_input_value(`textarea[name="q"]`, keyword);
+            await this.page.evaluate((element, value) => {
+                element.value = value;
+            }, textareaSearch, keyword);
             // await this.page.waitForTimeout(50);
             await this.page.evaluate(async () => {
                 await new Promise(function (resolve) {
                     setTimeout(resolve, 1000)
                 });
             });
-            await input.focus();
+            await textareaSearch.focus();
             await this.page.keyboard.press("Enter");
         } else {
-            throw new CustomError("input keyword button not found", 202405301120303)
+            const input = await this.page.$('input[name="q"]');
+            if(input){
+            // await this.set_input_value(`input[name="q"]`, keyword);
+            await this.page.evaluate((element, value) => {
+                element.value = value;
+            }, input, keyword);
+            // await this.page.waitForTimeout(50);
+            await this.page.evaluate(async () => {
+                await new Promise(function (resolve) {
+                    setTimeout(resolve, 1000)
+                });
+            });
+            
+            await input.focus();
+            await this.page.keyboard.press("Enter");
+            }else{
+            throw new CustomError("input keyword button not found", 202408191127280)
+            }
         }
     }
     //click next page

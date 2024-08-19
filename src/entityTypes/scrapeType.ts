@@ -1,4 +1,4 @@
-import { Page } from 'puppeteer';
+import { Browser, Page } from 'puppeteer';
 import winston from "winston"
 export type SMconfig = {
   logger: winston.Logger;
@@ -63,6 +63,7 @@ export interface ScrapeOptions {
   context?: object,
   pluggable?: pluggableType,
   page?: Page,
+  browser:Browser
   // platform:string
 }
 // export type SMconfig = {
