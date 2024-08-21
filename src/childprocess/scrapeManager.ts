@@ -270,6 +270,7 @@ export class ScrapeManager {
       let args = this.config.chrome_flags.concat([`--user-agent=${userAgent}`]);
 
       if (proxy) {
+        console.log("proxy is" + proxy)
         args = args.concat([`--proxy-server=${proxy}`]);
       }
 

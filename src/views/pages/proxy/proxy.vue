@@ -9,9 +9,9 @@ import { ref, onMounted } from 'vue';
 import ProxyTable from '@/views/pages/proxy/widgets/ProxyTable.vue'
 const dialog = ref(false);
 
-onMounted(() => {
+// onMounted(() => {
     
-});
+//});
 
 </script>
 <style lang="scss">

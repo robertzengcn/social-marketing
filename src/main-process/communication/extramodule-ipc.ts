@@ -7,10 +7,10 @@ export function registerExtraModulesIpcHandlers() {
   console.log("extramodules list register")
   ipcMain.handle(EXTRAMODULECHANNE_LIST, async (event, arg) => {
     const qdata = JSON.parse(arg);
-    if (!qdata.hasOwnProperty("page")) {
+    if (!Object.prototype.hasOwnProperty.call(qdata, "page")) {
       qdata.page = 0;
     }
-    if (!qdata.hasOwnProperty("size")) {
+    if (!Object.prototype.hasOwnProperty.call(qdata, "size")) {
       qdata.size = 100;
     }
     const extraModules = new ExtraModuleController

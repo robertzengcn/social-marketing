@@ -6,11 +6,28 @@ import { SearhEnginer } from "@/config/searchSetting"
 import { ToArray } from "@/modules/lib/function"
 import { CustomError } from "@/modules/customError"
 import {SearchDataRun} from "@/entityTypes/scrapeType"
+// import { ProxyController } from "@/controller/proxy-controller";
+import {proxyEntityToUrl} from "@/modules/lib/function"
+import { ProxyParseItem} from "@/entityTypes/proxyType"
+
 export class UserSearch {
     public async searchData(data: Usersearchdata,callback?: (arg: SearchDataRun) => void):Promise<SearchDataRun> {
-        //search data in search engineer
-// console.log(data)
-    // console.log("concurrency value is "+data.concurrency)
+
+        const proxyStrList:Array<string> = []
+        if (data.proxys) {
+               data.proxys.forEach((value, key) => {
+                   const proxyitem:ProxyParseItem = {
+                       host: value.host,
+                       port: value.port,
+                       user: value.user,
+                       pass: value.pass,
+                       protocol: value.protocol
+                   }
+                   const proxyStr=proxyEntityToUrl(proxyitem)
+                   proxyStrList.push(proxyStr)
+               })
+           }
+       
         const smConfig: SMstruct = {
             headless: data.notShowBrowser,
             debug_level: 1,
@@ -20,8 +37,10 @@ export class UserSearch {
                 concurrency: Cluster.CONCURRENCY_BROWSER,
                 //concurrency:data.concurrency, // one scraper per tab
                maxConcurrency: data.concurrency, // scrape with 1 tab
+               
             },
             num_pages: data.num_pages,
+            proxy: proxyStrList,
         }
         const keywords = data.keywords
          const scraper = new ScrapeManager(smConfig)

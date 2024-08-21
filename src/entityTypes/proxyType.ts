@@ -63,3 +63,10 @@ export interface SearchProxyResp extends SearchResult<ProxyListEntity>{
     data:ProxyListEntity[]
     total:number
 }
+export type GetProxyCountResp={
+    status:boolean,
+    code:number,
+    msg:string,
+    data:
+    {total:number}
+}

@@ -1,3 +1,5 @@
+import { proxy } from "jquery";
+
 export default {
     common:{
         more:"More",
@@ -111,6 +113,7 @@ export default {
         search_enginer_empty:"search enginer empty",
         keywords_empty:"keywords empty",
         page_number:"page number",
+        choose_proxy:"choose proxy",
     },
     searchtask:{
         id:"Task Id",
@@ -122,5 +125,9 @@ export default {
         record_time:"record Time",
         keyword:"keyword",
         status:"status",
+    },
+    proxy:{
+        add_proxy:"add proxy",
+        check_proxy:"check proxy",
     }
 }

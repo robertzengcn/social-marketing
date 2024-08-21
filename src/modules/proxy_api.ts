@@ -1,6 +1,6 @@
 export { };
 import { HttpClient } from "@/modules/lib/httpclient";
-import { ProxylistResp, ProxyEntity,SaveProxyResp,ProxyParseItem,ImportProxyResp } from "@/entityTypes/proxyType";
+import { ProxylistResp, ProxyEntity,SaveProxyResp,ProxyParseItem,ImportProxyResp,GetProxyCountResp } from "@/entityTypes/proxyType";
 export class ProxyApi {
   private _httpClient: HttpClient;
   constructor() {
@@ -99,5 +99,18 @@ export class ProxyApi {
       throw new Error("remote return empty");
     }
     return resp as ImportProxyResp;
+  }
+
+  public async getProxycount(): Promise<number> {
+    const resp = await this._httpClient.get("/api/proxy/count") as GetProxyCountResp;
+    if (!resp) {
+      throw new Error("remote return empty");
+    }
+    if(resp.status){
+      return resp.data.total
+    }else{
+      throw new Error(resp.msg)
+    }
+
   }
 }

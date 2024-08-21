@@ -1,3 +1,4 @@
+import {ProxyEntity} from './proxyType'
 export type SearchResponse={
     status:boolean,
     msg:string,
@@ -9,8 +10,12 @@ export type Usersearchdata = {
     num_pages: number,
     concurrency: number,
     notShowBrowser: boolean,
+    proxys?: Array<ProxyEntity>,
     // maxConcurrent: number,
   }
+  export interface UsersearchdataParam  extends Usersearchdata{
+    proxyIds?:Array<number>,
+  }  
 export type SearchDataParam={
     searchEnginer: number,
     keywords: Array<string>,

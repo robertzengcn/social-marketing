@@ -1,12 +1,13 @@
 import { SocialAccount } from "@/modules/socialaccount";
 import { BrowserWindow, session } from 'electron'
 import { AccountCookiesdb, AccountCookiesEntity } from "@/model/account_cookiesdb";
-import { ProxyController } from "./proxy-controller";
+//import { ProxyController } from "./proxy-controller";
 import { ProxyParseItem } from "@/entityTypes/proxyType";
 // import {showNotification} from "@/modules/lib/function"
 import { Token } from "@/modules/token"
 import {USERSDBPATH} from '@/config/usersetting';
 import {CustomError} from '@/modules/customError'
+import {proxyEntityToUrl} from "@/modules/lib/function"
 
 export class SocialAccountController {
     //open open and login social account
@@ -45,7 +46,7 @@ export class SocialAccountController {
 
             if (randomProxy.host && randomProxy.port) {
                 winTitle+=" Use proxy host:"+randomProxy.host+" port:"+randomProxy.port
-                const proxyCon = new ProxyController()
+                // const proxyCon = new ProxyController()
                 const proxyitem: ProxyParseItem = {
                     host: randomProxy.host,
                     port: randomProxy.port,
@@ -53,7 +54,7 @@ export class SocialAccountController {
                     pass: randomProxy.password,
                     protocol: randomProxy.protocol
                 }
-                const proxyUrl = proxyCon.proxyEntityToUrl(proxyitem)
+                const proxyUrl = proxyEntityToUrl(proxyitem)
                 // console.log(randomProxy.url)
                 //convert proxy to string
                 ses.setProxy({ proxyRules: proxyUrl }).then(() => {

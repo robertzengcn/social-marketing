@@ -7,7 +7,10 @@
             </div>
             <!-- <v-btn class="btn" variant="flat" prepend-icon="mdi-filter-variant"><span> More</span></v-btn> -->
             <v-btn class="btn ml-3" variant="flat" prepend-icon="mdi-plus" color="#5865f2" @click="createProxy()">
-                Create Proxy
+               {{$t('proxy.add_proxy')}}
+            </v-btn>
+            <v-btn class="btn ml-3" variant="flat" prepend-icon="mdi-plus" color="red" @click="checkProxy()">
+                {{$t('proxy.check_proxy')}}
             </v-btn>
             
         </div>
@@ -86,6 +89,8 @@ import { SearchResult } from '@/views/api/types'
 import {ProxyListEntity} from "@/entityTypes/proxyType"
 // import { useRoute } from "vue-router";
 import router from '@/views/router';
+import { useI18n } from "vue-i18n";
+const { t } = useI18n({ inheritLocale: true });
 type Fetchparam = {
     // id:number
     page: number,
@@ -216,7 +221,9 @@ const createProxy=()=>{
             name: 'AddProxy' 
         });
 }
-
+const checkProxy=()=>{
+    //check proxy available
+}
 
 
 

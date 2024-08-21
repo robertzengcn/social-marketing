@@ -6,12 +6,15 @@ import SyncMsg from "@/main-process/communication/sync-msg";
 import AsyncMsg from "@/main-process/communication/async-msg"
 import {BrowserWindow } from 'electron'
 import {registerSearchIpcHandlers} from "@/main-process/communication/search-ipc";
+import {registeProxyIpcHandlers} from "@/main-process/communication/proxy-ipc";
 export function registerCommunicationIpcHandlers(win: BrowserWindow) {
     SyncMsg(win)
     registerExtraModulesIpcHandlers()
     registerVideoIpcHandlers()
     registerSearchIpcHandlers()
+    registeProxyIpcHandlers()
     AsyncMsg()
     // Register extra modules IPC handlers
+    
     
 }

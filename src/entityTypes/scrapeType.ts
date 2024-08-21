@@ -1,4 +1,4 @@
-import { Browser, Page } from 'puppeteer';
+import { Page } from 'puppeteer';
 import winston from "winston"
 export type SMconfig = {
   logger: winston.Logger;
@@ -114,7 +114,7 @@ export type SMstruct = {
   // use a proxy for all connections
   // example: 'socks5://78.94.172.42:1080'
   // example: 'http://118.174.233.10:48400'
-  proxy?: string,
+  proxy?: Array<string>,
   // a file with one proxy per line. Example:
   // socks5://78.94.172.42:1080
   // http://118.174.233.10:48400

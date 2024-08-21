@@ -7,6 +7,7 @@ import * as fs from 'fs';
 import { Page } from 'puppeteer';
 import os from "os";
 import * as crypto from 'crypto';
+import {ProxyParseItem} from "@/entityTypes/proxyType"
 // import { contextIsolated } from "process";
 //import { utilityProcess, MessageChannelMain} from "electron";
 export type queryParams = {
@@ -398,6 +399,35 @@ export function WriteLog(logPath:string,data: string): void {
 }
 export function getRandomValues(buf: Uint8Array): Uint8Array {
   return crypto.randomFillSync(buf);
+}
+//convert proxy entity to url
+export function proxyEntityToUrl(proxyEntity: ProxyParseItem): string{
+  if (!proxyEntity.protocol) {
+      throw new Error("protocol is required");
+  }
+  if (!proxyEntity.host) {
+      throw new Error("host is required");
+  }
+  if (!proxyEntity.port) {
+      throw new Error("port is required");
+  }
+  let proxyUrl = "";
+  if (proxyEntity.protocol.includes('http')) {
+      if ((proxyEntity.user && (proxyEntity.user?.length > 0)) && (proxyEntity.pass && (proxyEntity.pass?.length > 0))) {
+          proxyUrl = `${proxyEntity.protocol}://${proxyEntity.user}:${proxyEntity.pass}@${proxyEntity.host}:${proxyEntity.port}`;
+      } else {
+          proxyUrl = `${proxyEntity.protocol}://${proxyEntity.host}:${proxyEntity.port}`;
+      }
+  } else if (proxyEntity.protocol.includes('socks')) {
+      // let socketType:4|5=5
+      // if(proxyEntity.protocol.includes('4')){
+      //     let socketType=4
+      // }
+      proxyUrl = `${proxyEntity.protocol}://${proxyEntity.host}:${proxyEntity.port}`;
+  } else {
+      throw new Error("protocol is not valid");
+  }
+  return proxyUrl;
 }
 
 

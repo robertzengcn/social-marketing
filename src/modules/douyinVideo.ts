@@ -3,10 +3,11 @@ import { checkPipPackage } from "@/modules/lib/function"
 import { exec } from 'child_process';
 import {videoScraper,douyinAppYaml} from "@/entityTypes/videoType"
 import {writeYamlFile,randomFileName} from "@/modules/lib/function"
-import {ProxyController} from "@/controller/proxy-controller"
+//import {ProxyController} from "@/controller/proxy-controller"
 import { app } from 'electron';
 import * as path from 'path'
 import {ProxyParseItem} from "@/entityTypes/proxyType"
+import {proxyEntityToUrl} from "@/modules/lib/function"
 
 
 export class douyinVideo implements Video {
@@ -31,14 +32,14 @@ export class douyinVideo implements Video {
     this.appfile=yamlFile
     this.cookies=videoScraper.cookies
     if(videoScraper.proxy&&videoScraper.proxy.host&&videoScraper.proxy.port){
-        const proxyCon=new ProxyController()
+       // const proxyCon=new ProxyController()
         const proxyitem: ProxyParseItem = {
             host: videoScraper.proxy.host,
             port: videoScraper.proxy.port,
             user: videoScraper.proxy.username,
             pass: videoScraper.proxy.password,
         }
-        this.proxy=proxyCon.proxyEntityToUrl(proxyitem)
+        this.proxy=proxyEntityToUrl(proxyitem)
         //this.proxy=videoScraper.proxy.ip+":"+videoScraper.proxy.port
     }
 

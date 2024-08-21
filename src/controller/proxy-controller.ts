@@ -7,6 +7,10 @@ import { HttpsProxyAgent } from 'https-proxy-agent';
 import { ProxyParseItem, ProxyCheckres } from "@/entityTypes/proxyType"
 // import * as url from 'url';
 import { socksDispatcher } from "fetch-socks";
+import { ProxyCheckdb, proxyCheckStatus } from "@/model/proxyCheckdb"
+import { Token } from "@/modules/token"
+import { USERSDBPATH } from '@/config/usersetting';
+import { ProxyApi } from "@/modules/proxy_api"
 export class ProxyController {
     //import proxy from csv file
     // public async importProxyfile(filename: string) {
@@ -21,8 +25,18 @@ export class ProxyController {
 
     //         }
     //     });
+    private proxyCheckdb: ProxyCheckdb
+    private proxyapi: ProxyApi
+    constructor() {
+        const tokenService = new Token()
+        const dbpath = tokenService.getValue(USERSDBPATH)
+        if (!dbpath) {
+            throw new Error("user path not exist")
+        }
 
-
+        this.proxyCheckdb = new ProxyCheckdb(dbpath)
+        this.proxyapi = new ProxyApi()
+    }
     //     //return proxy list
     //     const response = await fetch(filename);
     //     return response;
@@ -35,34 +49,7 @@ export class ProxyController {
         return results.data;
     }
     //convert proxy entity to url
-    public proxyEntityToUrl(proxyEntity: ProxyParseItem): string{
-        if (!proxyEntity.protocol) {
-            throw new Error("protocol is required");
-        }
-        if (!proxyEntity.host) {
-            throw new Error("host is required");
-        }
-        if (!proxyEntity.port) {
-            throw new Error("port is required");
-        }
-        let proxyUrl = "";
-        if (proxyEntity.protocol.includes('http')) {
-            if ((proxyEntity.user && (proxyEntity.user?.length > 0)) && (proxyEntity.pass && (proxyEntity.pass?.length > 0))) {
-                proxyUrl = `${proxyEntity.protocol}://${proxyEntity.user}:${proxyEntity.pass}@${proxyEntity.host}:${proxyEntity.port}`;
-            } else {
-                proxyUrl = `${proxyEntity.protocol}://${proxyEntity.host}:${proxyEntity.port}`;
-            }
-        } else if (proxyEntity.protocol.includes('socks')) {
-            // let socketType:4|5=5
-            // if(proxyEntity.protocol.includes('4')){
-            //     let socketType=4
-            // }
-            proxyUrl = `${proxyEntity.protocol}://${proxyEntity.host}:${proxyEntity.port}`;
-        } else {
-            throw new Error("protocol is not valid");
-        }
-        return proxyUrl;
-    }
+
     //check proxy valid
     public async checkProxy(proxyEntity: ProxyParseItem): Promise<ProxyCheckres> {
         try {
@@ -79,7 +66,7 @@ export class ProxyController {
                     proxyUrl = `${proxyEntity.protocol}://${proxyEntity.host}:${proxyEntity.port}`;
                 }
                 const agent = new HttpsProxyAgent(proxyUrl);
-                const res = await fetch('https://ident.me/ip', { agent: agent ,signal: AbortSignal.timeout( 2000 ),});
+                const res = await fetch('https://ident.me/ip', { agent: agent, signal: AbortSignal.timeout(2000), });
 
                 if (res.status == 200) {
                     console.log(res.status);
@@ -89,9 +76,9 @@ export class ProxyController {
                 return { status: false, msg: "proxy check failure, status code" + res.status.toString(), data: false };
                 // console.log('Proxy is valid');
             } else if (proxyEntity.protocol.includes('socks')) {
-                let socketType:4|5=5
-                if(proxyEntity.protocol.includes('4')){
-                    socketType=4
+                let socketType: 4 | 5 = 5
+                if (proxyEntity.protocol.includes('4')) {
+                    socketType = 4
                 }
                 // console.log(proxyEntity.host)
                 // console.log(proxyEntity.port)
@@ -114,12 +101,59 @@ export class ProxyController {
             }
         } catch (error) {
             // console.log('Proxy is not valid');
-            let message=""
-            if(error instanceof Error){
-                message=error.message
+            let message = ""
+            if (error instanceof Error) {
+                message = error.message
             }
-            throw new Error('Proxy is not valid,'+message);             
+            throw new Error('Proxy is not valid,' + message);
         }
     }
+    //check user's proxy and update db
+    public async updateProxyStatus(proxyEntity: ProxyParseItem, proxyID: number): Promise<ProxyCheckres> {
+
+        const res = await this.checkProxy(proxyEntity);
+        //update status to db
+        if (res.status) {
+            //update success status to db
+            this.proxyCheckdb.updateProxyCheck(proxyID, proxyCheckStatus.Success)
+        } else {
+            //update failure status to db
+            this.proxyCheckdb.updateProxyCheck(proxyID, proxyCheckStatus.Failure)
+        }
+        return res;
+    }
+    public async checkAllproxy(callback?: (arg: number,totalNum:number) => void): Promise<void> {
+        const proxyCount = await this.proxyapi.getProxycount()
+        if (proxyCount > 0) {
+            const size = 10
+            //get all proxy
+            for (let i = 0; i < proxyCount; i = i + 10) {
+                //check each proxy
+                await this.proxyapi.getProxylist(i, size, "").then(async function (res) {
+                    if (res.status) {
+                        if (res.data) {
+                            res.data.forEach(async (item) => {
+                                if (item.host && item.port && item.protocol) {
+                                    const element: ProxyParseItem = {
+                                        host: item.host,
+                                        port: item.port,
+                                        protocol: item.protocol,
+                                        user: item.username,
+                                        pass: item.password
+                                    }
+                                    await this.checkProxy(element)
+                                   if(callback){
+                                       callback(i,proxyCount)
+                                    }
+                                }
+                            });
+                        }
+                    }
+                })
+               
+            }
+        }
+    }
+
 
 }

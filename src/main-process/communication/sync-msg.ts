@@ -9,9 +9,9 @@ import { SocialTaskResult } from '@/modules/socialtask_result'
 import { User } from '@/modules/user'
 import { SocialAccount } from '@/modules/socialaccount'
 import { SocialPlatform } from "@/modules/social_platform"
-import { ProxyApi } from '@/modules/proxy_api'
-import { ProxyController } from '@/controller/proxy-controller'
-import { ProxyParseItem } from '@/entityTypes/proxyType'
+// import { ProxyApi } from '@/modules/proxy_api'
+// import { ProxyController } from '@/controller/proxy-controller'
+// import { ProxyParseItem } from '@/entityTypes/proxyType'
 import {CommonResponse} from "@/entityTypes/commonType"
 import {campaignEntity} from "@/entityTypes/campaign-type"
 import {OPENDIRECTORY,SOCIALPLATFORM_LIST} from "@/config/channellist"
@@ -113,7 +113,7 @@ export default function SyncMsg(mainWindow:BrowserWindow) {
   //get social task list
   ipcMain.handle("socialtask:list", async (event, data) => {
     const qdata = JSON.parse(data);
-    if (!qdata.hasOwnProperty("id")) {
+    if (!("id" in qdata)) {
       //throw new Error("id not found");
       return {
         status: false,
@@ -144,7 +144,7 @@ export default function SyncMsg(mainWindow:BrowserWindow) {
   //get social task info
   ipcMain.handle("socialtask:info", async (event, data) => {
     const qdata = JSON.parse(data);
-    if (!qdata.hasOwnProperty("id")) {
+    if (!("id" in qdata)) {
       //throw new Error("id not found");
       return {
         status: false,
@@ -249,17 +249,17 @@ export default function SyncMsg(mainWindow:BrowserWindow) {
 
   ipcMain.handle("socialtaskrun:list", async (event, data) => {
     const qdata = JSON.parse(data);
-    if (!qdata.hasOwnProperty("id")) {
+    if (!("id" in qdata)) {
       //throw new Error("id not found");
       return {
         status: false,
         msg: "id not found",
       };
     }
-    if (!qdata.hasOwnProperty("page")) {
+    if (!("page" in qdata)) {
       qdata.page = 10;
     }
-    if (!qdata.hasOwnProperty("size")) {
+    if (!("size" in qdata)) {
       qdata.size = 10;
     }
     const stkrunModel = new SocialTaskRun()
@@ -288,17 +288,17 @@ export default function SyncMsg(mainWindow:BrowserWindow) {
   });
   ipcMain.handle("socialtaskresult:list", async (event, data) => {
     const qdata = JSON.parse(data);
-    if (!qdata.hasOwnProperty("id")) {
+    if (!("id" in qdata)) {
       //throw new Error("id not found");
       return {
         status: false,
         msg: "id not found",
       };
     }
-    if (!qdata.hasOwnProperty("page")) {
+    if (!("page" in qdata)) {
       qdata.page = 10;
     }
-    if (!qdata.hasOwnProperty("size")) {
+    if (!("size" in qdata)) {
       qdata.size = 10;
     }
     const socialtaskres = new SocialTaskResult()
@@ -443,7 +443,7 @@ export default function SyncMsg(mainWindow:BrowserWindow) {
   //delete social account
   ipcMain.handle("socialaccount:delete", async (event, data) => {
     const qdata = JSON.parse(data);
-    if (!qdata.hasOwnProperty("id")) {
+    if (!("id" in qdata)) {
       //throw new Error("id not found");
       return {
         status: false,
@@ -470,135 +470,9 @@ export default function SyncMsg(mainWindow:BrowserWindow) {
 
     return res
   })
-  //get proxy list
-  ipcMain.handle("proxy:list", async (event, data) => {
-    const qdata = JSON.parse(data);
-    if (!qdata.hasOwnProperty("page")) {
-      qdata.page = 10;
-    }
-    if (!qdata.hasOwnProperty("size")) {
-      qdata.size = 10;
-    }
-    if (!qdata.hasOwnProperty("search")) {
-      qdata.search = "";
-    }
-    const proxyModule = new ProxyApi()
-    const res = await proxyModule.getProxylist(qdata.page, qdata.size, qdata.search).then(function (res) {
-      return res;
-    }).catch(function (err) {
-      console.log(err);
-      if (err instanceof Error) {
-        return {
-          status: false,
-          msg: err.message,
-        };
-      } else {
-        return {
-          status: false,
-          msg: "unknow error",
-        };
-      }
-    })
-    return res
-  })
-  ipcMain.handle("proxy:delete", async (event, data) => {
-    const qdata = JSON.parse(data);
-    if (!qdata.hasOwnProperty("id")) {
-      return {
-        status: false,
-        msg: "id not found",
-      };
-    }
-
-    const proxyModule = new ProxyApi()
-    const resp = await proxyModule.deleteProxy(qdata.id).then(function (res) {
-      return res;
-    }).catch(function (err) {
-      console.log(err);
-      if (err instanceof Error) {
-        return {
-          status: false,
-          msg: err.message,
-        };
-      } else {
-        return {
-          status: false,
-          msg: "unknow error",
-        };
-      }
-    })
-
-
-    return resp
-  })
-  ipcMain.handle("proxy:detail", async (event, data) => {
-    const qdata = JSON.parse(data);
-    if (!qdata.hasOwnProperty("id")) {
-      return {
-        status: false,
-        msg: "id not found",
-      };
-    }
-
-    const proxyModule = new ProxyApi()
-    const resp = await proxyModule.getProxyDetail(qdata.id).then(function (res) {
-      return res;
-    }).catch(function (err) {
-      console.log(err);
-      if (err instanceof Error) {
-        return {
-          status: false,
-          msg: err.message,
-        };
-      } else {
-        return {
-          status: false,
-          msg: "unknow error",
-        };
-      }
-    })
-    return resp
-  })
-  ipcMain.handle("proxy:save", async (event, data) => {
-    const qdata = JSON.parse(data);
-    const proxyModule = new ProxyApi()
-    const pres = await proxyModule.saveProxy(qdata).then(function (res) {
-      return res;
-    }).catch(function (err) {
-      console.log(err);
-      if (err instanceof Error) {
-        return {
-          status: false,
-          msg: err.message,
-        };
-      } else {
-        return {
-          status: false,
-          msg: "unknow error",
-        };
-      }
-    })
-    return pres
-  })
-  //check proxy
-  ipcMain.handle("proxy:check", async (event, data) => {
-    const qdata = JSON.parse(data) as ProxyParseItem;
-    
-    const proxyCon = new ProxyController()
-    const res=await proxyCon.checkProxy(qdata).catch(function (err) {
-      return {status:false,msg:err.message,data:false};
-    })
-    return res
-  })
-  //import proxy
-  ipcMain.handle("proxy:import", async (event, data) => {
-    const qdata = JSON.parse(data) as Array<ProxyParseItem>;
-    const proxyModel=new ProxyApi()
-    const res=await proxyModel.importProxy(qdata).catch(function (err) {
-      return {status:false,msg:err.message,data:false};
-    })
-    return res
-  })
+ 
+  
+  
   ipcMain.handle(OPENDIRECTORY, async () => {
     const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
       properties: ['openDirectory']
