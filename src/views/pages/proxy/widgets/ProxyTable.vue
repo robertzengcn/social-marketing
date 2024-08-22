@@ -83,13 +83,16 @@
 </template>
 
 <script setup lang="ts">
-import { getProxyList,deleteProxy} from '@/views/api/proxy'
-import { ref } from 'vue'
+import { getProxyList,deleteProxy,checkAllproxy,receiveProxycheckMsg} from '@/views/api/proxy'
+import { ref,onMounted,computed } from 'vue'
 import { SearchResult } from '@/views/api/types'
 import {ProxyListEntity} from "@/entityTypes/proxyType"
 // import { useRoute } from "vue-router";
 import router from '@/views/router';
 import { useI18n } from "vue-i18n";
+import { CommonMessage,NumProcessdata } from "@/entityTypes/commonType"
+import {CapitalizeFirstLetter} from "@/views/utils/function"
+
 const { t } = useI18n({ inheritLocale: true });
 type Fetchparam = {
     // id:number
@@ -112,36 +115,48 @@ const FakeAPI = {
 
 const headers: Array<any> = [
     {
-        title: 'Id',
+        title: computed(_ => CapitalizeFirstLetter(t("proxy.id"))),
         align: 'start',
         sortable: false,
         key: 'id',
     },
     {
-        title: 'Host',
+        title: computed(_ => CapitalizeFirstLetter(t("proxy.host"))),
         align: 'start',
         sortable: false,
         key: 'host',
     },
     {
-        title: 'User Name',
+        title: computed(_ => CapitalizeFirstLetter(t("proxy.user_name"))),
         align: 'start',
         sortable: false,
         key: 'user',
     },
     {
-        title: 'Pass',
+        title: computed(_ => CapitalizeFirstLetter(t("proxy.password"))),
         align: 'start',
         sortable: false,
         key: 'pass',
     },
     {
-        title: 'Protocol',
+        title: computed(_ => CapitalizeFirstLetter(t("proxy.protocol"))),
         align: 'start',
         sortable: false,
         key: 'protocol',
     },
-    { title: 'Actions', key: 'actions', sortable: false },
+    {
+        title: computed(_ => CapitalizeFirstLetter(t("proxy.status"))),
+        align: 'start',
+        sortable: false,
+        key: 'status',
+    },
+    {
+        title: computed(_ => CapitalizeFirstLetter(t("proxy.check_time"))),
+        align: 'start',
+        sortable: false,
+        key: 'checktime',
+    },
+    { title: computed(_ => CapitalizeFirstLetter(t("common.actions"))), key: 'actions', sortable: false },
 
 ];
 const itemsPerPage = ref(10);
@@ -223,7 +238,16 @@ const createProxy=()=>{
 }
 const checkProxy=()=>{
     //check proxy available
+    checkAllproxy()
 }
+
+onMounted(() => {
+    receiveProxycheckMsg((res:CommonMessage<NumProcessdata>)=>{
+        //revice system message
+       console.log(res)
+    })
+}
+)
 
 
 

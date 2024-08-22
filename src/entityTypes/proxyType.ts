@@ -25,13 +25,18 @@ export type ProxyListEntity={
     username?:string,
     password?:string,
     protocol?:string,
-    country_code?:string
+    country_code?:string    
     addtime:string,
+    checktime?:string,
+    status?:number
 }
 export type ProxylistResp={
     status:boolean,
     msg?:string,
-    data?:ProxyListEntity[]
+    data:{
+        total: number,
+        records:ProxyListEntity[]
+    }
 }
 export type SaveProxyResp={
     status:boolean,

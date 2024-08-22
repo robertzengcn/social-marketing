@@ -129,5 +129,12 @@ export default {
     proxy:{
         add_proxy:"add proxy",
         check_proxy:"check proxy",
+        status:"status",
+        id:"id",
+        host:"host",
+        user_name:"user name",
+        password:"password",
+        protocol:"protocol",
+        check_time:"check time",
     }
 }

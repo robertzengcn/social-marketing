@@ -1,13 +1,25 @@
 import { ipcMain } from 'electron';
-import {CHECKALLPROXY} from "@/config/channellist";
+import {CHECKALLPROXY,CHECKALLPROXYMESSAGE,} from "@/config/channellist";
 import { ProxyApi } from '@/modules/proxy_api'
 import { ProxyParseItem } from '@/entityTypes/proxyType'
 import { ProxyController } from '@/controller/proxy-controller'
+import { CommonMessage,NumProcessdata } from "@/entityTypes/commonType"
+
 export function registeProxyIpcHandlers() {
     
     ipcMain.on(CHECKALLPROXY, async (event, data) => {
         const proxyCon = new ProxyController()
-        await proxyCon.checkAllproxy()
+        await proxyCon.checkAllproxy(function(num, total) {
+            const messageData: CommonMessage<NumProcessdata> = {
+                status: true,
+                msg: "success",
+                data: {
+                    num: num,
+                    total: total
+                }
+            }
+            event.sender.send(CHECKALLPROXYMESSAGE, JSON.stringify(messageData))
+        })
     })
 
     ipcMain.handle("proxy:detail", async (event, data) => {
@@ -90,9 +102,9 @@ export function registeProxyIpcHandlers() {
     if (!("search" in qdata)) {
       qdata.search = "";
     }
-    const proxyModule = new ProxyApi()
-    const res = await proxyModule.getProxylist(qdata.page, qdata.size, qdata.search).then(function (res) {
-      return res;
+    const proxyCon = new ProxyController()
+    const res = await proxyCon.getProxylist(qdata.page, qdata.size, qdata.search).then(function (res) {
+    return res
     }).catch(function (err) {
       console.log(err);
       if (err instanceof Error) {

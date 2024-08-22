@@ -4,7 +4,7 @@ import Papa from 'papaparse';
 import fetch from 'node-fetch';
 import { fetch as undicifetch } from "undici";
 import { HttpsProxyAgent } from 'https-proxy-agent';
-import { ProxyParseItem, ProxyCheckres } from "@/entityTypes/proxyType"
+import { ProxyParseItem, ProxyCheckres, ProxylistResp } from "@/entityTypes/proxyType"
 // import * as url from 'url';
 import { socksDispatcher } from "fetch-socks";
 import { ProxyCheckdb, proxyCheckStatus } from "@/model/proxyCheckdb"
@@ -122,7 +122,7 @@ export class ProxyController {
         }
         return res;
     }
-    public async checkAllproxy(callback?: (arg: number,totalNum:number) => void): Promise<void> {
+    public async checkAllproxy(callback?: (arg: number, totalNum: number) => void): Promise<void> {
         const proxyCount = await this.proxyapi.getProxycount()
         if (proxyCount > 0) {
             const size = 10
@@ -132,7 +132,7 @@ export class ProxyController {
                 await this.proxyapi.getProxylist(i, size, "").then(async function (res) {
                     if (res.status) {
                         if (res.data) {
-                            res.data.forEach(async (item) => {
+                            res.data.records.forEach(async (item) => {
                                 if (item.host && item.port && item.protocol) {
                                     const element: ProxyParseItem = {
                                         host: item.host,
@@ -142,17 +142,48 @@ export class ProxyController {
                                         pass: item.password
                                     }
                                     await this.checkProxy(element)
-                                   if(callback){
-                                       callback(i,proxyCount)
+                                    if (callback) {
+                                        callback(i, proxyCount)
                                     }
                                 }
                             });
                         }
                     }
                 })
-               
+
             }
         }
+    }
+    public async getProxylist(page: number, size: number, search: string): Promise<ProxylistResp> {
+        const checkDb = this.proxyCheckdb
+        const res = await this.proxyapi.getProxylist(page, size, search).then(function (res) {
+            if (res.status) {
+
+                if (res.data) {
+                    // const pcdb=this.proxyCheckdb
+                    //loop data and get check status and check time
+                    if (res.data.records) {
+                        // res.data.records.map((item) => {
+
+                        //     const checkInfo = pcdb.getProxyCheck(item.id)
+                        //     item.status = checkInfo.status
+                        //     item.checktime = checkInfo.check_time
+                        // })
+                        for (let i = 0; i < res.data.records.length; i++) {
+                            if (res.data.records[i].id != undefined) {
+                                const checkInfo = checkDb.getProxyCheck(res.data.records[i].id!)
+                                if (checkInfo) {
+                                    res.data.records[i].status = checkInfo.status
+                                    res.data.records[i].checktime = checkInfo.check_time
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return res;
+        })
+        return res
     }
 
 

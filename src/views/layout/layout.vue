@@ -193,7 +193,9 @@ const Usersignout = async () => {
 onMounted(() => {
     receiveSystemMessage((res:CommonDialogMsg)=>{
         //revice system message
+        if(res.data){
         showDialog(res.status, res.data.title, res.data.content)
+        }
     })
 }
 )

@@ -1,6 +1,7 @@
 import { Database } from 'better-sqlite3';
 import { Scraperdb } from "@/model/scraperdb";
 import { getRecorddatetime } from "@/modules/lib/function";
+
 export enum proxyCheckStatus {
     Success = 1,
     Failure = 2,
@@ -41,6 +42,14 @@ export class ProxyCheckdb {
             );
             upStmt.run(proxyCheckStatus,recordtime, proxyId)
         }
+    }
+    //get proxy check status by proxy id
+    public getProxyCheck(proxyId: number):{ status: number, check_time: string } {
+        const stmt = this.db.prepare(
+            `SELECT status,check_time FROM ` + this.proxyCheckTable + ` WHERE proxy_id=?`
+        );
+        const info = stmt.get(proxyId) as { status: number, check_time: string };
+        return info;
     }
 
 }

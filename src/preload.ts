@@ -1,5 +1,7 @@
 import { contextBridge, ipcRenderer } from 'electron'
-import {EXTRAMODULECHANNE_LIST,EXTRAMODULECHANNE_INSTALL,EXTRAMODULECHANNE_UNINSTALL,EXTRAMODULECHANNE_MESSAGE,OPENDIRECTORY,SYSTEM_MESSAGE,VIDEODOWNLOAD_MESSAGE,VIDEODOWNLOAD,VIDEODOWNLOAD_LIST,SEARCHSCRAPERAPI,LISTSESARCHRESUT,SEARCHEVENT,TASKSEARCHRESULTLIST,SAVESEARCHERRORLOG} from "./config/channellist";
+import {EXTRAMODULECHANNE_LIST,EXTRAMODULECHANNE_INSTALL,EXTRAMODULECHANNE_UNINSTALL,EXTRAMODULECHANNE_MESSAGE,OPENDIRECTORY,SYSTEM_MESSAGE,VIDEODOWNLOAD_MESSAGE,VIDEODOWNLOAD,VIDEODOWNLOAD_LIST,SEARCHSCRAPERAPI,LISTSESARCHRESUT,SEARCHEVENT,TASKSEARCHRESULTLIST,SAVESEARCHERRORLOG
+  ,CHECKALLPROXY,CHECKALLPROXYMESSAGE
+} from "./config/channellist";
 
 // window.ipcRenderer = ipcRenderer
 // console.log('preload.js')
@@ -9,7 +11,8 @@ import {EXTRAMODULECHANNE_LIST,EXTRAMODULECHANNE_INSTALL,EXTRAMODULECHANNE_UNINS
 contextBridge.exposeInMainWorld('api', {
     send: (channel, data) => {
       // whitelist channels
-      const validChannels = ['user:Login','socialtask:start','socialtask:log','socialaccount:login','socialaccount:login:msg',EXTRAMODULECHANNE_INSTALL,EXTRAMODULECHANNE_MESSAGE,EXTRAMODULECHANNE_UNINSTALL,SYSTEM_MESSAGE,VIDEODOWNLOAD_MESSAGE,VIDEODOWNLOAD,SEARCHSCRAPERAPI]
+      const validChannels = ['user:Login','socialtask:start','socialtask:log','socialaccount:login','socialaccount:login:msg',EXTRAMODULECHANNE_INSTALL,EXTRAMODULECHANNE_MESSAGE,EXTRAMODULECHANNE_UNINSTALL,SYSTEM_MESSAGE,VIDEODOWNLOAD_MESSAGE,
+        VIDEODOWNLOAD,SEARCHSCRAPERAPI,CHECKALLPROXY]
       console.log('send',channel,data)
       if (validChannels.includes(channel)) {
         console.log('send2',channel,data)
@@ -17,7 +20,8 @@ contextBridge.exposeInMainWorld('api', {
       }
     },
     receive: (channel, func) => {
-      const validChannels = ['user:Login','socialtask:start','socialtask:log','socialaccount:login:msg',EXTRAMODULECHANNE_INSTALL,EXTRAMODULECHANNE_MESSAGE,EXTRAMODULECHANNE_UNINSTALL,SYSTEM_MESSAGE,VIDEODOWNLOAD_MESSAGE,VIDEODOWNLOAD,SEARCHSCRAPERAPI,SEARCHEVENT]
+      const validChannels = ['user:Login','socialtask:start','socialtask:log','socialaccount:login:msg',EXTRAMODULECHANNE_INSTALL,EXTRAMODULECHANNE_MESSAGE,EXTRAMODULECHANNE_UNINSTALL,SYSTEM_MESSAGE,VIDEODOWNLOAD_MESSAGE,VIDEODOWNLOAD,
+        SEARCHSCRAPERAPI,SEARCHEVENT,CHECKALLPROXYMESSAGE]
       const regex="/^socialtask:log:/"
 
       if (validChannels.includes(channel)||channel.test(regex)) {

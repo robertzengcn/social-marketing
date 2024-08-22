@@ -21,3 +21,12 @@ export type CommonDialogMsg={
         content:string
     }
 }
+export interface CommonMessage <Type>{
+    status: boolean
+    msg: string
+    data?: Type
+}
+export interface NumProcessdata{
+    total:number,
+    num:number
+}
