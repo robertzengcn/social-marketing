@@ -110,7 +110,8 @@ export class ProxyController {
     }
     //check user's proxy and update db
     public async updateProxyStatus(proxyEntity: ProxyParseItem, proxyID: number): Promise<ProxyCheckres> {
-
+    console.log("updateProxyStatus")
+    console.log(proxyEntity)
         const res = await this.checkProxy(proxyEntity);
         //update status to db
         if (res.status) {
@@ -129,7 +130,7 @@ export class ProxyController {
             //get all proxy
             for (let i = 0; i < proxyCount; i = i + 10) {
                 //check each proxy
-                await this.proxyapi.getProxylist(i, size, "").then(async function (res) {
+                const res=await this.proxyapi.getProxylist(i, size, "")
                     if (res.status) {
                         if (res.data) {
                             res.data.records.forEach(async (item) => {
@@ -141,7 +142,8 @@ export class ProxyController {
                                         user: item.username,
                                         pass: item.password
                                     }
-                                    await this.checkProxy(element)
+                                    console.log(element)
+                                    await this.updateProxyStatus(element, item.id!)
                                     if (callback) {
                                         callback(i, proxyCount)
                                     }
@@ -149,7 +151,7 @@ export class ProxyController {
                             });
                         }
                     }
-                })
+                //})
 
             }
         }

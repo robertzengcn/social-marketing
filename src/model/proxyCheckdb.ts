@@ -22,7 +22,7 @@ export class ProxyCheckdb {
             `SELECT proxy_id FROM ` + this.proxyCheckTable + ` WHERE proxy_id=?`
         );
         const info = checkstmt.get(proxyId) as { proxy_id: number };
-        if (!info.proxy_id) {
+        if (!info) {
             const stmt = this.db.prepare(
                 `INSERT INTO ` +
                 this.proxyCheckTable +
