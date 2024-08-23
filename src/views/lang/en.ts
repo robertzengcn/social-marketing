@@ -136,5 +136,6 @@ export default {
         password:"password",
         protocol:"protocol",
         check_time:"check time",
+        check_proxy_tip:"check the {number} proxy, total {total}",
     }
 }

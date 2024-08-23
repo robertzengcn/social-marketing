@@ -66,6 +66,6 @@ export async function checkAllproxy(): Promise<void> {
     console.log("checkAllproxy")
     await windowSend(CHECKALLPROXY,{});
 }
-export function receiveProxycheckMsg(cb:(data:CommonMessage<NumProcessdata>)=>void){
+export function receiveProxycheckMsg(cb:(data:string)=>void){
     windowReceive(CHECKALLPROXYMESSAGE,cb)
 }

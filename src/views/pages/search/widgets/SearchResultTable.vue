@@ -41,13 +41,19 @@
 <script setup lang="ts">
 import {useI18n} from "vue-i18n";
 import { listSearchresult,Errorlogquery } from '@/views/api/search'
-import { ref,computed,onMounted,onUnmounted } from 'vue'
+import { ref,computed,onMounted,onUnmounted,reactive } from 'vue'
 import { SearchResult } from '@/views/api/types'
 // import type { VDataTable } from 'vuetify/lib/components/index.mjs'
 import router from '@/views/router';
 import {SearchtaskItem } from "@/entityTypes/searchControlType"
 import {CapitalizeFirstLetter} from "@/views/utils/function"
 const {t} = useI18n({inheritLocale: true});
+
+
+const options = reactive({
+      page: 1, // Initial page
+      itemsPerPage: 10, // Items per page
+    });
 
 // const campaignId = i18n.t("campaignId");
 type Fetchparam = {
@@ -104,11 +110,12 @@ headers.value = [
 const itemsPerPage = ref(10);
 const serverItems = ref<Array<SearchtaskItem>>([]);
 const loading = ref(false);
+
 const totalItems = ref(0);
 const search = ref('');
 const startAutoRefresh = () => {
     refreshInterval = setInterval(function(){
-        loadItems({ page: 1, itemsPerPage: 10, sortBy: "" });
+        loadItems({ page: options.page, itemsPerPage: itemsPerPage.value, sortBy: "" });
     }, 5000); // Refresh every 5 seconds
 }
 const stopAutoRefresh = () => {
@@ -119,6 +126,7 @@ const stopAutoRefresh = () => {
 };
 
 function loadItems({ page=1, itemsPerPage=10, sortBy="" }) {
+    options.page = page;
     loading.value = true
     // console.log(page);
     const fetchitem: Fetchparam = {

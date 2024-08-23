@@ -109,19 +109,24 @@ export class ProxyController {
         }
     }
     //check user's proxy and update db
-    public async updateProxyStatus(proxyEntity: ProxyParseItem, proxyID: number): Promise<ProxyCheckres> {
+    public async updateProxyStatus(proxyEntity: ProxyParseItem, proxyID: number): Promise<void> {
     console.log("updateProxyStatus")
     console.log(proxyEntity)
-        const res = await this.checkProxy(proxyEntity);
+        await this.checkProxy(proxyEntity).then((res) => {
+            if (res.status) {
+                //update success status to db
+                this.proxyCheckdb.updateProxyCheck(proxyID, proxyCheckStatus.Success)
+            } else {
+                //update failure status to db
+                this.proxyCheckdb.updateProxyCheck(proxyID, proxyCheckStatus.Failure)
+            }
+        }).catch((error) => {
+            console.log(error)
         //update status to db
-        if (res.status) {
-            //update success status to db
-            this.proxyCheckdb.updateProxyCheck(proxyID, proxyCheckStatus.Success)
-        } else {
-            //update failure status to db
-            this.proxyCheckdb.updateProxyCheck(proxyID, proxyCheckStatus.Failure)
-        }
-        return res;
+        this.proxyCheckdb.updateProxyCheck(proxyID, proxyCheckStatus.Failure)
+        })
+        
+        
     }
     public async checkAllproxy(callback?: (arg: number, totalNum: number) => void): Promise<void> {
         const proxyCount = await this.proxyapi.getProxycount()
@@ -143,7 +148,10 @@ export class ProxyController {
                                         pass: item.password
                                     }
                                     console.log(element)
-                                    await this.updateProxyStatus(element, item.id!)
+                                    await this.updateProxyStatus(element, item.id!).catch((error) => {
+                                        console.log(error)
+
+                                    })
                                     if (callback) {
                                         callback(i, proxyCount)
                                     }

@@ -9,15 +9,19 @@
             <v-btn class="btn ml-3" variant="flat" prepend-icon="mdi-plus" color="#5865f2" @click="createProxy()">
                {{$t('proxy.add_proxy')}}
             </v-btn>
-            <v-btn class="btn ml-3" variant="flat" prepend-icon="mdi-plus" color="red" @click="checkProxy()">
-                {{$t('proxy.check_proxy')}}
+            <v-btn class="btn ml-3" 
+            variant="flat" 
+            prepend-icon="mdi-plus" color="red" 
+            :loading="checkloading"
+            @click="checkProxy()">
+                {{checkButtonName}}
             </v-btn>
             
         </div>
         <div>       
         </div>
     </div>
-    <v-data-table-server v-model:items-per-page="itemsPerPage" :search="search" :headers="headers"
+    <v-data-table-server class="mt-3" v-model:items-per-page="itemsPerPage" :search="search" :headers="headers"
         :items-length="totalItems" :items="serverItems" :loading="loading" item-value="name" @update:options="loadItems">
         <template v-slot:[`item.actions`]="{ item }">
             <v-icon
@@ -84,7 +88,7 @@
 
 <script setup lang="ts">
 import { getProxyList,deleteProxy,checkAllproxy,receiveProxycheckMsg} from '@/views/api/proxy'
-import { ref,onMounted,computed } from 'vue'
+import { ref,onMounted,computed,reactive } from 'vue'
 import { SearchResult } from '@/views/api/types'
 import {ProxyListEntity} from "@/entityTypes/proxyType"
 // import { useRoute } from "vue-router";
@@ -92,8 +96,13 @@ import router from '@/views/router';
 import { useI18n } from "vue-i18n";
 import { CommonMessage,NumProcessdata } from "@/entityTypes/commonType"
 import {CapitalizeFirstLetter} from "@/views/utils/function"
-
+import { json } from 'stream/consumers';
+let refreshInterval:ReturnType<typeof setInterval> | undefined;
 const { t } = useI18n({ inheritLocale: true });
+const options = reactive({
+      page: 1, // Initial page
+      itemsPerPage: 10, // Items per page
+    });
 type Fetchparam = {
     // id:number
     page: number,
@@ -101,7 +110,7 @@ type Fetchparam = {
     sortBy: string,
     search: string
 }
-
+const checkButtonName=ref("")
 const FakeAPI = {
     async fetch(fetchparam: Fetchparam): Promise<SearchResult<ProxyListEntity>> {
         // console.log(fetchparam.search)
@@ -162,6 +171,7 @@ const headers: Array<any> = [
 const itemsPerPage = ref(10);
 const serverItems = ref<Array<ProxyListEntity>>();
 const loading = ref(false);
+const checkloading=ref(false);
 const totalItems = ref(0);
 const search = ref('');
 // const $route = useRoute();
@@ -170,8 +180,21 @@ const deleteId=ref(0);
 const showDialog= ref(false);
 const alertext=ref("");
 
+const startAutoRefresh = () => {
+    refreshInterval = setInterval(function(){
+        loadItems({ page: options.page, itemsPerPage: itemsPerPage.value, sortBy: "" });
+    }, 5000); // Refresh every 5 seconds
+}
+const stopAutoRefresh = () => {
+  if (refreshInterval) {
+    clearInterval(refreshInterval);
+    refreshInterval= undefined;
+  }
+};
+
 
 function loadItems({ page, itemsPerPage, sortBy }) {
+    options.page = page;
     loading.value = true
     const fetchitem: Fetchparam = {
         // id:parseInt(campaignId),
@@ -239,12 +262,26 @@ const createProxy=()=>{
 const checkProxy=()=>{
     //check proxy available
     checkAllproxy()
+    startAutoRefresh()
 }
 
 onMounted(() => {
-    receiveProxycheckMsg((res:CommonMessage<NumProcessdata>)=>{
+    checkButtonName.value=t('proxy.check_proxy')
+    console.log(checkButtonName.value)
+    receiveProxycheckMsg((res:string)=>{
         //revice system message
        console.log(res)
+       const rest=JSON.parse(res) as CommonMessage<NumProcessdata>
+       if(rest&&rest.status){
+        console.log(rest.data)
+            
+              checkButtonName.value=t('proxy.check_proxy_tip',{number:rest.data?.num,total:rest.data?.total})
+              if((rest.data?.num)&&(rest.data?.total)&&rest.data?.num>=rest.data?.total){
+                checkloading.value=false;
+                stopAutoRefresh()
+              }
+             
+       }
     })
 }
 )

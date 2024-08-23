@@ -26,7 +26,7 @@ export class ProxyCheckdb {
             const stmt = this.db.prepare(
                 `INSERT INTO ` +
                 this.proxyCheckTable +
-                ` (proxy,status,check_time) VALUES (?,?,?)`
+                ` (proxy_id,status,check_time) VALUES (?,?,?)`
             );
             stmt.run(
                 proxyId,
