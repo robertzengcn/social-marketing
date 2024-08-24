@@ -136,6 +136,9 @@ export default {
         password:"password",
         protocol:"protocol",
         check_time:"check time",
-        check_proxy_tip:"check the {number} proxy, total {total}",
+        check_proxy_tip:"checking the proxy, process is {process}%",
+        pass:"pass",
+        failure:"failure",
+        remove_failure:"remove failure proxy",
     }
 }

@@ -29,6 +29,7 @@ export type ProxyListEntity={
     addtime:string,
     checktime?:string,
     status?:number
+    statusName?:string
 }
 export type ProxylistResp={
     status:boolean,

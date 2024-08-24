@@ -38,7 +38,7 @@ export class ProxyCheckdb {
             const upStmt = this.db.prepare(
                 `UPDATE ` +
                 this.proxyCheckTable +
-                ` SET status =? and check_time=? WHERE id=?`
+                ` SET status =? and check_time=? WHERE proxy_id=?`
             );
             upStmt.run(proxyCheckStatus,recordtime, proxyId)
         }
@@ -50,6 +50,21 @@ export class ProxyCheckdb {
         );
         const info = stmt.get(proxyId) as { status: number, check_time: string };
         return info;
+    }
+    //get proxy by status
+    public getProxyByStatus(status: proxyCheckStatus): Array<{ proxy_id: number }>{
+        const stmt = this.db.prepare(
+            `SELECT proxy_id FROM ` + this.proxyCheckTable + ` WHERE status=?`
+        );
+        const info = stmt.all(status) as Array<{ proxy_id: number }>;
+        return info;
+    }
+    //delete record by proxy id
+    public deleteProxyCheck(proxyId: number) {
+        const stmt = this.db.prepare(
+            `DELETE FROM ` + this.proxyCheckTable + ` WHERE proxy_id=?`
+        );
+        stmt.run(proxyId)
     }
 
 }

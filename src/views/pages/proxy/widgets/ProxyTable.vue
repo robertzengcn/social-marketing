@@ -11,10 +11,17 @@
             </v-btn>
             <v-btn class="btn ml-3" 
             variant="flat" 
-            prepend-icon="mdi-plus" color="red" 
+            prepend-icon="mdi-check" color="red" 
             :loading="checkloading"
             @click="checkProxy()">
                 {{checkButtonName}}
+            </v-btn>
+            <v-btn class="btn ml-3" 
+            variant="flat" 
+            prepend-icon="mdi-delete" color="red" 
+            :loading="checkloading"
+            @click="removefailure()">
+            {{$t('proxy.remove_failure')}}
             </v-btn>
             
         </div>
@@ -87,7 +94,7 @@
 </template>
 
 <script setup lang="ts">
-import { getProxyList,deleteProxy,checkAllproxy,receiveProxycheckMsg} from '@/views/api/proxy'
+import { getProxyList,deleteProxy,checkAllproxy,receiveProxycheckMsg,removeFailureproxy,receiveRemoveproxyMsg} from '@/views/api/proxy'
 import { ref,onMounted,computed,reactive } from 'vue'
 import { SearchResult } from '@/views/api/types'
 import {ProxyListEntity} from "@/entityTypes/proxyType"
@@ -96,7 +103,7 @@ import router from '@/views/router';
 import { useI18n } from "vue-i18n";
 import { CommonMessage,NumProcessdata } from "@/entityTypes/commonType"
 import {CapitalizeFirstLetter} from "@/views/utils/function"
-import { json } from 'stream/consumers';
+// import { json } from 'stream/consumers';
 let refreshInterval:ReturnType<typeof setInterval> | undefined;
 const { t } = useI18n({ inheritLocale: true });
 const options = reactive({
@@ -157,7 +164,7 @@ const headers: Array<any> = [
         title: computed(_ => CapitalizeFirstLetter(t("proxy.status"))),
         align: 'start',
         sortable: false,
-        key: 'status',
+        key: 'statusName',
     },
     {
         title: computed(_ => CapitalizeFirstLetter(t("proxy.check_time"))),
@@ -208,17 +215,18 @@ function loadItems({ page, itemsPerPage, sortBy }) {
             //  console.log(data)
             //  console.log(total)
             //loop data
-            // for(let i=0; i<data.length; i++){
-            //     if(data[i].Disable == 0){
-            //         data[i].Status = "enable"
-            //     }else{
-            //         data[i].Status = "disable"    
-            //     }
-            // }
+            
             console.log(data)
             console.log(total)
             if(!data){
                 data=[];
+            }
+            for(let i=0; i<data.length; i++){
+                if(data[i].status == 1){
+                    data[i].statusName = CapitalizeFirstLetter(t('proxy.success'))
+                }else{
+                    data[i].statusName =  CapitalizeFirstLetter(t('proxy.failure'))   
+                }
             }
             serverItems.value = data
             totalItems.value = total
@@ -260,9 +268,16 @@ const createProxy=()=>{
         });
 }
 const checkProxy=()=>{
+    loading.value = true
+    startAutoRefresh()
     //check proxy available
     checkAllproxy()
-    startAutoRefresh()
+    
+}
+const removefailure=()=>{
+    loading.value = true
+    //remove failure proxy
+    removeFailureproxy()
 }
 
 onMounted(() => {
@@ -275,12 +290,27 @@ onMounted(() => {
        if(rest&&rest.status){
         console.log(rest.data)
             
-              checkButtonName.value=t('proxy.check_proxy_tip',{number:rest.data?.num,total:rest.data?.total})
-              if((rest.data?.num)&&(rest.data?.total)&&rest.data?.num>=rest.data?.total){
+              checkButtonName.value=t('proxy.check_proxy_tip',{process:rest.data?.process})
+              if((rest.data?.process)&&(rest.data?.process==100)){
                 checkloading.value=false;
+                loading.value = false
                 stopAutoRefresh()
+                checkButtonName.value=t('proxy.check_proxy')
               }
              
+       }else{
+        loading.value = false
+       }
+    })
+    receiveRemoveproxyMsg((res:string)=>{
+        //revice system message
+       console.log(res)
+       const rest=JSON.parse(res) as CommonMessage<null>
+       if(rest&&rest.status){
+        loadItems({ page: 1, itemsPerPage: itemsPerPage.value, sortBy: '' })
+        loading.value = false
+       }else{
+        loading.value = false
        }
     })
 }

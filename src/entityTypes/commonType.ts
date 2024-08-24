@@ -27,6 +27,7 @@ export interface CommonMessage <Type>{
     data?: Type
 }
 export interface NumProcessdata{
-    total:number,
-    num:number
+    // total:number,
+    // num:number,
+    process:number
 }

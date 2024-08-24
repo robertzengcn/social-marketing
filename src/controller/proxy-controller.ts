@@ -110,8 +110,8 @@ export class ProxyController {
     }
     //check user's proxy and update db
     public async updateProxyStatus(proxyEntity: ProxyParseItem, proxyID: number): Promise<void> {
-    console.log("updateProxyStatus")
-    console.log(proxyEntity)
+        console.log("updateProxyStatus")
+        console.log(proxyEntity)
         await this.checkProxy(proxyEntity).then((res) => {
             if (res.status) {
                 //update success status to db
@@ -122,45 +122,51 @@ export class ProxyController {
             }
         }).catch((error) => {
             console.log(error)
-        //update status to db
-        this.proxyCheckdb.updateProxyCheck(proxyID, proxyCheckStatus.Failure)
+            //update status to db
+            this.proxyCheckdb.updateProxyCheck(proxyID, proxyCheckStatus.Failure)
         })
-        
-        
+
+
     }
-    public async checkAllproxy(callback?: (arg: number, totalNum: number) => void): Promise<void> {
+    public async checkAllproxy(callback?: (arg: number, totalNum: number) => void, finishcall?: () => void): Promise<void> {
         const proxyCount = await this.proxyapi.getProxycount()
         if (proxyCount > 0) {
             const size = 10
             //get all proxy
-            for (let i = 0; i < proxyCount; i = i + 10) {
+            for (let i = 0; i < proxyCount; i = i + size) {
                 //check each proxy
-                const res=await this.proxyapi.getProxylist(i, size, "")
-                    if (res.status) {
-                        if (res.data) {
-                            res.data.records.forEach(async (item) => {
-                                if (item.host && item.port && item.protocol) {
-                                    const element: ProxyParseItem = {
-                                        host: item.host,
-                                        port: item.port,
-                                        protocol: item.protocol,
-                                        user: item.username,
-                                        pass: item.password
-                                    }
-                                    console.log(element)
-                                    await this.updateProxyStatus(element, item.id!).catch((error) => {
-                                        console.log(error)
-
-                                    })
-                                    if (callback) {
-                                        callback(i, proxyCount)
-                                    }
+                const res = await this.proxyapi.getProxylist(i, size, "")
+                if (res.status) {
+                    if (res.data) {
+                        res.data.records.forEach(async (item) => {
+                            if (item.host && item.port && item.protocol) {
+                                const element: ProxyParseItem = {
+                                    host: item.host,
+                                    port: item.port,
+                                    protocol: item.protocol,
+                                    user: item.username,
+                                    pass: item.password
                                 }
-                            });
-                        }
-                    }
-                //})
+                                console.log(element)
+                                await this.updateProxyStatus(element, item.id!).catch((error) => {
+                                    console.log(error)
 
+                                })
+
+                            }
+                        });
+
+
+                    }
+                }
+                //})
+                if (callback) {
+                    callback(i, proxyCount)
+                }
+
+            }
+            if (finishcall) {
+                finishcall()
             }
         }
     }
@@ -194,6 +200,27 @@ export class ProxyController {
             return res;
         })
         return res
+    }
+    //remove failure proxy
+    public async removeFailureProxy(callback?: () => void): Promise<void> {
+        //get all failure proxy
+        const failureProxy = this.proxyCheckdb.getProxyByStatus(proxyCheckStatus.Failure);
+        if (failureProxy) {
+            //    const proxycheckres=this.proxyCheckdb
+            //remove all failure proxy
+            failureProxy.map(async (item) => {
+
+                const res = await this.proxyapi.deleteProxy(item.proxy_id);
+                if (res.status) {
+                    //delete from db
+                    this.proxyCheckdb.deleteProxyCheck(item.proxy_id)
+                }
+            })
+        }
+
+        if (callback) {
+            callback()
+        }
     }
 
 
