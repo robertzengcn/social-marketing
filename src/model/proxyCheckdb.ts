@@ -22,6 +22,7 @@ export class ProxyCheckdb {
             `SELECT proxy_id FROM ` + this.proxyCheckTable + ` WHERE proxy_id=?`
         );
         const info = checkstmt.get(proxyId) as { proxy_id: number };
+        //console.log(info)
         if (!info) {
             const stmt = this.db.prepare(
                 `INSERT INTO ` +
@@ -35,12 +36,26 @@ export class ProxyCheckdb {
             );
 
         } else {
+            const updateSql= `UPDATE ` +
+            this.proxyCheckTable +
+            ` SET status =?  WHERE proxy_id=?`
+            
             const upStmt = this.db.prepare(
-                `UPDATE ` +
-                this.proxyCheckTable +
-                ` SET status =? and check_time=? WHERE proxy_id=?`
+                updateSql 
             );
-            upStmt.run(proxyCheckStatus,recordtime, proxyId)
+
+            
+            upStmt.run(proxyCheckStatus, proxyId)
+
+            const updatetimeSql= `UPDATE ` +
+            this.proxyCheckTable +
+            ` SET check_time =?  WHERE proxy_id=?`
+            const utStmt = this.db.prepare(
+                updatetimeSql 
+            );
+           utStmt.run(recordtime, proxyId)
+            
+           
         }
     }
     //get proxy check status by proxy id

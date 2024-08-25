@@ -216,16 +216,18 @@ function loadItems({ page, itemsPerPage, sortBy }) {
             //  console.log(total)
             //loop data
             
-            console.log(data)
-            console.log(total)
+            //console.log(data)
+            //console.log(total)
             if(!data){
                 data=[];
             }
             for(let i=0; i<data.length; i++){
                 if(data[i].status == 1){
                     data[i].statusName = CapitalizeFirstLetter(t('proxy.success'))
-                }else{
+                }else if(data[i].status == 2){
                     data[i].statusName =  CapitalizeFirstLetter(t('proxy.failure'))   
+                }else{
+                    data[i].statusName =  CapitalizeFirstLetter(t('proxy.unkonw'))   
                 }
             }
             serverItems.value = data
@@ -294,7 +296,7 @@ onMounted(() => {
               if((rest.data?.process)&&(rest.data?.process==100)){
                 checkloading.value=false;
                 loading.value = false
-                stopAutoRefresh()
+                //stopAutoRefresh()
                 checkButtonName.value=t('proxy.check_proxy')
               }
              

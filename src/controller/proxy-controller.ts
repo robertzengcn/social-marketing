@@ -206,6 +206,7 @@ export class ProxyController {
         //get all failure proxy
         const failureProxy = this.proxyCheckdb.getProxyByStatus(proxyCheckStatus.Failure);
         if (failureProxy) {
+            console.log(failureProxy)
             //    const proxycheckres=this.proxyCheckdb
             //remove all failure proxy
             failureProxy.map(async (item) => {

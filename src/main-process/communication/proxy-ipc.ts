@@ -167,6 +167,7 @@ export function registeProxyIpcHandlers() {
 //remove failure proxy
   ipcMain.on(REMOVEFAILUREPROXY, async (event, data) => {
     const proxyCon = new ProxyController()
+    //console.log("removeFailureProxy")
     await proxyCon.removeFailureProxy(function(){
       //remove failure proxy
       const messageData: CommonMessage<null> = {

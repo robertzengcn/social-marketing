@@ -140,5 +140,6 @@ export default {
         pass:"pass",
         failure:"failure",
         remove_failure:"remove failure proxy",
+        unkonw:"unkonw",
     }
 }
