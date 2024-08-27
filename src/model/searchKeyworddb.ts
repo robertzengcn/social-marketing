@@ -51,7 +51,7 @@ export class SearchKeyworddb {
      //   console.log(item)
         res.push(item.keyword)
       })
-      console.log(res)
+      // console.log(res)
       return res;
     }
     //get keywords entity by task id

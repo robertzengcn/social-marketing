@@ -17,6 +17,7 @@ export type ProxyEntity={
     pass?:string,
     protocol?:string,
     country_code?:string
+    addtime?:string
 }
 export type ProxyListEntity={
     id?:number,
@@ -75,4 +76,9 @@ export type GetProxyCountResp={
     msg:string,
     data:
     {total:number}
+}
+export type ProxyServer={
+    server:string,
+    username:string|undefined|null,
+    password:string|undefined|null,
 }

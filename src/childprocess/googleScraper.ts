@@ -1,5 +1,5 @@
 'use strict';
-import { SearchScrape } from "@/modules/searchScraper"
+import { SearchScrape } from "@/childprocess/searchScraper"
 import { ScrapeOptions, SearchData,SearchResult } from "@/entityTypes/scrapeType"
 import { CustomError } from "@/modules/customError"
 // import debug from 'debug';

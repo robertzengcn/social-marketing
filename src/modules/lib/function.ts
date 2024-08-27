@@ -7,7 +7,7 @@ import * as fs from 'fs';
 import { Page } from 'puppeteer';
 import os from "os";
 import * as crypto from 'crypto';
-import {ProxyParseItem} from "@/entityTypes/proxyType"
+import {ProxyParseItem,ProxyServer} from "@/entityTypes/proxyType"
 // import { contextIsolated } from "process";
 //import { utilityProcess, MessageChannelMain} from "electron";
 export type queryParams = {
@@ -428,6 +428,26 @@ export function proxyEntityToUrl(proxyEntity: ProxyParseItem): string{
       throw new Error("protocol is not valid");
   }
   return proxyUrl;
+}
+//convert proxy entity to proxy server
+export function proxyEntityToServer(proxyEntity: ProxyParseItem): ProxyServer{
+  if (!proxyEntity.protocol) {
+    throw new Error("protocol is required");
+}
+if (!proxyEntity.host) {
+    throw new Error("host is required");
+}
+if (!proxyEntity.port) {
+    throw new Error("port is required");
+}
+const  proxyUrl = `${proxyEntity.protocol}://${proxyEntity.host}:${proxyEntity.port}`;
+const rest:ProxyServer={
+  server:proxyUrl,
+  username:proxyEntity.user,
+  password:proxyEntity.pass
+}
+return rest
+
 }
 
 

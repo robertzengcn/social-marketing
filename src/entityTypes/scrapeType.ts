@@ -1,9 +1,11 @@
 import { Page } from 'puppeteer';
 import winston from "winston"
+import {ProxyServer} from "@/entityTypes/proxyType"
+
 export type SMconfig = {
   logger: winston.Logger;
   keywords: Array<string>;
-  proxies: Array<string>;
+  proxies: Array<ProxyServer>;
   keyword_file: string;
   proxy_file: string;
   use_proxies_only: boolean;
@@ -114,7 +116,7 @@ export type SMstruct = {
   // use a proxy for all connections
   // example: 'socks5://78.94.172.42:1080'
   // example: 'http://118.174.233.10:48400'
-  proxy?: Array<string>,
+  proxies?: Array<ProxyServer>,
   // a file with one proxy per line. Example:
   // socks5://78.94.172.42:1080
   // http://118.174.233.10:48400
@@ -141,7 +143,7 @@ export interface clusterData {
   page: Page
 }
 export interface ClusterSearchData {
-
+  proxyServer?:ProxyServer
   keywords: Array<string>
 }
 export type ClusterFunctionparam = {

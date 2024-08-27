@@ -117,8 +117,8 @@ export function registerSearchIpcHandlers() {
             filters: [{ name: 'Text Files', extensions: ['txt'] }]
         });
         if (filePath) {
-            console.log(filePath)
-            console.log(qdata.id)
+            // console.log(filePath)
+            // console.log(qdata.id)
             if (qdata.id) {
                 const searchControl = new SearchController()
                 const content = searchControl.getTaskErrorlog(qdata.id)

@@ -1,6 +1,6 @@
 export { };
 import { HttpClient } from "@/modules/lib/httpclient";
-import { ProxylistResp, ProxyEntity,SaveProxyResp,ProxyParseItem,ImportProxyResp,GetProxyCountResp } from "@/entityTypes/proxyType";
+import { ProxylistResp, ProxyEntity, SaveProxyResp, ProxyParseItem, ImportProxyResp, GetProxyCountResp, ProxyListEntity } from "@/entityTypes/proxyType";
 export class ProxyApi {
   private _httpClient: HttpClient;
   constructor() {
@@ -28,13 +28,39 @@ export class ProxyApi {
     }
     // console.log("campaign list is following")
     // console.log(campignlistres.data)
-    const resp: ProxylistResp = {
-      status: proxylistres.status,
-      msg: proxylistres.msg,
-      data: proxylistres.data,
-    };
-    return resp;
-  }
+    const proxylistEn: ProxyListEntity[] = []
+    if (proxylistres.status) {
+      if (proxylistres.data.records) {
+        const plist = proxylistres.data.records as ProxyEntity[]
+        //convert data to ProxyListEntity
+        plist.forEach((item) => {
+          const ple: ProxyListEntity = {
+            id: item.id,
+            host: item.host,
+            port: item.port,
+            username: item.user,
+            password: item.pass,
+            protocol: item.protocol,
+            country_code: item.country_code,
+            addtime: "",
+          }
+          if (item.addtime) {
+            ple.addtime = item.addtime
+          }
+          proxylistEn.push(ple)
+        })
+      }
+    }
+      const resp: ProxylistResp = {
+        status: proxylistres.status,
+        msg: proxylistres.msg,
+        data: {
+          total: proxylistres.data.total,
+          records: proxylistEn,
+        },
+      };
+      return resp;
+    }
   //delete proxy from api
   public async deleteProxy(id: number): Promise<any> {
 
@@ -106,9 +132,9 @@ export class ProxyApi {
     if (!resp) {
       throw new Error("remote return empty");
     }
-    if(resp.status){
+    if (resp.status) {
       return resp.data.total
-    }else{
+    } else {
       throw new Error(resp.msg)
     }
 

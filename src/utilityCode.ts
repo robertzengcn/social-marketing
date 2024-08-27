@@ -42,8 +42,8 @@ const userSer=new UserSearch()
 
 process.parentPort.on('message', async (e) => {
     const [port] = e.ports
-    console.log("get parent message")
-    console.log(e)
+    // console.log("get parent message")
+    // console.log(e)
     const pme=JSON.parse(e.data) as ProcessMessage
     switch(pme.action){
        

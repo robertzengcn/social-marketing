@@ -51,7 +51,7 @@ export class ProxyController {
     //convert proxy entity to url
 
     //check proxy valid
-    public async checkProxy(proxyEntity: ProxyParseItem): Promise<ProxyCheckres> {
+    public async checkProxy(proxyEntity: ProxyParseItem,timeout=5000): Promise<ProxyCheckres> {
         try {
 
             let proxyUrl = "";
@@ -65,8 +65,9 @@ export class ProxyController {
                 } else {
                     proxyUrl = `${proxyEntity.protocol}://${proxyEntity.host}:${proxyEntity.port}`;
                 }
+                console.log(proxyUrl)
                 const agent = new HttpsProxyAgent(proxyUrl);
-                const res = await fetch('https://ident.me/ip', { agent: agent, signal: AbortSignal.timeout(2000), });
+                const res = await fetch('https://ident.me/ip', { agent: agent, signal: AbortSignal.timeout(timeout), });
 
                 if (res.status == 200) {
                     console.log(res.status);
@@ -137,6 +138,7 @@ export class ProxyController {
                 //check each proxy
                 const res = await this.proxyapi.getProxylist(i, size, "")
                 if (res.status) {
+                    console.log(res)
                     if (res.data) {
                         res.data.records.forEach(async (item) => {
                             if (item.host && item.port && item.protocol) {

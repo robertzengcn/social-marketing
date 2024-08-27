@@ -1,6 +1,6 @@
 import { searchEngineImpl } from "@/modules/interface/searchEngineImpl"
 import { Page,Browser } from 'puppeteer';
-import { SMconfig, ScrapeOptions,clusterData,RunResult,ParseType,SearchData,ResultParseType } from "@/entityTypes/scrapeType"
+import { SMconfig, ScrapeOptions,clusterData,RunResult,ParseType,SearchData,ClusterSearchData } from "@/entityTypes/scrapeType"
 import { evadeChromeHeadlessDetection } from "@/modules/lib/function"
 import { get_http_headers, get_ip_data } from "@/modules/metadata"
 import debug from 'debug';
@@ -76,7 +76,7 @@ export class SearchScrape implements searchEngineImpl {
        this.results=new Map<string,ParseType>();
     }
 
-    async run(data:{page:Page, data, worker}):Promise<RunResult> {
+    async run(data:{page:Page, data:ClusterSearchData, worker}):Promise<RunResult> {
 
         // debug('worker=%o', worker, this.config.keywords);
 
@@ -85,6 +85,11 @@ export class SearchScrape implements searchEngineImpl {
         if (data.page) {
             this.page = data.page;
         }
+        //console.log(data.data)
+        // const browsser=this.page.browser()
+        // browsser.browserContexts()
+        // console.log(data.worker.browserOptions)
+        
 
        // await this.exposeFunction()
 
@@ -92,6 +97,14 @@ export class SearchScrape implements searchEngineImpl {
 
         await this.page.setViewport({ width: 1920, height: 1040 });
         let do_continue:boolean|void = true;
+
+        if(data.data.proxyServer&&data.data.proxyServer.username&&data.data.proxyServer.password){
+        
+            await this.page.authenticate({
+              username: data.data.proxyServer.username,
+              password: data.data.proxyServer.password,
+            });
+        }
 
         if (!this.config.scrape_from_file||this.config.scrape_from_file.length <= 0) {
             do_continue = await this.load_search_engine();

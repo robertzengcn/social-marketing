@@ -38,22 +38,26 @@
             ><span> Clear Table</span></v-btn
           >
           <v-btn
+          
+          color="green"
             @click="checkProxyitem"
-            class="btn"
+            class="btn ml-1"
             variant="flat"
             prepend-icon="mdi-filter-variant"
             ><span> Check Proxy</span></v-btn
           >
           <v-btn
+          color="blue"
             @click="importProxy"
-            class="btn"
+            class="btn ml-1"
             variant="flat"
             prepend-icon="mdi-filter-variant"
             ><span> Save to My Proxy</span></v-btn
           >
           <v-btn
+          color="red"
             @click="removefailProxy"
-            class="btn"
+            class="btn ml-1"
             variant="flat"
             prepend-icon="mdi-filter-variant"
             ><span> Remove fail Proxy</span></v-btn

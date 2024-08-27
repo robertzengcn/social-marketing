@@ -18,6 +18,7 @@ import {CustomConcurrency} from "@/modules/concurrency-implementation"
 import { searchEngineFactory } from "@/modules/searchEngineFactory"
 // import { Keyword } from "./keyword";
 import { pluggableType } from "@/entityTypes/scrapeType"
+import {ProxyServer} from "@/entityTypes/proxyType"
 // import { app } from 'electron'
 // import * as path from 'path'
 //import BrowserImple from "@/modules/BrowseImple"
@@ -38,6 +39,7 @@ export class ScrapeManager {
   page: Page;
   numClusters: number;
   tmppath: string;
+  proxiesArr:Array<ProxyServer>
   // runLogin: Function;
   // taskid?: number;
   // taskrunId?: number;
@@ -136,12 +138,13 @@ export class ScrapeManager {
       //custom_func: resolve('examples/pluggable.js'),
       custom_func: null,
       throw_on_detection: false,
-      // List of proxies to use ['socks5://78.94.172.42:1080', 'http://localhost:1080']
+      // List proxy server
+      //https://github.com/puppeteer/puppeteer/issues/2234
       proxies: null,
       // a file with one proxy per line. Example:
       // socks5://78.94.172.42:1080
       // http://118.174.233.10:48400
-      proxy_file: "",
+      // proxy_file: "",
       // whether to use proxies only
       // when this is set to true, se-scraper will not use
       // your default IP address
@@ -155,7 +158,7 @@ export class ScrapeManager {
         timeout: 30 * 60 * 1000, // max timeout set to 30 minutes
         monitor: false,
         // concurrency: Cluster.CONCURRENCY_BROWSER,
-        maxConcurrency: 1,
+        maxConcurrency: 10,
       },
     });
     // if(!this.config.puppeteer_cluster_config.concurrency){
@@ -185,10 +188,10 @@ export class ScrapeManager {
       );
     }
 
-    if (this.config.proxy_file) {
-      this.config.proxies = read_keywords_from_file(this.config.proxy_file);
-      this.logger.info(`${this.config.proxies.length} proxies read from file.`);
-    }
+    // if (this.config.proxy_file) {
+    //   this.config.proxies = read_keywords_from_file(this.config.proxy_file);
+    //   this.logger.info(`${this.config.proxies.length} proxies read from file.`);
+    // }
 
     if (!this.config.proxies && this.config.use_proxies_only) {
       throw new Error(
@@ -235,7 +238,7 @@ export class ScrapeManager {
     // if no custom start_browser functionality was given
     // use puppeteer-cluster for scraping
 
-    let proxies;
+    //let proxies:Array<ProxyServer>;
     // if we have at least one proxy, always use CONCURRENCY_BROWSER
     // and set maxConcurrency to this.config.proxies.length + 1
     // else use whatever this.configuration was passed
@@ -245,39 +248,47 @@ export class ScrapeManager {
       // therefore hardcode a limit here
       // TODO not sure this what we want
       this.numClusters = Math.min(
-        this.config.proxies.length + (this.config.use_proxies_only ? 0 : 1),
+        //this.config.proxies.length + (this.config.use_proxies_only ? 0 : 1),
+        this.config.proxies.length,
         MAX_ALLOWED_BROWSERS
       );
 
-      proxies = clone(this.config.proxies);
+      this.proxiesArr = clone(this.config.proxies);
 
       // Insert a first config without proxy if use_proxy_only is false
-      if (this.config.use_proxies_only === false) {
-        proxies.unshift(null);
-      }
+      // if (this.config.use_proxies_only === false) {
+      //   proxies.unshift(null);
+      // }
     } else {
       this.numClusters = this.config.puppeteer_cluster_config.maxConcurrency;
-      proxies = times(this.numClusters, null);
+      this.proxiesArr = times(this.numClusters, null);
     }
 
     this.logger.info(`Using ${this.numClusters} clusters.`);
+  
+console.log(this.numClusters)
 
+//https://github.com/puppeteer/puppeteer/issues/2234
     // Give the per browser options
-    const perBrowserOptions = map(proxies, (proxy) => {
+    const perBrowserOptions = map(this.proxiesArr.slice(0, this.numClusters), (proxy) => {
       const userAgent = this.config.random_user_agent
         ? new UserAgent({ deviceCategory: "desktop" }).toString()
         : this.config.user_agent;
       let args = this.config.chrome_flags.concat([`--user-agent=${userAgent}`]);
 
-      if (proxy) {
-        console.log("proxy is" + proxy)
-        args = args.concat([`--proxy-server=${proxy}`]);
+      if (proxy&&proxy.server) {
+        // set proxy place
+        //console.log("proxy is" + proxy.server)
+        args = args.concat([`--proxy-server=${proxy.server}`]);
+        // args =args.concat([`--proxy-auth=${proxy.server.username}:${proxy.server.password}`]);
+
       }
 
       return {
         headless: this.config.headless,
         ignoreHTTPSErrors: true,
         args,
+        proxy
       };
     });
     this.logger.info(this.config)
@@ -306,6 +317,7 @@ export class ScrapeManager {
       //   perBrowserOptions: perBrowserOptions,
       // },
       perBrowserOptions: perBrowserOptions,
+      retryLimit: 3,
       // puppeteerOptions:perBrowserOptions,
     });
     // console.log(this.cluster)
@@ -479,8 +491,12 @@ export class ScrapeManager {
       const obj = engineFactory.getSearchEngine(param.engine.toLowerCase(), scop)
       const boundMethod = obj.run.bind(obj);
       const cludata: ClusterSearchData = {
+
         // page:this.page,
         keywords: chunks[c]
+      }
+      if(this.proxiesArr&&this.proxiesArr.length>0){
+        cludata.proxyServer=this.proxiesArr[c]
       }
       // const boundMethod = (data: string,res:any) => obj.searchData(data, page);
       execPromises.push(this.cluster.execute(cludata, boundMethod));

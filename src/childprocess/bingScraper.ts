@@ -1,5 +1,5 @@
 'use strict';
-import { SearchScrape } from "@/modules/searchScraper"
+import { SearchScrape } from "@/childprocess/searchScraper"
 import { ScrapeOptions, SearchData, SearchResult } from "@/entityTypes/scrapeType"
 import { CustomError } from "@/modules/customError"
 import { TimeoutError } from 'puppeteer';
@@ -196,7 +196,10 @@ export class BingScraper extends SearchScrape {
                     const newPage = await browser.newPage();
                     try {
 
-                        const response = await newPage.goto(seval.link, { waitUntil: 'domcontentloaded',timeout: 10000 });
+                        const response = await newPage.goto(seval.link, {
+                            waitUntil: "networkidle2",
+                            timeout: 60000
+                        });
                         if (response && response.status() === 200) {
                             seval.link = response.url();
                         }
@@ -205,7 +208,7 @@ export class BingScraper extends SearchScrape {
                         //catch time out error
                         if (error instanceof TimeoutError) {
                             // Do something if this is a timeout.
-                            console.error('Navigation timed out:', error);
+                            console.log('Navigation timed out:', error);
                         }
                     } finally {
                         if (!newPage.isClosed()) {

@@ -11,7 +11,7 @@
             </v-btn>
             <v-btn class="btn ml-3" 
             variant="flat" 
-            prepend-icon="mdi-check" color="red" 
+            prepend-icon="mdi-check" color="green" 
             :loading="checkloading"
             @click="checkProxy()">
                 {{checkButtonName}}
@@ -146,13 +146,13 @@ const headers: Array<any> = [
         title: computed(_ => CapitalizeFirstLetter(t("proxy.user_name"))),
         align: 'start',
         sortable: false,
-        key: 'user',
+        key: 'username',
     },
     {
         title: computed(_ => CapitalizeFirstLetter(t("proxy.password"))),
         align: 'start',
         sortable: false,
-        key: 'pass',
+        key: 'password',
     },
     {
         title: computed(_ => CapitalizeFirstLetter(t("proxy.protocol"))),
@@ -190,7 +190,7 @@ const alertext=ref("");
 const startAutoRefresh = () => {
     refreshInterval = setInterval(function(){
         loadItems({ page: options.page, itemsPerPage: itemsPerPage.value, sortBy: "" });
-    }, 5000); // Refresh every 5 seconds
+    }, 10000); // Refresh every 5 seconds
 }
 const stopAutoRefresh = () => {
   if (refreshInterval) {
@@ -223,7 +223,7 @@ function loadItems({ page, itemsPerPage, sortBy }) {
             }
             for(let i=0; i<data.length; i++){
                 if(data[i].status == 1){
-                    data[i].statusName = CapitalizeFirstLetter(t('proxy.success'))
+                    data[i].statusName = CapitalizeFirstLetter(t('proxy.pass'))
                 }else if(data[i].status == 2){
                     data[i].statusName =  CapitalizeFirstLetter(t('proxy.failure'))   
                 }else{

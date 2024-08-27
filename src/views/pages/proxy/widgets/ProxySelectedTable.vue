@@ -8,10 +8,11 @@
 
 <script setup lang="ts">
 import { getProxyList} from "@/views/api/proxy"
-import { ref,watch} from 'vue'
+import { ref,watch,computed} from 'vue'
 import { SearchProxyResp,ProxyListEntity } from "@/entityTypes/proxyType";
-
-
+import {CapitalizeFirstLetter} from "@/views/utils/function"
+import { useI18n } from "vue-i18n";
+const { t } = useI18n({ inheritLocale: true });
 type Fetchparam = {
     // id:number
     page: number,
@@ -54,19 +55,25 @@ const headers: Array<any> = [
         title: 'User Name',
         align: 'start',
         sortable: false,
-        key: 'user',
+        key: 'username',
     },
     {
         title: 'Pass',
         align: 'start',
         sortable: false,
-        key: 'pass',
+        key: 'password',
     },
     {
         title: 'Protocol',
         align: 'start',
         sortable: false,
         key: 'protocol',
+    },
+    {
+        title: computed(_ => CapitalizeFirstLetter(t("proxy.status"))),
+        align: 'start',
+        sortable: false,
+        key: 'statusName',
     },
     {
         title: 'Add time',
@@ -94,6 +101,15 @@ function loadItems({ page, itemsPerPage, sortBy }) {
     }
     FakeAPI.fetch(fetchitem).then(
         ({ data, total }) => {
+            for(let i=0; i<data.length; i++){
+                if(data[i].status == 1){
+                    data[i].statusName = CapitalizeFirstLetter(t('proxy.pass'))
+                }else if(data[i].status == 2){
+                    data[i].statusName =  CapitalizeFirstLetter(t('proxy.failure'))   
+                }else{
+                    data[i].statusName =  CapitalizeFirstLetter(t('proxy.unkonw'))   
+                }
+            }
             
             // console.log(data)
             // console.log(total)

@@ -61,7 +61,7 @@ export class SearchController {
             engine:enginName,
             keywords:data.keywords
         }
-        console.log(dp)
+        // console.log(dp)
         const taskId=await seModel.saveSearchtask(dp)
         // const jsonData=JSON.stringify(data);
         //console.log(jsonData)
@@ -73,7 +73,7 @@ export class SearchController {
         const tokenService=new Token()
         
         const child = utilityProcess.fork(path.join(__dirname, 'utilityCode.js'), [],{stdio:"pipe",execArgv:["puppeteer-cluster:*"]} )
-        console.log(path.join(__dirname, 'utilityCode.js'))
+        // console.log(path.join(__dirname, 'utilityCode.js'))
         let logpath=tokenService.getValue(USERLOGPATH)
         if(!logpath){
             const useremail=tokenService.getValue(USEREMAIL)
@@ -85,7 +85,7 @@ export class SearchController {
         const errorLogfile=path.join(logpath,'search_'+taskId.toString()+'_'+uuid+'.error.log')
         const runLogfile=path.join(logpath,'search_'+taskId.toString()+'_'+uuid+'.runtime.log')
        // console.log(errorLogfile)
-        console.log(data)
+        // console.log(data)
         // child.postMessage({ message: 'hello' }, [port1])
         child.on("spawn", () => {
             console.log("child process satart, pid is"+child.pid)
