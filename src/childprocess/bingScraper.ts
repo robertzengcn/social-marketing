@@ -312,7 +312,7 @@ export class BingScraper extends SearchScrape {
                 // await this.page.waitForTimeout(50);
                 await this.page.evaluate(async () => {
                     await new Promise(function (resolve) {
-                        setTimeout(resolve, 1000)
+                        setTimeout(resolve, 3000)
                     });
                 });
 

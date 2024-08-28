@@ -47,6 +47,9 @@ export class CustomConcurrency extends Browser {
             },
 
             close: async () => {
+                if(page){
+                    page.close();
+                }
                 await chrome.close();
             },
 

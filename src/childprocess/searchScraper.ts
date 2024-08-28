@@ -1,9 +1,10 @@
 import { searchEngineImpl } from "@/modules/interface/searchEngineImpl"
-import { Page,Browser } from 'puppeteer';
-import { SMconfig, ScrapeOptions,clusterData,RunResult,ParseType,SearchData,ClusterSearchData } from "@/entityTypes/scrapeType"
+import { Page, Browser, InterceptResolutionAction } from 'puppeteer';
+import { SMconfig, ScrapeOptions, clusterData, RunResult, ParseType, SearchData, ClusterSearchData } from "@/entityTypes/scrapeType"
 import { evadeChromeHeadlessDetection } from "@/modules/lib/function"
 import { get_http_headers, get_ip_data } from "@/modules/metadata"
 import debug from 'debug';
+import useProxy from "@lem0-packages/puppeteer-page-proxy"
 
 
 // const logger = debug('SearchScrape');
@@ -13,7 +14,7 @@ export class SearchScrape implements searchEngineImpl {
     page: Page
     browser: Browser
     last_response: object | null;
-    metadata: { http_headers?: object, ipinfo?: { ip: string }, scraping_detected?: boolean|void };
+    metadata: { http_headers?: object, ipinfo?: { ip: string }, scraping_detected?: boolean | void };
     pluggable?: ScrapeOptions["pluggable"];
     context?: object;
     logger: SMconfig["logger"];
@@ -27,7 +28,7 @@ export class SearchScrape implements searchEngineImpl {
     result_rank: number;
     num_requests: number;
     num_keywords: number;
-    keyword:string;
+    keyword: string;
     page_num: number;
     constructor(options: ScrapeOptions) {
         if (options.page) {
@@ -73,14 +74,14 @@ export class SearchScrape implements searchEngineImpl {
                 this.config[`${this.config.platform}_settings`] = settings;
             }
         }
-       this.results=new Map<string,ParseType>();
+        this.results = new Map<string, ParseType>();
     }
 
-    async run(data:{page:Page, data:ClusterSearchData, worker}):Promise<RunResult> {
+    async run(data: { page: Page, data: ClusterSearchData, worker }): Promise<RunResult> {
 
         // debug('worker=%o', worker, this.config.keywords);
 
-        
+
 
         if (data.page) {
             this.page = data.page;
@@ -89,24 +90,43 @@ export class SearchScrape implements searchEngineImpl {
         // const browsser=this.page.browser()
         // browsser.browserContexts()
         // console.log(data.worker.browserOptions)
-        
 
-       // await this.exposeFunction()
 
-        this.keywords=data.data.keywords
+        // await this.exposeFunction()
+
+        this.keywords = data.data.keywords
 
         await this.page.setViewport({ width: 1920, height: 1040 });
-        let do_continue:boolean|void = true;
+        let do_continue: boolean | void = true;
 
-        if(data.data.proxyServer&&data.data.proxyServer.username&&data.data.proxyServer.password){
-        
-            await this.page.authenticate({
-              username: data.data.proxyServer.username,
-              password: data.data.proxyServer.password,
-            });
+        if (data.data.proxyServer) {
+            if (data.data.proxyServer != undefined) {
+                // await useProxy(this.page, data.data.proxyServer)
+                // await this.page.setRequestInterception(true);
+                //     this.page.on('request', async request => {
+                //         await useProxy(request, data.data.proxyServer!);
+                //     });
+                // }
+                // await this.page.authenticate({
+                //   username: data.data.proxyServer.username,
+                //   password: data.data.proxyServer.password,
+                // });
+
+                await this.page.setRequestInterception(true);
+                this.page.on("request", async (interceptedRequest) => {
+                    if (interceptedRequest.interceptResolutionState().action === InterceptResolutionAction.AlreadyHandled) return;
+                    if (interceptedRequest.resourceType() === "image") {
+                        interceptedRequest.abort();
+                    } else {
+                        await useProxy(interceptedRequest, data.data.proxyServer!);
+                        if (interceptedRequest.interceptResolutionState().action === InterceptResolutionAction.AlreadyHandled) return;
+                        interceptedRequest.continue();
+                    }
+                });
+            }
         }
 
-        if (!this.config.scrape_from_file||this.config.scrape_from_file.length <= 0) {
+        if (!this.config.scrape_from_file || this.config.scrape_from_file.length <= 0) {
             do_continue = await this.load_search_engine();
         }
 
@@ -123,20 +143,20 @@ export class SearchScrape implements searchEngineImpl {
         }
     }
 
-    async exposeFunction(){
+    async exposeFunction() {
         const _text = async (el, s) => {
             const n = await el.$eval(s);
-    
+
             if (n) {
                 return n.innerText;
             } else {
                 return '';
             }
         };
-        
+
         const _attr = async (el, s, attr) => {
             const n = await el.$eval(s);
-    
+
             if (n) {
                 return n.getAttribute(attr);
             } else {
@@ -150,13 +170,13 @@ export class SearchScrape implements searchEngineImpl {
         await this.page.exposeFunction("_attr", _attr);
     }
 
-      /**
-     * Action that runs only once in the beginning of the
-     * scraping procedure.
-     *
-     * @returns {Promise<boolean>} true if everything is correct.
-     */
-      async load_search_engine():Promise<boolean|void> {
+    /**
+   * Action that runs only once in the beginning of the
+   * scraping procedure.
+   *
+   * @returns {Promise<boolean>} true if everything is correct.
+   */
+    async load_search_engine(): Promise<boolean | void> {
 
         if (this.config.apply_evasion_techniques === true) {
             // prevent detection by evading common detection techniques
@@ -167,6 +187,7 @@ export class SearchScrape implements searchEngineImpl {
         if (this.config.block_assets === true) {
             await this.page.setRequestInterception(true);
             this.page.on('request', (req) => {
+                if (req.isInterceptResolutionHandled()) return;
                 const type = req.resourceType();
                 const block = ['stylesheet', 'font', 'image', 'media'];
                 if (block.includes(type)) {
@@ -182,7 +203,7 @@ export class SearchScrape implements searchEngineImpl {
             const testUrl = 'https://bot.sannysoft.com';
             await this.page.goto(testUrl);
             // Save a screenshot of the results.
-            await this.page.screenshot({path: 'headless-evasion-result.png'});
+            await this.page.screenshot({ path: 'headless-evasion-result.png' });
         }
 
         if (this.config.log_http_headers === true) {
@@ -202,7 +223,7 @@ export class SearchScrape implements searchEngineImpl {
             //debug(`${this.metadata.ipinfo.ip} vs ${this.proxy}`);
 
             // if the ip returned by ipinfo is not a substring of our proxystring, get the heck outta here
-            if (this.metadata.ipinfo&&(!this.proxy.includes(this.metadata.ipinfo.ip))) {
+            if (this.metadata.ipinfo && (!this.proxy.includes(this.metadata.ipinfo.ip))) {
                 throw new Error(`Proxy output ip ${this.proxy} does not match with provided one`);
             } else {
                 this.logger.info(`Using valid Proxy: ${this.proxy}`);
@@ -223,7 +244,7 @@ export class SearchScrape implements searchEngineImpl {
     *
     * @returns {Promise<boolean>} true if everything is correct.
     */
-    async load_browser_engine(): Promise<boolean|void> {
+    async load_browser_engine(): Promise<boolean | void> {
 
         if (this.config.apply_evasion_techniques === true) {
             // prevent detection by evading common detection techniques
@@ -234,6 +255,7 @@ export class SearchScrape implements searchEngineImpl {
         if (this.config.block_assets === true) {
             await this.page.setRequestInterception(true);
             this.page.on('request', (req) => {
+                if (req.isInterceptResolutionHandled()) return;
                 const type = req.resourceType();
                 const block = ['stylesheet', 'font', 'image', 'media'];
                 if (block.includes(type)) {
@@ -280,8 +302,8 @@ export class SearchScrape implements searchEngineImpl {
         return await this.load_start_page();
     }
 
- //achieve it in subclass
-    async load_start_page(): Promise<boolean|void> {
+    //achieve it in subclass
+    async load_start_page(): Promise<boolean | void> {
         //achieve it in subclass
         // return true
     }
@@ -315,7 +337,7 @@ export class SearchScrape implements searchEngineImpl {
                 this.page_num = 1;
 
                 // load scraped page from file if `scrape_from_file` is given
-                if (!this.config.scrape_from_file||this.config.scrape_from_file.length <= 0) {
+                if (!this.config.scrape_from_file || this.config.scrape_from_file.length <= 0) {
                     await this.search_keyword(keyword);
                 } else {
                     this.last_response = await this.page.goto(this.config.scrape_from_file);
@@ -337,22 +359,22 @@ export class SearchScrape implements searchEngineImpl {
                     this.results[keyword][this.page_num] = {};
                     const html = await this.page.content();
                     const parsed = this.parse(html);
-                    if(parsed){
+                    if (parsed) {
                         //this.results[keyword][this.page_num].value = parsed 
                         //const setdata:ParseType=new map();
 
                         // setdata.value=parsed;
-                        this.results[keyword][this.page_num].value=parsed
-                    }else{
+                        this.results[keyword][this.page_num].value = parsed
+                    } else {
                         // this.results[keyword][this.page_num] = await this.parse_async(html);
-                        const pareseres: SearchData|void = await this.parse_async();
-                        if(pareseres){
+                        const pareseres: SearchData | void = await this.parse_async();
+                        if (pareseres) {
                             this.results[keyword][this.page_num].value = pareseres.results;
                             //this.results[keyword].set(this.page_num,{value:pareseres.results})
-                        }else{
+                        } else {
                             this.logger.warn(`No results found for keyword "${keyword}" on page ${this.page_num}`);
-                           // this.results[keyword][this.page_num].value =""
-                            this.results[keyword][this.page_num].value=null
+                            // this.results[keyword][this.page_num].value =""
+                            this.results[keyword][this.page_num].value = null
                         }
                     }
                     // this.results[keyword][this.page_num] = parsed ? parsed : await this.parse_async(html);
@@ -371,13 +393,13 @@ export class SearchScrape implements searchEngineImpl {
                             await this.page.evaluate(() => {
                                 // remove script and style tags
                                 Array.prototype.slice.call(document.getElementsByTagName('script')).forEach(
-                                  function(item) {
-                                    item.remove();
-                                });
+                                    function (item) {
+                                        item.remove();
+                                    });
                                 Array.prototype.slice.call(document.getElementsByTagName('style')).forEach(
-                                  function(item) {
-                                    item.remove();
-                                });
+                                    function (item) {
+                                        item.remove();
+                                    });
 
                                 // remove all comment nodes
                                 // const nodeIterator = document.createNodeIterator(
@@ -395,19 +417,19 @@ export class SearchScrape implements searchEngineImpl {
                         if (this.config.clean_data_images) {
                             await this.page.evaluate(() => {
                                 Array.prototype.slice.call(document.getElementsByTagName('img')).forEach(
-                                  function(item) {
-                                    const src = item.getAttribute('src');
-                                    if (src && src.startsWith('data:')) {
-                                        item.setAttribute('src', '');
-                                    }
-                                });
+                                    function (item) {
+                                        const src = item.getAttribute('src');
+                                        if (src && src.startsWith('data:')) {
+                                            item.setAttribute('src', '');
+                                        }
+                                    });
                             });
                         }
 
                         let html_contents = await this.page.content();
                         // https://stackoverflow.com/questions/27841112/how-to-remove-white-space-between-html-tags-using-javascript
                         // TODO: not sure if this is save!
-                        html_contents = html_contents.replace(/>\s+</g,'><');
+                        html_contents = html_contents.replace(/>\s+</g, '><');
                         this.results[keyword][this.page_num].html = html_contents;
                     }
 
@@ -449,7 +471,7 @@ export class SearchScrape implements searchEngineImpl {
                         // expect that user filled out necessary captcha
                     } else {
                         if (this.config.throw_on_detection === true) {
-                            throw( e );
+                            throw (e);
                         } else {
                             continue;
                         }
@@ -471,13 +493,13 @@ export class SearchScrape implements searchEngineImpl {
         //Implement the logic to wait for the results here
     }
     async random_sleep() {
-        let max=0
-        let min=0
-        if(this.config.sleep_range){
-        const sleepRange = this.config.sleep_range; // Default sleep range if undefined
-        // const [min, max] = sleepRange;
-         min = sleepRange.min;
-        max = sleepRange.max;
+        let max = 0
+        let min = 0
+        if (this.config.sleep_range) {
+            const sleepRange = this.config.sleep_range; // Default sleep range if undefined
+            // const [min, max] = sleepRange;
+            min = sleepRange.min;
+            max = sleepRange.max;
         }
         const rand = Math.floor(Math.random() * (max - min + 1) + min); //Generate Random number
         // this.logger.info(`Sleeping for ${rand}s`);
@@ -488,7 +510,7 @@ export class SearchScrape implements searchEngineImpl {
             setTimeout(resolve, ms)
         })
     }
-    async detected():Promise<boolean|void> {
+    async detected(): Promise<boolean | void> {
         // Implement the logic to detect if the scraping is detected here
     }
 
@@ -497,20 +519,20 @@ export class SearchScrape implements searchEngineImpl {
         return "https://example.com";
     }
 
-    parse(html: any):string|void {
+    parse(html: any): string | void {
         // Implement the logic to parse the HTML here
     }
 
-    async parse_async(): Promise<SearchData|void> {
+    async parse_async(): Promise<SearchData | void> {
 
         // Implement the logic to parse the HTML asynchronously here     
     }
 
-    async search_keyword(keywords:string) {
+    async search_keyword(keywords: string) {
         // Implement the logic to perform a keyword search here
     }
 
-    async set_input_value(selector:string, value:string) {
+    async set_input_value(selector: string, value: string) {
         await this.page.waitForSelector(selector);
         await this.page.evaluate((value, selector) => {
             const inputElement = document.querySelector(selector) as HTMLInputElement;
@@ -519,7 +541,7 @@ export class SearchScrape implements searchEngineImpl {
             }
         }, value, selector);
     }
-    async next_page():Promise<boolean|void>{
+    async next_page(): Promise<boolean | void> {
         //implemet in sub class
     }
 

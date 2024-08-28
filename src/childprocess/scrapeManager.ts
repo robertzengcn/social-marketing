@@ -18,7 +18,7 @@ import {CustomConcurrency} from "@/modules/concurrency-implementation"
 import { searchEngineFactory } from "@/modules/searchEngineFactory"
 // import { Keyword } from "./keyword";
 import { pluggableType } from "@/entityTypes/scrapeType"
-import {ProxyServer} from "@/entityTypes/proxyType"
+// import {ProxyServer} from "@/entityTypes/proxyType"
 // import { app } from 'electron'
 // import * as path from 'path'
 //import BrowserImple from "@/modules/BrowseImple"
@@ -26,7 +26,7 @@ import {ProxyServer} from "@/entityTypes/proxyType"
 // import * as vanillaPuppeteer from "puppeteer";
 
 const logger = debug('ScrapeManager');
-const MAX_ALLOWED_BROWSERS = 6;
+const MAX_ALLOWED_BROWSERS = 10;
 export class ScrapeManager {
   cluster: Cluster<ClusterSearchData>;
   pluggable: pluggableType;
@@ -39,7 +39,7 @@ export class ScrapeManager {
   page: Page;
   numClusters: number;
   tmppath: string;
-  proxiesArr:Array<ProxyServer>
+  proxiesArr:Array<string>
   // runLogin: Function;
   // taskid?: number;
   // taskrunId?: number;
@@ -214,7 +214,7 @@ export class ScrapeManager {
    *
    * Returns true if the browser was successfully launched. Otherwise will return false.
    */
-  async start() {
+  async start(param: SearchDataParam) {
     //if (this.config.custom_func) {
     //   import PluggableClass from this.config.custom_func;
 
@@ -267,6 +267,10 @@ export class ScrapeManager {
     this.logger.info(`Using ${this.numClusters} clusters.`);
   
 console.log(this.numClusters)
+//avoid to waste resource
+if(param.keywords.length<this.numClusters){
+  this.numClusters=param.keywords.length;
+}
 
 //https://github.com/puppeteer/puppeteer/issues/2234
     // Give the per browser options
@@ -274,21 +278,21 @@ console.log(this.numClusters)
       const userAgent = this.config.random_user_agent
         ? new UserAgent({ deviceCategory: "desktop" }).toString()
         : this.config.user_agent;
-      let args = this.config.chrome_flags.concat([`--user-agent=${userAgent}`]);
+      const args = this.config.chrome_flags.concat([`--user-agent=${userAgent}`]);
 
-      if (proxy&&proxy.server) {
-        // set proxy place
-        //console.log("proxy is" + proxy.server)
-        args = args.concat([`--proxy-server=${proxy.server}`]);
-        // args =args.concat([`--proxy-auth=${proxy.server.username}:${proxy.server.password}`]);
+      // if (proxy&&proxy.server) {
+      //   // set proxy place
+      //   //console.log("proxy is" + proxy.server)
+      //   args = args.concat([`--proxy-server=${proxy.server}`]);
+      //   // args =args.concat([`--proxy-auth=${proxy.server.username}:${proxy.server.password}`]);
 
-      }
+      // }
 
       return {
         headless: this.config.headless,
         ignoreHTTPSErrors: true,
         args,
-        proxy
+        // proxy
       };
     });
     this.logger.info(this.config)
@@ -323,6 +327,9 @@ console.log(this.numClusters)
     // console.log(this.cluster)
     //}
     //}
+    this.cluster.on('taskerror', (err, data) => {
+      console.log(`Error crawling ${data}: ${err.message}`);
+    });
   }
 
   /*
@@ -425,7 +432,7 @@ console.log(this.numClusters)
    * get data from search engine
    */
   async searchdata(param: SearchDataParam):Promise<SearchDataRun> {
-    await this.start();
+    await this.start(param);
 
     const results:ResultParseType = {};
     let num_requests = 0;
@@ -456,7 +463,10 @@ console.log(this.numClusters)
     // for every browser instance. We will use our custom puppeteer-cluster version.
     // https://www.npmjs.com/package/proxy-chain
     // this answer looks nice: https://github.com/GoogleChrome/puppeteer/issues/678#issuecomment-389096077
+    //this.numClusters=Math.min(this.numClusters,param.keywords.length);
+   
     const chunks: Array<Array<string>> = []; // Initialize the 'chunks' variable
+
     for (let n = 0; n < this.numClusters; n++) {
       chunks.push([]);
     }
@@ -464,7 +474,7 @@ console.log(this.numClusters)
       chunks[k % this.numClusters].push(param.keywords[k]);
     }
 
-    this.logger.info(chunks);
+    // this.logger.info(chunks);
     const engineFactory = new searchEngineFactory()
     const execPromises: Array<Promise<any>> = [];
 
@@ -496,7 +506,10 @@ console.log(this.numClusters)
         keywords: chunks[c]
       }
       if(this.proxiesArr&&this.proxiesArr.length>0){
-        cludata.proxyServer=this.proxiesArr[c]
+        //get random proxy from proxy array
+        const randomIndex = Math.floor(Math.random() * this.proxiesArr.length);
+
+        cludata.proxyServer=this.proxiesArr[randomIndex];
       }
       // const boundMethod = (data: string,res:any) => obj.searchData(data, page);
       execPromises.push(this.cluster.execute(cludata, boundMethod));

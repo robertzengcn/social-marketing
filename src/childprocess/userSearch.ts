@@ -7,15 +7,15 @@ import { ToArray } from "@/modules/lib/function"
 import { CustomError } from "@/modules/customError"
 import {SearchDataRun} from "@/entityTypes/scrapeType"
 // import { ProxyController } from "@/controller/proxy-controller";
-import {proxyEntityToUrl,proxyEntityToServer} from "@/modules/lib/function"
-import { ProxyParseItem,ProxyServer} from "@/entityTypes/proxyType"
+import {proxyEntityToUrl} from "@/modules/lib/function"
+import { ProxyParseItem} from "@/entityTypes/proxyType"
 
 export class UserSearch {
     public async searchData(data: Usersearchdata,callback?: (arg: SearchDataRun) => void):Promise<SearchDataRun> {
 
-        const proxyStrList:Array<ProxyServer> = []
+        const proxyStrList:Array<string> = []
         console.log("proxy are following")
-        console.log(data.proxys)
+       // console.log(data.proxys)
         if (data.proxys) {
                data.proxys.forEach((value, key) => {
                    const proxyitem:ProxyParseItem = {
@@ -25,7 +25,7 @@ export class UserSearch {
                        pass: value.pass,
                        protocol: value.protocol
                    }
-                   const proxyStr=proxyEntityToServer(proxyitem)
+                   const proxyStr=proxyEntityToUrl(proxyitem)
                    proxyStrList.push(proxyStr)
                })
            }

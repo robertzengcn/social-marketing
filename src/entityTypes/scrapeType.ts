@@ -116,7 +116,7 @@ export type SMstruct = {
   // use a proxy for all connections
   // example: 'socks5://78.94.172.42:1080'
   // example: 'http://118.174.233.10:48400'
-  proxies?: Array<ProxyServer>,
+  proxies?: Array<string>,
   // a file with one proxy per line. Example:
   // socks5://78.94.172.42:1080
   // http://118.174.233.10:48400
@@ -143,7 +143,7 @@ export interface clusterData {
   page: Page
 }
 export interface ClusterSearchData {
-  proxyServer?:ProxyServer
+  proxyServer?:string
   keywords: Array<string>
 }
 export type ClusterFunctionparam = {

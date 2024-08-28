@@ -116,7 +116,7 @@ const search = ref('');
 const startAutoRefresh = () => {
     refreshInterval = setInterval(function(){
         loadItems({ page: options.page, itemsPerPage: itemsPerPage.value, sortBy: "" });
-    }, 5000); // Refresh every 5 seconds
+    }, 10000); // Refresh every 5 seconds
 }
 const stopAutoRefresh = () => {
   if (refreshInterval) {
@@ -137,7 +137,7 @@ function loadItems({ page=1, itemsPerPage=10, sortBy="" }) {
     }
     FakeAPI.fetch(fetchitem).then(
         ({ data, total }) => {
-             console.log(data)
+             //console.log(data)
             // console.log(total)
         
             serverItems.value = data
