@@ -115,13 +115,13 @@ export class SearchScrape implements searchEngineImpl {
                 await this.page.setRequestInterception(true);
                 this.page.on("request", async (interceptedRequest) => {
                     if (interceptedRequest.interceptResolutionState().action === InterceptResolutionAction.AlreadyHandled) return;
-                    if (interceptedRequest.resourceType() === "image") {
-                        interceptedRequest.abort();
-                    } else {
+                    // if (interceptedRequest.resourceType() === "image") {
+                    //     interceptedRequest.abort();
+                    // } else {
                         await useProxy(interceptedRequest, data.data.proxyServer!);
                         if (interceptedRequest.interceptResolutionState().action === InterceptResolutionAction.AlreadyHandled) return;
                         interceptedRequest.continue();
-                    }
+                   // }
                 });
             }
         }

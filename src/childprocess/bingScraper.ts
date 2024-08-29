@@ -3,7 +3,7 @@ import { SearchScrape } from "@/childprocess/searchScraper"
 import { ScrapeOptions, SearchData, SearchResult } from "@/entityTypes/scrapeType"
 import { CustomError } from "@/modules/customError"
 import { TimeoutError } from 'puppeteer';
-
+import { delay } from "@/modules/lib/function";
 
 export type googlePlaces = {
     heading: string;
@@ -287,6 +287,8 @@ export class BingScraper extends SearchScrape {
     }
 
     async search_keyword(keyword: string) {
+        //wait for full page loading
+        // await delay(5000)
         const textareaSearch = await this.page.$('textarea[name="q"]');
         if (textareaSearch) {
 
@@ -300,8 +302,44 @@ export class BingScraper extends SearchScrape {
                     setTimeout(resolve, 1000)
                 });
             });
-            await textareaSearch.focus();
-            await this.page.keyboard.press("Enter");
+            // await textareaSearch.focus();
+            // await this.page.keyboard.press("Enter");
+    
+            const labelSelector = '#search_icon';
+            const svgSelector = 'svg';
+            await this.page.evaluate((labelSel, svgSel) => {
+                const label = document.querySelector(labelSel);
+                if (label) {
+                  const svg = label.querySelector(svgSel) as HTMLElement;
+                  if (svg) {
+                    // const clickEvent = new MouseEvent('click', {
+                    //     view: window,
+                    //     bubbles: true,
+                    //     cancelable: true
+                    //   });
+                    //   svg.dispatchEvent(clickEvent);
+                    const rect = svg.getBoundingClientRect();
+                    return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+                  }
+                  return null;
+                }
+              }, labelSelector, svgSelector).then(async (position) => {
+                if (position) {
+                    await this.page.mouse.move(position.x, position.y);
+                    await this.page.mouse.click(position.x, position.y);
+                  }
+              });
+
+              //#search_icon
+            
+            // const clickbtn = await this.page.$('#search_icon');
+            // if(!clickbtn){
+            //     //click button not found
+            //     throw new CustomError("click button not found", 202408291119318)
+            // }else{
+            //     clickbtn.click();
+            // }
+            // await this.page.click(`#search_icon`);
         } else {
             const input = await this.page.$('input[name="q"]');
             if (input) {

@@ -131,7 +131,7 @@ export class ScrapeManager {
       scrape_from_file: "",
       // whether to prevent images, css, fonts and media from being loaded
       // will speed up scraping a great deal
-      block_assets: true,
+      block_assets: false,
       // path to js module that extends functionality
       // this module should export the functions:
       // get_browser, handle_metadata, close_browser
