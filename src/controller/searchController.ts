@@ -99,7 +99,8 @@ export class SearchController {
            // child.kill()
         })
         child.stderr?.on('data', (data) => {
-            if((!data.includes("Debugger attached"))&&(!data.includes("Waiting for the debugger to disconnect"))){
+            const ingoreStr=["Debugger attached","Waiting for the debugger to disconnect","Most NODE_OPTIONs are not supported in packaged apps"]
+            if(!ingoreStr.some((value)=>data.includes(value))){
                     
             // seModel.saveTaskerrorlog(taskId,data)
             console.log(`Received error chunk ${data}`)

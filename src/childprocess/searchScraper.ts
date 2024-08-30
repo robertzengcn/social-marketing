@@ -322,7 +322,7 @@ export class SearchScrape implements searchEngineImpl {
             this.results[keyword] = {};
             // this.results.set(keyword, {});
             this.result_rank = 1;
-
+console.log("keyword is "+keyword)
             try {
 
                 // if (this.pluggable && this.pluggable.before_keyword_scraped) {

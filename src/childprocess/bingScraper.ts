@@ -305,30 +305,36 @@ export class BingScraper extends SearchScrape {
             // await textareaSearch.focus();
             // await this.page.keyboard.press("Enter");
     
-            const labelSelector = '#search_icon';
-            const svgSelector = 'svg';
-            await this.page.evaluate((labelSel, svgSel) => {
-                const label = document.querySelector(labelSel);
-                if (label) {
-                  const svg = label.querySelector(svgSel) as HTMLElement;
-                  if (svg) {
-                    // const clickEvent = new MouseEvent('click', {
-                    //     view: window,
-                    //     bubbles: true,
-                    //     cancelable: true
-                    //   });
-                    //   svg.dispatchEvent(clickEvent);
-                    const rect = svg.getBoundingClientRect();
-                    return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
-                  }
-                  return null;
+            // const labelSelector = '#search_icon';
+            // const svgSelector = 'svg';
+            // await this.page.evaluate((labelSel, svgSel) => {
+            //     const label = document.querySelector(labelSel);
+            //     if (label) {
+            //       const svg = label.querySelector(svgSel) as HTMLElement;
+            //       if (svg) {
+            //         // const clickEvent = new MouseEvent('click', {
+            //         //     view: window,
+            //         //     bubbles: true,
+            //         //     cancelable: true
+            //         //   });
+            //         //   svg.dispatchEvent(clickEvent);
+            //         const rect = svg.getBoundingClientRect();
+            //         return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+            //       }
+            //       return null;
+            //     }
+            //   }, labelSelector, svgSelector).then(async (position) => {
+            //     if (position) {
+            //         await this.page.mouse.move(position.x, position.y);
+            //         await this.page.mouse.click(position.x, position.y);
+            //       }
+            //   });
+            await this.page.evaluate(async () => {
+                const form = document.querySelector('form[action="/search"]') as HTMLFormElement;
+                if (form) {
+                    form.submit();
                 }
-              }, labelSelector, svgSelector).then(async (position) => {
-                if (position) {
-                    await this.page.mouse.move(position.x, position.y);
-                    await this.page.mouse.click(position.x, position.y);
-                  }
-              });
+            });
 
               //#search_icon
             

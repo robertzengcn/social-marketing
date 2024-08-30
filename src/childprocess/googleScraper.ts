@@ -187,47 +187,47 @@ export class GoogleScraper extends SearchScrape {
             result.results.push(resValue);
         }
 
-        const topad=await this.page.$$eval('#tvcap .uEierd', elements =>elements.map(
-            el => async () =>{
-                const ad_obj: SearchResult = {
-                    // visible_link: _text(el, '.ads-visurl cite'),
-                    // tracking_link: _attr(el, 'a:first-child', 'href'),
-                    // link: await (window as any)._attr(el, 'a', 'href'),
-                    link: el.querySelector('a')?.getAttribute('href'),
-                    //title: await (window as any)._text(el, 'span:nth-child(2)'),
-                    title: el.querySelector('span:nth-child(2)')?.textContent,
-                    //snippet: await (window as any)._text(el, '.Va3FIb span'),
-                    snippet: el.querySelector('.Va3FIb span')?.textContent,
-                    // links: [],
-                };
+        // const topad=await this.page.$$eval('#tvcap .uEierd', elements =>elements.map(
+        //     el => async () =>{
+        //         const ad_obj: SearchResult = {
+        //             // visible_link: _text(el, '.ads-visurl cite'),
+        //             // tracking_link: _attr(el, 'a:first-child', 'href'),
+        //             // link: await (window as any)._attr(el, 'a', 'href'),
+        //             link: el.querySelector('a')?.getAttribute('href'),
+        //             //title: await (window as any)._text(el, 'span:nth-child(2)'),
+        //             title: el.querySelector('span:nth-child(2)')?.textContent,
+        //             //snippet: await (window as any)._text(el, '.Va3FIb span'),
+        //             snippet: el.querySelector('.Va3FIb span')?.textContent,
+        //             // links: [],
+        //         };
                
-                return ad_obj
-            }
-        ))
-        for( const tValue of topad){
-            const atValue = await tValue();
-            result.results.push(atValue)
-        }
-        const bottomAd=await this.page.$$eval('#tadsb .uEierd', elements =>elements.map(
-            el => async () =>{
-                const ad_obj: SearchResult = {
-                    // visible_link: _text(el, '.ads-visurl cite'),
-                    // tracking_link: _attr(el, 'a:first-child', 'href'),
-                    //link: await (window as any)._attr(el, 'a', 'href'),
-                    link: el.querySelector('a')?.getAttribute('href'),
-                    title:el.querySelector('span:nth-child(2)')?.textContent,
-                    //snippet: await (window as any)._text(el, '.Va3FIb span'),
-                    snippet: el.querySelector('.Va3FIb span')?.textContent,
-                    // links: [],
-                };
+        //         return ad_obj
+        //     }
+        // ))
+        // for( const tValue of topad){
+        //     const atValue = await tValue();
+        //     result.results.push(atValue)
+        // }
+        // const bottomAd=await this.page.$$eval('#tadsb .uEierd', elements =>elements.map(
+        //     el => async () =>{
+        //         const ad_obj: SearchResult = {
+        //             // visible_link: _text(el, '.ads-visurl cite'),
+        //             // tracking_link: _attr(el, 'a:first-child', 'href'),
+        //             //link: await (window as any)._attr(el, 'a', 'href'),
+        //             link: el.querySelector('a')?.getAttribute('href'),
+        //             title:el.querySelector('span:nth-child(2)')?.textContent,
+        //             //snippet: await (window as any)._text(el, '.Va3FIb span'),
+        //             snippet: el.querySelector('.Va3FIb span')?.textContent,
+        //             // links: [],
+        //         };
                
-                return ad_obj
-            }
-        ))
-        for( const tValue of bottomAd){
-            const atValue= await tValue();
-            result.results.push(atValue)
-        }
+        //         return ad_obj
+        //     }
+        // ))
+        // for( const tValue of bottomAd){
+        //     const atValue= await tValue();
+        //     result.results.push(atValue)
+        // }
         // const num=await this.page.$eval('#resultStats', el => el.textContent);
         // if(num){
         //     result.num_results = num;
