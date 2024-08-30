@@ -102,6 +102,9 @@ export default {
         select_account_hint:"Select account by click the change account button, please select account with cookies exist",
     },
     search:{
+        google:"Google.com",
+        bing:"Bing.com",
+        baidu:"Baidu.com",
         platform:"platform",
         keyword:"Keyword",
         search_enginer_name:"search enginer",

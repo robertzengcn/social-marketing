@@ -87,7 +87,13 @@ const concurrent_quantity = ref(1);
 const proxyValue = ref<Array<ProxyEntity>>([]);
 const proxytableshow = ref(false);
 const initialize = () => {
-  searchplatform.value = ToArray(SearhEnginer);
+  //searchplatform.value = ToArray(SearhEnginer);
+  const seArr:string[]=ToArray(SearhEnginer);
+  console.log(seArr);
+  // seArr.map((item)=>{
+  //   searchplatform.value?.push(t('search.'+item))
+  // })
+  searchplatform.value=seArr
 };
 const setAlert = (
   text: string,

@@ -5,12 +5,12 @@ import { CustomError } from "@/modules/customError"
 import { TimeoutError } from 'puppeteer';
 import { delay } from "@/modules/lib/function";
 
-export type googlePlaces = {
-    heading: string;
-    rating: string;
-    contact: string;
-    hours: string;
-}
+// export type googlePlaces = {
+//     heading: string;
+//     rating: string;
+//     contact: string;
+//     hours: string;
+// }
 
 export class BingScraper extends SearchScrape {
     constructor(options: ScrapeOptions) {
