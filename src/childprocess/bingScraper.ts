@@ -2,8 +2,10 @@
 import { SearchScrape } from "@/childprocess/searchScraper"
 import { ScrapeOptions, SearchData, SearchResult } from "@/entityTypes/scrapeType"
 import { CustomError } from "@/modules/customError"
-import { TimeoutError } from 'puppeteer';
-import { delay } from "@/modules/lib/function";
+import { TimeoutError,InterceptResolutionAction } from 'puppeteer';
+//import { delay } from "@/modules/lib/function";
+import useProxy from "@lem0-packages/puppeteer-page-proxy"
+
 
 // export type googlePlaces = {
 //     heading: string;
@@ -185,7 +187,7 @@ export class BingScraper extends SearchScrape {
             }
             ))
         for (const seval of searchRes) {
-            if (seval.link?.indexOf('www.bing.com') == -1) {
+            if (seval.link?.includes('www.bing.com')) {
                 // const response = await fetch(link, { method: 'GET' });
                 // if(response.status==200){
                 //     link=response.url
@@ -195,6 +197,20 @@ export class BingScraper extends SearchScrape {
                 try {
                     const newPage = await browser.newPage();
                     try {
+
+                        if (this.proxyServer && this.proxyServer.length > 0) {
+                            await newPage.setRequestInterception(true);
+                            newPage.on("request", async (interceptedRequest) => {
+                                if (interceptedRequest.interceptResolutionState().action === InterceptResolutionAction.AlreadyHandled) return;
+                                // if (interceptedRequest.resourceType() === "image") {
+                                //     interceptedRequest.abort();
+                                // } else {
+                                await useProxy(interceptedRequest, this.proxyServer!);
+                                if (interceptedRequest.interceptResolutionState().action === InterceptResolutionAction.AlreadyHandled) return;
+                                interceptedRequest.continue();
+                                // }
+                            });
+                        }
 
                         const response = await newPage.goto(seval.link, {
                             waitUntil: "networkidle2",

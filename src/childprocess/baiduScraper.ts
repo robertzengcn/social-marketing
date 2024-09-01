@@ -2,7 +2,9 @@
 import { SearchScrape } from "@/childprocess/searchScraper"
 import { ScrapeOptions, SearchData, SearchResult } from "@/entityTypes/scrapeType"
 import { CustomError } from "@/modules/customError"
-import { TimeoutError } from 'puppeteer';
+import { TimeoutError,InterceptResolutionAction } from 'puppeteer';
+import useProxy from "@lem0-packages/puppeteer-page-proxy"
+
 //import { delay } from "@/modules/lib/function";
 
 // export type googlePlaces = {
@@ -16,7 +18,7 @@ export class BaiduScraper extends SearchScrape {
     constructor(options: ScrapeOptions) {
         super(options);
     }
-    
+
 
     async parse_async(): Promise<SearchData> {
 
@@ -38,19 +40,20 @@ export class BaiduScraper extends SearchScrape {
             bottom_ads: [],
             // places: [],
         };
-        const searchRes = await this.page.$$eval('#b_results .b_algo', elements =>
+        const searchRes = await this.page.$$eval('#content_left .c-container', elements =>
             elements.map(el => {
-                const link = el.querySelector('.b_tpcn a')?.getAttribute('href')
+                const link = el.querySelector('.c-title a')?.getAttribute('href')
 
-                let title = el.querySelector('h2 a')?.textContent
+                let title = el.querySelector('h3 a')?.textContent
                 if (!title) {
-                    title = el.querySelector('.b_topTitle')?.textContent
+                    title = el.querySelector('.tts-title')?.textContent
                 }
-                let visible_link = el.querySelector('.tptt')?.textContent
-                if (!visible_link) {
-                    visible_link = el.querySelector('.tptxt cite')?.textContent
-                }
-               
+                // let visible_link = el.querySelector('.tptt')?.textContent
+                // if (!visible_link) {
+                //     visible_link = el.querySelector('.tptxt cite')?.textContent
+                // }
+                const visible_link = ""
+
 
                 const serp_obj: SearchResult = {
                     // link: await (window as any)._attr(el, '.yuRUbf a', 'href'),
@@ -69,7 +72,7 @@ export class BaiduScraper extends SearchScrape {
             }
             ))
         for (const seval of searchRes) {
-            if (seval.link?.indexOf('www.baidu.com') == -1) {
+            if (seval.link?.includes('www.baidu.com')) {
                 // const response = await fetch(link, { method: 'GET' });
                 // if(response.status==200){
                 //     link=response.url
@@ -79,6 +82,19 @@ export class BaiduScraper extends SearchScrape {
                 try {
                     const newPage = await browser.newPage();
                     try {
+                        if (this.proxyServer && this.proxyServer.length > 0) {
+                            await newPage.setRequestInterception(true);
+                            newPage.on("request", async (interceptedRequest) => {
+                                if (interceptedRequest.interceptResolutionState().action === InterceptResolutionAction.AlreadyHandled) return;
+                                // if (interceptedRequest.resourceType() === "image") {
+                                //     interceptedRequest.abort();
+                                // } else {
+                                await useProxy(interceptedRequest, this.proxyServer!);
+                                if (interceptedRequest.interceptResolutionState().action === InterceptResolutionAction.AlreadyHandled) return;
+                                interceptedRequest.continue();
+                                // }
+                            });
+                        }
 
                         const response = await newPage.goto(seval.link, {
                             waitUntil: "networkidle2",
@@ -127,74 +143,62 @@ export class BaiduScraper extends SearchScrape {
 
     async search_keyword(keyword: string) {
         //wait for full page loading
-        // await delay(5000)
-        const textareaSearch = await this.page.$('textarea[name="q"]');
-        if (textareaSearch) {
 
-            // await this.set_input_value(`textarea[name="q"]`, keyword);
+        const input = await this.page.$('input[name="wd"]');
+        if (input) {
+            // await this.set_input_value(`input[name="q"]`, keyword);
             await this.page.evaluate((element, value) => {
                 element.value = value;
-            }, textareaSearch, keyword);
+            }, input, keyword);
             // await this.page.waitForTimeout(50);
             await this.page.evaluate(async () => {
                 await new Promise(function (resolve) {
-                    setTimeout(resolve, 1000)
+                    setTimeout(resolve, 3000)
                 });
             });
-            await textareaSearch.focus();
-            await this.page.keyboard.press("Enter");  
-            
-        } else {
-            const input = await this.page.$('input[name="q"]');
-            if (input) {
-                // await this.set_input_value(`input[name="q"]`, keyword);
-                await this.page.evaluate((element, value) => {
-                    element.value = value;
-                }, input, keyword);
-                // await this.page.waitForTimeout(50);
-                await this.page.evaluate(async () => {
-                    await new Promise(function (resolve) {
-                        setTimeout(resolve, 3000)
-                    });
-                });
 
-                await input.focus();
-                await this.page.keyboard.press("Enter");
-            } else {
-                throw new CustomError("input keyword button not found", 202408191127280)
-            }
+            await input.focus();
+            await this.page.keyboard.press("Enter");
+        } else {
+            throw new CustomError("input keyword button not found", 202409011049147)
         }
+        //}
     }
     //click next page
     async next_page(): Promise<boolean | void> {
-        const next_page_link = await this.page.$('.sb_pagN');
-        if (!next_page_link) {
-            //return false;
-            const targetElement = await this.page.$('[aria-label="Next page"]')
-            if (targetElement) {
-                await targetElement.scrollIntoView();
-                targetElement.click();
-                return true
-            } else {
-                const targetElements = await this.page.$('[title="Next page"]');
-                if (targetElements) {
-                    await targetElements.scrollIntoView();
-                    await targetElements.click();
-                    return true;
-                }
-            }
+        const next_page_link = await this.page.$('#page n');
+        // if (!next_page_link) {
+        //     //return false;
+        //     const targetElement = await this.page.$('[aria-label="Next page"]')
+        //     if (targetElement) {
+        //         await targetElement.scrollIntoView();
+        //         targetElement.click();
+        //         return true
+        //     } else {
+        //         const targetElements = await this.page.$('[title="Next page"]');
+        //         if (targetElements) {
+        //             await targetElements.scrollIntoView();
+        //             await targetElements.click();
+        //             return true;
+        //         }
+        //     }
 
-        } else {
+        // } else {
+        if (next_page_link) {
+            await next_page_link.scrollIntoView();
             await next_page_link.click();
-            return true;
+            return true
+        }else{
+            throw new CustomError("next page button not found", 202409011049192)
         }
+        //}
 
 
         return false;
     }
 
     async wait_for_results() {
-        await this.page.waitForSelector('#b_tween', { timeout: this.STANDARD_TIMEOUT });
+        await this.page.waitForSelector('#content_left', { timeout: this.STANDARD_TIMEOUT });
     }
 
     async detected() {

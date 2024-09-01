@@ -30,6 +30,7 @@ export class SearchScrape implements searchEngineImpl {
     num_keywords: number;
     keyword: string;
     page_num: number;
+    proxyServer?:string
     constructor(options: ScrapeOptions) {
         if (options.page) {
             this.page = options.page;
@@ -95,7 +96,7 @@ export class SearchScrape implements searchEngineImpl {
         // await this.exposeFunction()
 
         this.keywords = data.data.keywords
-
+       
         await this.page.setViewport({ width: 1920, height: 1040 });
         let do_continue: boolean | void = true;
 
@@ -111,7 +112,7 @@ export class SearchScrape implements searchEngineImpl {
                 //   username: data.data.proxyServer.username,
                 //   password: data.data.proxyServer.password,
                 // });
-
+                this.proxyServer = data.data.proxyServer
                 await this.page.setRequestInterception(true);
                 this.page.on("request", async (interceptedRequest) => {
                     if (interceptedRequest.interceptResolutionState().action === InterceptResolutionAction.AlreadyHandled) return;
@@ -322,7 +323,7 @@ export class SearchScrape implements searchEngineImpl {
             this.results[keyword] = {};
             // this.results.set(keyword, {});
             this.result_rank = 1;
-console.log("keyword is "+keyword)
+//console.log("keyword is "+keyword)
             try {
 
                 // if (this.pluggable && this.pluggable.before_keyword_scraped) {

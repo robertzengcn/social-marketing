@@ -9,7 +9,7 @@
         </div>     
     </div>
     <v-data-table-server v-model:items-per-page="itemsPerPage" :search="search" :headers="headers" 
-        :items-length="totalItems" :items="serverItems" :loading="loading" item-value="name" @update:options="loadItems">
+        :items-length="totalItems" :items="serverItems" :loading="loading" item-value="name" @update:options="loadItems" class="custom-data-table mt5">
          
     </v-data-table-server>
     
@@ -79,12 +79,14 @@ headers.value = [
         align: 'start',
         sortable: false,
         key: 'title',
+        width: '20px'
     },
     {
         title: computed(_ => CapitalizeFirstLetter(t("searchresult.link"))),
         align: 'start',
         sortable: false,
         key: 'link',
+        width: '20px'
         // value: computed(value => value.join(', '))
     },
     {
@@ -147,3 +149,12 @@ function loadItems({ page, itemsPerPage, sortBy }) {
 // }
 
 </script>
+<style scoped>
+.custom-data-table .v-data-table__wrapper tr {
+  height: 50px; /* Set the desired row height */
+}
+
+.custom-data-table .v-data-table__wrapper td {
+  height: 50px; /* Set the desired cell height */
+}
+</style>
