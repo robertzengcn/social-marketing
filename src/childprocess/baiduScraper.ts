@@ -71,7 +71,10 @@ export class BaiduScraper extends SearchScrape {
                 return serp_obj
             }
             ))
-        for (const seval of searchRes) {
+        //remove duplicate items
+        const uniqueArray = Array.from(new Set(searchRes));
+//console.log(uniqueArray); // Output: [1, 2, 3, 4, 5]    
+        for (const seval of uniqueArray) {
             if (seval.link?.includes('www.baidu.com')) {
                 // const response = await fetch(link, { method: 'GET' });
                 // if(response.status==200){
@@ -166,7 +169,7 @@ export class BaiduScraper extends SearchScrape {
     }
     //click next page
     async next_page(): Promise<boolean | void> {
-        const next_page_link = await this.page.$('#page n');
+        const next_page_link = await this.page.$('#page .n');
         // if (!next_page_link) {
         //     //return false;
         //     const targetElement = await this.page.$('[aria-label="Next page"]')
