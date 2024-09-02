@@ -1,16 +1,18 @@
 <template>
   <v-sheet class="mx-auto" rounded>
     <v-form ref="form" @submit.prevent="onSubmit">
-      <h3>{{ $t('search.use_hint') }}</h3>
-      <v-textarea class="mt-3" v-model="keywords" :label="$t('search.input_keywords_hint')"></v-textarea>
-      <v-select v-model="enginer" :items="searchplatform" :label="$t('search.search_enginer_name') as string" required
+    
+      
+      <v-select v-model="emailtype" :items="emailTypelist" :label="$t('emailextraction.extraction_type') as string" required
         :readonly="loading" :rules="[rules.required]" class="mt-3"  
         item-title="name"
           item-value="key"
+          return-object
           ></v-select>
+       <v-textarea class="mt-3" v-model="urls" :label="$t('emailextraction.input_urls_hint')" v-if="emailtype?.index==0"></v-textarea>   
 
 
-      <v-text-field v-model="page_number" :label="$t('search.page_number')" clearable class="mt-3"></v-text-field>
+      <v-text-field v-model="page_length" :label="$t('emailextraction.page_length')" clearable class="mt-3"></v-text-field>
 
       <v-text-field v-model="concurrent_quantity" :label="$t('search.concurrent_quantity')" clearable
         class="mt-3"></v-text-field>
@@ -57,15 +59,11 @@
   </div>
 </template>
 <script setup lang="ts">
-type SearchOption = {
-  key: string;
-  name: string;
-  index: number;
-};
+
 import { ref, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import router from '@/views/router';
-import { SearhEnginer } from "@/config/searchSetting"
+import {EmailExtractionTypes} from "@/config/emailextraction";
 import { ToArray, CapitalizeFirstLetter } from "@/views/utils/function"
 import { submitScraper, receiveSearchevent } from "@/views/api/search"
 import { Usersearchdata } from "@/entityTypes/searchControlType"
@@ -86,9 +84,16 @@ const loading = ref(false);
 const rules = {
   required: (value) => !!value || "Field is required",
 };
-const enginer = ref<string>();
+type EmailOption = {
+  key: string;
+  name: string;
+  index: number;
+};
+const urls=ref("");
+const page_length=ref(1);
+const emailtype = ref<EmailOption>();
 const keywords = ref();
-const searchplatform = ref<Array<SearchOption>>([]);
+const emailTypelist = ref<Array<EmailOption>>([]);
 const showinbrwoser = ref(0);
 const page_number = ref(1);
 const concurrent_quantity = ref(1);
@@ -96,13 +101,13 @@ const proxyValue = ref<Array<ProxyEntity>>([]);
 const proxytableshow = ref(false);
 const initialize = () => {
   //searchplatform.value = ToArray(SearhEnginer);
-  const seArr:string[]=ToArray(SearhEnginer);
+  const seArr:string[]=ToArray(EmailExtractionTypes);
 
   //console.log(seArr);
   seArr.map((item,index)=>{
-    searchplatform.value?.push({name:t('search.'+item.toLowerCase()),key:item,index:index})
+    emailTypelist.value?.push({name:t('emailextraction.'+item.toLowerCase()),key:item,index:index})
   })
-  console.log(searchplatform.value)
+ console.log(emailTypelist.value)
   //searchplatform.value=seArr
 };
 const setAlert = (
@@ -186,40 +191,24 @@ async function onSubmit() {
     //console.log("form is not valid");
     setAlert("Please fill all required fields", "Error", "error");
   } else {
-    if (!enginer.value) {
-      //return; 
-      setAlert(t("search.search_enginer_empty"), "Error", "error");
-      return
-    }
-    if (!keywords.value) {
-      setAlert(t("search.keywords_empty"), "Error", "error");
-      return
-    }
+   
     const subkeyword = keywords.value.split('\n').map(keyword => keyword.trim());
-    let finalser=0;
-    searchplatform.value.forEach((item) => {
-      if (item.key == enginer.value) {
-        finalser = item.index;
-      }
-    })
-    const subdata: Usersearchdata = {
-      searchEnginer: finalser,
-      keywords: subkeyword,
-      num_pages: page_number.value,
-      concurrency: concurrent_quantity.value,
-      notShowBrowser: !convertNumberToBoolean(showinbrwoser.value),
-      proxys: proxyValue.value
-      // maxConcurrent:concurrent_quantity.value
-    }
+    // let finalser=0;
+    // searchplatform.value.forEach((item) => {
+    //   if (item.key == enginer.value) {
+    //     finalser = item.index;
+    //   }
+    // })
+   
     //split keywords one line per one
     // subdata.keywords=
     //submit form
-    console.log(subdata)
-    submitScraper(subdata).catch(function (err) {
-      //catch error
-      setAlert(err.message, "Error", "error");
-      return null
-    })
+    // console.log(subdata)
+    // submitScraper(subdata).catch(function (err) {
+    //   //catch error
+    //   setAlert(err.message, "Error", "error");
+    //   return null
+    // })
     // if(res){
 
     // }

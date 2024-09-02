@@ -68,7 +68,8 @@ const homeCardlist: homecardEntity[] = [
         subtitle: t('home.emailmarketing_subtitle'),
         prependIcon: 'mdi-alarm',
         appendIcon: 'mdi-crown',
-        description: t('home.emailmarketing_description')
+        description: t('home.emailmarketing_description'),
+        link:'/emailextraction/form'
     },{
       title: t('home.tiktok_marketing_title'),
         subtitle: t('home.tiktok_marketing_subtitle'),

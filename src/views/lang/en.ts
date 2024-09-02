@@ -144,5 +144,12 @@ export default {
         failure:"failure",
         remove_failure:"remove failure proxy",
         unkonw:"unkonw",
+    },
+    emailextraction:{
+        manualinputurl:"manual input url",
+        searchresult:"search result",
+        extraction_type:"Extraction Type", 
+        input_urls_hint:"input urls, per one per line",
+        page_length:"the page length that you want to extract",
     }
 }

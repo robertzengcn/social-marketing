@@ -336,6 +336,48 @@ export const constantRoutes: RouteRecordRaw[] = [
     ]
   },
   {
+    path: '/emailextraction',
+    name: 'Email_Extraction',
+    meta: {
+      visible: true,
+      title: 'Email_Extraction',
+      icon: 'mdi-paw-off'
+    },
+    component: Layout, 
+    children: [
+      {
+        path: 'form',
+        component: () => import(/* webpackChunkName: "staff-list" */ '@/views/pages/emailextraction/index.vue'),
+        name: 'Email_Extraction_Form',
+        meta: {
+          visible: true,
+          title: 'Email Extraction',
+          icon: 'list'
+        }
+      },
+      {
+        path: 'tasklist',
+        component: () => import(/* webpackChunkName: "staff-list" */ '@/views/pages/emailextraction/resultlist.vue'),
+        name: 'Email_Extraction_list',
+        meta: {
+          visible: true,
+          title: 'Email Extraction Task list',
+          icon: 'list'
+        }
+      },
+      {
+        path: 'taskdetail/:id(\\d+)',
+        component: () => import(/* webpackChunkName: "staff-list" */ '@/views/pages/search/detaillist.vue'),
+        name: 'Email Extraction Task Detail',
+        meta: {
+          visible: false,
+          title: 'Email Extraction Detail',
+          icon: 'list'
+        }
+      }
+    ]
+  },
+  {
     path: '/login',
     name: 'login',
     meta: {

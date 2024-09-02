@@ -52,6 +52,7 @@ export class SearchController {
         //     //     data: null
         //     // }
         // }
+        //console.log(data)
         const seModel=new searhModel()
         const enginName=seModel.convertNumtoSE(data.searchEnginer)
         if(!enginName){
