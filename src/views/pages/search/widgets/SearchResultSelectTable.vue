@@ -1,31 +1,16 @@
 <template>
-   
-        <!-- <div>
-            <v-chip class="mx-2" closable color="pink"> Secondary </v-chip>
-            <v-chip class="mx-2" closable color="secondary"> Label </v-chip>
-            <v-chip class="mx-2"> Status </v-chip>
-        </div> -->
-   
+    <div class="search_bar mt-4 d-flex jsb">
+        <div class="d-flex jsb search_tool">
+            <div class="search_wrap mr-4">
+                <v-text-field rounded class="elevation-0" density="compact" variant="solo" label="Search sample"
+                    append-inner-icon="mdi-magnify" single-line hide-details></v-text-field>
+            </div>
+            <v-btn class="btn" variant="flat" prepend-icon="mdi-filter-variant"><span> {{$t('common.more')}}</span></v-btn>
+        </div>
+     
+    </div>
     <v-data-table-server v-model:items-per-page="itemsPerPage" :search="search" :headers="headers"
-        :items-length="totalItems" :items="serverItems" :loading="loading" item-value="name" @update:options="loadItems" class="custom-data-table">
-        <template v-slot:[`item.actions`]="{ item }">
-            <v-icon
-            size="small"
-            class="me-2"
-            @click="openfolder(item)"
-          >
-            mdi-folder
-          </v-icon>
-          <v-icon 
-          size="small"
-          class="me-2"
-          v-if="item.status=='Error'" 
-          @click="downloadErrorlog(item)"
-          >
-          mdi-download
-          </v-icon>
-
-        </template>
+        :items-length="totalItems" :items="serverItems" :loading="loading" item-value="name" @update:options="loadItems" class="custom-data-table" return-object show-select>
     </v-data-table-server>
     
     
@@ -33,11 +18,10 @@
 
 <script setup lang="ts">
 import {useI18n} from "vue-i18n";
-import { listSearchresult,Errorlogquery } from '@/views/api/search'
-import { ref,computed,onMounted,onUnmounted,reactive } from 'vue'
+import { listSearchresult} from '@/views/api/search'
+import { ref,computed,watch,reactive } from 'vue'
 import { SearchResult } from '@/views/api/types'
-// import type { VDataTable } from 'vuetify/lib/components/index.mjs'
-import router from '@/views/router';
+// import router from '@/views/router';
 import {SearchtaskItem } from "@/entityTypes/searchControlType"
 import {CapitalizeFirstLetter} from "@/views/utils/function"
 const {t} = useI18n({inheritLocale: true});
@@ -52,7 +36,7 @@ const options = reactive({
 type Fetchparam = {
     page: number,
     itemsPerPage: number,
-    sortBy?: {key:string,order:string},
+    sortBy: string,
     search: string
 }
 
@@ -64,13 +48,13 @@ const FakeAPI = {
 }
 
 const headers=ref<Array<any>>([])
-let refreshInterval:ReturnType<typeof setInterval> | undefined;
+// let refreshInterval:ReturnType<typeof setInterval> | undefined;
 
 headers.value = [
     {
         title: computed(_ => CapitalizeFirstLetter(t("searchtask.id"))),
         align: 'center',
-        sortable: true,
+        sortable: false,
         key: 'id',
     },
     {
@@ -78,7 +62,6 @@ headers.value = [
         align: 'start',
         sortable: false,
         key: 'enginer_name',
-        
     },
     {
         title: computed(_ => CapitalizeFirstLetter(t("search.keyword"))),
@@ -107,36 +90,18 @@ const loading = ref(false);
 
 const totalItems = ref(0);
 const search = ref('');
-const startAutoRefresh = () => {
-    refreshInterval = setInterval(function(){
-        loadItems({ page: options.page, itemsPerPage: itemsPerPage.value, sortBy: "" });
-    }, 10000); // Refresh every 5 seconds
-}
-const stopAutoRefresh = () => {
-  if (refreshInterval) {
-    clearInterval(refreshInterval);
-    refreshInterval= undefined;
-  }
-};
+const selected=ref<SearchtaskItem[]>([]);
 
-function loadItems({ page=1, itemsPerPage=10, sortBy}) {
+function loadItems({ page=1, itemsPerPage=10, sortBy="" }) {
     options.page = page;
     loading.value = true
-    console.log(sortBy)
     // console.log(page);
-    
     const fetchitem: Fetchparam = {
         page: page,
         itemsPerPage: itemsPerPage,
-       
+        sortBy: sortBy,
         search: search.value
     }
-    if(sortBy.length){
-        console.log("sort have value")
-        fetchitem.sortBy={key:sortBy[0].key,order:sortBy[0].order}
-
-    }
-   console.log(fetchitem)
     FakeAPI.fetch(fetchitem).then(
         ({ data, total }) => {
              //console.log(data)
@@ -149,40 +114,17 @@ function loadItems({ page=1, itemsPerPage=10, sortBy}) {
             console.error(error);
         })
 }
-// },
-// }
-// const editItem = (item) => {
- 
-    // else if(item.Types=="social task"){
-        
-    // }
-    // router.push({
-    //     path: '/graphics/oasis-engine',
-    // });
-// };
-const openfolder=(item)=>{
-    // console.log(item)
-    router.push({
-            name: 'Searchtaskdetail',params: { id: item.id } 
-     });
-    }
-const downloadErrorlog=(item)=>{
-    // console.log(item)
-    Errorlogquery(item.id).then((res)=>{
-        console.log(res)
-        // const url = window.URL.createObjectURL(new Blob([res.data]));
-        // const link = document.createElement('a');
-        // link.href
-    })
-}
-onMounted(() => {
-  
-  startAutoRefresh();
+
+
+const emit = defineEmits(['change'])
+watch(selected, (newValue:SearchtaskItem[], oldValue:SearchtaskItem[]) => {
+  console.log(`selectedtask changed from ${oldValue} to ${newValue}`);
+  emit('change', newValue);
 });
 
-onUnmounted(() => {
-  stopAutoRefresh();
-});
+
+
+
 
 </script>
 <style scoped>

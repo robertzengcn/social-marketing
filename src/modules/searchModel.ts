@@ -12,6 +12,7 @@ import { SearchtaskEntityNum, SearchtaskItem } from "@/entityTypes/searchControl
 import { getEnumKeyByValue, getEnumValueByNumber } from "@/modules/lib/function"
 import * as path from 'path';
 import * as fs from 'fs';
+import {SortBy} from "@/entityTypes/commonType";
 
 export class searhModel {
     private dbpath: string
@@ -143,14 +144,14 @@ export class searhModel {
         this.taskdbModel.updatetasklog(taskId, errorLog)
     }
     //return data for search list 
-    public listSearchtask(): SearchtaskEntityNum {
+    public listSearchtask(page:number,size:number, sortBy?:SortBy): SearchtaskEntityNum {
         // const tokenService = new Token()
         // const dbpath = await tokenService.getValue(USERSDBPATH)
         // if (!dbpath) {
         //     throw new Error("user path not exist")
         // }
         //const taskdbModel=new SearchTaskdb(this.dbpath)
-        const tasklist = this.taskdbModel.listTask()
+        const tasklist = this.taskdbModel.listTask(page,size,sortBy)
         // const searchKeydb=new SearchKeyworddb(this.dbpath)
         const taskdata: Array<SearchtaskItem> = []
 

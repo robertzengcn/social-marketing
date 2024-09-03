@@ -2,11 +2,11 @@ import { Usersearchdata } from "@/entityTypes/searchControlType"
 import { windowSend } from '@/views/utils/apirequest'
 import { SEARCHSCRAPERAPI } from '@/config/channellist'
 import { SearchtaskItem,SearchResultFetchparam } from "@/entityTypes/searchControlType"
-import { SearchResult, ItemSearchparam } from '@/views/api/types'
+import { SearchResult} from '@/views/api/types'
 import { windowInvoke,windowReceive } from '@/views/utils/apirequest'
 import {LISTSESARCHRESUT,TASKSEARCHRESULTLIST,SAVESEARCHERRORLOG} from "@/config/channellist";
 import {SearchResEntityDisplay} from "@/entityTypes/scrapeType"
-
+import {ItemSearchparam} from "@/entityTypes/commonType"
 //import {CommonDialogMsg} from "@/entityTypes/commonType";
 // import { ipcMain} from 'electron'
 

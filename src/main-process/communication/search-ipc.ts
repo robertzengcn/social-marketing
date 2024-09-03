@@ -7,6 +7,7 @@ import { CommonResponse } from "@/entityTypes/commonType"
 import { SearchResEntity } from "@/entityTypes/scrapeType"
 import * as path from 'path';
 import * as fs from 'fs';
+import {ItemSearchparam} from "@/entityTypes/commonType"
 
 export function registerSearchIpcHandlers() {
     ipcMain.on(SEARCHSCRAPERAPI, async (event, arg) => {
@@ -70,9 +71,11 @@ export function registerSearchIpcHandlers() {
         //return comMsgs
     })
     ipcMain.handle(LISTSESARCHRESUT, async (event, data) => {
+        const qdata = JSON.parse(data) as ItemSearchparam;
+        
         //console.log("handle campaign:list")
         const searchControl = new SearchController()
-        const res = searchControl.listSearchresult()
+        const res = searchControl.listSearchresult(qdata.page, qdata.size, qdata.sortby)
         const resp: CommonResponse<SearchtaskItem> = {
             status: true,
             msg: "",

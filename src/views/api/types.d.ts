@@ -1,11 +1,6 @@
 'use strict';
 export {};
-export type ItemSearchparam={
-    page:number
-    size:number
-    sortby?:string
-    search?:string
-}
+
 export type Itemlistparam={
     page:number
     size:number

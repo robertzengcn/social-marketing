@@ -1,9 +1,9 @@
 import {windowInvoke,windowSend,windowReceive} from '@/views/utils/apirequest'
-import {ItemSearchparam,SearchResult} from "./types"
+import {SearchResult} from "./types"
 import {ProxyEntity,ProxyParseItem,ProxyListEntity} from "@/entityTypes/proxyType"
 import {CHECKALLPROXY,CHECKALLPROXYMESSAGE,PROXYLIST,REMOVEFAILUREPROXY,REMOVEFAILUREPROXY_MESSAGE} from "@/config/channellist";
 // import { CommonMessage,NumProcessdata } from "@/entityTypes/commonType"
-
+import {ItemSearchparam} from "@/entityTypes/commonType"
 export async function getProxyList(data: ItemSearchparam): Promise<SearchResult<ProxyListEntity>> {
     const resp=await windowInvoke(PROXYLIST,data);
         

@@ -4,7 +4,8 @@ import { windowInvoke, windowSend, windowReceive } from '@/views/utils/apireques
 import { OPENDIRECTORY, VIDEODOWNLOAD_MESSAGE, VIDEODOWNLOAD, VIDEODOWNLOAD_LIST } from "@/config/channellist";
 import { downloadVideoparam, videoDownloadEntity } from "@/entityTypes/videoType"
 import { CommonDialogMsg } from "@/entityTypes/commonType";
-import { ItemSearchparam, SearchResult } from '@/views/api/types'
+import {SearchResult } from '@/views/api/types'
+import {ItemSearchparam} from "@/entityTypes/commonType"
 
 export async function opendialog(): Promise<any> {
     return await windowInvoke(OPENDIRECTORY);

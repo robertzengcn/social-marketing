@@ -31,3 +31,13 @@ export interface NumProcessdata{
     // num:number,
     process:number
 }
+export type SortBy={
+    key:string
+    order:string
+}
+export type ItemSearchparam={
+    page:number
+    size:number
+    sortby?:SortBy
+    search?:string
+}

@@ -1,6 +1,8 @@
-import {ItemSearchparam,SearchResult} from './types'
+import {SearchResult} from './types'
+import {ItemSearchparam} from "@/entityTypes/commonType"
 import {windowInvoke,windowSend,windowReceive} from '@/views/utils/apirequest'
 import {SocialAccountDetailData,SoASuccessEntity,SoADeleteResp,SocialLoginParam,SocialAccountListData} from "@/entityTypes/socialaccount-type"
+
 export async function getSocialAccountlist(data: ItemSearchparam):Promise<SearchResult<SocialAccountListData>>{
     const resp=await windowInvoke('socialaccount:list',data);
         

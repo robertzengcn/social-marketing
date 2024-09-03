@@ -22,6 +22,7 @@ import { SearchResEntityRecord } from "@/entityTypes/scrapeType"
 import {USERLOGPATH,USEREMAIL} from '@/config/usersetting';
 import {WriteLog,getApplogspath,getRandomValues} from "@/modules/lib/function"
 import { v4 as uuidv4 } from 'uuid';
+import {SortBy} from "@/entityTypes/commonType";
 export class SearchController {
     private searhModel:searhModel;
     
@@ -132,10 +133,10 @@ export class SearchController {
         });
     }
     //return search result
-    public listSearchresult():SearchtaskEntityNum{
+    public listSearchresult(page:number,size:number,sortBy?:SortBy):SearchtaskEntityNum{
         const seModel=new searhModel()
         // await seModel.init();
-        const res=seModel.listSearchtask()
+        const res=seModel.listSearchtask(page,size, sortBy)
         return res;
     }   
     //list task search result

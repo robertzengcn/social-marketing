@@ -10,7 +10,7 @@
           return-object
           ></v-select>
        <v-textarea class="mt-3" v-model="urls" :label="$t('emailextraction.input_urls_hint')" v-if="emailtype?.index==0"></v-textarea>   
-
+      
 
       <v-text-field v-model="page_length" :label="$t('emailextraction.page_length')" clearable class="mt-3"></v-text-field>
 
