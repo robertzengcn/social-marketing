@@ -1,16 +1,8 @@
 <template>
-    <div class="search_bar mt-4 d-flex jsb">
-        <div class="d-flex jsb search_tool">
-            <div class="search_wrap mr-4">
-                <v-text-field rounded class="elevation-0" density="compact" variant="solo" label="Search sample"
-                    append-inner-icon="mdi-magnify" single-line hide-details></v-text-field>
-            </div>
-            <v-btn class="btn" variant="flat" prepend-icon="mdi-filter-variant"><span> {{$t('common.more')}}</span></v-btn>
-        </div>
-     
-    </div>
-    <v-data-table-server v-model:items-per-page="itemsPerPage" :search="search" :headers="headers"
-        :items-length="totalItems" :items="serverItems" :loading="loading" item-value="name" @update:options="loadItems" class="custom-data-table" return-object show-select>
+
+    <v-data-table-server v-model="selected" :items-per-page="itemsPerPage" :search="search" :headers="headers"
+        :items-length="totalItems" :items="serverItems" :loading="loading" item-value="name" @update:options="loadItems" class="custom-data-table" return-object show-select select-strategy="single">
+        
     </v-data-table-server>
     
     
@@ -36,7 +28,7 @@ const options = reactive({
 type Fetchparam = {
     page: number,
     itemsPerPage: number,
-    sortBy: string,
+    sortBy?: {key:string,order:string},
     search: string
 }
 
@@ -82,7 +74,7 @@ headers.value = [
         sortable: false,
         key: 'record_time',
     },
-    { title: 'Actions', key: 'actions', sortable: false },
+    
 ];
 const itemsPerPage = ref(10);
 const serverItems = ref<Array<SearchtaskItem>>([]);
@@ -90,9 +82,9 @@ const loading = ref(false);
 
 const totalItems = ref(0);
 const search = ref('');
-const selected=ref<SearchtaskItem[]>([]);
+const selected=ref<SearchtaskItem>();
 
-function loadItems({ page=1, itemsPerPage=10, sortBy="" }) {
+function loadItems({ page=1, itemsPerPage=10, sortBy }) {
     options.page = page;
     loading.value = true
     // console.log(page);
@@ -117,7 +109,7 @@ function loadItems({ page=1, itemsPerPage=10, sortBy="" }) {
 
 
 const emit = defineEmits(['change'])
-watch(selected, (newValue:SearchtaskItem[], oldValue:SearchtaskItem[]) => {
+watch(selected, (newValue:SearchtaskItem|undefined, oldValue:SearchtaskItem|undefined) => {
   console.log(`selectedtask changed from ${oldValue} to ${newValue}`);
   emit('change', newValue);
 });

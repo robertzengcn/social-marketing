@@ -9,8 +9,12 @@
           item-value="key"
           return-object
           ></v-select>
-       <v-textarea class="mt-3" v-model="urls" :label="$t('emailextraction.input_urls_hint')" v-if="emailtype?.index==0"></v-textarea>   
-      
+       <v-textarea class="mt-3" v-model="urls" :label="$t('emailextraction.input_urls_hint')" v-if="emailtype?.index==0"></v-textarea> 
+       
+       <div v-if="emailtype?.index==1" class="mt-3">
+        <SearchResultSelectTable @change="handleSearchtaskChanged" />
+      </div>
+
 
       <v-text-field v-model="page_length" :label="$t('emailextraction.page_length')" clearable class="mt-3"></v-text-field>
 
@@ -65,13 +69,15 @@ import { useI18n } from "vue-i18n";
 import router from '@/views/router';
 import {EmailExtractionTypes} from "@/config/emailextraction";
 import { ToArray, CapitalizeFirstLetter } from "@/views/utils/function"
-import { submitScraper, receiveSearchevent } from "@/views/api/search"
-import { Usersearchdata } from "@/entityTypes/searchControlType"
-import { convertNumberToBoolean } from "@/views/utils/function"
-import { SEARCHEVENT } from "@/config/channellist"
-import { CommonDialogMsg } from "@/entityTypes/commonType"
+import { submitScraper } from "@/views/api/emailextraction"
+// import { Usersearchdata } from "@/entityTypes/searchControlType"
+// import { convertNumberToBoolean } from "@/views/utils/function"
+import {isValidUrl,convertNumberToBoolean} from "@/views/utils/function"
 import ProxyTableselected from "@/views/pages/proxy/widgets/ProxySelectedTable.vue";
+import SearchResultSelectTable from "@/views/pages/search/widgets/SearchResultSelectTable.vue";
 import { ProxyEntity,ProxyListEntity } from "@/entityTypes/proxyType";
+import {SearchtaskItem } from "@/entityTypes/searchControlType"
+import {EmailscFormdata} from '@/entityTypes/emailextraction-type'
 const { t } = useI18n({ inheritLocale: true });
 const alert = ref(false);
 const alerttext = ref("");
@@ -89,16 +95,17 @@ type EmailOption = {
   name: string;
   index: number;
 };
-const urls=ref("");
+const urls=ref<string>("");
 const page_length=ref(1);
 const emailtype = ref<EmailOption>();
-const keywords = ref();
+
 const emailTypelist = ref<Array<EmailOption>>([]);
 const showinbrwoser = ref(0);
-const page_number = ref(1);
+// const searchtaskshow=ref(false);
 const concurrent_quantity = ref(1);
 const proxyValue = ref<Array<ProxyEntity>>([]);
 const proxytableshow = ref(false);
+const searchtaskId=ref<number>(0);
 const initialize = () => {
   //searchplatform.value = ToArray(SearhEnginer);
   const seArr:string[]=ToArray(EmailExtractionTypes);
@@ -126,30 +133,14 @@ const setAlert = (
 
 onMounted(() => {
   initialize();
-  receiveMsg()
+
 })
 const showProxytable = () => {
   console.log("show proxy table");
   proxytableshow.value = !proxytableshow.value;
 };
 
-const receiveMsg = () => {
-  receiveSearchevent(SEARCHEVENT, function (res) {
-    console.log(res)
-    const obj = JSON.parse(res) as CommonDialogMsg
-    if (obj.status) {
-      if (obj.data) {
-        if (obj.data.action) {
-          if (obj.data.action == 'search_task _start') {
-            router.push({
-              path: '/search/tasklist'
-            });
-          }
-        }
-      }
-    }
-  })
-}
+
 const capletter = CapitalizeFirstLetter
 
 const handleSelectedChanged = (newValue: ProxyListEntity[]) => {
@@ -184,6 +175,15 @@ const handleSelectedChanged = (newValue: ProxyListEntity[]) => {
     }
   }
 };
+const handleSearchtaskChanged = (newValue: SearchtaskItem) => {
+  // console.log(`selectedProxy changed to ${newValue}`);
+  // proxyValue.value=[];
+  console.log("search change")
+  console.log(newValue)
+  if(newValue){
+    searchtaskId.value=newValue.id;
+  }
+};
 async function onSubmit() {
   if (!form.value) return;
   const { valid } = await form.value.validate();
@@ -191,27 +191,39 @@ async function onSubmit() {
     //console.log("form is not valid");
     setAlert("Please fill all required fields", "Error", "error");
   } else {
-   
-    const subkeyword = keywords.value.split('\n').map(keyword => keyword.trim());
-    // let finalser=0;
-    // searchplatform.value.forEach((item) => {
-    //   if (item.key == enginer.value) {
-    //     finalser = item.index;
-    //   }
-    // })
-   
-    //split keywords one line per one
-    // subdata.keywords=
-    //submit form
-    // console.log(subdata)
-    // submitScraper(subdata).catch(function (err) {
-    //   //catch error
-    //   setAlert(err.message, "Error", "error");
-    //   return null
-    // })
-    // if(res){
+    const validateurl:Array<string>=[]
+    let extratype = "";
+    if(emailtype.value&&(emailtype.value?.index==0)){
+      extratype=emailtype.value.key;
+      if(urls.value==""){
+        setAlert("Please fill all required fields", "Error", "error");
+        return;
+      }
+    
+    const urlarr = urls.value.split('\n').map(keyword => keyword.trim());
+  
+    //validate item in urls array is valid url
+    urlarr.forEach((item) => {
+      //check url is valid
+      isValidUrl(item)?validateurl.push(item):null
+    })
 
-    // }
+  }
+   const scraperData:EmailscFormdata={
+    extratype:extratype,
+    urls:validateurl,
+    pagelength:page_length.value,
+    concurrency:concurrent_quantity.value,
+    notShowBrowser:!convertNumberToBoolean(showinbrwoser.value),
+    proxys:proxyValue.value,
+    searchTaskId:searchtaskId.value
+   }
+   console.log(scraperData)
+   submitScraper(scraperData).catch(function (err) {
+      //catch error
+      setAlert(err.message, "Error", "error");
+      return null
+    })
 
   }
 

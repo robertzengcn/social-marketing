@@ -20,5 +20,13 @@ export  function CapitalizeFirstLetter(string:string) {
 export function convertNumberToBoolean(num: number): boolean {
     return num !== 0;
   }
+export function isValidUrl(url:string):boolean {
+    try {
+        new URL(url);
+        return true;
+      } catch (e) {
+        return false;
+      }
+}  
 
 
