@@ -5,7 +5,7 @@ import { CampaignController } from '@/controller/campaign-controller'
 import { SocialTaskController } from '@/controller/socialtask-controller'
 import { SocialTaskResponse, SocialTaskInfoResponse, SocialTaskTypeResponse, TagResponse, SaveSocialTaskResponse } from '@/entityTypes/socialtask-type'
 import { SocialTaskRun } from "@/modules/socialtaskrun"
-import { SocialTaskResult } from '@/modules/socialtask_result'
+import { SocialTaskResult } from '@/modules/socialtaskResult'
 import { User } from '@/modules/user'
 import { SocialAccount } from '@/modules/socialaccount'
 import { SocialPlatform } from "@/modules/social_platform"

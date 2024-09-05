@@ -13,12 +13,11 @@ import * as fs from 'fs';
 import {searhModel} from "@/modules/searchModel"
 import { Token } from "@/modules/token"
 // import {USERSDBPATH} from '@/config/usersetting';
-import {SearchDataParam} from "@/entityTypes/scrapeType"
+import {SearchDataParam,SearchResEntityDisplay,SearchResEntityRecord} from "@/entityTypes/scrapeType"
 // import {SEARCHEVENT} from "@/config/channellist"
 import { SearchTaskStatus } from "@/model/searchTaskdb"
 // import { SearchKeyworddb } from "@/model/searchKeyworddb";
 import { CustomError } from "@/modules/customError";
-import { SearchResEntityRecord } from "@/entityTypes/scrapeType"
 import {USERLOGPATH,USEREMAIL} from '@/config/usersetting';
 import {WriteLog,getApplogspath,getRandomValues} from "@/modules/lib/function"
 import { v4 as uuidv4 } from 'uuid';
@@ -143,10 +142,33 @@ export class SearchController {
     public listtaskSearchResult(taskId:number,page:number,size:number):SearchResEntityRecord{
         const seModel=new searhModel()
         const res=seModel.listSearchResult(taskId,page,size)
+
+        const datas: Array<SearchResEntityDisplay> = []
+        //const SearchKeyDb=new SearchKeyworddb(this.dbpath)
+
+        res.forEach((item) => {
+            console.log(item)
+            console.log(item.keyword_id)
+            const keyEntity = this.searhModel.getkeywrodsEntitybyId(item.keyword_id)
+            console.log(keyEntity)
+            const data: SearchResEntityDisplay = {
+                id: item.id,
+                keyword_id: item.keyword_id,
+                title: item.title,
+                link: item.link,
+                snippet: item.snippet,
+                record_time: item.record_time,
+                visible_link: item.visible_link,
+                keyword: keyEntity.keyword
+            }
+            datas.push(data)
+        })
+        //return datas
+
         const total=seModel.countSearchResult(taskId)
         const data:SearchResEntityRecord={
             total:total,
-            record:res
+            record:datas
         }
         return data
     }

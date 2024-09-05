@@ -9,3 +9,11 @@ export type EmailscFormdata = {
     proxys?: Array<ProxyEntity>,
     // maxConcurrent: number,
   }
+  export type EmailClusterdata={
+    url:string,
+    proxy?:ProxyEntity,
+  }
+  export type EmailDatascraper={
+    urls:Array<string>,
+  }
+ 

@@ -6,7 +6,7 @@ import { SearhEnginer } from "@/config/searchSetting"
 // import { ToArray } from "@/modules/lib/function"
 import { SearchKeyworddb } from "@/model/searchKeyworddb"
 import { SearchResultdb } from "@/model/searchResultdb"
-import { SearchResEntity, SearchResEntityDisplay, SearchDataRun } from "@/entityTypes/scrapeType"
+import { SearchResEntity, SearchDataRun } from "@/entityTypes/scrapeType"
 //import {SearchTaskdb} from "@/model/searchTaskdb"
 import { SearchtaskEntityNum, SearchtaskItem } from "@/entityTypes/searchControlType"
 import { getEnumKeyByValue, getEnumValueByNumber } from "@/modules/lib/function"
@@ -185,32 +185,12 @@ export class searhModel {
     }
 
     //get search result list by task id
-    public listSearchResult(taskId: number, page: number, size: number): Array<SearchResEntityDisplay> {
+    public listSearchResult(taskId: number, page: number, size: number): Array<SearchResEntity> {
         //console.log(taskId)
         const keyarr = this.getKeywrodsbyTask(taskId)
         const res = this.serResultModel.listSearchresult(keyarr, page, size)
 
-        const datas: Array<SearchResEntityDisplay> = []
-        //const SearchKeyDb=new SearchKeyworddb(this.dbpath)
-
-        res.forEach((item) => {
-            console.log(item)
-            console.log(item.keyword_id)
-            const keyEntity = this.serKeyworddb.getkeywrodsEntitybyId(item.keyword_id)
-            console.log(keyEntity)
-            const data: SearchResEntityDisplay = {
-                id: item.id,
-                keyword_id: item.keyword_id,
-                title: item.title,
-                link: item.link,
-                snippet: item.snippet,
-                record_time: item.record_time,
-                visible_link: item.visible_link,
-                keyword: keyEntity.keyword
-            }
-            datas.push(data)
-        })
-        return datas
+        return res
     }
     public countSearchResult(taskId: number): number {
         const keyarr = this.getKeywrodsbyTask(taskId)
@@ -251,6 +231,10 @@ export class searhModel {
         }
 
 
+    }
+    //get search task entity by id
+    public getkeywrodsEntitybyId(keywordId: number) {
+        return this.serKeyworddb.getkeywrodsEntitybyId(keywordId)
     }
 
 
