@@ -40,6 +40,7 @@ export type SMconfig = {
   is_local?: boolean;
   throw_on_detection?: boolean;
   output_file?: string;
+  page_length?;number
 }
 export type pluginType = {
   results: object,
@@ -131,6 +132,7 @@ export type SMstruct = {
   sleep_range?: Array<number>,
   headless: boolean,
   num_pages?: number,
+  page_length?: number,
   logger?: winston.Logger
   // taskid?: number,
   // taskrunId?: number

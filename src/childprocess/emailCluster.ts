@@ -10,11 +10,13 @@ import debug from 'debug';
 const logger = debug('ScrapeManager');
 const { combine, timestamp, printf } = format;
 const MAX_ALLOWED_BROWSERS = 10;
+const MAX_CRAWL_PAGE_LENGTH=10;
 import map from "lodash/map";
 import { UserAgent } from "user-agents";
 import clone from "lodash/clone"
 import times from "lodash/times"
-import {extractLink} from '@/childprocess/emailScraper'
+import {crawlSite,crawlSiteex} from '@/childprocess/emailScraper'
+import {getDomain} from "@/modules/lib/function"
 export class EmailCluster {
     cluster: Cluster<EmailClusterdata>;
     context: object;
@@ -231,12 +233,23 @@ export class EmailCluster {
 
   async searchdata(param:EmailDatascraper){
     await this.start(param);
-    await this.cluster.task(extractLink)
+    const pageLength=Math.min(this.config.page_length,MAX_CRAWL_PAGE_LENGTH)
+    await this.cluster.task(crawlSiteex)
     param.urls.forEach((value,index)=>{
+      const domain=getDomain(value)
+      if(!domain){
+        return;
+      }
     //get random proxy 
     const randomIndex = Math.floor(Math.random() * this.proxiesArr.length);
     const proxyServer=this.proxiesArr[randomIndex];  
-    this.cluster.queue({ url: value,proxy:proxyServer });
+    const crawlData:EmailClusterdata={
+      url:value,
+      proxy:proxyServer,
+     domain:domain,
+     maxPageLevel:pageLength
+    }
+    this.cluster.queue(crawlData);
     })
   }
 

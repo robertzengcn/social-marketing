@@ -449,5 +449,14 @@ const rest:ProxyServer={
 return rest
 
 }
+export function getDomain(url) {
+  try {
+    const parsedUrl = new URL(url);
+    return parsedUrl.hostname;
+  } catch (e) {
+    console.error('Invalid URL:', e);
+    return null;
+  }
+}
 
 

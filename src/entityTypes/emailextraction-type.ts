@@ -12,6 +12,9 @@ export type EmailscFormdata = {
   export type EmailClusterdata={
     url:string,
     proxy?:string,
+    domain:string,
+    maxPageLevel:number,
+    visited?:Set<string>
   }
   export type EmailDatascraper={
     urls:Array<string>,
