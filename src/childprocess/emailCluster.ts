@@ -14,6 +14,7 @@ import map from "lodash/map";
 import { UserAgent } from "user-agents";
 import clone from "lodash/clone"
 import times from "lodash/times"
+import {extractLink} from '@/childprocess/emailScraper'
 export class EmailCluster {
     cluster: Cluster<EmailClusterdata>;
     context: object;
@@ -201,8 +202,6 @@ export class EmailCluster {
         this.proxiesArr = times(this.numClusters, null);
       }
 
-
-
       const perBrowserOptions = map(this.proxiesArr.slice(0, this.numClusters), (proxy) => {
         const userAgent = this.config.random_user_agent
           ? new UserAgent({ deviceCategory: "desktop" }).toString()
@@ -232,8 +231,12 @@ export class EmailCluster {
 
   async searchdata(param:EmailDatascraper){
     await this.start(param);
-    await this.cluster.task(async ({ page, data }) => {
-        
+    await this.cluster.task(extractLink)
+    param.urls.forEach((value,index)=>{
+    //get random proxy 
+    const randomIndex = Math.floor(Math.random() * this.proxiesArr.length);
+    const proxyServer=this.proxiesArr[randomIndex];  
+    this.cluster.queue({ url: value,proxy:proxyServer });
     })
   }
 
