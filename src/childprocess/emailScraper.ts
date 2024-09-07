@@ -1,11 +1,37 @@
 export {};
-import {EmailClusterdata} from '@/entityTypes/emailextraction-type'
-import { Page} from 'puppeteer';
+import {EmailClusterdata,EmailResult} from '@/entityTypes/emailextraction-type'
+import { Page,InterceptResolutionAction} from 'puppeteer';
+import useProxy from "@lem0-packages/puppeteer-page-proxy"
 
 export const extractLink = async (page: Page, val: EmailClusterdata ) => {
     const url = val.url;
     if (!url) return;
-
+    if(val.proxy){
+        if (val.proxy != undefined) {
+            // await useProxy(this.page, data.data.proxyServer)
+            // await this.page.setRequestInterception(true);
+            //     this.page.on('request', async request => {
+            //         await useProxy(request, data.data.proxyServer!);
+            //     });
+            // }
+            // await this.page.authenticate({
+            //   username: data.data.proxyServer.username,
+            //   password: data.data.proxyServer.password,
+            // });
+            // this.proxyServer = data.data.proxyServer
+            await page.setRequestInterception(true);
+            page.on("request", async (interceptedRequest) => {
+                if (interceptedRequest.interceptResolutionState().action === InterceptResolutionAction.AlreadyHandled) return;
+                // if (interceptedRequest.resourceType() === "image") {
+                //     interceptedRequest.abort();
+                // } else {
+                    await useProxy(interceptedRequest, val.proxy!);
+                    if (interceptedRequest.interceptResolutionState().action === InterceptResolutionAction.AlreadyHandled) return;
+                    interceptedRequest.continue();
+               // }
+            });
+        }
+    }
     await page.goto(url,{
         waitUntil: "networkidle2",
         timeout: 60000
@@ -32,7 +58,14 @@ export const extractLink = async (page: Page, val: EmailClusterdata ) => {
         const bodyText = document.body.innerText;
         return bodyText.match(emailRegex) || [];
     });
-
+    if(val.callback){
+        const er:EmailResult={
+            pageTitle:pageTitle,
+            filteredLinks:filteredLinks,
+            emails:emails
+        }
+        val.callback(er)
+    }
     return {
         pageTitle,
         filteredLinks,
@@ -46,27 +79,25 @@ export async function crawlSite ({ page, data }: { page: Page; data: EmailCluste
     if(!data.visited){
         data.visited=new Set() 
     }
-    if (param.val.visited.has(param.val.url)) return;
-    param.val.visited.add(param.val.url);
+    if (data.visited.has(data.url)) return;
+    data.visited.add(data.url);
 
-    const result = await extractLink( param.page, {url:param.val.url,domain:param.val.domain,maxPageLevel:param.val.maxPageLevel} ); 
+    const result = await extractLink( page, {url:data.url,domain:data.domain,maxPageLevel:data.maxPageLevel,callback:data.callback} ); 
     if (!result) return;
 
     console.log(`Page Title: ${result.pageTitle}`);
-    console.log(`URL: ${param.val.url}`);
+    console.log(`URL: ${data.url}`);
     console.log(`Filtered Links: ${result.filteredLinks}`);
 
     for (const link of result.filteredLinks) {
         const crawdata:EmailClusterdata={
             url:link,
-            domain:param.val.domain,
-            maxPageLevel:param.val.maxPageLevel,
-            visited:param.val.visited
+            domain:data.domain,
+            maxPageLevel:data.maxPageLevel,
+            visited:data.visited,
+            callback:data.callback
         }
-        await crawlSite({page:param.page, val:crawdata});
+        await crawlSite({page:page, data:crawdata});
     }
-};
+}
 
-export async function crawlSiteex({ page, data }: { page: Page; data: EmailClusterdata }) {
-    // Your crawling logic here
-  }

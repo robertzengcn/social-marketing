@@ -47,6 +47,10 @@ module.exports = {
           {
             entry: 'src/utilityCode.ts',
             config: 'vite.utilityCode.config.mjs'
+          },
+          {
+            entry: 'src/emailSearchCode.ts',
+            config: 'vite.emailSearchCode.config.mjs'
           }
 
         ],

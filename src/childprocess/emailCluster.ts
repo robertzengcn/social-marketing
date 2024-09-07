@@ -15,7 +15,7 @@ import map from "lodash/map";
 import { UserAgent } from "user-agents";
 import clone from "lodash/clone"
 import times from "lodash/times"
-import {crawlSite,crawlSiteex} from '@/childprocess/emailScraper'
+import {crawlSite} from '@/childprocess/emailScraper'
 import {getDomain} from "@/modules/lib/function"
 export class EmailCluster {
     cluster: Cluster<EmailClusterdata>;
@@ -234,11 +234,11 @@ export class EmailCluster {
   async searchdata(param:EmailDatascraper){
     await this.start(param);
     const pageLength=Math.min(this.config.page_length,MAX_CRAWL_PAGE_LENGTH)
-    await this.cluster.task(crawlSiteex)
+    await this.cluster.task(crawlSite)
     param.urls.forEach((value,index)=>{
       const domain=getDomain(value)
       if(!domain){
-        return;
+      return
       }
     //get random proxy 
     const randomIndex = Math.floor(Math.random() * this.proxiesArr.length);
