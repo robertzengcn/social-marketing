@@ -20,7 +20,7 @@ export class ExtraModuleController {
         }
     }
     //install extra module
-    public installExtraModule(packagename: string, strout?: Function, strerr?: Function) {
+    public installExtraModule(packagename: string, strout?: (message: string) => void, strerr?: (message: string) => void) {
         //valid package name
         const valid = extramodules.find((module) => module.packagename === packagename)
         if (!valid) {
@@ -52,7 +52,7 @@ export class ExtraModuleController {
         )
     }
     //remove modules
-    public removeExtraModule(packagename: string, strout?: Function, strerr?: Function) {
+    public removeExtraModule(packagename: string, strout?: (message: string) => void, strerr?: (message: string) => void) {
         //valid package name
         const valid = extramodules.find((module) => module.packagename === packagename)
         if (!valid) {
