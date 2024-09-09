@@ -42,3 +42,9 @@ export type EmailsControldata = {
   proxys?: Array<ProxyEntity>,
   // maxConcurrent: number,
 }
+
+export type EmailSearchResult = {
+url:string,
+email:Array<string>,
+title:string,
+}

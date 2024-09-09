@@ -81,7 +81,7 @@ export class SearchController {
             //create log path
             logpath=getApplogspath(useremail)
         }
-        console.log(logpath)
+        // console.log(logpath)
         const uuid=uuidv4({random: getRandomValues(new Uint8Array(16))})
         const errorLogfile=path.join(logpath,'search_'+taskId.toString()+'_'+uuid+'.error.log')
         const runLogfile=path.join(logpath,'search_'+taskId.toString()+'_'+uuid+'.runtime.log')
