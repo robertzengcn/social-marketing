@@ -42,7 +42,7 @@ export function registerExtraModulesIpcHandlers() {
           }
         }))
       }, function (message) {
-        if (message.legth > 0) {
+        if (message.length > 0) {
           event.sender.send(EXTRAMODULECHANNE_MESSAGE, JSON.stringify({
             status: false,
             msg: "failed"
@@ -76,7 +76,7 @@ export function registerExtraModulesIpcHandlers() {
           }
         }))
       }, function (message) {
-        if (message.legth > 0) {
+        if (message.length > 0) {
           event.sender.send(EXTRAMODULECHANNE_MESSAGE, JSON.stringify({
             status: false,
             msg: "failed"

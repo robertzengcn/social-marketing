@@ -111,6 +111,7 @@ function loadItems({ page=1, itemsPerPage=10, sortBy }) {
 const emit = defineEmits(['change'])
 watch(selected, (newValue:SearchtaskItem|undefined, oldValue:SearchtaskItem|undefined) => {
   console.log(`selectedtask changed from ${oldValue} to ${newValue}`);
+  console.log(newValue)
   emit('change', newValue);
 });
 

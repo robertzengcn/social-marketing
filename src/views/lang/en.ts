@@ -12,6 +12,7 @@ export default {
         reset:"reset",
         submit:"submit",
         success:"success",
+        fill_require_field:"Please fill all required fields"
     },
     home:{
         search:"Search Extraction",
@@ -41,6 +42,9 @@ export default {
         video_download_title:"Video Download",
         video_download_subtitle:"Download video",
         video_download_description:"Download video from Platform",
+        emailextraction:"Email Extraction",
+        emailextraction_subtitle:"Email Extraction",
+        emailextraction_description:"Extract email from website",
     },
     campaign:{
         campaignId:"Campaign ID", 
@@ -151,5 +155,9 @@ export default {
         extraction_type:"Extraction Type", 
         input_urls_hint:"input urls, per one per line",
         page_length:"the page length that you want to extract",
+        choose_email_extraction_type:"choose email extraction type",
+        input_urls_empty:"input urls empty",
+        choose_search_task:"choose search task",
+
     }
 }

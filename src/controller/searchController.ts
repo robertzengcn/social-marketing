@@ -24,6 +24,9 @@ import { v4 as uuidv4 } from 'uuid';
 import {SortBy} from "@/entityTypes/commonType";
 export class SearchController {
     private searhModel:searhModel;
+    constructor() {
+        this.searhModel=new searhModel()
+    }
     
     public async searchData(data: Usersearchdata) {
         //search data
@@ -53,8 +56,8 @@ export class SearchController {
         //     // }
         // }
         //console.log(data)
-        const seModel=new searhModel()
-        const enginName=seModel.convertNumtoSE(data.searchEnginer)
+        // const seModel=new searhModel()
+        const enginName=this.searhModel.convertNumtoSE(data.searchEnginer)
         if(!enginName){
             throw new CustomError("enginer name error",20240809160454)
         }
@@ -63,7 +66,7 @@ export class SearchController {
             keywords:data.keywords
         }
         // console.log(dp)
-        const taskId=await seModel.saveSearchtask(dp)
+        const taskId=await this.searhModel.saveSearchtask(dp)
         // const jsonData=JSON.stringify(data);
         //console.log(jsonData)
        const childPath = path.join(__dirname, 'utilityCode.js')
@@ -91,7 +94,7 @@ export class SearchController {
         child.on("spawn", () => {
             console.log("child process satart, pid is"+child.pid)
             child.postMessage(JSON.stringify({action:"searchscraper",data:data}),[port1])
-            seModel.updateTaskLog(taskId,runLogfile,errorLogfile)
+            this.searhModel.updateTaskLog(taskId,runLogfile,errorLogfile)
         })
         
         child.stdout?.on('data', (data) => {
@@ -106,7 +109,7 @@ export class SearchController {
             // seModel.saveTaskerrorlog(taskId,data)
             console.log(`Received error chunk ${data}`)
             WriteLog(errorLogfile,data)
-            seModel.updateTaskStatus(taskId,SearchTaskStatus.Error)
+            this.searhModel.updateTaskStatus(taskId,SearchTaskStatus.Error)
             //child.kill()
             }
             
@@ -125,23 +128,23 @@ export class SearchController {
             const childdata=JSON.parse(message)
             if(childdata.action=="saveres"){
                 //save result
-                seModel.saveSearchResult(childdata.data,taskId)
-                seModel.updateTaskStatus(taskId,SearchTaskStatus.Complete)
+                this.searhModel.saveSearchResult(childdata.data,taskId)
+                this.searhModel.updateTaskStatus(taskId,SearchTaskStatus.Complete)
                 child.kill()
             }
         });
     }
     //return search result
     public listSearchresult(page:number,size:number,sortBy?:SortBy):SearchtaskEntityNum{
-        const seModel=new searhModel()
+        // const seModel=new searhModel()
         // await seModel.init();
-        const res=seModel.listSearchtask(page,size, sortBy)
+        const res=this.searhModel.listSearchtask(page,size, sortBy)
         return res;
     }   
     //list task search result
     public listtaskSearchResult(taskId:number,page:number,size:number):SearchResEntityRecord{
-        const seModel=new searhModel()
-        const res=seModel.listSearchResult(taskId,page,size)
+        // const seModel=new searhModel()
+        const res=this.searhModel.listSearchResult(taskId,page,size)
 
         const datas: Array<SearchResEntityDisplay> = []
         //const SearchKeyDb=new SearchKeyworddb(this.dbpath)
@@ -165,7 +168,7 @@ export class SearchController {
         })
         //return datas
 
-        const total=seModel.countSearchResult(taskId)
+        const total=this.searhModel.countSearchResult(taskId)
         const data:SearchResEntityRecord={
             total:total,
             record:datas
@@ -173,8 +176,8 @@ export class SearchController {
         return data
     }
     public getTaskErrorlog(taskId:number):string{
-        const seModel=new searhModel()
-        const log=seModel.getTaskErrorLog(taskId)
+        // const seModel=new searhModel()
+        const log=this.searhModel.getTaskErrorLog(taskId)
         return log
     }
 

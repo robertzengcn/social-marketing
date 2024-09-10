@@ -1,12 +1,15 @@
 import { ipcMain } from 'electron';
-import { EMAILEXTRACTIONAPI } from "@/config/channellist";
+import { EMAILEXTRACTIONAPI,EMAILEXTRACTIONMESSAGE } from "@/config/channellist";
 import { EmailscFormdata } from '@/entityTypes/emailextraction-type'
 import { CommonDialogMsg } from "@/entityTypes/commonType";
 import { isValidUrl } from "@/views/utils/function"
 import { searhModel } from "@/modules/searchModel"
+import {EmailextractionController} from "@/controller/emailextractionController"
+import { EmailsControldata } from '@/entityTypes/emailextraction-type'
 
 export function registerEmailextractionIpcHandlers() {
     const searchModel = new searhModel();
+    const emailCon=new EmailextractionController();
     ipcMain.on(EMAILEXTRACTIONAPI, async (event, arg) => {
         //receive user submit form
         const qdata = JSON.parse(arg) as EmailscFormdata;
@@ -86,8 +89,37 @@ export function registerEmailextractionIpcHandlers() {
             return
 
         }
-        
-
+        if(validUrls.length===0){
+            const comMsgs: CommonDialogMsg = {
+                status: false,
+                code: 20240705103811,
+                data: {
+                    action: "",
+                    title: "emailscrape.failed",
+                    content: "emailscrape.url_empty"
+                }
+            }
+            event.sender.send(EMAILEXTRACTIONAPI, JSON.stringify(comMsgs))
+            return
+        }
+        const datas:EmailsControldata={
+            validUrls:validUrls,
+            concurrency:qdata.concurrency,
+            pagelength:qdata.pagelength,
+            notShowBrowser:qdata.notShowBrowser,
+            proxys:qdata.proxys
+        }
+        emailCon.searchEmail(datas);
+        const comMsgs: CommonDialogMsg = {
+            status: true,
+            code: 0,
+            data: {
+                action: "emailsearch_task _start",
+                title: "",
+                content: ""
+            }
+        }
+        event.sender.send(EMAILEXTRACTIONMESSAGE, JSON.stringify(comMsgs))
 
     });
 

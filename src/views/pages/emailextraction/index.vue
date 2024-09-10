@@ -175,13 +175,18 @@ const handleSelectedChanged = (newValue: ProxyListEntity[]) => {
     }
   }
 };
-const handleSearchtaskChanged = (newValue: SearchtaskItem) => {
+const handleSearchtaskChanged = (newValue: SearchtaskItem[]|undefined) => {
   // console.log(`selectedProxy changed to ${newValue}`);
   // proxyValue.value=[];
   console.log("search change")
   console.log(newValue)
-  if(newValue){
-    searchtaskId.value=newValue.id;
+  if(newValue&& newValue.length > 0){
+    if (newValue[0] && newValue[0].id) {
+    searchtaskId.value=newValue[0].id;
+    console.log("search task id is"+searchtaskId.value)
+    }
+  }else{
+    searchtaskId.value=0;
   }
 };
 async function onSubmit() {
@@ -189,14 +194,19 @@ async function onSubmit() {
   const { valid } = await form.value.validate();
   if (!valid) {
     //console.log("form is not valid");
-    setAlert("Please fill all required fields", "Error", "error");
+    setAlert(t('common.fill_require_field'), "Error", "error");
   } else {
+    if(!emailtype.value){
+      setAlert(t('emailextraction.choose_email_extraction_type'), "Error", "error");
+      return;
+    }
     const validateurl:Array<string>=[]
     let extratype = "";
-    if(emailtype.value&&(emailtype.value?.index==0)){
+    console.log(emailtype.value)
+    if(emailtype.value?.index==0){
       extratype=emailtype.value.key;
       if(urls.value==""){
-        setAlert("Please fill all required fields", "Error", "error");
+        setAlert(t('emailextraction.input_urls_empty'), "Error","error");
         return;
       }
     
@@ -208,7 +218,14 @@ async function onSubmit() {
       isValidUrl(item)?validateurl.push(item):null
     })
 
+  }else if(emailtype.value?.index==1){
+    extratype=emailtype.value.key;
+    if(searchtaskId.value==0||!searchtaskId.value){
+      setAlert(t('emailextraction.choose_search_task'), "Error", "error");
+      return;
   }
+
+}
    const scraperData:EmailscFormdata={
     extratype:extratype,
     urls:validateurl,

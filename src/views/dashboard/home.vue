@@ -64,6 +64,14 @@ const homeCardlist: homecardEntity[] = [
         description: t('home.socialshare_description')
     },
     {
+        title: t('home.emailextraction'),
+        subtitle: t('home.emailextraction_subtitle'),
+        prependIcon: 'mdi-alarm',
+        appendIcon: 'mdi-crown',
+        description: t('home.emailextraction_description'),
+        link:'/emailextraction/form'
+    },
+    {
         title: t('home.emailmarketing'),
         subtitle: t('home.emailmarketing_subtitle'),
         prependIcon: 'mdi-alarm',

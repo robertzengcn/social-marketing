@@ -3,7 +3,7 @@ import { Scraperdb } from "@/model/scraperdb";
 // import { getRecorddatetime } from "@/modules/lib/function";
 export interface EmailsearchUrlEntity {
     id?: number,
-    taskId:number,
+    task_id:number,
     url:string,
 }
 export class EmailsearchUrldb {
@@ -15,8 +15,8 @@ export class EmailsearchUrldb {
     }
     create(emailsearchUrl: EmailsearchUrlEntity): number {
         const stmt = this.db.prepare(`
-            INSERT INTO ${this.emailsearchurlTable} (taskId, url)
-            VALUES (@taskId, @url)
+            INSERT INTO ${this.emailsearchurlTable} (task_id, url)
+            VALUES (@task_id, @url)
         `);
         const result = stmt.run(emailsearchUrl);
         return Number(result.lastInsertRowid);
@@ -38,7 +38,7 @@ export class EmailsearchUrldb {
     update(emailsearchUrl: EmailsearchUrlEntity): boolean {
         const stmt = this.db.prepare(`
             UPDATE ${this.emailsearchurlTable}
-            SET taskId = @taskId, url = @url
+            SET task_id = @task_id, url = @url
             WHERE id = @id
         `);
         const result = stmt.run(emailsearchUrl);

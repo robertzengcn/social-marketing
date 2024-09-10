@@ -5,10 +5,10 @@ import { getRecorddatetime } from "@/modules/lib/function";
 export interface EmailsearchResultEntity {
     id?: number,
     task_id: number,
-    url: number,
+    url: string,
     title?: string,
-    email: string,
-    record_time: string
+    // email: string,
+    record_time?: string
 }
 export class EmailsearchResultdb {
     db: Database;
@@ -18,9 +18,12 @@ export class EmailsearchResultdb {
         this.db = scraperModel.getdb();
     }
     create(emailsearchResult: EmailsearchResultEntity): number {
+        if(!emailsearchResult.record_time){
+            emailsearchResult.record_time = getRecorddatetime();
+        }
         const stmt = this.db.prepare(`
-            INSERT INTO ${this.emailsearchtaskTable} (task_id, url, title, email, record_time)
-            VALUES (@task_id, @url, @title, @email, @record_time)
+            INSERT INTO ${this.emailsearchtaskTable} (task_id, url, title, record_time)
+            VALUES (@task_id, @url, @title, @record_time)
         `);
         const result = stmt.run(emailsearchResult);
         return Number(result.lastInsertRowid);
@@ -37,7 +40,7 @@ export class EmailsearchResultdb {
     update(id: number, emailsearchResult: EmailsearchResultEntity): boolean {
         const stmt = this.db.prepare(`
             UPDATE ${this.emailsearchtaskTable}
-            SET task_id = @task_id, url = @url, title = @title, email = @email, record_time = @record_time
+            SET task_id = @task_id, url = @url, title = @title, record_time = @record_time
             WHERE id = ?
         `);
         const result = stmt.run({ ...emailsearchResult, id });
