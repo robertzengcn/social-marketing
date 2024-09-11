@@ -5,7 +5,7 @@ import {Usersearchdata } from "@/entityTypes/searchControlType"
 
 test('user-search', async function () {
     const userSearchdata:Usersearchdata={
-        searchEnginer:1,
+        searchEnginer:"Google",
         keywords:['Williams','doctor'],
         notShowBrowser:false,
         num_pages:1,

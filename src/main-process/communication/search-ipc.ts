@@ -8,6 +8,8 @@ import { SearchResEntity } from "@/entityTypes/scrapeType"
 import * as path from 'path';
 import * as fs from 'fs';
 import {ItemSearchparam} from "@/entityTypes/commonType"
+import { SearhEnginer } from "@/config/searchSetting"
+import { ToArray} from "@/views/utils/function"
 
 export function registerSearchIpcHandlers() {
     ipcMain.on(SEARCHSCRAPERAPI, async (event, arg) => {
@@ -15,6 +17,7 @@ export function registerSearchIpcHandlers() {
         //handle search event
         const qdata = JSON.parse(arg) as Usersearchdata;
         if (!("searchEnginer" in qdata)) {
+
             const comMsgs: CommonDialogMsg = {
                 status: false,
                 code: 20240705103811,
@@ -54,7 +57,21 @@ export function registerSearchIpcHandlers() {
                 qdata.num_pages = 1
             }
         }
-
+//valid search enginer 
+const seArr:string[]=ToArray(SearhEnginer);
+if(!seArr.includes(qdata.searchEnginer)){
+    const comMsgs: CommonDialogMsg = {
+        status: false,
+        code: 20240705103811,
+        data: {
+            action: "",
+            title: "search.scraper_failed",
+            content: "search.search_enginer_invalid"
+        }
+    }
+    event.sender.send(SEARCHEVENT, JSON.stringify(comMsgs))
+    return comMsgs
+}
 
         const searchcon = new SearchController()
         await searchcon.searchData(qdata)

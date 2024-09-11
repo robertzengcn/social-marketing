@@ -59,6 +59,7 @@ export const extractLink = async (page: Page, val: EmailClusterdata ) => {
         return bodyText.match(emailRegex) || [];
     });
     if(val.callback){
+        if(emails.length>0){
         const er:EmailResult={
             pageTitle:pageTitle,
             filteredLinks:filteredLinks,
@@ -66,6 +67,8 @@ export const extractLink = async (page: Page, val: EmailClusterdata ) => {
         }
         val.callback(er)
     }
+    }
+
     return {
         pageTitle,
         filteredLinks,
@@ -83,6 +86,8 @@ export async function crawlSite ({ page, data }: { page: Page; data: EmailCluste
     data.visited.add(data.url);
 
     const result = await extractLink( page, {url:data.url,domain:data.domain,maxPageLevel:data.maxPageLevel,callback:data.callback} ); 
+    console.log("extract link result is following")
+    console.log(result)
     if (!result) return;
 
     console.log(`Page Title: ${result.pageTitle}`);

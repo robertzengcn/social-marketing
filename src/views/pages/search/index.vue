@@ -196,14 +196,17 @@ async function onSubmit() {
       return
     }
     const subkeyword = keywords.value.split('\n').map(keyword => keyword.trim());
-    let finalser=0;
-    searchplatform.value.forEach((item) => {
-      if (item.key == enginer.value) {
-        finalser = item.index;
-      }
-    })
+    // let finalser="";
+    console.log("enginer value is"+enginer.value)
+    // searchplatform.value.forEach((item) => {
+    //   console.log(item)
+    //   if (item.key == enginer.value) {
+    //     finalser = item.index;
+    //   }
+    // })
+    
     const subdata: Usersearchdata = {
-      searchEnginer: finalser,
+      searchEnginer: enginer.value,
       keywords: subkeyword,
       num_pages: page_number.value,
       concurrency: concurrent_quantity.value,

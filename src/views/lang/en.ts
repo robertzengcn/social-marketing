@@ -121,6 +121,7 @@ export default {
         keywords_empty:"keywords empty",
         page_number:"page number",
         choose_proxy:"choose proxy",
+        search_enginer_invalid:"search enginer invalid"
     },
     searchtask:{
         id:"Task Id",

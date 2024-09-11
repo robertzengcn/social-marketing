@@ -5,7 +5,7 @@ export type SearchResponse={
     data:any
 }
 export type Usersearchdata = {
-    searchEnginer: number,
+    searchEnginer: string,
     keywords: Array<string>,
     num_pages: number,
     concurrency: number,

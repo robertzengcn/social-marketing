@@ -17,7 +17,7 @@ export class EmailextractionController {
     public async searchEmail(data: EmailsControldata) {
         //save search email task
         const taskId=await this.emailSeachTaskModule.saveSearchtask(data.validUrls)
-        const childPath = path.join(__dirname, 'emailSearchCode.ts')
+        const childPath = path.join(__dirname, 'emailSearchCode.js')
         if (!fs.existsSync(childPath)) {
             throw new Error("child js path not exist for the path " + childPath);
         }
@@ -25,7 +25,7 @@ export class EmailextractionController {
         const { port1, port2 } = new MessageChannelMain()
         const tokenService=new Token()
         
-        const child = utilityProcess.fork(path.join(__dirname, 'utilityCode.js'), [],{stdio:"pipe",execArgv:["puppeteer-cluster:*"]} )
+        const child = utilityProcess.fork(childPath, [],{stdio:"pipe",execArgv:["DEBUG='puppeteer-cluster:*'"]} )
         // console.log(path.join(__dirname, 'utilityCode.js'))
         let logpath=tokenService.getValue(USERLOGPATH)
         if(!logpath){
@@ -40,7 +40,7 @@ export class EmailextractionController {
 
         child.on("spawn", () => {
             console.log("child process satart, pid is"+child.pid)
-            child.postMessage(JSON.stringify({action:"searchscraper",data:data}),[port1])
+            child.postMessage(JSON.stringify({action:"searchEmail",data:data}),[port1])
             this.emailSeachTaskModule.updateTaskLog(taskId,runLogfile,errorLogfile)
         })
         
@@ -77,7 +77,7 @@ export class EmailextractionController {
                 //save result
                 this.emailSeachTaskModule.saveSearchResult(taskId,childdata.data)
                 this.emailSeachTaskModule.updateTaskStatus(taskId,EmailsearchTaskStatus.Complete)
-                child.kill()
+                //child.kill()
             }
         });
     }

@@ -57,12 +57,12 @@ export class SearchController {
         // }
         //console.log(data)
         // const seModel=new searhModel()
-        const enginName=this.searhModel.convertNumtoSE(data.searchEnginer)
-        if(!enginName){
-            throw new CustomError("enginer name error",20240809160454)
-        }
+        // const enginName=this.searhModel.convertNumtoSE(data.searchEnginer)
+        // if(!enginName){
+        //     throw new CustomError("enginer name error",20240809160454)
+        // }
         const dp:SearchDataParam={
-            engine:enginName,
+            engine:data.searchEnginer,
             keywords:data.keywords
         }
         // console.log(dp)
@@ -76,7 +76,7 @@ export class SearchController {
         const { port1, port2 } = new MessageChannelMain()
         const tokenService=new Token()
         
-        const child = utilityProcess.fork(path.join(__dirname, 'utilityCode.js'), [],{stdio:"pipe",execArgv:["puppeteer-cluster:*"]} )
+        const child = utilityProcess.fork(childPath, [],{stdio:"pipe",execArgv:["puppeteer-cluster:*"]} )
         // console.log(path.join(__dirname, 'utilityCode.js'))
         let logpath=tokenService.getValue(USERLOGPATH)
         if(!logpath){

@@ -4,14 +4,15 @@ import {proxyEntityToUrl} from "@/modules/lib/function"
 import { SMstruct } from "@/entityTypes/scrapeType"
 import { Cluster } from "puppeteer-cluster"
 import {EmailCluster} from "@/childprocess/emailCluster"
+import { EmailsControldata } from '@/entityTypes/emailextraction-type'
 export class EmailSearch{
     
-    public async searchEmail(data: EmailSearchData,callback?:(arg: EmailResult) => void) {
+    public async searchEmail(data: EmailsControldata,callback?:(arg: EmailResult) => void) {
         const proxyStrList:Array<string> = []
         console.log("proxy are following")
        // console.log(data.proxys)
         if (data.proxys) {
-               data.proxys.forEach((value, key) => {
+               data.proxys.forEach((value) => {
                    const proxyitem:ProxyParseItem = {
                        host: value.host,
                        port: value.port,
@@ -34,15 +35,16 @@ export class EmailSearch{
                maxConcurrency: data.concurrency, // scrape with 1 tab
                
             },
-            page_length:data.pageLevel,
+            page_length:data.pagelength,
             proxies: proxyStrList,
         }
         const emailCluster=new EmailCluster(smConfig)
         const sedata:EmailDatascraper={
-            urls:data.urls,
+            urls:data.validUrls,
             callback:callback
         }
 
-        emailCluster.searchdata(sedata)
+        await emailCluster.searchdata(sedata)
+        
     }
 }

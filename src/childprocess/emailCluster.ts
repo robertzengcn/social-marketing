@@ -1,6 +1,6 @@
-import {EmailClusterdata,EmailDatascraper} from '@/entityTypes/emailextraction-type'
+import { EmailClusterdata, EmailDatascraper } from '@/entityTypes/emailextraction-type'
 import { SMconfig, SMstruct } from "@/entityTypes/scrapeType"
-import { Cluster} from "puppeteer-cluster"
+import { Cluster } from "puppeteer-cluster"
 //import { pluggableType } from "@/entityTypes/scrapeType"
 import { Page, Browser } from 'puppeteer';
 import defaults from "lodash/defaults"
@@ -10,16 +10,17 @@ import debug from 'debug';
 const logger = debug('ScrapeManager');
 const { combine, timestamp, printf } = format;
 const MAX_ALLOWED_BROWSERS = 10;
-const MAX_CRAWL_PAGE_LENGTH=10;
+const MAX_CRAWL_PAGE_LENGTH = 10;
 import map from "lodash/map";
 import { UserAgent } from "user-agents";
 import clone from "lodash/clone"
 import times from "lodash/times"
-import {crawlSite} from '@/childprocess/emailScraper'
-import {getDomain} from "@/modules/lib/function"
+import { crawlSite } from '@/childprocess/emailScraper'
+import { getDomain } from "@/modules/lib/function"
+import {CustomConcurrency} from "@/modules/concurrency-implementation"
 export class EmailCluster {
-    cluster: Cluster<EmailClusterdata>;
-    context: object;
+  cluster: Cluster<EmailClusterdata>;
+  context: object;
   config: SMconfig;
   logger: winston.Logger;
   // logger: { info: Function };
@@ -27,7 +28,7 @@ export class EmailCluster {
   page: Page;
   numClusters: number;
   tmppath: string;
-  proxiesArr:Array<string>
+  proxiesArr: Array<string>
   // runLogin: Function;
   // taskid?: number;
   // taskrunId?: number;
@@ -68,10 +69,10 @@ export class EmailCluster {
           })
         ),
         transports: [new transports.Console(),
-    //       new winston.transports.File({ filename: path.join(app.getPath("logs"),'error.log'), level: 'error' }),
-    // new winston.transports.File({ filename: path.join(app.getPath("logs"),'combined.log') }),
-    //       new winston.transports.File({ filename: 'error.log', level: 'error' }),
-    // new winston.transports.File({ filename: 'combined.log' }),
+          //       new winston.transports.File({ filename: path.join(app.getPath("logs"),'error.log'), level: 'error' }),
+          // new winston.transports.File({ filename: path.join(app.getPath("logs"),'combined.log') }),
+          //       new winston.transports.File({ filename: 'error.log', level: 'error' }),
+          // new winston.transports.File({ filename: 'combined.log' }),
         ],
       }),
       // platform: "facebook",
@@ -105,7 +106,7 @@ export class EmailCluster {
       // the number of pages to scrape for each keyword
       page_length: 1,
       // path to output file, data will be stored in JSON
-       // output_file: "",
+      // output_file: "",
       // whether to also passthru all the html output of the serp pages
       html_output: false,
       // whether to strip JS and CSS from the html_output
@@ -190,67 +191,75 @@ export class EmailCluster {
     // }
   }
   //init cluster
-  async start(scraperData:EmailDatascraper) {
+  async start(scraperData: EmailDatascraper) {
     this.numClusters = Math.min(
-        //this.config.proxies.length + (this.config.use_proxies_only ? 0 : 1),
-        scraperData.urls.length,
-        MAX_ALLOWED_BROWSERS
-      );
+      //this.config.proxies.length + (this.config.use_proxies_only ? 0 : 1),
+      scraperData.urls.length,
+      MAX_ALLOWED_BROWSERS
+    );
 
     if (this.config.proxies && this.config.proxies.length > 0) {
-        this.proxiesArr = clone(this.config.proxies);
-    }else {
-        this.numClusters = this.config.puppeteer_cluster_config.maxConcurrency;
-        this.proxiesArr = times(this.numClusters, null);
-      }
-
-      const perBrowserOptions = map(this.proxiesArr.slice(0, this.numClusters), (proxy) => {
-        const userAgent = this.config.random_user_agent
-          ? new UserAgent({ deviceCategory: "desktop" }).toString()
-          : this.config.user_agent;
-        const args = this.config.chrome_flags.concat([`--user-agent=${userAgent}`]);
-        return {
-          headless: this.config.headless,
-          ignoreHTTPSErrors: true,
-          args,
-        };
-      });
-      this.logger.info(perBrowserOptions);
-      this.cluster = await Cluster.launch({
-        // puppeteer,
-        monitor: this.config.puppeteer_cluster_config.monitor,
-        timeout: this.config.puppeteer_cluster_config.timeout, // max timeout set to 30 minutes
-        concurrency: Cluster.CONCURRENCY_BROWSER,
-        //concurrency: Cluster.CustomConcurrency,
-        maxConcurrency: this.numClusters,
-        perBrowserOptions: perBrowserOptions,
-        retryLimit: 3,
-        // puppeteerOptions:perBrowserOptions,
-      });
-
-
-  }
-
-  async searchdata(param:EmailDatascraper){
-    await this.start(param);
-    const pageLength=Math.min(this.config.page_length,MAX_CRAWL_PAGE_LENGTH)
-    await this.cluster.task(crawlSite)
-    param.urls.forEach((value,index)=>{
-      const domain=getDomain(value)
-      if(!domain){
-      return
-      }
-    //get random proxy 
-    const randomIndex = Math.floor(Math.random() * this.proxiesArr.length);
-    const proxyServer=this.proxiesArr[randomIndex];  
-    const crawlData:EmailClusterdata={
-      url:value,
-      proxy:proxyServer,
-     domain:domain,
-     maxPageLevel:pageLength
+      this.proxiesArr = clone(this.config.proxies);
+    } else {
+      this.numClusters = this.config.puppeteer_cluster_config.maxConcurrency;
+      this.proxiesArr = times(this.numClusters, null);
     }
-    this.cluster.queue(crawlData);
-    })
+
+    const perBrowserOptions = map(this.proxiesArr.slice(0, this.numClusters), (proxy) => {
+      const userAgent = this.config.random_user_agent
+        ? new UserAgent({ deviceCategory: "desktop" }).toString()
+        : this.config.user_agent;
+      const args = this.config.chrome_flags.concat([`--user-agent=${userAgent}`]);
+      return {
+        headless: this.config.headless,
+        ignoreHTTPSErrors: true,
+        args,
+      };
+    });
+    this.logger.info(perBrowserOptions);
+    console.log("cluster number is "+this.numClusters)
+    this.cluster = await Cluster.launch({
+      // puppeteer,
+      monitor: this.config.puppeteer_cluster_config.monitor,
+      timeout: this.config.puppeteer_cluster_config.timeout, // max timeout set to 30 minutes
+      // concurrency: Cluster.CONCURRENCY_CONTEXT,
+      concurrency: CustomConcurrency,
+      maxConcurrency: Number(this.numClusters),
+      perBrowserOptions: perBrowserOptions,
+      retryLimit: 3,
+      // puppeteerOptions:perBrowserOptions,
+    });
+
+
   }
 
+  async searchdata(param: EmailDatascraper) {
+    await this.start(param);
+    const pageLength = Math.min(this.config.page_length, MAX_CRAWL_PAGE_LENGTH)
+    await this.cluster.task(crawlSite)
+    param.urls.forEach((value) => {
+      const domain = getDomain(value)
+      if (!domain) {
+        return
+      }
+      //get random proxy 
+      const randomIndex = Math.floor(Math.random() * this.proxiesArr.length);
+      const proxyServer = this.proxiesArr[randomIndex];
+      const crawlData: EmailClusterdata = {
+        url: value,
+        proxy: proxyServer,
+        domain: domain,
+        maxPageLevel: pageLength
+      }
+      this.cluster.queue(crawlData);
+    })
+    await this.quit();
+  }
+
+  async quit() {
+  
+      await this.cluster.idle();
+      await this.cluster.close();
+    
+  }
 }
