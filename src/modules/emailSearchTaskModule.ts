@@ -2,7 +2,7 @@ import { Token } from "@/modules/token"
 import { USERSDBPATH } from '@/config/usersetting';
 import { EmailsearchTaskdb, EmailsearchTaskEntity, EmailsearchTaskStatus } from '@/model/emailsearchTaskdb'
 import { EmailsearchUrldb, EmailsearchUrlEntity } from '@/model/emailsearchUrldb'
-import {EmailSearchResult} from "@/entityTypes/emailextraction-type"
+import {EmailResult} from "@/entityTypes/emailextraction-type"
 import {EmailsearchResultdb,EmailsearchResultEntity} from "@/model/emailsearchResultdb"
 import {EmailsearchResultDetailEntity,EmailsearchResultDetaildb} from "@/model/emailsearchResultDetaildb"
 export class EmailSearchTaskModule {
@@ -63,12 +63,12 @@ export class EmailSearchTaskModule {
         this.emailsearchTaskdb.updateTaskStatus(taskId, status)
     }
     //save search result
-    public saveSearchResult(taskId: number, res: EmailSearchResult) {
+    public saveSearchResult(taskId: number, res: EmailResult) {
 
        const data:EmailsearchResultEntity={
         task_id: taskId,
         url: res.url,
-        title:res.title,
+        title:res.pageTitle,
        
        }
         const resultId=this.emailsearchresultdb.create(data)
@@ -76,7 +76,7 @@ export class EmailSearchTaskModule {
             throw new Error("save search result failed")
         }
         //save email result detail
-        res.email.forEach((email:string)=>{
+        res.emails.forEach((email:string)=>{
             const emailData:EmailsearchResultDetailEntity={
                 result_id:resultId,
                 email:email

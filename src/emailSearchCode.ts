@@ -3,7 +3,7 @@ export {};
 import {ProcessMessage} from "@/entityTypes/processMessage-type"
 import {EmailSearch} from "@/childprocess/emailSearch"
 //import {EmailSearchData} from "@/entityTypes/emailextraction-type"
-import { EmailsControldata } from '@/entityTypes/emailextraction-type'
+import { EmailsControldata,EmailResult } from '@/entityTypes/emailextraction-type'
 
 const emailSearchModel=new EmailSearch()
 
@@ -11,7 +11,7 @@ process.parentPort.on('message', async (e) => {
     // const [port] = e.ports
     // console.log("get parent message")
     // console.log(e)
-    const pme=JSON.parse(e.data) as ProcessMessage
+    const pme=JSON.parse(e.data) as ProcessMessage<EmailsControldata>
     switch(pme.action){
         //check action
         case "searchEmail": {
@@ -24,7 +24,7 @@ process.parentPort.on('message', async (e) => {
                 }
               
            await emailSearchModel.searchEmail(userEmaildata,(res)=>{
-                const message:ProcessMessage={
+                const message:ProcessMessage<EmailResult>={
                     action:"saveres",
                     data:res
                 }

@@ -30,6 +30,7 @@ export type EmailSearchData = {
   // callback?: (arg: EmailResult) => void
 }
 export type EmailResult = {
+  url: string,
   pageTitle: string,
   filteredLinks: Array<string>,
   emails: Array<string>

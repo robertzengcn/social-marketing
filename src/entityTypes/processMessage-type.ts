@@ -1,4 +1,4 @@
-export type ProcessMessage = {
+export type ProcessMessage<type> = {
     action: string,
-    data:any
+    data:type
 }

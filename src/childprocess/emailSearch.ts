@@ -1,4 +1,4 @@
-import {EmailSearchData,EmailDatascraper,EmailResult} from "@/entityTypes/emailextraction-type"
+import {EmailDatascraper,EmailResult} from "@/entityTypes/emailextraction-type"
 import { ProxyParseItem} from "@/entityTypes/proxyType"
 import {proxyEntityToUrl} from "@/modules/lib/function"
 import { SMstruct } from "@/entityTypes/scrapeType"

@@ -4,6 +4,7 @@ import {Usersearchdata} from "@/entityTypes/searchControlType"
 import {UserSearch} from "@/childprocess/userSearch"
 // import { resolveCname } from "node:dns";
 import {ProcessMessage} from "@/entityTypes/processMessage-type"
+import {SearchDataRun} from "@/entityTypes/scrapeType"
 // import { argv } from 'node:process';
 // import {SearchDataRun} from "@/entityTypes/scrapeType"
 
@@ -44,7 +45,7 @@ process.parentPort.on('message', async (e) => {
     const [port] = e.ports
     // console.log("get parent message")
     // console.log(e)
-    const pme=JSON.parse(e.data) as ProcessMessage
+    const pme=JSON.parse(e.data) as ProcessMessage<Usersearchdata>
     switch(pme.action){
        
             // Surround the case block with braces
@@ -56,7 +57,7 @@ process.parentPort.on('message', async (e) => {
                 }
                 const res=await userSer.searchData(userSearchdata)
                     //console.log(res)
-                    const message:ProcessMessage={
+                    const message:ProcessMessage<SearchDataRun>={
                         action:"saveres",
                         data:res
                     }

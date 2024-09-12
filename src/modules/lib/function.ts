@@ -376,8 +376,10 @@ export async function checkAndCreatePath(pathToCheck: string): Promise<void> {
 }
 export function getEnumKeyByValue(enumObj: any, value: string): number | undefined {
   const keys = Object.keys(enumObj).filter(k => isNaN(Number(k))); // Get only the string keys
+  // console.log(keys)
   for (const key of keys) {
-      if (enumObj[key] === value) {
+    
+      if (key === value) {
           return enumObj[key];
       }
   }

@@ -22,6 +22,8 @@ import {USERLOGPATH,USEREMAIL} from '@/config/usersetting';
 import {WriteLog,getApplogspath,getRandomValues} from "@/modules/lib/function"
 import { v4 as uuidv4 } from 'uuid';
 import {SortBy} from "@/entityTypes/commonType";
+
+
 export class SearchController {
     private searhModel:searhModel;
     constructor() {

@@ -1,4 +1,4 @@
-import { EmailsControldata } from '@/entityTypes/emailextraction-type'
+import { EmailsControldata,EmailResult } from '@/entityTypes/emailextraction-type'
 import {EmailSearchTaskModule} from "@/modules/emailSearchTaskModule"
 import { utilityProcess, MessageChannelMain} from "electron";
 import { Token } from "@/modules/token"
@@ -8,6 +8,8 @@ import {USERLOGPATH,USEREMAIL} from '@/config/usersetting';
 import {WriteLog,getApplogspath,getRandomValues} from "@/modules/lib/function"
 import { v4 as uuidv4 } from 'uuid';
 import {EmailsearchTaskStatus} from '@/model/emailsearchTaskdb'
+import {ProcessMessage} from "@/entityTypes/processMessage-type"
+
 export class EmailextractionController {
        private emailSeachTaskModule:EmailSearchTaskModule
     constructor() {
@@ -72,7 +74,7 @@ export class EmailextractionController {
         child.on('message', (message) => {
             console.log("get message from child")
             console.log('Message from child:', JSON.parse(message));
-            const childdata=JSON.parse(message)
+            const childdata=JSON.parse(message) as ProcessMessage<EmailResult>
             if(childdata.action=="saveres"){
                 //save result
                 this.emailSeachTaskModule.saveSearchResult(taskId,childdata.data)

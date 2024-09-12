@@ -46,9 +46,9 @@ export const extractLink = async (page: Page, val: EmailClusterdata ) => {
     // Filter links with page level less than 3
     const filteredLinks = links.filter(link => {
         try{
-        const url = new URL(link);
-        const pathSegments = url.pathname.split('/').filter(segment => segment.length > 0);
-        return pathSegments.length < val.maxPageLevel&&url.hostname.endsWith(val.domain);
+        const furl = new URL(link);
+        const pathSegments = furl.pathname.split('/').filter(segment => segment.length > 0);
+        return pathSegments.length < val.maxPageLevel&&furl.hostname.endsWith(val.domain);
         }catch(e){
             return false;
         }
@@ -61,6 +61,7 @@ export const extractLink = async (page: Page, val: EmailClusterdata ) => {
     if(val.callback){
         if(emails.length>0){
         const er:EmailResult={
+            url:url,
             pageTitle:pageTitle,
             filteredLinks:filteredLinks,
             emails:emails
@@ -85,6 +86,24 @@ export async function crawlSite ({ page, data }: { page: Page; data: EmailCluste
     if (data.visited.has(data.url)) return;
     data.visited.add(data.url);
 
+    if (data.proxy) {
+        if (data.proxy != undefined) {
+ 
+            this.proxyServer = data.proxy
+            await this.page.setRequestInterception(true);
+            this.page.on("request", async (interceptedRequest) => {
+                if (interceptedRequest.interceptResolutionState().action === InterceptResolutionAction.AlreadyHandled) return;
+                // if (interceptedRequest.resourceType() === "image") {
+                //     interceptedRequest.abort();
+                // } else {
+                    await useProxy(interceptedRequest, data.proxy!);
+                    if (interceptedRequest.interceptResolutionState().action === InterceptResolutionAction.AlreadyHandled) return;
+                    interceptedRequest.continue();
+               // }
+            });
+        }
+    }
+
     const result = await extractLink( page, {url:data.url,domain:data.domain,maxPageLevel:data.maxPageLevel,callback:data.callback} ); 
     console.log("extract link result is following")
     console.log(result)
@@ -95,14 +114,15 @@ export async function crawlSite ({ page, data }: { page: Page; data: EmailCluste
     console.log(`Filtered Links: ${result.filteredLinks}`);
 
     for (const link of result.filteredLinks) {
-        const crawdata:EmailClusterdata={
-            url:link,
-            domain:data.domain,
-            maxPageLevel:data.maxPageLevel,
-            visited:data.visited,
-            callback:data.callback
-        }
-        await crawlSite({page:page, data:crawdata});
+        // const crawdata:EmailClusterdata={
+        //     url:link,
+        //     domain:data.domain,
+        //     maxPageLevel:data.maxPageLevel,
+        //     visited:data.visited,
+        //     callback:data.callback
+        // }
+        data.url=link;
+        await crawlSite({page:page, data:data});
     }
 }
 

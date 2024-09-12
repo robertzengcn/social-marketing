@@ -249,7 +249,8 @@ export class EmailCluster {
         url: value,
         proxy: proxyServer,
         domain: domain,
-        maxPageLevel: pageLength
+        maxPageLevel: pageLength,
+        callback: param.callback
       }
       this.cluster.queue(crawlData);
     })

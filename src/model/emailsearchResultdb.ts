@@ -18,6 +18,10 @@ export class EmailsearchResultdb {
         this.db = scraperModel.getdb();
     }
     create(emailsearchResult: EmailsearchResultEntity): number {
+        const item=this.getByTaskIdUrl(emailsearchResult.task_id,emailsearchResult.url)
+        if(item&&item!=undefined){
+            return Number(item.id)
+        }
         if(!emailsearchResult.record_time){
             emailsearchResult.record_time = getRecorddatetime();
         }
@@ -53,5 +57,13 @@ export class EmailsearchResultdb {
         `);
         const result = stmt.run(id);
         return result.changes > 0;
+    }
+    //get item by task id and url
+    getByTaskIdUrl(taskId:number,url:string):EmailsearchResultEntity|undefined{
+        const stmt = this.db.prepare(`
+            SELECT * FROM ${this.emailsearchtaskTable} WHERE task_id = ? and url = ?
+        `);
+        const result = stmt.get(taskId,url) as EmailsearchResultEntity;
+        return result;
     }
 }
