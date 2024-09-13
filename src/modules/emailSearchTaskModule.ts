@@ -66,12 +66,13 @@ export class EmailSearchTaskModule {
     }
     //save search result
     public saveSearchResult(taskId: number, res: EmailResult) {
-
+        //convert url to domain
+        const url = new URL(res.url);
+        const domain = url.hostname;
        const data:EmailsearchResultEntity={
         task_id: taskId,
-        url: res.url,
+        url: domain,
         title:res.pageTitle,
-       
        }
         const resultId=this.emailsearchresultdb.create(data)
         if(!resultId){

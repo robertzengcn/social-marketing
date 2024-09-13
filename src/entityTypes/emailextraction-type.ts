@@ -15,7 +15,8 @@ export type EmailClusterdata = {
   proxy?: string,
   domain: string,
   maxPageLevel: number,
-  visited?: Set<string>
+  visited?: Set<string>,
+  //filterEmail?: Set<string>,
   callback?: (arg: EmailResult) => void
 }
 export type EmailDatascraper = {

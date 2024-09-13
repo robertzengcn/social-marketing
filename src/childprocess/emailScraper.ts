@@ -6,6 +6,7 @@ import useProxy from "@lem0-packages/puppeteer-page-proxy"
 export const extractLink = async (page: Page, val: EmailClusterdata ) => {
     const url = val.url;
     if (!url) return;
+    
     if(val.proxy){
         if (val.proxy != undefined) {
             // await useProxy(this.page, data.data.proxyServer)
