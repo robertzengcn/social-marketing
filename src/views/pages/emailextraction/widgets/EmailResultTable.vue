@@ -27,12 +27,13 @@
 
 <script setup lang="ts">
 import {useI18n} from "vue-i18n";
-import { listSearchresult,Errorlogquery } from '@/views/api/search'
+import { listEmailSearchtasks } from '@/views/api/emailextraction'
+import {SearchTaskItemdisplay} from '@/entityTypes/emailextraction-type'
 import { ref,computed,onMounted,onUnmounted,reactive } from 'vue'
 import { SearchResult } from '@/views/api/types'
 // import type { VDataTable } from 'vuetify/lib/components/index.mjs'
 import router from '@/views/router';
-import {SearchtaskItem } from "@/entityTypes/searchControlType"
+// import {SearchtaskItem } from "@/entityTypes/searchControlType"
 import {CapitalizeFirstLetter} from "@/views/utils/function"
 const {t} = useI18n({inheritLocale: true});
 
@@ -51,9 +52,9 @@ type Fetchparam = {
 }
 
 const FakeAPI = {
-    async fetch(fetchparam: Fetchparam): Promise<SearchResult<SearchtaskItem>> {
+    async fetch(fetchparam: Fetchparam): Promise<SearchResult<SearchTaskItemdisplay>> {
         const fpage=(fetchparam.page-1)*fetchparam.itemsPerPage
-        return await listSearchresult({ page: fpage, size: fetchparam.itemsPerPage, sortby: fetchparam.sortBy, search: fetchparam.search })
+        return await listEmailSearchtasks({ page: fpage, size: fetchparam.itemsPerPage, sortby: fetchparam.sortBy, search: fetchparam.search })
     }
 }
 
@@ -62,23 +63,23 @@ let refreshInterval:ReturnType<typeof setInterval> | undefined;
 
 headers.value = [
     {
-        title: computed(_ => CapitalizeFirstLetter(t("searchtask.id"))),
+        title: computed(_ => CapitalizeFirstLetter(t("emailextraction.id"))),
         align: 'center',
         sortable: true,
         key: 'id',
     },
     {
-        title: computed(_ => CapitalizeFirstLetter(t("search.search_enginer_name"))),
-        align: 'start',
+        title: computed(_ => CapitalizeFirstLetter(t("emailextraction.type"))),
+        align: 'center',
         sortable: false,
-        key: 'enginer_name',
+        key: 'type',
         
     },
     {
-        title: computed(_ => CapitalizeFirstLetter(t("search.keyword"))),
+        title: computed(_ => CapitalizeFirstLetter(t("emailextraction.url"))),
         align: 'start',
         sortable: false,
-        key: 'keywordline',
+        key: 'url',
         // value: computed(value => value.join(', '))
     },
     {
@@ -96,7 +97,7 @@ headers.value = [
     { title: 'Actions', key: 'actions', sortable: false },
 ];
 const itemsPerPage = ref(10);
-const serverItems = ref<Array<SearchtaskItem>>([]);
+const serverItems = ref<Array<SearchTaskItemdisplay>>([]);
 const loading = ref(false);
 
 const totalItems = ref(0);
@@ -162,12 +163,11 @@ const openfolder=(item)=>{
     }
 const downloadErrorlog=(item)=>{
     // console.log(item)
-    Errorlogquery(item.id).then((res)=>{
-        console.log(res)
+    
         // const url = window.URL.createObjectURL(new Blob([res.data]));
         // const link = document.createElement('a');
         // link.href
-    })
+   
 }
 onMounted(() => {
   

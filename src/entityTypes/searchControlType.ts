@@ -52,10 +52,3 @@ export type SearchResultFetchparam = {
     search: string
     taskId:number
 }
-export type SearchTaskItemdisplay = {
-    id: number,
-    type: string,    
-    status: string,
-    urls:Array<string>,
-    email:Array<string>,
-}

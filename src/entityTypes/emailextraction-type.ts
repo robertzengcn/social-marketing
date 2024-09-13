@@ -52,3 +52,10 @@ url:string,
 email:Array<string>,
 title:string,
 }
+export type SearchTaskItemdisplay = {
+  id: number,
+  type: string,    
+  status: string,
+  urls:Array<string>,
+  email:Array<string>,
+}

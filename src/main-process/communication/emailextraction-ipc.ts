@@ -1,16 +1,17 @@
 import { ipcMain } from 'electron';
-import { EMAILEXTRACTIONAPI,EMAILEXTRACTIONMESSAGE } from "@/config/channellist";
+import { EMAILEXTRACTIONAPI, EMAILEXTRACTIONMESSAGE,LISTEMAILSEARCHTASK } from "@/config/channellist";
 import { EmailscFormdata } from '@/entityTypes/emailextraction-type'
 import { CommonDialogMsg } from "@/entityTypes/commonType";
 import { isValidUrl } from "@/views/utils/function"
 import { searhModel } from "@/modules/searchModel"
-import {EmailextractionController} from "@/controller/emailextractionController"
+import { EmailextractionController } from "@/controller/emailextractionController"
 import { EmailsControldata } from '@/entityTypes/emailextraction-type'
 import { EmailExtractionTypes } from '@/config/emailextraction'
+import {ItemSearchparam} from "@/entityTypes/commonType"
 
 export function registerEmailextractionIpcHandlers() {
     const searchModel = new searhModel();
-    const emailCon=new EmailextractionController();
+    const emailCon = new EmailextractionController();
     ipcMain.on(EMAILEXTRACTIONAPI, async (event, arg) => {
         let extraType: EmailExtractionTypes = EmailExtractionTypes.ManualInputUrl;
         //receive user submit form
@@ -53,7 +54,7 @@ export function registerEmailextractionIpcHandlers() {
             }
 
         } else if (qdata.extratype === "SearchResult") {
-            extraType=EmailExtractionTypes.SearchResult
+            extraType = EmailExtractionTypes.SearchResult
             if (!qdata.searchTaskId) {
                 const comMsgs: CommonDialogMsg = {
                     status: false,
@@ -69,8 +70,8 @@ export function registerEmailextractionIpcHandlers() {
             }
             //get result url from search task
             const taskresultNum = searchModel.countSearchResult(qdata.searchTaskId)
-            const step=100
-            for (let i = 0; i < taskresultNum; i=i+step) {
+            const step = 100
+            for (let i = 0; i < taskresultNum; i = i + step) {
                 const taskresult = searchModel.listSearchResult(qdata.searchTaskId, i, step)
                 if (taskresult.length > 0) {
                     taskresult.map((item) => {
@@ -92,7 +93,7 @@ export function registerEmailextractionIpcHandlers() {
             return
 
         }
-        if(validUrls.length===0){
+        if (validUrls.length === 0) {
             const comMsgs: CommonDialogMsg = {
                 status: false,
                 code: 20240705103811,
@@ -105,13 +106,13 @@ export function registerEmailextractionIpcHandlers() {
             event.sender.send(EMAILEXTRACTIONAPI, JSON.stringify(comMsgs))
             return
         }
-        const datas:EmailsControldata={
-            validUrls:validUrls,
-            concurrency:qdata.concurrency,
-            pagelength:qdata.pagelength,
-            notShowBrowser:qdata.notShowBrowser,
-            proxys:qdata.proxys,
-            type:extraType
+        const datas: EmailsControldata = {
+            validUrls: validUrls,
+            concurrency: qdata.concurrency,
+            pagelength: qdata.pagelength,
+            notShowBrowser: qdata.notShowBrowser,
+            proxys: qdata.proxys,
+            type: extraType
         }
         emailCon.searchEmail(datas);
         const comMsgs: CommonDialogMsg = {
@@ -127,4 +128,7 @@ export function registerEmailextractionIpcHandlers() {
 
     });
 
+    ipcMain.handle(LISTEMAILSEARCHTASK, async (event, data) => {
+        const qdata = JSON.parse(data) as ItemSearchparam;  
+    })
 }
