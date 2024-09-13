@@ -1,5 +1,6 @@
 CREATE TABLE IF NOT EXISTS emailsearch_task(
 id INTEGER PRIMARY KEY AUTOINCREMENT,
+type_id INTEGER NULL,
 error_log TEXT NULL,
 runtime_log TEXT NULL,
 record_time INTEGER NULL,

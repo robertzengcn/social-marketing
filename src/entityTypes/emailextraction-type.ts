@@ -1,4 +1,5 @@
 import { ProxyEntity } from '@/entityTypes/proxyType'
+import {EmailExtractionTypes} from "@/config/emailextraction"
 export type EmailscFormdata = {
   extratype: string,
   urls?: Array<string>,
@@ -41,6 +42,7 @@ export type EmailsControldata = {
   pagelength: number,
   notShowBrowser: boolean,
   proxys?: Array<ProxyEntity>,
+  type: EmailExtractionTypes,
   // maxConcurrent: number,
 }
 

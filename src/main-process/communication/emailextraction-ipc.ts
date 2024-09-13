@@ -6,11 +6,13 @@ import { isValidUrl } from "@/views/utils/function"
 import { searhModel } from "@/modules/searchModel"
 import {EmailextractionController} from "@/controller/emailextractionController"
 import { EmailsControldata } from '@/entityTypes/emailextraction-type'
+import { EmailExtractionTypes } from '@/config/emailextraction'
 
 export function registerEmailextractionIpcHandlers() {
     const searchModel = new searhModel();
     const emailCon=new EmailextractionController();
     ipcMain.on(EMAILEXTRACTIONAPI, async (event, arg) => {
+        let extraType: EmailExtractionTypes = EmailExtractionTypes.ManualInputUrl;
         //receive user submit form
         const qdata = JSON.parse(arg) as EmailscFormdata;
         if (!Object.prototype.hasOwnProperty.call(qdata, "extratype")) {
@@ -51,6 +53,7 @@ export function registerEmailextractionIpcHandlers() {
             }
 
         } else if (qdata.extratype === "SearchResult") {
+            extraType=EmailExtractionTypes.SearchResult
             if (!qdata.searchTaskId) {
                 const comMsgs: CommonDialogMsg = {
                     status: false,
@@ -107,7 +110,8 @@ export function registerEmailextractionIpcHandlers() {
             concurrency:qdata.concurrency,
             pagelength:qdata.pagelength,
             notShowBrowser:qdata.notShowBrowser,
-            proxys:qdata.proxys
+            proxys:qdata.proxys,
+            type:extraType
         }
         emailCon.searchEmail(datas);
         const comMsgs: CommonDialogMsg = {

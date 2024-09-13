@@ -1,11 +1,13 @@
 import { Database } from 'better-sqlite3';
 import { Scraperdb } from "@/model/scraperdb";
 import { getRecorddatetime } from "@/modules/lib/function";
+import {EmailExtractionTypes} from "@/config/emailextraction"
 export interface EmailsearchTaskEntity {
     id?: number,
     error_log?:string,
     runtime_log?:string,
     record_time?:string,
+    type_id: EmailExtractionTypes,
     status: EmailsearchTaskStatus,
 }
 export enum EmailsearchTaskStatus {
@@ -26,10 +28,10 @@ export class EmailsearchTaskdb {
             task.record_time = getRecorddatetime();
         }
         const stmt = this.db.prepare(`
-            INSERT INTO ${this.emailsearchtaskTable} (error_log, runtime_log, record_time, status)
-            VALUES (?, ?, ?, ?)
+            INSERT INTO ${this.emailsearchtaskTable} (error_log, runtime_log, record_time,type_id, status)
+        VALUES (?, ?, ?, ?, ?)
         `);
-        const result = stmt.run(task.error_log, task.runtime_log, task.record_time, task.status);
+        const result = stmt.run(task.error_log, task.runtime_log, task.record_time, task.type_id,task.status);
         return Number(result.lastInsertRowid);
     }
     //get task by id

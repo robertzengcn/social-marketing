@@ -5,6 +5,7 @@ import { EmailsearchUrldb, EmailsearchUrlEntity } from '@/model/emailsearchUrldb
 import {EmailResult} from "@/entityTypes/emailextraction-type"
 import {EmailsearchResultdb,EmailsearchResultEntity} from "@/model/emailsearchResultdb"
 import {EmailsearchResultDetailEntity,EmailsearchResultDetaildb} from "@/model/emailsearchResultDetaildb"
+import {EmailExtractionTypes} from "@/config/emailextraction"
 export class EmailSearchTaskModule {
     private dbpath: string
     private emailsearchTaskdb: EmailsearchTaskdb
@@ -24,10 +25,11 @@ export class EmailSearchTaskModule {
         this.emailsearchResultDetaildb=new EmailsearchResultDetaildb(this.dbpath)
     }
     //save search task, call it when user start search email
-    public async saveSearchtask(urls: string[]): Promise<number> {
+    public async saveSearchtask(typeId:EmailExtractionTypes,urls: string[]): Promise<number> {
         console.log("save search task")
         const task: EmailsearchTaskEntity = {
-            status: EmailsearchTaskStatus.Processing
+            status: EmailsearchTaskStatus.Processing,
+            type_id:typeId
         }
         const taskId = this.emailsearchTaskdb.createTask(task)
         console.log("task id is" + taskId)

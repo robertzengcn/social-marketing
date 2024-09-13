@@ -40,7 +40,6 @@ export type SearchtaskItem = {
     keywords:Array<string>,
     keywordline?:string,
     status: string,
-
 }
 export type SearchDetailquery = {
 taskId: number
@@ -52,4 +51,11 @@ export type SearchResultFetchparam = {
     sortBy: string,
     search: string
     taskId:number
+}
+export type SearchTaskItemdisplay = {
+    id: number,
+    type: string,    
+    status: string,
+    urls:Array<string>,
+    email:Array<string>,
 }

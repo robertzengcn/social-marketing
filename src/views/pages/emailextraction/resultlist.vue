@@ -6,7 +6,7 @@
 </template>
 <script setup lang="ts">
 
-import { ref } from 'vue';
+//import { ref } from 'vue';
 import EmailresultTable from '@/views/pages/emailextraction/widgets/EmailResultTable.vue'
 //const dialog = ref(false);
 

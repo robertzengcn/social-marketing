@@ -18,7 +18,7 @@ export class EmailextractionController {
     }
     public async searchEmail(data: EmailsControldata) {
         //save search email task
-        const taskId=await this.emailSeachTaskModule.saveSearchtask(data.validUrls)
+        const taskId=await this.emailSeachTaskModule.saveSearchtask(data.type,data.validUrls)
         const childPath = path.join(__dirname, 'emailSearchCode.js')
         if (!fs.existsSync(childPath)) {
             throw new Error("child js path not exist for the path " + childPath);
