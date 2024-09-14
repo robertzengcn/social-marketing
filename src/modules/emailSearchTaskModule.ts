@@ -6,6 +6,7 @@ import {EmailResult} from "@/entityTypes/emailextraction-type"
 import {EmailsearchResultdb,EmailsearchResultEntity} from "@/model/emailsearchResultdb"
 import {EmailsearchResultDetailEntity,EmailsearchResultDetaildb} from "@/model/emailsearchResultDetaildb"
 import {EmailExtractionTypes} from "@/config/emailextraction"
+import { SortBy } from "@/entityTypes/commonType"
 export class EmailSearchTaskModule {
     private dbpath: string
     private emailsearchTaskdb: EmailsearchTaskdb
@@ -32,7 +33,7 @@ export class EmailSearchTaskModule {
             type_id:typeId
         }
         const taskId = this.emailsearchTaskdb.createTask(task)
-        console.log("task id is" + taskId)
+        //console.log("task id is" + taskId)
         for (let i = 0; i < urls.length; i++) {
             // console.log("url is" + urls[i])
             const urltask: EmailsearchUrlEntity = {
@@ -86,6 +87,18 @@ export class EmailSearchTaskModule {
             }
             this.emailsearchResultDetaildb.create(emailData)
         })
+    }
+    //list email search task
+    public listSearchtask(page: number, size: number, sortby?: SortBy): { records: EmailsearchTaskEntity[], total: number } {
+        const res = this.emailsearchTaskdb.listSearchtask(page, size, sortby)
+        return res
+    }
+    //convert task status to string
+    public taskstatusConvert(status: EmailsearchTaskStatus): string {
+        return this.emailsearchTaskdb.statusConvert(status)
+    }
+    public taskTypeconvert(typeId:EmailExtractionTypes):string{
+        return this.emailsearchTaskdb.convertType(typeId)
     }
 
 }

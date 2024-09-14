@@ -8,6 +8,9 @@ import { EmailextractionController } from "@/controller/emailextractionControlle
 import { EmailsControldata } from '@/entityTypes/emailextraction-type'
 import { EmailExtractionTypes } from '@/config/emailextraction'
 import {ItemSearchparam} from "@/entityTypes/commonType"
+import { CommonResponse } from "@/entityTypes/commonType"
+import {EmailsearchTaskEntityDisplay} from '@/entityTypes/emailextraction-type'
+
 
 export function registerEmailextractionIpcHandlers() {
     const searchModel = new searhModel();
@@ -130,5 +133,22 @@ export function registerEmailextractionIpcHandlers() {
 
     ipcMain.handle(LISTEMAILSEARCHTASK, async (event, data) => {
         const qdata = JSON.parse(data) as ItemSearchparam;  
+        if (!Object.prototype.hasOwnProperty.call(qdata, "page")) {
+            qdata.page = 0;
+          }
+          if (!Object.prototype.hasOwnProperty.call(qdata, "size")) {
+            qdata.size = 100;
+          }
+          const res=await emailCon.listEmailSearchtasks(qdata.page,qdata.size,qdata.sortby)
+
+          const resp: CommonResponse<EmailsearchTaskEntityDisplay> = {
+            status: true,
+            msg: "",
+            data: {
+                records: res.records,
+                num: res.total
+            }
+        }
+        return resp
     })
 }

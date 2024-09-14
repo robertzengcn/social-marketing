@@ -1,4 +1,4 @@
-import { EmailsControldata,EmailResult } from '@/entityTypes/emailextraction-type'
+import { EmailsControldata,EmailResult,EmailsearchTaskEntityDisplay} from '@/entityTypes/emailextraction-type'
 import {EmailSearchTaskModule} from "@/modules/emailSearchTaskModule"
 import { utilityProcess, MessageChannelMain} from "electron";
 import { Token } from "@/modules/token"
@@ -9,6 +9,9 @@ import {WriteLog,getApplogspath,getRandomValues} from "@/modules/lib/function"
 import { v4 as uuidv4 } from 'uuid';
 import {EmailsearchTaskStatus} from '@/model/emailsearchTaskdb'
 import {ProcessMessage} from "@/entityTypes/processMessage-type"
+import { SortBy } from "@/entityTypes/commonType"
+
+
 
 export class EmailextractionController {
        private emailSeachTaskModule:EmailSearchTaskModule
@@ -82,5 +85,26 @@ export class EmailextractionController {
                 //child.kill()
             }
         });
+    }
+    //list email search task
+    public async listEmailSearchtasks(page:number,size:number,sortby?:SortBy): Promise<{records:EmailsearchTaskEntityDisplay[],total:number}> {
+        const res = await this.emailSeachTaskModule.listSearchtask(page, size, sortby)
+       const displayRes:EmailsearchTaskEntityDisplay[]=[]
+        res.records.forEach((value)=>{
+            if(value.id){
+
+            const taskStatus=this.emailSeachTaskModule.taskstatusConvert(value.status)
+            const taskType=this.emailSeachTaskModule.taskTypeconvert(value.type_id)
+            const displayValue:EmailsearchTaskEntityDisplay={
+                id:value.id,
+                record_time:value.record_time,
+                statusName:taskStatus,
+                typeName:taskType,  
+            }
+            displayRes.push(displayValue)
+            }
+        })
+
+        return {records:displayRes,total:res.total}
     }
 }

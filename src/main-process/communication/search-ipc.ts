@@ -7,9 +7,9 @@ import { CommonResponse } from "@/entityTypes/commonType"
 import { SearchResEntity } from "@/entityTypes/scrapeType"
 import * as path from 'path';
 import * as fs from 'fs';
-import {ItemSearchparam} from "@/entityTypes/commonType"
+import { ItemSearchparam } from "@/entityTypes/commonType"
 import { SearhEnginer } from "@/config/searchSetting"
-import { ToArray} from "@/views/utils/function"
+import { ToArray } from "@/views/utils/function"
 
 export function registerSearchIpcHandlers() {
     ipcMain.on(SEARCHSCRAPERAPI, async (event, arg) => {
@@ -57,21 +57,21 @@ export function registerSearchIpcHandlers() {
                 qdata.num_pages = 1
             }
         }
-//valid search enginer 
-const seArr:string[]=ToArray(SearhEnginer);
-if(!seArr.includes(qdata.searchEnginer)){
-    const comMsgs: CommonDialogMsg = {
-        status: false,
-        code: 20240705103811,
-        data: {
-            action: "",
-            title: "search.scraper_failed",
-            content: "search.search_enginer_invalid"
+        //valid search enginer 
+        const seArr: string[] = ToArray(SearhEnginer);
+        if (!seArr.includes(qdata.searchEnginer)) {
+            const comMsgs: CommonDialogMsg = {
+                status: false,
+                code: 20240705103811,
+                data: {
+                    action: "",
+                    title: "search.scraper_failed",
+                    content: "search.search_enginer_invalid"
+                }
+            }
+            event.sender.send(SEARCHEVENT, JSON.stringify(comMsgs))
+            return comMsgs
         }
-    }
-    event.sender.send(SEARCHEVENT, JSON.stringify(comMsgs))
-    return comMsgs
-}
 
         const searchcon = new SearchController()
         await searchcon.searchData(qdata)
@@ -89,7 +89,7 @@ if(!seArr.includes(qdata.searchEnginer)){
     })
     ipcMain.handle(LISTSESARCHRESUT, async (event, data) => {
         const qdata = JSON.parse(data) as ItemSearchparam;
-        
+
         //console.log("handle campaign:list")
         const searchControl = new SearchController()
         const res = searchControl.listSearchresult(qdata.page, qdata.size, qdata.sortby)
@@ -133,7 +133,7 @@ if(!seArr.includes(qdata.searchEnginer)){
         const qdata = JSON.parse(data) as { id: number };
         const { filePath } = await dialog.showSaveDialog({
             title: 'Save Text File',
-            defaultPath: path.join(app.getPath('documents'), qdata.id.toString()+'_search-error-log.txt'),
+            defaultPath: path.join(app.getPath('documents'), qdata.id.toString() + '_search-error-log.txt'),
             filters: [{ name: 'Text Files', extensions: ['txt'] }]
         });
         if (filePath) {

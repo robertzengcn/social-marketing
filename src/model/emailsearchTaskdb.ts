@@ -2,6 +2,7 @@ import { Database } from 'better-sqlite3';
 import { Scraperdb } from "@/model/scraperdb";
 import { getRecorddatetime } from "@/modules/lib/function";
 import {EmailExtractionTypes} from "@/config/emailextraction"
+import { SortBy } from "@/entityTypes/commonType"
 export interface EmailsearchTaskEntity {
     id?: number,
     error_log?:string,
@@ -91,4 +92,69 @@ export class EmailsearchTaskdb {
     );
     stmt.run(log, taskId)
   }
+  //list email search task
+    public listSearchtask(page: number, size: number, sort?: SortBy): { records: EmailsearchTaskEntity[], total: number } {
+        let query = 'SELECT * FROM '+this.emailsearchtaskTable
+        if (sort&&sort.key&&sort.order) {
+            const lowsersortkey = sort.key.toLowerCase()
+            const lowsersortorder = sort.order.toLowerCase()
+            const allowsortkey = ['id', 'record_time', 'status']
+            const allowsortorder = ['asc', 'desc']
+      
+            // if (sort) {
+            if (!allowsortkey.includes(lowsersortkey)) {
+              //not allow such key, throw error
+              throw new Error("not allow sort key")
+            } else {
+              if (!allowsortorder.includes(lowsersortorder)) {
+                throw new Error("not allow sort order")
+              }
+              // sortstr = lowsersortkey + ' ' + lowsersortorder
+              query+=' ORDER BY '+lowsersortkey+' '+lowsersortorder
+              console.log(query)
+            }
+      
+            // }
+          }else{
+            query+=' ORDER BY id DESC'
+          }
+          query+=' LIMIT ? OFFSET ?'
+        const stmt = this.db.prepare(query);
+
+        const records = stmt.all(size, page) as EmailsearchTaskEntity[];
+        const total = this.countSearchtask();
+        return { records, total };
+    }
+    //count email search task
+    public countSearchtask(): number {
+        const stmt = this.db.prepare(`
+            SELECT COUNT(*) AS total FROM ${this.emailsearchtaskTable}
+        `);
+        const result = stmt.get() as { total: number };
+        return result.total as number;
+    }
+    //task status convert
+    public statusConvert(status: EmailsearchTaskStatus): string {
+        switch (status) {
+            case EmailsearchTaskStatus.Processing:
+                return 'Processing';
+            case EmailsearchTaskStatus.Complete:
+                return 'Complete';
+            case EmailsearchTaskStatus.Error:
+                return 'Error';
+            default:
+                return 'Unknown';
+        }
+    }
+    //convert type to string
+    public convertType(type: EmailExtractionTypes): string {
+        switch (type) {
+            case EmailExtractionTypes.ManualInputUrl:
+                return 'ManualInputUrl';
+            case EmailExtractionTypes.SearchResult:
+                return 'SearchResult';
+            default:
+                return 'Unknown';
+        }
+    }
 }

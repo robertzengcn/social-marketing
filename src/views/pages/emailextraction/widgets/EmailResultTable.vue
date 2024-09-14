@@ -28,13 +28,14 @@
 <script setup lang="ts">
 import {useI18n} from "vue-i18n";
 import { listEmailSearchtasks } from '@/views/api/emailextraction'
-import {SearchTaskItemdisplay} from '@/entityTypes/emailextraction-type'
+//import {SearchTaskItemdisplay} from '@/entityTypes/emailextraction-type'
 import { ref,computed,onMounted,onUnmounted,reactive } from 'vue'
 import { SearchResult } from '@/views/api/types'
 // import type { VDataTable } from 'vuetify/lib/components/index.mjs'
 import router from '@/views/router';
 // import {SearchtaskItem } from "@/entityTypes/searchControlType"
 import {CapitalizeFirstLetter} from "@/views/utils/function"
+import {EmailsearchTaskEntityDisplay} from '@/entityTypes/emailextraction-type'
 const {t} = useI18n({inheritLocale: true});
 
 
@@ -52,7 +53,7 @@ type Fetchparam = {
 }
 
 const FakeAPI = {
-    async fetch(fetchparam: Fetchparam): Promise<SearchResult<SearchTaskItemdisplay>> {
+    async fetch(fetchparam: Fetchparam): Promise<SearchResult<EmailsearchTaskEntityDisplay>> {
         const fpage=(fetchparam.page-1)*fetchparam.itemsPerPage
         return await listEmailSearchtasks({ page: fpage, size: fetchparam.itemsPerPage, sortby: fetchparam.sortBy, search: fetchparam.search })
     }
@@ -72,21 +73,21 @@ headers.value = [
         title: computed(_ => CapitalizeFirstLetter(t("emailextraction.type"))),
         align: 'center',
         sortable: false,
-        key: 'type',
+        key: 'typeName',
         
     },
-    {
-        title: computed(_ => CapitalizeFirstLetter(t("emailextraction.url"))),
-        align: 'start',
-        sortable: false,
-        key: 'url',
-        // value: computed(value => value.join(', '))
-    },
+    // {
+    //     title: computed(_ => CapitalizeFirstLetter(t("emailextraction.url"))),
+    //     align: 'start',
+    //     sortable: false,
+    //     key: 'url',
+    //     // value: computed(value => value.join(', '))
+    // },
     {
         title: computed(_ => CapitalizeFirstLetter(t("searchresult.status"))),
         align: 'start',
         sortable: false,
-        key: 'status',
+        key: 'statusName',
     },
     {
         title: computed(_ => CapitalizeFirstLetter(t("searchresult.record_time"))),
@@ -97,7 +98,7 @@ headers.value = [
     { title: 'Actions', key: 'actions', sortable: false },
 ];
 const itemsPerPage = ref(10);
-const serverItems = ref<Array<SearchTaskItemdisplay>>([]);
+const serverItems = ref<Array<EmailsearchTaskEntityDisplay>>([]);
 const loading = ref(false);
 
 const totalItems = ref(0);
@@ -131,10 +132,10 @@ function loadItems({ page=1, itemsPerPage=10, sortBy}) {
         fetchitem.sortBy={key:sortBy[0].key,order:sortBy[0].order}
 
     }
-   console.log(fetchitem)
+//    console.log(fetchitem)
     FakeAPI.fetch(fetchitem).then(
         ({ data, total }) => {
-             //console.log(data)
+             console.log(data)
             // console.log(total)
         
             serverItems.value = data

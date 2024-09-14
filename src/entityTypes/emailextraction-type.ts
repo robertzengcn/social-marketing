@@ -59,3 +59,9 @@ export type SearchTaskItemdisplay = {
   urls:Array<string>,
   email:Array<string>,
 }
+export interface EmailsearchTaskEntityDisplay {
+  id: number,
+  record_time?:string,
+  typeName: string,
+  statusName: string,
+}

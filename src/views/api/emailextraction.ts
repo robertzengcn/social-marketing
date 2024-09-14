@@ -1,9 +1,11 @@
-import {EmailscFormdata,SearchTaskItemdisplay} from '@/entityTypes/emailextraction-type'
+import {EmailscFormdata} from '@/entityTypes/emailextraction-type'
 import { windowInvoke,windowReceive,windowSend } from '@/views/utils/apirequest'
 import {EMAILEXTRACTIONAPI} from '@/config/channellist'
 import { SearchResult} from '@/views/api/types'
 import {ItemSearchparam} from "@/entityTypes/commonType"
 import {LISTEMAILSEARCHTASK} from "@/config/channellist";
+// import { CommonResponse } from "@/entityTypes/commonType"
+import {EmailsearchTaskEntityDisplay} from '@/entityTypes/emailextraction-type'
 
 export async function submitScraper(data: EmailscFormdata) {
     
@@ -12,13 +14,13 @@ export async function submitScraper(data: EmailscFormdata) {
     // return resp 
 }
 //list email search task
-export async function listEmailSearchtasks(data: ItemSearchparam): Promise<SearchResult<SearchTaskItemdisplay>> {
+export async function listEmailSearchtasks(data: ItemSearchparam): Promise<SearchResult<EmailsearchTaskEntityDisplay>> {
     const resp = await windowInvoke(LISTEMAILSEARCHTASK, data);
     //console.log(resp)
     if (!resp) {
         throw new Error("unknow error")
     }
-    const resdata: SearchResult<SearchTaskItemdisplay> = {
+    const resdata: SearchResult<EmailsearchTaskEntityDisplay> = {
         data: resp.records,
         total: resp.num,
     }
