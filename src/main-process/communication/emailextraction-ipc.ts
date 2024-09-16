@@ -1,5 +1,5 @@
 import { ipcMain } from 'electron';
-import { EMAILEXTRACTIONAPI, EMAILEXTRACTIONMESSAGE,LISTEMAILSEARCHTASK } from "@/config/channellist";
+import { EMAILEXTRACTIONAPI, EMAILEXTRACTIONMESSAGE,LISTEMAILSEARCHTASK,EMAILSEARCHTASKRESULT } from "@/config/channellist";
 import { EmailscFormdata } from '@/entityTypes/emailextraction-type'
 import { CommonDialogMsg } from "@/entityTypes/commonType";
 import { isValidUrl } from "@/views/utils/function"
@@ -151,4 +151,7 @@ export function registerEmailextractionIpcHandlers() {
         }
         return resp
     })
+    ipcMain.handle(EMAILSEARCHTASKRESULT, async (event, data) => {
+        //EmailsearchTaskquery
+    });
 }

@@ -1,4 +1,4 @@
-import { EmailsControldata,EmailResult,EmailsearchTaskEntityDisplay} from '@/entityTypes/emailextraction-type'
+import { EmailsControldata,EmailResult,EmailsearchTaskEntityDisplay,EmailResultDisplay} from '@/entityTypes/emailextraction-type'
 import {EmailSearchTaskModule} from "@/modules/emailSearchTaskModule"
 import { utilityProcess, MessageChannelMain} from "electron";
 import { Token } from "@/modules/token"
@@ -15,9 +15,10 @@ import { SortBy } from "@/entityTypes/commonType"
 
 export class EmailextractionController {
        private emailSeachTaskModule:EmailSearchTaskModule
-    constructor() {
+    
+       constructor() {
        this.emailSeachTaskModule=new EmailSearchTaskModule()
-
+       
     }
     public async searchEmail(data: EmailsControldata) {
         //save search email task
@@ -95,11 +96,13 @@ export class EmailextractionController {
 
             const taskStatus=this.emailSeachTaskModule.taskstatusConvert(value.status)
             const taskType=this.emailSeachTaskModule.taskTypeconvert(value.type_id)
+            const urls=this.emailSeachTaskModule.getTaskurls(value.id,0,10)
             const displayValue:EmailsearchTaskEntityDisplay={
                 id:value.id,
                 record_time:value.record_time,
                 statusName:taskStatus,
                 typeName:taskType,  
+                urls:urls
             }
             displayRes.push(displayValue)
             }
@@ -107,4 +110,11 @@ export class EmailextractionController {
 
         return {records:displayRes,total:res.total}
     }
+    //get email search task result
+    public async Emailtaskresult(taskId:number):Promise<EmailResultDisplay[]>{ 
+        const res=await this.emailSeachTaskModule.getTaskResult(taskId)
+        return res
+    }
+  
+    
 }

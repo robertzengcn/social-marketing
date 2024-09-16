@@ -1,7 +1,7 @@
 <template>
 
     <v-data-table-server v-model:items-per-page="itemsPerPage" :search="search" :headers="headers"
-        :items-length="totalItems" :items="serverItems" :loading="loading" item-value="name" @update:options="loadItems" class="custom-data-table">
+        :items-length="totalItems" :items="serverItems" :loading="loading" item-value="name" @update:options="loadItems" class="custom-data-table" show-expand>
         <template v-slot:[`item.actions`]="{ item }">
             <v-icon
             size="small"
@@ -20,6 +20,17 @@
           </v-icon>
 
         </template>
+        <template v-slot:expanded-row="{ columns, item }">
+      <tr>
+        <td :colspan="columns.length" >
+         <div class="ellipsis-cell"> 
+            <div v-for="(url, index) in item.urls" :key="index" class="url-item">
+         {{ url }}
+        </div> 
+         </div>
+        </td>
+      </tr>
+    </template>
     </v-data-table-server>
     
     
@@ -68,13 +79,14 @@ headers.value = [
         align: 'center',
         sortable: true,
         key: 'id',
+        width: '5%'
     },
     {
         title: computed(_ => CapitalizeFirstLetter(t("emailextraction.type"))),
         align: 'center',
         sortable: false,
         key: 'typeName',
-        
+        width: '10%'
     },
     // {
     //     title: computed(_ => CapitalizeFirstLetter(t("emailextraction.url"))),
@@ -88,14 +100,20 @@ headers.value = [
         align: 'start',
         sortable: false,
         key: 'statusName',
+        width: '10%'
     },
     {
         title: computed(_ => CapitalizeFirstLetter(t("searchresult.record_time"))),
         align: 'start',
         sortable: false,
         key: 'record_time',
+        width: '10%'
     },
-    { title: 'Actions', key: 'actions', sortable: false },
+    { title: 'Actions', 
+    key: 'actions', 
+    sortable: false,
+    width: '10%'
+ },
 ];
 const itemsPerPage = ref(10);
 const serverItems = ref<Array<EmailsearchTaskEntityDisplay>>([]);
@@ -137,7 +155,9 @@ function loadItems({ page=1, itemsPerPage=10, sortBy}) {
         ({ data, total }) => {
              console.log(data)
             // console.log(total)
-        
+            // data.forEach((item) => {
+            //     item.urlString=item.urls.join(',')
+            // })
             serverItems.value = data
             totalItems.value = total
             loading.value = false
@@ -187,5 +207,16 @@ onUnmounted(() => {
 
 .custom-data-table .v-data-table__wrapper td {
   height: 50px; /* Set the desired cell height */
+}
+.ellipsis-cell {
+  height: calc(10 * 1.2em); /* 4 lines with a line height of 1.2em */
+  line-height: 1.2em;  
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 80%; /* Adjust the width as needed */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  white-space: normal;
 }
 </style>

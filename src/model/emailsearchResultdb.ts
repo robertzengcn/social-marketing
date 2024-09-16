@@ -66,4 +66,12 @@ export class EmailsearchResultdb {
         const result = stmt.get(taskId,url) as EmailsearchResultEntity;
         return result;
     }
+    //get task result
+    getTaskResult(taskId:number,page:number=0,size:number=10):Array<EmailsearchResultEntity>{
+        const stmt = this.db.prepare(`
+            SELECT * FROM ${this.emailsearchtaskTable} WHERE task_id = ? LIMIT ? OFFSET ?
+        `);
+        const result = stmt.all(taskId,size,page) as Array<EmailsearchResultEntity>;
+        return result;
+    }
 }

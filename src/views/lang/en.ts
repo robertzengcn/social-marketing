@@ -159,6 +159,7 @@ export default {
         choose_email_extraction_type:"choose email extraction type",
         input_urls_empty:"input urls empty",
         choose_search_task:"choose search task",
-
+        id:"id",
+        type:"type",
     }
 }

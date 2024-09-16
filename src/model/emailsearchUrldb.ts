@@ -53,5 +53,13 @@ export class EmailsearchUrldb {
         const result = stmt.run({ id });
         return result.changes > 0;
     }
+    getUrls(taskId:number,page:number=0,size:number=10):Array<EmailsearchUrlEntity>{
+        const stmt = this.db.prepare(`
+            SELECT * FROM ${this.emailsearchurlTable}
+            WHERE task_id = @taskId LIMIT @size OFFSET @page
+        `);
+        const result = stmt.all({ taskId,size,page }) as Array<EmailsearchUrlEntity>;
+        return result;
+    }
 
 }

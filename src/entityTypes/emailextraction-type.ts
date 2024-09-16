@@ -37,6 +37,12 @@ export type EmailResult = {
   filteredLinks: Array<string>,
   emails: Array<string>
 }
+export type EmailResultDisplay = {
+  url: string,
+  pageTitle: string,
+  emails: Array<string>,
+  recordTime: string
+}
 export type EmailsControldata = {
   validUrls: Array<string>,
   concurrency: number,
@@ -64,4 +70,9 @@ export interface EmailsearchTaskEntityDisplay {
   record_time?:string,
   typeName: string,
   statusName: string,
+  urls:Array<string>,
+  //urlString?:string,
+}
+export type EmailsearchTaskquery={
+  taskId:number
 }

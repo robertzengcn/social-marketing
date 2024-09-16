@@ -78,4 +78,12 @@ export class EmailsearchResultDetaildb {
         const result = stmt.get(result_id,email) as EmailsearchResultDetailEntity;
         return result;
     }
+    //get items by result id
+    getItemsByResultId(result_id: number): EmailsearchResultDetailEntity[] {
+        const stmt = this.db.prepare(`
+            SELECT * FROM ${this.emailsearchtaskTable} WHERE result_id = ?
+        `);
+        const result = stmt.all(result_id) as EmailsearchResultDetailEntity[];
+        return result;
+    }
 }

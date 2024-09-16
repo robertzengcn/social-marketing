@@ -2,7 +2,7 @@ import { Token } from "@/modules/token"
 import { USERSDBPATH } from '@/config/usersetting';
 import { EmailsearchTaskdb, EmailsearchTaskEntity, EmailsearchTaskStatus } from '@/model/emailsearchTaskdb'
 import { EmailsearchUrldb, EmailsearchUrlEntity } from '@/model/emailsearchUrldb'
-import {EmailResult} from "@/entityTypes/emailextraction-type"
+import {EmailResult,EmailResultDisplay} from "@/entityTypes/emailextraction-type"
 import {EmailsearchResultdb,EmailsearchResultEntity} from "@/model/emailsearchResultdb"
 import {EmailsearchResultDetailEntity,EmailsearchResultDetaildb} from "@/model/emailsearchResultDetaildb"
 import {EmailExtractionTypes} from "@/config/emailextraction"
@@ -99,6 +99,42 @@ export class EmailSearchTaskModule {
     }
     public taskTypeconvert(typeId:EmailExtractionTypes):string{
         return this.emailsearchTaskdb.convertType(typeId)
+    }
+    //get task urls
+    public getTaskurls(taskId:number,page:number,size:number):string[]{
+        const res=this.emailsearchUrldb.getUrls(taskId,page,size)
+        const urls:string[]=[]
+        res.forEach((value)=>{
+            urls.push(value.url)
+        })
+        return urls
+    }
+    //get task result
+    public getTaskResult(taskId:number):EmailResultDisplay[]{
+        const res=this.emailsearchresultdb.getTaskResult(taskId)
+        const result:EmailResultDisplay[]=[]
+        res.forEach((value)=>{
+            const emails=this.emailsearchResultDetaildb.getItemsByResultId(value.task_id)
+            const emailsArr:string[]=[]
+            emails.forEach((email)=>{
+                emailsArr.push(email.email)
+            })
+          if(!value.title){
+                value.title=""
+          }
+          if(!value.record_time){
+                value.record_time=""
+          }
+          const item:EmailResultDisplay={
+                url:value.url,
+                pageTitle:value.title,
+                emails:emailsArr,
+                recordTime:value.record_time
+          }
+            result.push(item) 
+        })
+
+        return result
     }
 
 }
