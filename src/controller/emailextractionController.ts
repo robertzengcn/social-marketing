@@ -111,8 +111,8 @@ export class EmailextractionController {
         return {records:displayRes,total:res.total}
     }
     //get email search task result
-    public async Emailtaskresult(taskId:number):Promise<EmailResultDisplay[]>{ 
-        const res=await this.emailSeachTaskModule.getTaskResult(taskId)
+    public async Emailtaskresult(taskId:number,page:number,size:number):Promise<EmailResultDisplay[]>{ 
+        const res=await this.emailSeachTaskModule.getTaskResult(taskId,page,size)
         return res
     }
   

@@ -26,3 +26,6 @@ export async function listEmailSearchtasks(data: ItemSearchparam): Promise<Searc
     }
     return resdata;
 }
+export async function getEmailtaskdetail(data: ItemSearchparam){
+
+}

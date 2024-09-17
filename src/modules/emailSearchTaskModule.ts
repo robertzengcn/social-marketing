@@ -110,8 +110,8 @@ export class EmailSearchTaskModule {
         return urls
     }
     //get task result
-    public getTaskResult(taskId:number):EmailResultDisplay[]{
-        const res=this.emailsearchresultdb.getTaskResult(taskId)
+    public getTaskResult(taskId:number,page:number,size:number):EmailResultDisplay[]{
+        const res=this.emailsearchresultdb.getTaskResult(taskId,page,size)
         const result:EmailResultDisplay[]=[]
         res.forEach((value)=>{
             const emails=this.emailsearchResultDetaildb.getItemsByResultId(value.task_id)

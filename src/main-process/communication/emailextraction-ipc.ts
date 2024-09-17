@@ -5,12 +5,10 @@ import { CommonDialogMsg } from "@/entityTypes/commonType";
 import { isValidUrl } from "@/views/utils/function"
 import { searhModel } from "@/modules/searchModel"
 import { EmailextractionController } from "@/controller/emailextractionController"
-import { EmailsControldata } from '@/entityTypes/emailextraction-type'
+import { EmailsControldata,EmailResultDisplay,EmailsearchTaskEntityDisplay,EmailsearchtaskResultquery} from '@/entityTypes/emailextraction-type'
 import { EmailExtractionTypes } from '@/config/emailextraction'
 import {ItemSearchparam} from "@/entityTypes/commonType"
 import { CommonResponse } from "@/entityTypes/commonType"
-import {EmailsearchTaskEntityDisplay} from '@/entityTypes/emailextraction-type'
-
 
 export function registerEmailextractionIpcHandlers() {
     const searchModel = new searhModel();
@@ -151,7 +149,25 @@ export function registerEmailextractionIpcHandlers() {
         }
         return resp
     })
-    ipcMain.handle(EMAILSEARCHTASKRESULT, async (event, data) => {
+    ipcMain.handle(EMAILSEARCHTASKRESULT, async (event, arg) => {
+        const qdata = JSON.parse(arg) as EmailsearchtaskResultquery;
+        if (!Object.prototype.hasOwnProperty.call(qdata, "taskId")) {
+            const comMsgs: CommonResponse<EmailResultDisplay> = {
+                status: false,
+                msg:"emailextraction.task_id_empty"
+                
+            }
+            
+            return
+          }
+        if (!Object.prototype.hasOwnProperty.call(qdata, "page")) {
+            qdata.page = 0;
+          }
+          if (!Object.prototype.hasOwnProperty.call(qdata, "size")) {
+            qdata.size = 100;
+          }
         //EmailsearchTaskquery
+        emailCon.Emailtaskresult(qdata.taskId,qdata.page,qdata.size)
     });
+
 }
