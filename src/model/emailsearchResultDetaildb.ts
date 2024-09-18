@@ -86,4 +86,12 @@ export class EmailsearchResultDetaildb {
         const result = stmt.all(result_id) as EmailsearchResultDetailEntity[];
         return result;
     }
+
+    getTaskResultCount(result_id: number): number {
+        const stmt = this.db.prepare(`
+            SELECT COUNT(*) as count FROM ${this.emailsearchtaskTable} WHERE result_id = ?
+        `);
+        const result = stmt.get(result_id) as { 'count': number };
+        return result.count
+    }
 }

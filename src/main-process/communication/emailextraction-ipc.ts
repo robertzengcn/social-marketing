@@ -167,7 +167,18 @@ export function registerEmailextractionIpcHandlers() {
             qdata.size = 100;
           }
         //EmailsearchTaskquery
-        emailCon.Emailtaskresult(qdata.taskId,qdata.page,qdata.size)
+        const res=await emailCon.Emailtaskresult(qdata.taskId,qdata.page,qdata.size)
+        //count number
+        const count=await emailCon.EmailtaskresultCount(qdata.taskId)
+        const resp: CommonResponse<EmailResultDisplay> = {
+            status: true,
+            msg: "",
+            data: {
+                records: res,
+                num: count
+            }
+        }
+        return resp
     });
 
 }

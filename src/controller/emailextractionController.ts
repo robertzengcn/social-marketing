@@ -115,6 +115,10 @@ export class EmailextractionController {
         const res=await this.emailSeachTaskModule.getTaskResult(taskId,page,size)
         return res
     }
+    public async EmailtaskresultCount(taskId:number):Promise<number>{
+        const res=await this.emailSeachTaskModule.getTaskResultCount(taskId)
+        return res
+    }
   
     
 }

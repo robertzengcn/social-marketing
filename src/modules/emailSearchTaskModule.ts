@@ -136,5 +136,9 @@ export class EmailSearchTaskModule {
 
         return result
     }
+    //get task detail count
+    public getTaskResultCount(taskId:number):number{
+        return this.emailsearchresultdb.getTaskResultCount(taskId)
+    }
 
 }

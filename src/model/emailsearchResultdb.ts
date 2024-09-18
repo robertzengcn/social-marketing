@@ -67,11 +67,19 @@ export class EmailsearchResultdb {
         return result;
     }
     //get task result
-    getTaskResult(taskId:number,page:number=0,size:number=10):Array<EmailsearchResultEntity>{
+    getTaskResult(taskId:number,page:number,size:number):Array<EmailsearchResultEntity>{
         const stmt = this.db.prepare(`
             SELECT * FROM ${this.emailsearchtaskTable} WHERE task_id = ? LIMIT ? OFFSET ?
         `);
         const result = stmt.all(taskId,size,page) as Array<EmailsearchResultEntity>;
         return result;
+    }
+    //get task result count
+    getTaskResultCount(taskId:number):number{
+        const stmt = this.db.prepare(`
+            SELECT COUNT(*) as count FROM ${this.emailsearchtaskTable} WHERE task_id = ?
+        `);
+        const result = stmt.get(taskId) as {count:number};
+        return result.count;
     }
 }

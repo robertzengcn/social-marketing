@@ -12,7 +12,8 @@ export default {
         reset:"reset",
         submit:"submit",
         success:"success",
-        fill_require_field:"Please fill all required fields"
+        fill_require_field:"Please fill all required fields",
+        record_time:"record Time",
     },
     home:{
         search:"Search Extraction",
@@ -162,5 +163,8 @@ export default {
         id:"id",
         type:"type",
         task_id_empty:"task id empty",
+        url:"url",
+        title:"title",
+
     }
 }

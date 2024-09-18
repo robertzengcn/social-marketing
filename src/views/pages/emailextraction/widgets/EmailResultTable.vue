@@ -179,7 +179,7 @@ function loadItems({ page=1, itemsPerPage=10, sortBy}) {
 const openfolder=(item)=>{
     // console.log(item)
     router.push({
-            name: 'Searchtaskdetail',params: { id: item.id } 
+            name: 'Email_Extraction_Task_Detail',params: { id: item.id } 
      });
     }
 const downloadErrorlog=(item)=>{

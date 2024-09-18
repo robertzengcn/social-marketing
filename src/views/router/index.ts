@@ -367,8 +367,8 @@ export const constantRoutes: RouteRecordRaw[] = [
       },
       {
         path: 'taskdetail/:id(\\d+)',
-        component: () => import(/* webpackChunkName: "staff-list" */ '@/views/pages/search/detaillist.vue'),
-        name: 'Email Extraction Task Detail',
+        component: () => import(/* webpackChunkName: "staff-list" */ '@/views/pages/emailextraction/detaillist.vue'),
+        name: 'Email_Extraction_Task_Detail',
         meta: {
           visible: false,
           title: 'Email Extraction Detail',

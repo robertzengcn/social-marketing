@@ -1,5 +1,6 @@
 import { ProxyEntity } from '@/entityTypes/proxyType'
 import { EmailExtractionTypes } from "@/config/emailextraction"
+import {ItemSearchparam} from "@/entityTypes/commonType"
 export type EmailscFormdata = {
   extratype: string,
   urls?: Array<string>,
@@ -73,10 +74,10 @@ export interface EmailsearchTaskEntityDisplay {
   urls: Array<string>,
   //urlString?:string,
 }
-export interface EmailsearchTaskquery {
+export interface EmailsearchtaskResultquery extends ItemSearchparam{
   taskId: number
 }
-export interface EmailsearchtaskResultquery extends EmailsearchTaskquery {
-  page: number,
-  size: number
-}
+// export interface EmailsearchtaskResultquery extends EmailsearchTaskquery {
+//   page: number,
+//   size: number
+// }
