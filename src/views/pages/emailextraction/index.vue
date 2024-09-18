@@ -20,7 +20,15 @@
 
       <v-text-field v-model="concurrent_quantity" :label="$t('search.concurrent_quantity')" clearable
         class="mt-3"></v-text-field>
-      <v-combobox v-model="proxyValue" :items="proxyValue" label="Select proxy" item-title="host" multiple return-object
+      
+        <v-number-input
+        :label="$t('emailextraction.process_timeout')"
+        control-variant="default"
+        v-model="processTimeout"
+        :max="20"
+          :min="1"
+      ></v-number-input>
+        <v-combobox v-model="proxyValue" :items="proxyValue" label="Select proxy" item-title="host" multiple return-object
         chips clearable></v-combobox>
       <v-btn color="primary" @click="showProxytable">{{$t('search.choose_proxy')}}</v-btn>
 
@@ -33,6 +41,8 @@
         <v-btn :value="0" color="primary">No</v-btn>
         <v-btn :value="1" color="success">Yes</v-btn>
       </v-btn-toggle>
+
+
 
 
       <div class="d-flex flex-column">
@@ -78,6 +88,7 @@ import SearchResultSelectTable from "@/views/pages/search/widgets/SearchResultSe
 import { ProxyEntity,ProxyListEntity } from "@/entityTypes/proxyType";
 import {SearchtaskItem } from "@/entityTypes/searchControlType"
 import {EmailscFormdata} from '@/entityTypes/emailextraction-type'
+
 const { t } = useI18n({ inheritLocale: true });
 const alert = ref(false);
 const alerttext = ref("");
@@ -90,6 +101,7 @@ const loading = ref(false);
 const rules = {
   required: (value) => !!value || "Field is required",
 };
+const processTimeout = ref<number>(10);
 type EmailOption = {
   key: string;
   name: string;
@@ -233,7 +245,8 @@ async function onSubmit() {
     concurrency:concurrent_quantity.value,
     notShowBrowser:!convertNumberToBoolean(showinbrwoser.value),
     proxys:proxyValue.value,
-    searchTaskId:searchtaskId.value
+    searchTaskId:searchtaskId.value,
+    processTimeout:processTimeout.value
    }
    console.log(scraperData)
    submitScraper(scraperData).catch(function (err) {

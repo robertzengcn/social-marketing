@@ -165,6 +165,6 @@ export default {
         task_id_empty:"task id empty",
         url:"url",
         title:"title",
-
+        process_timeout:"process timeout minutes",
     }
 }

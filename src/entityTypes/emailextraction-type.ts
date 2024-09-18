@@ -9,6 +9,7 @@ export type EmailscFormdata = {
   pagelength: number,
   notShowBrowser: boolean,
   proxys?: Array<ProxyEntity>,
+  processTimeout:number
   // maxConcurrent: number,
 }
 export type EmailClusterdata = {

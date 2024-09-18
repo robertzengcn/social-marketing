@@ -112,7 +112,7 @@
     "vue-material": "^1.0.0-beta-16",
     "vue-router": "^4.2.5",
     "vue3-apexcharts": "^1.4.4",
-    "vuetify": "^3.3.22",
+    "vuetify": "3.5.15",
     "vuex": "^4.1.0",
     "vuex-module-decorators": "^2.0.0",
     "webfontloader": "^1.0.0",
