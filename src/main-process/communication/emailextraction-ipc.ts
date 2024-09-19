@@ -167,6 +167,15 @@ export function registerEmailextractionIpcHandlers() {
           if (!Object.prototype.hasOwnProperty.call(qdata, "size")) {
             qdata.size = 100;
           }
+          if(!qdata.taskId){
+            const comMsgs: CommonResponse<EmailResultDisplay> = {
+                status: false,
+                msg:"emailextraction.task_id_empty"
+                
+            }
+            return comMsgs
+          }
+        console.log("task id is" + qdata.taskId)  
         //EmailsearchTaskquery
         const res=await emailCon.Emailtaskresult(qdata.taskId,qdata.page,qdata.size)
         //count number
