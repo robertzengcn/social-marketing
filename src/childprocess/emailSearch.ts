@@ -28,7 +28,7 @@ export class EmailSearch{
             headless: data.notShowBrowser,
             debug_level: 1,
             puppeteer_cluster_config: {
-                timeout: 30 * 60 * 1000, // max timeout set to 10 minutes
+                timeout: data.processTimeout * 60 * 1000, // max timeout set to 10 minutes
                 monitor: true,
                 concurrency: Cluster.CONCURRENCY_BROWSER,
                 //concurrency:data.concurrency, // one scraper per tab

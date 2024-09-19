@@ -27,12 +27,12 @@ export function registerEmailextractionIpcHandlers() {
                     status: false,
                     code: 20240705103811,
                     data: {
-                        action: "",
+                        action: "error",
                         title: "emailscrape.failed",
                         content: "emailscrape.url_empty"
                     }
                 }
-                event.sender.send(EMAILEXTRACTIONAPI, JSON.stringify(comMsgs))
+                event.sender.send(EMAILEXTRACTIONMESSAGE, JSON.stringify(comMsgs))
                 return
             }
             //valid item in urls
@@ -45,12 +45,12 @@ export function registerEmailextractionIpcHandlers() {
                     status: false,
                     code: 20240705103811,
                     data: {
-                        action: "",
+                        action: "error",
                         title: "emailscrape.failed",
                         content: "emailscrape.url_invalid"
                     }
                 }
-                event.sender.send(EMAILEXTRACTIONAPI, JSON.stringify(comMsgs))
+                event.sender.send(EMAILEXTRACTIONMESSAGE, JSON.stringify(comMsgs))
                 return
             }
 
@@ -61,12 +61,12 @@ export function registerEmailextractionIpcHandlers() {
                     status: false,
                     code: 20240705103811,
                     data: {
-                        action: "",
+                        action: "error",
                         title: "emailscrape.failed",
                         content: "emailscrape.searchTaskId_empty"
                     }
                 }
-                event.sender.send(EMAILEXTRACTIONAPI, JSON.stringify(comMsgs))
+                event.sender.send(EMAILEXTRACTIONMESSAGE, JSON.stringify(comMsgs))
                 return
             }
             //get result url from search task
@@ -85,12 +85,12 @@ export function registerEmailextractionIpcHandlers() {
                 status: false,
                 code: 20240705103811,
                 data: {
-                    action: "",
+                    action: "error",
                     title: "emailscrape.failed",
                     content: "emailscrape.action_error"
                 }
             }
-            event.sender.send(EMAILEXTRACTIONAPI, JSON.stringify(comMsgs))
+            event.sender.send(EMAILEXTRACTIONMESSAGE, JSON.stringify(comMsgs))
             return
 
         }
@@ -104,7 +104,7 @@ export function registerEmailextractionIpcHandlers() {
                     content: "emailscrape.url_empty"
                 }
             }
-            event.sender.send(EMAILEXTRACTIONAPI, JSON.stringify(comMsgs))
+            event.sender.send(EMAILEXTRACTIONMESSAGE, JSON.stringify(comMsgs))
             return
         }
         const datas: EmailsControldata = {
@@ -113,7 +113,8 @@ export function registerEmailextractionIpcHandlers() {
             pagelength: qdata.pagelength,
             notShowBrowser: qdata.notShowBrowser,
             proxys: qdata.proxys,
-            type: extraType
+            type: extraType,
+            processTimeout:Number(qdata.processTimeout)
         }
         emailCon.searchEmail(datas);
         const comMsgs: CommonDialogMsg = {

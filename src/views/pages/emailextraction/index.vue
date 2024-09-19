@@ -79,7 +79,7 @@ import { useI18n } from "vue-i18n";
 import router from '@/views/router';
 import {EmailExtractionTypes} from "@/config/emailextraction";
 import { ToArray, CapitalizeFirstLetter } from "@/views/utils/function"
-import { submitScraper } from "@/views/api/emailextraction"
+import { submitScraper,receiveSearchEmailevent } from "@/views/api/emailextraction"
 // import { Usersearchdata } from "@/entityTypes/searchControlType"
 // import { convertNumberToBoolean } from "@/views/utils/function"
 import {isValidUrl,convertNumberToBoolean} from "@/views/utils/function"
@@ -88,7 +88,8 @@ import SearchResultSelectTable from "@/views/pages/search/widgets/SearchResultSe
 import { ProxyEntity,ProxyListEntity } from "@/entityTypes/proxyType";
 import {SearchtaskItem } from "@/entityTypes/searchControlType"
 import {EmailscFormdata} from '@/entityTypes/emailextraction-type'
-
+import {EMAILEXTRACTIONMESSAGE} from "@/config/channellist"
+import { CommonDialogMsg } from "@/entityTypes/commonType"
 const { t } = useI18n({ inheritLocale: true });
 const alert = ref(false);
 const alerttext = ref("");
@@ -145,7 +146,7 @@ const setAlert = (
 
 onMounted(() => {
   initialize();
-
+  receiveMsg()
 })
 const showProxytable = () => {
   console.log("show proxy table");
@@ -201,6 +202,27 @@ const handleSearchtaskChanged = (newValue: SearchtaskItem[]|undefined) => {
     searchtaskId.value=0;
   }
 };
+
+const receiveMsg = () => {
+  receiveSearchEmailevent(EMAILEXTRACTIONMESSAGE, function (res) {
+    console.log(res)
+    const obj = JSON.parse(res) as CommonDialogMsg
+    if (obj.status) {
+      if (obj.data) {
+        if (obj.data.action) {
+          if (obj.data.action == 'emailsearch_task _start') {
+            router.push({
+              path: '/emailextraction/tasklist'
+            });
+          }else if(obj.data.action == 'error'){
+            //error notice
+            setAlert(t(obj.data.content), t(obj.data.title), "error");
+          }
+        }
+      }
+    }
+  })
+}
 async function onSubmit() {
   if (!form.value) return;
   const { valid } = await form.value.validate();

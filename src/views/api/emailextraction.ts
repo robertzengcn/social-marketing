@@ -40,3 +40,8 @@ export async function getEmailtaskdetail(data: EmailsearchtaskResultquery){
     return resdata;
 
 }
+
+export function receiveSearchEmailevent(channel:string,cb:(data:any)=>void){
+   
+    windowReceive(channel,cb)
+}

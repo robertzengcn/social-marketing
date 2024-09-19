@@ -140,7 +140,10 @@ const receiveMsg = () => {
               path: '/search/tasklist'
             });
           }
-        }
+        }else if(obj.data.action == 'error'){
+            //error notice
+            setAlert(t(obj.data.content), t(obj.data.title), "error");
+          }
       }
     }
   })

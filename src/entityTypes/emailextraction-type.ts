@@ -52,6 +52,7 @@ export type EmailsControldata = {
   notShowBrowser: boolean,
   proxys?: Array<ProxyEntity>,
   type: EmailExtractionTypes,
+  processTimeout:number
   // maxConcurrent: number,
 }
 
