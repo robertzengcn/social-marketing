@@ -94,7 +94,7 @@ headers.value = [
         title: computed(_ => CapitalizeFirstLetter(t("common.record_time"))),
         align: 'start',
         sortable: false,
-        key: 'record_time',
+        key: 'recordTime',
         width: '10%'
     },
 
@@ -123,9 +123,9 @@ function loadItems({ page=1, itemsPerPage=10, sortBy}) {
     loading.value = true
     console.log(sortBy)
     // console.log(page);
-    
+    const taskid=parseInt($route.params.id.toString())
     const fetchitem: Fetchparam = {
-      taskId:emailresulttaskdetailId.value,
+      taskId:taskid,
         page: page,
         itemsPerPage: itemsPerPage,
        
@@ -136,7 +136,7 @@ function loadItems({ page=1, itemsPerPage=10, sortBy}) {
         fetchitem.sortBy={key:sortBy[0].key,order:sortBy[0].order}
 
     }
-//    console.log(fetchitem)
+    console.log(fetchitem)
     FakeAPI.fetch(fetchitem).then(
         ({ data, total }) => {
              console.log(data)
@@ -178,10 +178,10 @@ const downloadErrorlog=(item)=>{
 }
 const initialize = async () => {
     
-    if($route.params.id){
-      emailresulttaskdetailId.value = parseInt($route.params.id.toString());
-    }
-    console.log(emailresulttaskdetailId.value)
+    // if($route.params.id){
+    //   emailresulttaskdetailId.value = parseInt($route.params.id.toString());
+    // }
+    console.log($route.params.id)
 }
 onMounted(() => {
   initialize();

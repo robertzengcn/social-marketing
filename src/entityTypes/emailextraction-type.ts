@@ -40,6 +40,7 @@ export type EmailResult = {
   emails: Array<string>
 }
 export type EmailResultDisplay = {
+  id:number,
   url: string,
   pageTitle: string,
   emails: Array<string>,
