@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS email_filter_detail(
+id INTEGER PRIMARY KEY AUTOINCREMENT,
+filter_id INTEGER,
+email TEXT NULL,
+)

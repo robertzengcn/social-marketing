@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS email_template(
+id INTEGER PRIMARY KEY AUTOINCREMENT,
+title TEXT,
+content TEXT
+)
