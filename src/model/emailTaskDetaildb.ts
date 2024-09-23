@@ -2,24 +2,24 @@ import { Database } from 'better-sqlite3';
 import { Scraperdb } from "@/model/scraperdb";
 
 
-export enum EmailTaskType {
+export enum EmailMarketingTaskType {
     Filter = 1,
     Template = 2,
     Setting = 3
   }
-export interface EmailTaskDetaildbEntity {
+export interface EmailMarketingTaskDetaildbEntity {
     id?: number;
     task_id: number;
-    type: EmailTaskType;
+    type: EmailMarketingTaskType;
     value: number;   
 }
-export class EmailTaskDetaildb {
+export class EmailMarketingTaskDetaildb {
     db: Database;
     constructor(filepath:string) {
         const scraperModel = Scraperdb.getInstance(filepath);
         this.db = scraperModel.getdb();
     }
-    create(emailTaskDetail: EmailTaskDetaildbEntity): number {
+    create(emailTaskDetail: EmailMarketingTaskDetaildbEntity): number {
         const stmt = this.db.prepare(`
             INSERT INTO email_task_details (task_id, type, value)
             VALUES (?, ?, ?)
@@ -28,14 +28,14 @@ export class EmailTaskDetaildb {
         return info.lastInsertRowid as number;
     }
 
-    read(id: number): EmailTaskDetaildbEntity | null {
+    read(id: number): EmailMarketingTaskDetaildbEntity | null {
         const stmt = this.db.prepare(`
             SELECT * FROM email_task_details WHERE id = ?
         `);
-        return stmt.get(id) as EmailTaskDetaildbEntity | null;
+        return stmt.get(id) as EmailMarketingTaskDetaildbEntity | null;
     }
 
-    update(emailTaskDetail: EmailTaskDetaildbEntity): number {
+    update(emailTaskDetail: EmailMarketingTaskDetaildbEntity): number {
         const stmt = this.db.prepare(`
             UPDATE email_task_details
             SET task_id = ?, type = ?, value = ?

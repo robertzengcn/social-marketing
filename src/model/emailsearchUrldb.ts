@@ -53,7 +53,7 @@ export class EmailsearchUrldb {
         const result = stmt.run({ id });
         return result.changes > 0;
     }
-    getUrls(taskId:number,page:number=,size:number=10):Array<EmailsearchUrlEntity>{
+    getUrls(taskId:number,page:number,size:number):Array<EmailsearchUrlEntity>{
         const stmt = this.db.prepare(`
             SELECT * FROM ${this.emailsearchurlTable}
             WHERE task_id = @taskId LIMIT @size OFFSET @page

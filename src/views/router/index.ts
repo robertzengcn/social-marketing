@@ -340,7 +340,7 @@ export const constantRoutes: RouteRecordRaw[] = [
     name: 'Email_Extraction',
     meta: {
       visible: true,
-      title: 'Email_Extraction',
+      title: 'Email Extraction',
       icon: 'mdi-paw-off'
     },
     component: Layout, 
@@ -375,6 +375,28 @@ export const constantRoutes: RouteRecordRaw[] = [
           icon: 'list'
         }
       }
+    ]
+  },
+  {
+    path: '/emailmarketing',
+    name: 'Email_Marketing',
+    meta: {
+      visible: true,
+      title: 'Email Marketing',
+      icon: 'mdi-paw-off'
+    },
+    component: Layout, 
+    children: [
+      {
+        path: 'form',
+        component: () => import(/* webpackChunkName: "staff-list" */ '@/views/pages/emailmarketing/form.vue'),
+        name: 'Email_Marketing_Form',
+        meta: {
+          visible: true,
+          title: 'Email Marketing',
+          icon: 'list'
+        }
+      },
     ]
   },
   {

@@ -1,14 +1,14 @@
 import { Database } from 'better-sqlite3';
 import { Scraperdb } from "@/model/scraperdb";
 import { getRecorddatetime } from "@/modules/lib/function";
-export enum EmailTaskStatus {
+export enum EmailMarketingTaskStatus {
     Processing = 1,
     Complete = 2,
     Error = 3
   }
-export interface EmailTaskdbEntity {
+export interface EmailMarketingTaskdbEntity {
     id?: number;
-    status: EmailTaskStatus;
+    status: EmailMarketingTaskStatus;
     record_time?: string;   
 }
 
@@ -18,7 +18,7 @@ export class EmailTaskdb {
         const scraperModel = Scraperdb.getInstance(filepath);
         this.db = scraperModel.getdb();
     }
-    createTask(task: EmailTaskdbEntity): number {
+    createTask(task: EmailMarketingTaskdbEntity): number {
         const stmt = this.db.prepare(`
             INSERT INTO email_tasks (status, record_time)
             VALUES (?, ?)
@@ -27,14 +27,14 @@ export class EmailTaskdb {
         return info.lastInsertRowid as number;
     }
 
-    getTaskById(id: number): EmailTaskdbEntity | null {
+    getTaskById(id: number): EmailMarketingTaskdbEntity | null {
         const stmt = this.db.prepare(`
             SELECT * FROM email_tasks WHERE id = ?
         `);
-        return stmt.get(id) as EmailTaskdbEntity | null;
+        return stmt.get(id) as EmailMarketingTaskdbEntity | null;
     }
 
-    updateTask(task: EmailTaskdbEntity): void {
+    updateTask(task: EmailMarketingTaskdbEntity): void {
         if (!task.id) {
             throw new Error("Task ID is required for update");
         }
@@ -52,7 +52,7 @@ export class EmailTaskdb {
         `);
         stmt.run(id);
     }
-    updateTaskStatus(id: number, status: EmailTaskStatus): void {
+    updateTaskStatus(id: number, status: EmailMarketingTaskStatus): void {
         const stmt = this.db.prepare(`
             UPDATE email_tasks
             SET status = ?
@@ -60,13 +60,13 @@ export class EmailTaskdb {
         `);
         stmt.run(status, id);
     }
-    getStatusName(status: EmailTaskStatus): string {
+    getStatusName(status: EmailMarketingTaskStatus): string {
         switch (status) {
-            case EmailTaskStatus.Processing:
+            case EmailMarketingTaskStatus.Processing:
                 return "Processing";
-            case EmailTaskStatus.Complete:
+            case EmailMarketingTaskStatus.Complete:
                 return "Complete";
-            case EmailTaskStatus.Error:
+            case EmailMarketingTaskStatus.Error:
                 return "Error";
             default:
                 throw new Error("Invalid status");
