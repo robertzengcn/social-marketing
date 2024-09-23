@@ -1,8 +1,0 @@
-CREATE TABLE IF NOT EXISTS email_setting(
-id INTEGER PRIMARY KEY AUTOINCREMENT,
-account TEXT,
-password TEXT NULL,
-server TEXT NULL,
-port TEXT NULL,
-ssl INTEGER NULL
-)
