@@ -25,15 +25,7 @@ const marketTypeOption=ref<marketType[]>([]);
 const rules = {
     required: (value: any) => !!value || 'Required.',
   };
-// Convert enum to array of objects
-//const marketTypeList = computed(() => {
-//    return Object.entries(EmailMarketingType)
-//      .filter(([key, value]) => isNaN(Number(key))) // Filter out numeric keys
-//      .map(([key, value]) => ({
-//        key: value,
-//        name: key
-//      }));
-//});
+
 onMounted(() => {
     initialize();
    

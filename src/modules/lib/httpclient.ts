@@ -18,7 +18,7 @@ export class HttpClient {
     constructor() {
       //AuthInterceptor()
       this.baseUrl = import.meta.env.VITE_REMOTEADD;
-      
+      this.setheaderToken()
       // const tokenModel=new Token()
       // const tokenval=tokenModel.getValue("social-market-token")
       // if (tokenval) {
@@ -27,7 +27,7 @@ export class HttpClient {
       // }
     }
 
-    public async setheaderToken(){
+    public setheaderToken(){
       const tokenModel=new Token()
       const tokenval=tokenModel.getValue(TOKENNAME)
       //console.log("prepare to set token:"+tokenval)
@@ -38,7 +38,7 @@ export class HttpClient {
     }
   
     public async _fetchJSON(endpoint:string, options:RequestInit): Promise<any> {
-      await this.setheaderToken()
+      // await this.setheaderToken()
       const res = await fetch(this.baseUrl+endpoint,
         {...options,
           headers: this._headers,
