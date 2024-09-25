@@ -41,3 +41,9 @@ export type ItemSearchparam={
     sortby?:SortBy
     search?:string
 }
+export interface CommonApiresp <Type>{
+    status: boolean
+    code:number
+    msg: string 
+    data?: Type
+}

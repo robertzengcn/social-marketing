@@ -1,6 +1,6 @@
 import { ipcMain,dialog,BrowserWindow } from 'electron'
 import { userController, userResponse, userlogin } from '@/controller/user-controller'
-import { CampaignController } from '@/controller/campaign-controller'
+import { CampaignController } from '@/controller/campaignController'
 // import { campaignResponse } from '@/modules/campaign'
 import { SocialTaskController } from '@/controller/socialtask-controller'
 import { SocialTaskResponse, SocialTaskInfoResponse, SocialTaskTypeResponse, TagResponse, SaveSocialTaskResponse } from '@/entityTypes/socialtask-type'

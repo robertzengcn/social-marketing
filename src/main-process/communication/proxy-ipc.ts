@@ -1,6 +1,6 @@
 import { ipcMain } from 'electron';
 import { CHECKALLPROXY, CHECKALLPROXYMESSAGE, REMOVEFAILUREPROXY,REMOVEFAILUREPROXY_MESSAGE} from "@/config/channellist";
-import { ProxyApi } from '@/modules/proxy_api'
+import { ProxyApi } from '@/api/proxyApi'
 import { ProxyParseItem } from '@/entityTypes/proxyType'
 import { ProxyController } from '@/controller/proxy-controller'
 import { CommonMessage, NumProcessdata } from "@/entityTypes/commonType"

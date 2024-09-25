@@ -10,7 +10,7 @@ import { socksDispatcher } from "fetch-socks";
 import { ProxyCheckdb, proxyCheckStatus } from "@/model/proxyCheckdb"
 import { Token } from "@/modules/token"
 import { USERSDBPATH } from '@/config/usersetting';
-import { ProxyApi } from "@/modules/proxy_api"
+import { ProxyApi } from "@/api/proxyApi"
 export class ProxyController {
     //import proxy from csv file
     // public async importProxyfile(filename: string) {
