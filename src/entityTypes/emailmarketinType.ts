@@ -4,6 +4,7 @@ export type EmailsTemplagedata = {
     Status?:number
 }
 export type EmailTemplateRespdata={
+    Index?:number
     TplId:number
     TplTitle:string
     TplContent:string

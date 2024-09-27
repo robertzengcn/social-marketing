@@ -1,7 +1,24 @@
 <template>
 
     <v-data-table-server v-model:items-per-page="itemsPerPage" :search="search" :headers="headers"
-        :items-length="totalItems" :items="serverItems" :loading="loading" item-value="name" @update:options="loadItems" class="custom-data-table" show-expand>  
+        :items-length="totalItems" :items="serverItems" :loading="loading" item-value="name" @update:options="loadItems" class="custom-data-table">  
+        <template v-slot:[`item.actions`]="{ item }">
+            <v-icon
+            size="small"
+            class="me-2"
+            @click="editItem(item)"
+          >
+          mdi-pencil
+          </v-icon>
+          <v-icon
+            size="small" 
+            @click="deleteItembtn(item)"
+          >
+            mdi-delete
+          </v-icon>
+          
+          
+        </template>  
     </v-data-table-server>
     
     
@@ -17,7 +34,7 @@ import { SearchResult } from '@/views/api/types'
 import router from '@/views/router';
 // import {SearchtaskItem } from "@/entityTypes/searchControlType"
 import {CapitalizeFirstLetter} from "@/views/utils/function"
-import {EmailsearchTaskEntityDisplay} from '@/entityTypes/emailextraction-type'
+
 import {EmailTemplateRespdata} from "@/entityTypes/emailmarketinType"
 
 const {t} = useI18n({inheritLocale: true});
@@ -43,22 +60,30 @@ const FakeAPI = {
     }
 }
 
-const headers=ref<Array<any>>([])
+type Header = {
+    title: string | ReturnType<typeof computed>;
+    align: string;
+    sortable: boolean;
+    key: string;
+    width: string;
+};
+
+const headers = ref<Array<Header>>([]);
 let refreshInterval:ReturnType<typeof setInterval> | undefined;
 
 headers.value = [
     {
-        title: computed(_ => CapitalizeFirstLetter(t("emailmarketing.id"))),
+        title: computed(_ => CapitalizeFirstLetter(t("emailmarketing.index"))),
         align: 'center',
         sortable: true,
-        key: 'id',
+        key: 'Index',
         width: '5%'
     },
     {
         title: computed(_ => CapitalizeFirstLetter(t("emailmarketing.title"))),
         align: 'center',
         sortable: false,
-        key: 'tplTitle',
+        key: 'TplTitle',
         width: '10%'
     },
     // {
@@ -72,10 +97,11 @@ headers.value = [
         title: computed(_ => CapitalizeFirstLetter(t("common.record_time"))),
         align: 'start',
         sortable: false,
-        key: 'record_time',
+        key: 'TplRecord',
         width: '10%'
     },
     { title: 'Actions', 
+    align: 'start',
     key: 'actions', 
     sortable: false,
     width: '10%'
@@ -84,7 +110,8 @@ headers.value = [
 const itemsPerPage = ref(10);
 const serverItems = ref<Array<EmailTemplateRespdata>>([]);
 const loading = ref(false);
-
+const showDeleteModal = ref(false);
+const deleteId=ref(0);
 const totalItems = ref(0);
 const search = ref('');
 const startAutoRefresh = () => {
@@ -124,6 +151,9 @@ function loadItems({ page=1, itemsPerPage=10, sortBy}) {
             // data.forEach((item) => {
             //     item.urlString=item.urls.join(',')
             // })
+            // data.map((item, index) => {
+            //     item.Index = index + 1
+            // })
             serverItems.value = data
             totalItems.value = total
             loading.value = false
@@ -142,19 +172,14 @@ function loadItems({ page=1, itemsPerPage=10, sortBy}) {
     //     path: '/graphics/oasis-engine',
     // });
 // };
-const openfolder=(item)=>{
-    // console.log(item)
+const editItem=(item)=>{
     router.push({
-            name: 'Email_Extraction_Task_Detail',params: { id: item.id } 
-     });
-    }
-const downloadErrorlog=(item)=>{
-    // console.log(item)
-    
-        // const url = window.URL.createObjectURL(new Blob([res.data]));
-        // const link = document.createElement('a');
-        // link.href
-   
+            name: 'editProxy',params: { id: item.id } 
+        });
+}
+const deleteItembtn=(item)=>{
+    showDeleteModal.value = true;
+    deleteId.value=item.id;
 }
 onMounted(() => {
   

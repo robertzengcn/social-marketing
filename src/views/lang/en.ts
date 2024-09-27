@@ -168,6 +168,8 @@ export default {
         process_timeout:"process timeout minutes",
     },
     emailmarketing:{
+        id:"id",
+        index:"index",
         marketingtype:"Marketing Type",
         use_email_source:"Use Email Source",
         title:"email title"

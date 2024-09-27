@@ -8,6 +8,7 @@ import {BrowserWindow } from 'electron'
 import {registerSearchIpcHandlers} from "@/main-process/communication/search-ipc";
 import {registeProxyIpcHandlers} from "@/main-process/communication/proxy-ipc";
 import {registerEmailextractionIpcHandlers} from "@/main-process/communication/emailextraction-ipc";
+import {registerEmailMarketingIpcHandlers} from "@/main-process/communication/emailMarketingIpc";
 export function registerCommunicationIpcHandlers(win: BrowserWindow) {
     SyncMsg(win)
     registerExtraModulesIpcHandlers()
@@ -15,6 +16,7 @@ export function registerCommunicationIpcHandlers(win: BrowserWindow) {
     registerSearchIpcHandlers()
     registeProxyIpcHandlers()
     registerEmailextractionIpcHandlers()
+    registerEmailMarketingIpcHandlers()
     AsyncMsg()
     // Register extra modules IPC handlers
     
