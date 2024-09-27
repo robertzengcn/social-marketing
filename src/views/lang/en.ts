@@ -167,8 +167,9 @@ export default {
         title:"title",
         process_timeout:"process timeout minutes",
     },
-    emailmarket:{
+    emailmarketing:{
         marketingtype:"Marketing Type",
         use_email_source:"Use Email Source",
+        title:"email title"
     }
 }

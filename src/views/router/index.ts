@@ -397,6 +397,16 @@ export const constantRoutes: RouteRecordRaw[] = [
           icon: 'list'
         }
       },
+      {
+        path: 'template/list',
+        component: () => import(/* webpackChunkName: "staff-list" */ '@/views/pages/emailmarketing/template/templatelist.vue'),
+        name: 'Email_Marketing_Template_List',
+        meta: {
+          visible: true,
+          title: 'Email Template',
+          icon: 'list'
+        }
+      },
     ]
   },
   {

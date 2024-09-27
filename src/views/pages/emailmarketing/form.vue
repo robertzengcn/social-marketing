@@ -1,7 +1,7 @@
 <template>
     <v-sheet class="mx-auto" rounded>
         <v-form ref="form" @submit.prevent="onSubmit">
-            <v-select v-model="useemailsource" :items="marketTypeOption" item-title="tranme" item-value="key" :label="$t('emailmarket.use_email_source') as string" required
+            <v-select v-model="useemailsource" :items="marketTypeOption" item-title="tranme" item-value="key" :label="$t('emailmarketing.use_email_source') as string" required
         :readonly="loading" :rules="[rules.required]" class="mt-3"  
           return-object
           ></v-select>

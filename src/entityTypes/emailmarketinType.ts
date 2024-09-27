@@ -10,3 +10,4 @@ export type EmailTemplateRespdata={
     TplRecord:string
     Status:number
 }
+
