@@ -10,5 +10,9 @@ export class EmailMarketingController {
     public listEmailTemplate(page: number, size: number, search?: string): Promise<CommonApiresp<ListData<EmailTemplateRespdata>>> {
         return this.emailMarketingTemplateApi.listTemplate(page, size, search);
     }
+    //get email template detail
+    public getEmailTemplateDetail(id: number): Promise<CommonApiresp<EmailTemplateRespdata>> {
+        return this.emailMarketingTemplateApi.readTemplate(id.toString());
+    }
     
 }
