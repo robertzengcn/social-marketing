@@ -5,10 +5,10 @@ export type EmailsTemplagedata = {
 }
 export type EmailTemplateRespdata={
     Index?:number
-    TplId:number
+    TplId?:number
     TplTitle:string
     TplContent:string
-    TplRecord:string
-    Status:number
+    TplRecord?:string
+    Status?:number
 }
 

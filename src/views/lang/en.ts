@@ -172,6 +172,11 @@ export default {
         index:"index",
         marketingtype:"Marketing Type",
         use_email_source:"Use Email Source",
-        title:"email title"
+        title:"email title",
+        title_hint:"input email title",
+        content:"email content",
+        content_hint:"input email content",
+        email_template_deleted:"Are you sure you want to delete this email template?",
+        confirm_delete_email_template:"Email template delete confirm",
     }
 }

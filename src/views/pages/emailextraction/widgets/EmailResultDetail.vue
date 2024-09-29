@@ -47,7 +47,6 @@ import router from '@/views/router';
 // import {SearchtaskItem } from "@/entityTypes/searchControlType"
 import {CapitalizeFirstLetter} from "@/views/utils/function"
 import { useRoute } from "vue-router";
-// import {EmailsearchTaskEntityDisplay} from '@/entityTypes/emailextraction-type'
 const {t} = useI18n({inheritLocale: true});
 const $route = useRoute();
 

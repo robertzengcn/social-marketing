@@ -21,6 +21,31 @@
         </template>  
     </v-data-table-server>
     
+     <!-- Delete Confirmation Modal -->
+     <v-dialog v-model="showDeleteModal" width="auto">
+      <v-card
+      max-width="400"
+      prepend-icon="mdi-update"
+      :text="$t('emailmarketing.email_template_deleted')"
+      :title="$t('emailmarketing.confirm_delete_email_template')"
+    >
+      <template v-slot:actions>
+          <v-btn
+          class="ms-auto"
+          text="Ok"
+          color="secondary"
+          @click="confirmrmItem"
+          > 
+          </v-btn>
+        <v-btn
+          class="ms-auto"
+          text="Cancel"
+          @click="showDeleteModal = false"
+        ></v-btn>
+
+      </template>
+    </v-card>
+  </v-dialog>
     
 </template>
 
@@ -172,14 +197,27 @@ function loadItems({ page=1, itemsPerPage=10, sortBy}) {
     //     path: '/graphics/oasis-engine',
     // });
 // };
-const editItem=(item)=>{
+const editItem=(item:EmailTemplateRespdata)=>{
     router.push({
-            name: 'editProxy',params: { id: item.id } 
+            name: 'Email_Marketing_Template_Detail',params: { id: item.TplId } 
         });
 }
-const deleteItembtn=(item)=>{
+const deleteItembtn=(item:EmailTemplateRespdata)=>{
     showDeleteModal.value = true;
-    deleteId.value=item.id;
+    if(item.TplId){
+        deleteId.value=item.TplId;
+    }
+    // deleteId.value=item.TplId;
+}
+const confirmrmItem=()=>{
+    // console.log("delete account")
+    // deleteItem(deleteId.value).then(
+    //     () => {
+    //         // console.log(res)
+    //         showDeleteModal.value = false;
+    //     }).catch(function (error) {
+    //         console.error(error);
+    //     })
 }
 onMounted(() => {
   
