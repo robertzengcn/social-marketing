@@ -11,7 +11,16 @@
             :hint="$t('emailmarketing.title_content')" :rules="[rules.required]" required :readonly="loading"
             clearable></v-text-field> -->
            <!-- https://www.vue2editor.com/examples/#basic-setup -->
-            <vue-editor v-model="tplcontent" />
+            <!-- <vue-editor v-model="tplcontent" /> -->
+            <v-textarea
+              v-model="tplcontent"
+              :label="$t('emailmarketing.content')"
+              :hint="$t('emailmarketing.content_hint')"
+              :rules="[rules.required]"
+              :readonly="loading"
+              clearable
+              required
+            ></v-textarea>
         </v-col>
         <v-col cols="12" md="4">
           <!-- Content for the 1/3 column -->
