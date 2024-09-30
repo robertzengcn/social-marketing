@@ -1,8 +1,8 @@
 import { EmailMarketingController } from "@/controller/emailMarketingController";
 import { ipcMain } from 'electron';
-import { EMAILMARKETINGTEMPLIST } from "@/config/channellist";
+import { EMAILMARKETINGTEMPLIST, EMAILMARKETINGTEMPREMOVE,EMAILMARKETINGTEMPDETAIL } from "@/config/channellist";
 import { ItemSearchparam } from "@/entityTypes/commonType"
-import { CommonResponse } from "@/entityTypes/commonType"
+import { CommonResponse, CommonMessage,CommonIdrequest } from "@/entityTypes/commonType"
 import { EmailTemplateRespdata } from "@/entityTypes/emailmarketinType"
 
 export function registerEmailMarketingIpcHandlers() {
@@ -17,36 +17,91 @@ export function registerEmailMarketingIpcHandlers() {
     }
     const res = await emailmarketCon.listEmailTemplate(qdata.page, qdata.size, qdata.search)
     if (res.status) {
-      if(res.data){
-      const resp: CommonResponse<EmailTemplateRespdata> = {
-        status: true,
-        msg: "",
-        data: {
-          records: res.data.records,
-          num: res.data.num
+      if (res.data) {
+        const resp: CommonResponse<EmailTemplateRespdata> = {
+          status: true,
+          msg: "",
+          data: {
+            records: res.data.records,
+            num: res.data.num
+          }
         }
+        return resp
+      } else {
+        //data empty
+        const resp: CommonResponse<EmailTemplateRespdata> = {
+          status: true,
+          msg: "",
+          data: {
+            records: [],
+            num: 0
+          }
+        }
+
+      }
+    } else {
+      const resp: CommonResponse<EmailTemplateRespdata> = {
+        status: false,
+        msg: res.msg,
+        data: null
       }
       return resp
-    }else{
-      //data empty
-      const resp: CommonResponse<EmailTemplateRespdata> = {
+    }
+  });
+
+  //remove email template
+  ipcMain.handle(EMAILMARKETINGTEMPREMOVE, async (event, arg) => {
+    const qdata = JSON.parse(arg) as CommonIdrequest;
+    if (!qdata.id) {
+      const resp: CommonMessage<number> = {
+        status: false,
+        msg: "Template id is required",
+      }
+      return resp
+    }
+    const res = await emailmarketCon.removeEmailTemplate(Number(qdata.id))
+    if (res.status) {
+      const resp: CommonMessage<number> = {
         status: true,
         msg: "",
-        data: {
-          records: [],
-          num: 0
-        }
+        data: res.data
       }
+      return resp
+    } else {
+      const resp: CommonMessage<number> = {
+        status: false,
+        msg: res.msg,
 
+      }
+      return resp
     }
-  }else{
-    const resp: CommonResponse<EmailTemplateRespdata> = {
-      status: false,
-      msg: res.msg,
-      data: null
-    }
-    return resp
-  }
   });
+  //get email template by id
+  ipcMain.handle(EMAILMARKETINGTEMPDETAIL, async (event, arg) => {
+    const qdata = JSON.parse(arg) as CommonIdrequest;
+    if (!qdata.id) {
+      const resp: CommonMessage<EmailTemplateRespdata> = {
+        status: false,
+        msg: "template_id_require",
+      }
+      return resp
+    }
+    const res = await emailmarketCon.getEmailTemplateDetail(Number(qdata.id))
+    if (res.status) {
+      const resp: CommonMessage<EmailTemplateRespdata> = {
+        status: true,
+        msg: "",
+        data: res.data
+      }
+      return resp
+    } else {
+      const resp: CommonMessage<EmailTemplateRespdata> = {
+        status: false,
+        msg: res.msg,
+      }
+      return resp
+    }
+  });
+
 
 }

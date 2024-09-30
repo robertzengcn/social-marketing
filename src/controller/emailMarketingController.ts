@@ -14,5 +14,9 @@ export class EmailMarketingController {
     public getEmailTemplateDetail(id: number): Promise<CommonApiresp<EmailTemplateRespdata>> {
         return this.emailMarketingTemplateApi.readTemplate(id.toString());
     }
+    //remove email template
+    public removeEmailTemplate(id: number): Promise<CommonApiresp<number>> {
+        return this.emailMarketingTemplateApi.deleteTemplate(id.toString());
+    }
     
 }

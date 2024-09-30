@@ -178,5 +178,6 @@ export default {
         content_hint:"input email content",
         email_template_deleted:"Are you sure you want to delete this email template?",
         confirm_delete_email_template:"Email template delete confirm",
+        template_id_require:"Template id is required",
     }
 }

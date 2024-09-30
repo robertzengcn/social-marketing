@@ -51,7 +51,7 @@
 
 <script setup lang="ts">
 import {useI18n} from "vue-i18n";
-import { getEmailtemplatelist } from '@/views/api/emailmarketing'
+import { getEmailtemplatelist,removeEmailtemplate } from '@/views/api/emailmarketing'
 //import {SearchTaskItemdisplay} from '@/entityTypes/emailextraction-type'
 import { ref,computed,onMounted,onUnmounted,reactive } from 'vue'
 import { SearchResult } from '@/views/api/types'
@@ -209,7 +209,7 @@ const deleteItembtn=(item:EmailTemplateRespdata)=>{
     }
     // deleteId.value=item.TplId;
 }
-const confirmrmItem=()=>{
+const confirmrmItem= async ()=>{
     // console.log("delete account")
     // deleteItem(deleteId.value).then(
     //     () => {
@@ -218,6 +218,17 @@ const confirmrmItem=()=>{
     //     }).catch(function (error) {
     //         console.error(error);
     //     })
+    if(deleteId.value){
+      console.log(deleteId.value)
+      loading.value = true
+    const resp=await removeEmailtemplate(deleteId.value)
+    if(resp){
+        showDeleteModal.value = false;
+        loading.value = false
+        loadItems({ page: options.page, itemsPerPage: itemsPerPage.value, sortBy: "" });
+    }
+   
+    }
 }
 onMounted(() => {
   

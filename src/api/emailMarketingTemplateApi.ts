@@ -32,12 +32,12 @@ export class EmailMarketingTemplateApi {
 
     async updateTemplate(templateId: string, templateData: EmailsTemplagedata): Promise<CommonApiresp<number>> {
 
-        return this._httpClient.put(`/api/templates/${templateId}`, templateData);
+        return this._httpClient.put(`/api/emailtpl/${templateId}`, templateData);
     }
 
     async deleteTemplate(templateId: string): Promise<CommonApiresp<number>> {
 
-        return this._httpClient.delete(`/api/templates/${templateId}`);
+        return this._httpClient.delete(`/api/emailtpl/${templateId}`);
     }
     //list email tpl
     async listTemplate(page: number, size: number, search?: string,sortBy?:SortBy): Promise<CommonApiresp<ListData<EmailTemplateRespdata>>> {
