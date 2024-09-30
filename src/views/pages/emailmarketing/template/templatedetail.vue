@@ -7,9 +7,11 @@
           <v-text-field v-model="tplTitle" :label="$t('emailmarketing.title')" type="input"
             :hint="$t('emailmarketing.title_hint')" v-show="isEdit" :readonly="loading" clearable
             required></v-text-field>
-          <v-text-field v-model="tplcontent" :label="$t('emailmarketing.content')" type="input"
+          <!-- <v-text-field v-model="tplcontent" :label="$t('emailmarketing.content')" type="input"
             :hint="$t('emailmarketing.title_content')" :rules="[rules.required]" required :readonly="loading"
-            clearable></v-text-field>
+            clearable></v-text-field> -->
+           <!-- https://www.vue2editor.com/examples/#basic-setup -->
+            <vue-editor v-model="tplcontent" />
         </v-col>
         <v-col cols="12" md="4">
           <!-- Content for the 1/3 column -->
@@ -54,6 +56,7 @@ import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
 import {getEmailtemplatebyid,updateEmailtemplate} from "@/views/api/emailmarketing"
 import {EmailTemplateRespdata} from "@/entityTypes/emailmarketinType"
+import { VueEditor } from "vue2-editor";
 const { t } = useI18n({ inheritLocale: true });
 const templateId = ref<number>(0);
 
