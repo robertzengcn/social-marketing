@@ -14,6 +14,7 @@ export default {
         success:"success",
         fill_require_field:"Please fill all required fields",
         record_time:"record Time",
+        return:"return",
     },
     home:{
         search:"Search Extraction",
@@ -179,5 +180,6 @@ export default {
         email_template_deleted:"Are you sure you want to delete this email template?",
         confirm_delete_email_template:"Email template delete confirm",
         template_id_require:"Template id is required",
+        preview:"preview",
     }
 }

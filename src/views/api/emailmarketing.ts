@@ -1,7 +1,7 @@
 import {windowInvoke} from '@/views/utils/apirequest'
-import {EMAILMARKETINGTEMPLIST,EMAILMARKETINGTEMPDETAIL,EMAILMARKETINGTEMPREMOVE} from "@/config/channellist";
+import {EMAILMARKETINGTEMPLIST,EMAILMARKETINGTEMPDETAIL,EMAILMARKETINGTEMPREMOVE,EMAILMARKETINGTEMPPREVIEW} from "@/config/channellist";
 import {SearchResult} from '@/views/api/types'
-import {EmailTemplateRespdata} from "@/entityTypes/emailmarketinType"
+import {EmailTemplateRespdata,EmailTemplatePreviewdata} from "@/entityTypes/emailmarketinType"
 import {ItemSearchparam} from "@/entityTypes/commonType"
 
 export async function getEmailtemplatelist(data: ItemSearchparam):Promise<SearchResult<EmailTemplateRespdata>>{
@@ -38,6 +38,14 @@ export async function updateEmailtemplate(data:EmailTemplateRespdata):Promise<nu
 //remove email marketing
 export async function removeEmailtemplate(id:number):Promise<number>{
     const resp=await windowInvoke(EMAILMARKETINGTEMPREMOVE,{id:id});
+    if(!resp){
+        throw new Error("unknow error")
+    }
+    return resp;
+}
+//submit email preview data
+export async function submitEmailPreview(data:EmailTemplatePreviewdata):Promise<number>{
+    const resp=await windowInvoke(EMAILMARKETINGTEMPPREVIEW,data);
     if(!resp){
         throw new Error("unknow error")
     }

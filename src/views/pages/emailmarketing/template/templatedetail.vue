@@ -13,24 +13,27 @@
            <!-- https://www.vue2editor.com/examples/#basic-setup -->
             <!-- <vue-editor v-model="tplcontent" /> -->
             <v-textarea
+              ref="textarea"
               v-model="tplcontent"
               :label="$t('emailmarketing.content')"
               :hint="$t('emailmarketing.content_hint')"
               :rules="[rules.required]"
               :readonly="loading"
               clearable
+              rows="10"
               required
+              auto-grow
             ></v-textarea>
         </v-col>
         <v-col cols="12" md="4">
           <!-- Content for the 1/3 column -->
-          <v-btn @click="insertVariable('time')" color="primary" class="mb-2" block>
+          <v-btn @click="insertVariable('[[$time]]')" color="primary" class="mb-2" block>
             Insert Time Variable
           </v-btn>
-          <v-btn @click="insertVariable('sender')" color="primary" class="mb-2" block>
+          <v-btn @click="insertVariable('[[$sender]]')" color="primary" class="mb-2" block>
             Insert Sender Variable
           </v-btn>
-          <v-btn @click="insertVariable('receiver')" color="primary" class="mb-2" block>
+          <v-btn @click="insertVariable('[[$receiver]]')" color="primary" class="mb-2" block>
             Insert Receiver Variable
           </v-btn>
         </v-col>
@@ -47,16 +50,79 @@
         {{ alertContent }}
       </v-alert>
       <div class="d-flex flex-column">
-        <v-btn color="success" class="mt-4" block type="submit" :loading="loading">
-          Submit
-        </v-btn>
-
-        <v-btn color="error" class="mt-4" block @click="$router.go(-1)">
-          Return
-        </v-btn>
+        <v-row>
+          <v-col cols="12" md="4">
+            <v-btn color="success" class="mt-4" block 
+            @click="previewdialog = true"
+            :loading="loading">
+              {{$t('emailmarketing.preview')}}
+            </v-btn>
+          </v-col>
+          <v-col cols="12" md="4">
+            <v-btn color="success" class="mt-4" block type="submit" :loading="loading">
+              {{$t('common.submit')}}
+            </v-btn>
+          </v-col>
+          <v-col cols="12" md="4">
+            <v-btn color="error" class="mt-4" block @click="$router.go(-1)">
+              {{$t('common.return')}}
+            </v-btn>
+          </v-col>
+        </v-row>
       </div>
     </v-form>
   </v-sheet>
+  <!-- preview dialog -->
+<v-dialog
+  v-model="previewdialog"
+  width="auto"
+>
+  <v-card
+    max-width="400"
+    prepend-icon="mdi-update"
+    text="Input follow variable content to preview email"
+    title="Email Preview"
+  >
+  <v-card-text>
+    <v-row dense>
+      <v-col
+              cols="12"
+              md="4"
+              sm="6"
+            >
+              <v-text-field
+                
+                label="Sender"
+                required
+              ></v-text-field>
+            </v-col>
+            <v-col
+            cols="12"
+            md="4"
+            sm="6"
+          >
+            <v-text-field
+              label="Receiver"
+              required
+            ></v-text-field>
+          </v-col>
+
+    </v-row>  
+  </v-card-text> 
+    <template v-slot:actions>
+      <v-btn
+            text="Close"
+            variant="plain"
+           @click="previewdialog = false"
+          ></v-btn>
+      <v-btn
+        class="ms-auto"
+        text="Save"
+       @click="submitpreview"
+      ></v-btn>
+    </template>
+  </v-card>
+</v-dialog>
 </template>
 <script setup lang="ts">
 // import router from '@/views/router';
@@ -65,7 +131,7 @@ import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
 import {getEmailtemplatebyid,updateEmailtemplate} from "@/views/api/emailmarketing"
 import {EmailTemplateRespdata} from "@/entityTypes/emailmarketinType"
-import { VueEditor } from "vue2-editor";
+// import { VueEditor } from "vue2-editor";
 const { t } = useI18n({ inheritLocale: true });
 const templateId = ref<number>(0);
 
@@ -80,12 +146,13 @@ const FakeAPI = {
 const form = ref<HTMLFormElement>();
 const tplTitle = ref<string>(""); //template title
 const tplcontent = ref<string>(""); //template
-
+const previewdialog=ref(false);
 const loading = ref(false);
 const alert = ref(false);
 const alertContent = ref("");
 const alertcolor = ref("");
 const isEdit = ref(false);
+const textarea = ref<HTMLTextAreaElement | null>(null);
 
 import router from "@/views/router";
 // const selectedProxy = ref<ProxyListEntity>();
@@ -176,9 +243,24 @@ async function onSubmit() {
   loading.value = false;
 }
 
-const insertVariable=function(str:string){
+function submitpreview(){
+  previewdialog.value=true;
+}
+
+function insertVariable(variable:string){
   //insert variable to content
-  
+  if (textarea.value) {
+    const el = textarea.value;
+    if (el) {
+      const start = el.selectionStart;
+      const end = el.selectionEnd;
+      const text = tplcontent.value;
+      tplcontent.value = text.slice(0, start) + variable + text.slice(end);
+      // Move the cursor to the end of the inserted variable
+      el.selectionStart = el.selectionEnd = start + variable.length;
+      el.focus();
+    }
+  }
 }
 
 onMounted(() => {

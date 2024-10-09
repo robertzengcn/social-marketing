@@ -11,4 +11,14 @@ export type EmailTemplateRespdata={
     TplRecord?:string
     Status?:number
 }
+export type EmailTemplatePreviewdata={
+    TplTitle:string
+    TplContent:string
+    Sender:string
+    Receiver:string
+}
+export type EmailTemplatedata={
+    TplTitle:string
+    TplContent:string
+}
 

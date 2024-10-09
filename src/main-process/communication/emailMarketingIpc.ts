@@ -1,9 +1,9 @@
 import { EmailMarketingController } from "@/controller/emailMarketingController";
 import { ipcMain } from 'electron';
-import { EMAILMARKETINGTEMPLIST, EMAILMARKETINGTEMPREMOVE,EMAILMARKETINGTEMPDETAIL } from "@/config/channellist";
+import { EMAILMARKETINGTEMPLIST, EMAILMARKETINGTEMPREMOVE,EMAILMARKETINGTEMPDETAIL,EMAILMARKETINGTEMPPREVIEW} from "@/config/channellist";
 import { ItemSearchparam } from "@/entityTypes/commonType"
 import { CommonResponse, CommonMessage,CommonIdrequest } from "@/entityTypes/commonType"
-import { EmailTemplateRespdata } from "@/entityTypes/emailmarketinType"
+import { EmailTemplateRespdata,EmailTemplatePreviewdata } from "@/entityTypes/emailmarketinType"
 
 export function registerEmailMarketingIpcHandlers() {
   const emailmarketCon = new EmailMarketingController()
@@ -102,6 +102,9 @@ export function registerEmailMarketingIpcHandlers() {
       return resp
     }
   });
-
-
+  //submit email preview data
+  ipcMain.handle(EMAILMARKETINGTEMPPREVIEW, async (event, arg) => {
+    const qdata = JSON.parse(arg) as EmailTemplatePreviewdata;
+    
+  })
 }

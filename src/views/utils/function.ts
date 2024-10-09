@@ -1,3 +1,4 @@
+import {EmailTemplatePreviewdata,EmailTemplatedata} from "@/entityTypes/emailmarketinType"
 //split array into groups
 export function SplitArrayIntoGroups<Type>(array: Type[], groupSize: number):Type[][] {
         const groups:Type[][] = [];
@@ -27,6 +28,23 @@ export function isValidUrl(url:string):boolean {
       } catch (e) {
         return false;
       }
-}  
+} 
+
+export function convertVariableInTemplate(data:EmailTemplatePreviewdata): EmailTemplatedata {
+  //replace variable in template
+  let content = data.TplContent;
+  content = content.replace(/[[$sender]]/g, data.Sender);
+  content = content.replace(/[[$receiver]]/g, data.Receiver);
+  //replace time variable
+  const date = new Date();
+  const time = date.toLocaleTimeString();
+  content = content.replace(/[[$time]]/g, time);
+  const resdata: EmailTemplatedata = {
+    TplTitle: data.TplTitle,
+    TplContent: content
+  }
+  return resdata;
+
+} 
 
 
