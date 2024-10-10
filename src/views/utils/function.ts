@@ -33,14 +33,20 @@ export function isValidUrl(url:string):boolean {
 export function convertVariableInTemplate(data:EmailTemplatePreviewdata): EmailTemplatedata {
   //replace variable in template
   let content = data.TplContent;
-  content = content.replace(/[[$sender]]/g, data.Sender);
-  content = content.replace(/[[$receiver]]/g, data.Receiver);
+  content = content.replace(/{$sender}/g, data.Sender);
+  content = content.replace(/{$receiver}/g, data.Receiver);
   //replace time variable
   const date = new Date();
   const time = date.toLocaleTimeString();
-  content = content.replace(/[[$time]]/g, time);
+  content = content.replace(/{$time}/g, time);
+
+  let title=data.TplTitle
+  title = title.replace(/{$sender}/g, data.Sender);
+  title = title.replace(/{$receiver}/g, data.Receiver);
+  title.replace(/{$time}/g, time);
+
   const resdata: EmailTemplatedata = {
-    TplTitle: data.TplTitle,
+    TplTitle: title,
     TplContent: content
   }
   return resdata;

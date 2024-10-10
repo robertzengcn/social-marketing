@@ -4,68 +4,50 @@
     <v-form ref="form" @submit.prevent="onSubmit">
       <v-row>
         <v-col cols="12" md="8">
-          <v-text-field v-model="tplTitle" :label="$t('emailmarketing.title')" type="input"
+          <v-text-field ref="inputs" v-model="tplTitle" :label="$t('emailmarketing.title')" type="input"
             :hint="$t('emailmarketing.title_hint')" v-show="isEdit" :readonly="loading" clearable
             required></v-text-field>
           <!-- <v-text-field v-model="tplcontent" :label="$t('emailmarketing.content')" type="input"
             :hint="$t('emailmarketing.title_content')" :rules="[rules.required]" required :readonly="loading"
             clearable></v-text-field> -->
-           <!-- https://www.vue2editor.com/examples/#basic-setup -->
-            <!-- <vue-editor v-model="tplcontent" /> -->
-            <v-textarea
-              ref="textarea"
-              v-model="tplcontent"
-              :label="$t('emailmarketing.content')"
-              :hint="$t('emailmarketing.content_hint')"
-              :rules="[rules.required]"
-              :readonly="loading"
-              clearable
-              rows="10"
-              required
-              auto-grow
-            ></v-textarea>
+          <!-- https://www.vue2editor.com/examples/#basic-setup -->
+          <!-- <vue-editor v-model="tplcontent" /> -->
+          <v-textarea ref="textarea" v-model="tplcontent" :label="$t('emailmarketing.content')"
+            :hint="$t('emailmarketing.content_hint')" :rules="[rules.required]" :readonly="loading" clearable rows="10"
+            required auto-grow></v-textarea>
         </v-col>
         <v-col cols="12" md="4">
           <!-- Content for the 1/3 column -->
-          <v-btn @click="insertVariable('[[$time]]')" color="primary" class="mb-2" block>
+          <v-btn @click="insertVariable('{$time}')" color="primary" class="mb-2" block>
             Insert Time Variable
           </v-btn>
-          <v-btn @click="insertVariable('[[$sender]]')" color="primary" class="mb-2" block>
+          <v-btn @click="insertVariable('{$sender}')" color="primary" class="mb-2" block>
             Insert Sender Variable
           </v-btn>
-          <v-btn @click="insertVariable('[[$receiver]]')" color="primary" class="mb-2" block>
+          <v-btn @click="insertVariable('{$receiver}')" color="primary" class="mb-2" block>
             Insert Receiver Variable
           </v-btn>
         </v-col>
       </v-row>
-      <v-alert
-        v-model="alert"
-        border="start"
-        variant="tonal"
-        closable
-        close-label="Close Alert"
-        title="Information"
-        :color="alertcolor"
-      >
+      <v-alert v-model="alert" border="start" variant="tonal" closable close-label="Close Alert" title="Information"
+        :color="alertcolor">
         {{ alertContent }}
       </v-alert>
       <div class="d-flex flex-column">
         <v-row>
           <v-col cols="12" md="4">
-            <v-btn color="success" class="mt-4" block 
-            @click="previewdialog = true"
-            :loading="loading">
-              {{$t('emailmarketing.preview')}}
+            <v-btn color="success" class="mt-4" block @click="submitpreview" :loading="loading">
+              {{ $t('emailmarketing.preview') }}
             </v-btn>
           </v-col>
           <v-col cols="12" md="4">
             <v-btn color="success" class="mt-4" block type="submit" :loading="loading">
-              {{$t('common.submit')}}
+              {{ $t('common.submit') }}
             </v-btn>
           </v-col>
           <v-col cols="12" md="4">
             <v-btn color="error" class="mt-4" block @click="$router.go(-1)">
-              {{$t('common.return')}}
+              {{ $t('common.return') }}
             </v-btn>
           </v-col>
         </v-row>
@@ -73,64 +55,45 @@
     </v-form>
   </v-sheet>
   <!-- preview dialog -->
-<v-dialog
-  v-model="previewdialog"
-  width="auto"
->
-  <v-card
-    max-width="400"
-    prepend-icon="mdi-update"
-    text="Input follow variable content to preview email"
-    title="Email Preview"
-  >
-  <v-card-text>
-    <v-row dense>
-      <v-col
-              cols="12"
-              md="4"
-              sm="6"
-            >
-              <v-text-field
-                
-                label="Sender"
-                required
-              ></v-text-field>
-            </v-col>
-            <v-col
-            cols="12"
-            md="4"
-            sm="6"
-          >
-            <v-text-field
-              label="Receiver"
-              required
-            ></v-text-field>
+  <v-dialog v-model="previewdialog" width="auto">
+    <v-card max-width="400" prepend-icon="mdi-update" text="Input follow variable content to preview email"
+      title="Email Preview">
+      <v-card-text>
+        <v-row dense>
+          <v-col cols="12" md="4" sm="6">
+            <v-text-field v-model="Sendervar" label="Sender" required></v-text-field>
+          </v-col>
+          <v-col cols="12" md="4" sm="6">
+            <v-text-field v-model="Receivervar" label="Receiver" required></v-text-field>
+
           </v-col>
 
-    </v-row>  
-  </v-card-text> 
-    <template v-slot:actions>
-      <v-btn
-            text="Close"
-            variant="plain"
-           @click="previewdialog = false"
-          ></v-btn>
-      <v-btn
-        class="ms-auto"
-        text="Save"
-       @click="submitpreview"
-      ></v-btn>
-    </template>
-  </v-card>
-</v-dialog>
+        </v-row>
+        <v-row dense>
+          <v-text-field v-model="EmailTitlepreview" :label="$t('emailmarketing.title')" type="input"
+            readonly></v-text-field>
+        </v-row>
+        <v-row dense>
+          <v-textarea v-model="EmailContentpreview" :label="$t('emailmarketing.content')" readonly rows="10" required
+            auto-grow></v-textarea>
+        </v-row>
+      </v-card-text>
+      <template v-slot:actions>
+        <v-spacer></v-spacer>
+        <v-btn text="Close" @click="previewdialog = false"></v-btn>
+
+      </template>
+    </v-card>
+  </v-dialog>
 </template>
 <script setup lang="ts">
 // import router from '@/views/router';
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch,onBeforeUnmount } from "vue";
 import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
-import {getEmailtemplatebyid,updateEmailtemplate} from "@/views/api/emailmarketing"
-import {EmailTemplateRespdata} from "@/entityTypes/emailmarketinType"
+import { getEmailtemplatebyid, updateEmailtemplate } from "@/views/api/emailmarketing"
+import { EmailTemplateRespdata, EmailTemplatePreviewdata } from "@/entityTypes/emailmarketinType"
+import { convertVariableInTemplate } from "@/views/utils/function"
 // import { VueEditor } from "vue2-editor";
 const { t } = useI18n({ inheritLocale: true });
 const templateId = ref<number>(0);
@@ -146,15 +109,21 @@ const FakeAPI = {
 const form = ref<HTMLFormElement>();
 const tplTitle = ref<string>(""); //template title
 const tplcontent = ref<string>(""); //template
-const previewdialog=ref(false);
-const loading = ref(false);
-const alert = ref(false);
+const previewdialog = ref<boolean>(false);
+const loading = ref<boolean>(false);
+const alert = ref<boolean>(false);
 const alertContent = ref("");
 const alertcolor = ref("");
 const isEdit = ref(false);
 const textarea = ref<HTMLTextAreaElement | null>(null);
-
+const inputs = ref<HTMLInputElement | null>(null);
+const Sendervar = ref<string>("");
+const Receivervar = ref<string>("");
+const EmailTitlepreview = ref<string>("");
+const EmailContentpreview = ref<string>("");
+let lastFocusedElement: HTMLTextAreaElement | HTMLInputElement | null = null;
 import router from "@/views/router";
+// import { RefSymbol } from "@vue/reactivity";
 // const selectedProxy = ref<ProxyListEntity>();
 
 const rules = {
@@ -172,9 +141,10 @@ const initialize = async () => {
     isEdit.value = true;
     FakeAPI.fetch(parseInt(templateId.value.toString())).then((res) => {
       //set value
-      if(res){
-      tplTitle.value = res.TplTitle;
-      tplcontent.value = res.TplContent;
+      if (res) {
+        tplTitle.value = res.TplTitle;
+        tplcontent.value = res.TplContent;
+
       }
     });
   } else {
@@ -184,8 +154,33 @@ const initialize = async () => {
     // campaignId.value=parseInt($route.params.campaignId.toString());
     // }
   }
-  
+
 };
+
+watch(Sendervar, (newValue, oldValue) => {
+  //console.log('EmailContentpreview changed from', oldValue, 'to', newValue);
+  // Call your function here
+  onEmailContentpreviewChange();
+});
+function handleFocus(event: FocusEvent) {
+  const target = event.target as HTMLTextAreaElement | HTMLInputElement;
+  if (target && (target.tagName === 'TEXTAREA' || target.tagName === 'INPUT')) {
+    lastFocusedElement = target;
+  }
+}
+
+function onEmailContentpreviewChange() {
+  const changeData: EmailTemplatePreviewdata = {
+    Sender: Sendervar.value,
+    Receiver: Receivervar.value,
+    TplTitle: tplTitle.value,
+    TplContent: tplcontent.value
+  }
+  const tplres = convertVariableInTemplate(changeData)
+  console.log(tplres)
+  EmailTitlepreview.value = tplres.TplTitle;
+  EmailContentpreview.value = tplres.TplContent;
+}
 
 async function onSubmit() {
   console.log("submit");
@@ -200,11 +195,11 @@ async function onSubmit() {
     alertContent.value = "form is not valid";
   } else {
     const soacc: EmailTemplateRespdata = {
-      
+
       TplTitle: tplTitle.value,
       TplContent: tplcontent.value,
     };
-    
+
 
     if ($route.params.id) {
       soacc.TplId = parseInt($route.params.id.toString());
@@ -212,7 +207,7 @@ async function onSubmit() {
     console.log(soacc);
     await updateEmailtemplate(soacc)
       .then((res) => {
-        if (res> 0) {
+        if (res > 0) {
           alert.value = true;
           alertcolor.value = "success";
           alertContent.value = "Save success";
@@ -243,27 +238,67 @@ async function onSubmit() {
   loading.value = false;
 }
 
-function submitpreview(){
-  previewdialog.value=true;
+function submitpreview() {
+  previewdialog.value = true;
+  console.log(tplcontent.value)
+  console.log(tplTitle.value)
+  EmailContentpreview.value = tplcontent.value;
+  EmailTitlepreview.value = tplTitle.value;
+  onEmailContentpreviewChange();
 }
 
-function insertVariable(variable:string){
-  //insert variable to content
-  if (textarea.value) {
-    const el = textarea.value;
-    if (el) {
-      const start = el.selectionStart;
-      const end = el.selectionEnd;
-      const text = tplcontent.value;
-      tplcontent.value = text.slice(0, start) + variable + text.slice(end);
+function insertVariable(variable: string) {
+  const activeElement = lastFocusedElement;
+  console.log(activeElement)
+  if (activeElement && (activeElement.tagName === 'TEXTAREA' || activeElement.tagName === 'INPUT')) {
+  //  console.log(244)
+    //insert variable to content
+    // if (textarea.value) {
+    //   const el = textarea.value;
+    //   if (el) {
+    //     const start = el.selectionStart;
+    //     const end = el.selectionEnd;
+    //     const text = tplcontent.value;
+    //     tplcontent.value = text.slice(0, start) + variable + text.slice(end);
+    //     // Move the cursor to the end of the inserted variable
+    //     el.selectionStart = el.selectionEnd = start + variable.length;
+    //     el.focus();
+    //   }
+    // }
+    const start = activeElement.selectionStart;
+    const end = activeElement.selectionEnd;
+    const text = activeElement.value;
+    if (start !== null && end !== null) {
+      console.log(start, end)
+      activeElement.value = text.slice(0, start) + variable + text.slice(end);
+
       // Move the cursor to the end of the inserted variable
-      el.selectionStart = el.selectionEnd = start + variable.length;
-      el.focus();
+      activeElement.selectionStart = activeElement.selectionEnd = start + variable.length;
+      activeElement.focus();
     }
+    console.log(activeElement)
+    console.log(textarea.value)
+    // Update the corresponding Vue ref if necessary
+
+    if (activeElement.tagName === 'TEXTAREA') {
+      tplcontent.value = activeElement.value;
+    }else if (activeElement.tagName === 'INPUT') {
+      tplTitle.value = activeElement.value;
+    }
+    // if (activeElement) {
+    //   tplcontent.value = activeElement.value;
+    // } else if (activeElement.tagName === 'INPUT' && activeElement.type === 'text') {
+    //   tplTitle.value = activeElement.value;
+    // }
+
   }
 }
 
 onMounted(() => {
   initialize();
+  document.addEventListener('focusin', handleFocus);
+});
+onBeforeUnmount(() => {
+  document.removeEventListener('focusin', handleFocus);
 });
 </script>
