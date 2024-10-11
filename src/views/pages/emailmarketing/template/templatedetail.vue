@@ -5,7 +5,7 @@
       <v-row>
         <v-col cols="12" md="8">
           <v-text-field ref="inputs" v-model="tplTitle" :label="$t('emailmarketing.title')" type="input"
-            :hint="$t('emailmarketing.title_hint')" v-show="isEdit" :readonly="loading" clearable
+            :hint="$t('emailmarketing.title_hint')" :readonly="loading" clearable
             required></v-text-field>
           <!-- <v-text-field v-model="tplcontent" :label="$t('emailmarketing.content')" type="input"
             :hint="$t('emailmarketing.title_content')" :rules="[rules.required]" required :readonly="loading"
@@ -18,13 +18,13 @@
         </v-col>
         <v-col cols="12" md="4">
           <!-- Content for the 1/3 column -->
-          <v-btn @click="insertVariable('{$time}')" color="primary" class="mb-2" block>
+          <v-btn @click="insertVariable('{$time}')" color="primary" class="mb-2" block size="small">
             Insert Time Variable
           </v-btn>
-          <v-btn @click="insertVariable('{$sender}')" color="primary" class="mb-2" block>
+          <v-btn @click="insertVariable('{$sender}')" color="primary" class="mb-2" block size="small">
             Insert Sender Variable
           </v-btn>
-          <v-btn @click="insertVariable('{$receiver}')" color="primary" class="mb-2" block>
+          <v-btn @click="insertVariable('{$receiver}')" color="primary" class="mb-2" block size="small">
             Insert Receiver Variable
           </v-btn>
         </v-col>
@@ -55,7 +55,7 @@
     </v-form>
   </v-sheet>
   <!-- preview dialog -->
-  <v-dialog v-model="previewdialog" width="auto">
+  <v-dialog v-model="previewdialog" width="auto" scrollable>
     <v-card max-width="400" prepend-icon="mdi-update" text="Input follow variable content to preview email"
       title="Email Preview">
       <v-card-text>
@@ -158,6 +158,11 @@ const initialize = async () => {
 };
 
 watch(Sendervar, (newValue, oldValue) => {
+  //console.log('EmailContentpreview changed from', oldValue, 'to', newValue);
+  // Call your function here
+  onEmailContentpreviewChange();
+});
+watch(Receivervar, (newValue, oldValue) => {
   //console.log('EmailContentpreview changed from', oldValue, 'to', newValue);
   // Call your function here
   onEmailContentpreviewChange();

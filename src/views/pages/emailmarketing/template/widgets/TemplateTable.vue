@@ -1,7 +1,20 @@
 <template>
-
+<div class="search_bar mt-4 d-flex jsb">
+        <div class="d-flex jsb search_tool">
+            <div class="search_wrap mr-4">
+                <v-text-field rounded class="elevation-0" density="compact" variant="solo" label="Search"
+                    append-inner-icon="mdi-magnify" single-line hide-details v-model="search"></v-text-field>
+            </div>
+            <!-- <v-btn class="btn" variant="flat" prepend-icon="mdi-filter-variant"><span> More</span></v-btn> -->
+            <v-btn class="btn ml-3" variant="flat" prepend-icon="mdi-plus" color="#5865f2" @click="createTemplate()">
+               {{CapitalizeFirstLetter($t('emailmarketing.create_template'))}}
+            </v-btn>       
+        </div>
+        <div>       
+        </div>
+    </div>
     <v-data-table-server v-model:items-per-page="itemsPerPage" :search="search" :headers="headers"
-        :items-length="totalItems" :items="serverItems" :loading="loading" item-value="name" @update:options="loadItems" class="custom-data-table">  
+        :items-length="totalItems" :items="serverItems" :loading="loading" item-value="name" @update:options="loadItems" class="custom-data-table mt-4">  
         <template v-slot:[`item.actions`]="{ item }">
             <v-icon
             size="small"
@@ -150,7 +163,11 @@ const stopAutoRefresh = () => {
     refreshInterval= undefined;
   }
 };
-
+function createTemplate(){
+    router.push({
+        name: 'Email_Marketing_Template_Create'
+    });
+}
 function loadItems({ page=1, itemsPerPage=10, sortBy}) {
     options.page = page;
     loading.value = true
@@ -179,6 +196,12 @@ function loadItems({ page=1, itemsPerPage=10, sortBy}) {
             // data.map((item, index) => {
             //     item.Index = index + 1
             // })
+            if(!data){
+                data=[]
+            }
+            if(!total){
+                total=0
+            }
             serverItems.value = data
             totalItems.value = total
             loading.value = false

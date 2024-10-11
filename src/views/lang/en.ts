@@ -167,6 +167,7 @@ export default {
         url:"url",
         title:"title",
         process_timeout:"process timeout minutes",
+       
     },
     emailmarketing:{
         id:"id",
@@ -181,5 +182,6 @@ export default {
         confirm_delete_email_template:"Email template delete confirm",
         template_id_require:"Template id is required",
         preview:"preview",
+        create_template:"create template",
     }
 }
