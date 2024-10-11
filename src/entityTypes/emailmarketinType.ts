@@ -18,6 +18,7 @@ export type EmailTemplatePreviewdata={
     Receiver:string
 }
 export type EmailTemplatedata={
+    TplId?:number
     TplTitle:string
     TplContent:string
 }

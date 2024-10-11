@@ -47,6 +47,6 @@ export interface CommonApiresp <Type>{
     msg: string 
     data?: Type
 }
-export interface CommonIdrequest{
-    id:string
+export interface CommonIdrequest<Type>{
+    id:Type
 }

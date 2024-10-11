@@ -16,15 +16,15 @@
             :hint="$t('emailmarketing.content_hint')" :rules="[rules.required]" :readonly="loading" clearable rows="10"
             required auto-grow></v-textarea>
         </v-col>
-        <v-col cols="12" md="4">
+        <v-col cols="12" md="3">
           <!-- Content for the 1/3 column -->
-          <v-btn @click="insertVariable('{$time}')" color="primary" class="mb-2" block size="small">
+          <v-btn @click="insertVariable('{$time}')" color="primary" class="mb-2 ml-2" rounded="lg" size="small">
             Insert Time Variable
           </v-btn>
-          <v-btn @click="insertVariable('{$sender}')" color="primary" class="mb-2" block size="small">
+          <v-btn @click="insertVariable('{$sender}')" color="primary" class="mb-2 ml-2" rounded="lg" size="small">
             Insert Sender Variable
           </v-btn>
-          <v-btn @click="insertVariable('{$receiver}')" color="primary" class="mb-2" block size="small">
+          <v-btn @click="insertVariable('{$receiver}')" color="primary" class="mb-2 ml-2" rounded="lg" size="small">
             Insert Receiver Variable
           </v-btn>
         </v-col>
@@ -36,7 +36,7 @@
       <div class="d-flex flex-column">
         <v-row>
           <v-col cols="12" md="4">
-            <v-btn color="success" class="mt-4" block @click="submitpreview" :loading="loading">
+            <v-btn color="blue" class="mt-4" block @click="submitpreview" :loading="loading">
               {{ $t('emailmarketing.preview') }}
             </v-btn>
           </v-col>
@@ -212,14 +212,15 @@ async function onSubmit() {
     console.log(soacc);
     await updateEmailtemplate(soacc)
       .then((res) => {
-        if (res > 0) {
+        console.log(res)
+        if (res.id > 0) {
           alert.value = true;
           alertcolor.value = "success";
           alertContent.value = "Save success";
-          soacc.TplId = res;
-          $route.params.id = res.toString();
+          soacc.TplId = res.id;
+          $route.params.id = res.id.toString();
           isEdit.value = true;
-          templateId.value = res;
+          templateId.value = res.id;
         } else {
           alert.value = true;
           alertcolor.value = "error";
@@ -227,7 +228,7 @@ async function onSubmit() {
         }
         setTimeout(() => {
           alert.value = false;
-          if (res > 0) {
+          if (res.id > 0) {
             router.push({
               path: "/emailmarketing/template/list",
             });

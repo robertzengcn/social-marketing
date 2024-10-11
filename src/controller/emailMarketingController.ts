@@ -1,6 +1,6 @@
 import {EmailMarketingTemplateApi} from "@/api/emailMarketingTemplateApi";
 import { CommonApiresp,ListData } from "@/entityTypes/commonType"
-import { EmailTemplateRespdata} from "@/entityTypes/emailmarketinType"
+import { EmailTemplateRespdata,EmailTemplatedata} from "@/entityTypes/emailmarketinType"
 export class EmailMarketingController {
     emailMarketingTemplateApi: EmailMarketingTemplateApi;
     constructor() {
@@ -17,6 +17,15 @@ export class EmailMarketingController {
     //remove email template
     public async removeEmailTemplate(id: number): Promise<CommonApiresp<number>> {
         return this.emailMarketingTemplateApi.deleteTemplate(id.toString());
+    }
+    //update email template
+    public async updateEmailtemplate(param:EmailTemplatedata): Promise<CommonApiresp<number>>{
+        
+        if(param.TplId){
+            return this.emailMarketingTemplateApi.updateTemplate(param.TplId.toString(),param);
+        }else{
+            return this.emailMarketingTemplateApi.createTemplate(param)
+        }
     }
 
   

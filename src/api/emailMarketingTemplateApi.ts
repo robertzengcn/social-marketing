@@ -1,10 +1,11 @@
 "use strict";
 import { HttpClient } from "@/modules/lib/httpclient";
 // import { Token } from "@/modules/token"
-import { USERSDBPATH } from '@/config/usersetting';
+// import { USERSDBPATH } from '@/config/usersetting';
 import { EmailsTemplagedata, EmailTemplateRespdata } from "@/entityTypes/emailmarketinType"
 import { CommonApiresp,ListData } from "@/entityTypes/commonType"
 import {SortBy} from "@/entityTypes/commonType";
+import {CommonIdrequest} from "@/entityTypes/commonType"
 export class EmailMarketingTemplateApi {
     private _httpClient: HttpClient;
 
@@ -13,7 +14,7 @@ export class EmailMarketingTemplateApi {
 
     }
 
-    async createTemplate(templateData: EmailsTemplagedata): Promise<CommonApiresp<number>> {
+    async createTemplate(templateData: EmailsTemplagedata): Promise<CommonApiresp<CommonIdrequest<number>>> {
         const data = new FormData();
         if (templateData.TplTitle) {
             data.append("email_title", templateData.TplTitle);
@@ -30,9 +31,17 @@ export class EmailMarketingTemplateApi {
         return this._httpClient.get(`/api/emailtpl/${templateId}`);
     }
 
-    async updateTemplate(templateId: string, templateData: EmailsTemplagedata): Promise<CommonApiresp<number>> {
+    async updateTemplate(templateId: string, param: EmailsTemplagedata): Promise<CommonApiresp<CommonIdrequest<number>>> {
 
-        return this._httpClient.put(`/api/emailtpl/${templateId}`, templateData);
+        const data = new FormData();
+        if(param.TplTitle){
+            data.append("email_title", param.TplTitle);
+        }
+        if(param.TplContent){
+            data.append("email_content", param.TplTitle);
+        }
+        
+        return this._httpClient.put(`/api/emailtpl/${templateId}`, data);
     }
 
     async deleteTemplate(templateId: string): Promise<CommonApiresp<number>> {

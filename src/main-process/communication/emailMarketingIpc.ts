@@ -1,9 +1,9 @@
 import { EmailMarketingController } from "@/controller/emailMarketingController";
 import { ipcMain } from 'electron';
-import { EMAILMARKETINGTEMPLIST, EMAILMARKETINGTEMPREMOVE,EMAILMARKETINGTEMPDETAIL,EMAILMARKETINGTEMPPREVIEW} from "@/config/channellist";
+import { EMAILMARKETINGTEMPLIST, EMAILMARKETINGTEMPREMOVE,EMAILMARKETINGTEMPDETAIL,EMAILMARKETINGTEMPUPDATE} from "@/config/channellist";
 import { ItemSearchparam } from "@/entityTypes/commonType"
 import { CommonResponse, CommonMessage,CommonIdrequest } from "@/entityTypes/commonType"
-import { EmailTemplateRespdata,EmailTemplatePreviewdata } from "@/entityTypes/emailmarketinType"
+import { EmailTemplateRespdata,EmailTemplatedata } from "@/entityTypes/emailmarketinType"
 
 export function registerEmailMarketingIpcHandlers() {
   const emailmarketCon = new EmailMarketingController()
@@ -51,7 +51,7 @@ export function registerEmailMarketingIpcHandlers() {
 
   //remove email template
   ipcMain.handle(EMAILMARKETINGTEMPREMOVE, async (event, arg) => {
-    const qdata = JSON.parse(arg) as CommonIdrequest;
+    const qdata = JSON.parse(arg) as CommonIdrequest<string>;
     if (!qdata.id) {
       const resp: CommonMessage<number> = {
         status: false,
@@ -78,7 +78,7 @@ export function registerEmailMarketingIpcHandlers() {
   });
   //get email template by id
   ipcMain.handle(EMAILMARKETINGTEMPDETAIL, async (event, arg) => {
-    const qdata = JSON.parse(arg) as CommonIdrequest;
+    const qdata = JSON.parse(arg) as CommonIdrequest<string>;
     if (!qdata.id) {
       const resp: CommonMessage<EmailTemplateRespdata> = {
         status: false,
@@ -102,9 +102,24 @@ export function registerEmailMarketingIpcHandlers() {
       return resp
     }
   });
-  //submit email preview data
-  ipcMain.handle(EMAILMARKETINGTEMPPREVIEW, async (event, arg) => {
-    const qdata = JSON.parse(arg) as EmailTemplatePreviewdata;
-    
+  //update email template data
+  ipcMain.handle(EMAILMARKETINGTEMPUPDATE, async (event, arg) => {
+    const qdata = JSON.parse(arg) as EmailTemplatedata;
+    const res=await emailmarketCon.updateEmailtemplate(qdata)
+    if (res.status) {
+      const resp: CommonMessage<number> = {
+        status: true,
+        msg: "",
+        data: res.data
+      }
+      return resp
+    } else {
+      const resp: CommonMessage<number> = {
+        status: false,
+        msg: res.msg,
+
+      }
+      return resp
+    }
   })
 }
