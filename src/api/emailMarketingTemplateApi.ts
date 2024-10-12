@@ -14,7 +14,7 @@ export class EmailMarketingTemplateApi {
 
     }
 
-    async createTemplate(templateData: EmailsTemplagedata): Promise<CommonApiresp<CommonIdrequest<number>>> {
+    async createTemplate(templateData: EmailsTemplagedata): Promise<CommonApiresp<number>> {
         const data = new FormData();
         if (templateData.TplTitle) {
             data.append("email_title", templateData.TplTitle);
@@ -31,7 +31,7 @@ export class EmailMarketingTemplateApi {
         return this._httpClient.get(`/api/emailtpl/${templateId}`);
     }
 
-    async updateTemplate(templateId: string, param: EmailsTemplagedata): Promise<CommonApiresp<CommonIdrequest<number>>> {
+    async updateTemplate(templateId: string, param: EmailsTemplagedata): Promise<CommonApiresp<number>> {
 
         const data = new FormData();
         if(param.TplTitle){
