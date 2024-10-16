@@ -22,4 +22,13 @@ export type EmailTemplatedata={
     TplTitle:string
     TplContent:string
 }
+export type EmailFilterdata={
+    id?:number
+    name:string
+    filter_details:Array<EmailFilterDetialdata>
+}
+export type EmailFilterDetialdata={
+    id?:number
+    content:string
+}
 

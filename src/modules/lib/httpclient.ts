@@ -50,7 +50,7 @@ export class HttpClient {
     //   if (options.parseResponse !== false && res.status !== 204)
     //     return res.json();
     const data = await res.json();
-    console.log(data)
+    //console.log(data)
       return data;
     }
   

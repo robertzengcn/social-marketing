@@ -5,7 +5,7 @@ import { HttpClient } from "@/modules/lib/httpclient";
 import { EmailsTemplagedata, EmailTemplateRespdata } from "@/entityTypes/emailmarketinType"
 import { CommonApiresp,ListData } from "@/entityTypes/commonType"
 import {SortBy} from "@/entityTypes/commonType";
-import {CommonIdrequest} from "@/entityTypes/commonType"
+// import {CommonIdrequest} from "@/entityTypes/commonType"
 export class EmailMarketingTemplateApi {
     private _httpClient: HttpClient;
 

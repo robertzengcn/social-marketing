@@ -460,5 +460,9 @@ export function getDomain(url) {
     return null;
   }
 }
+// Function to convert JSON string to object
+export function convertJsonToObject<T>(jsonString: string): T {
+  return JSON.parse(jsonString) as T;
+}
 
 
