@@ -426,7 +426,29 @@ export const constantRoutes: RouteRecordRaw[] = [
           title: 'Create Email Template',
           icon: 'list'
         }
-      }
+      },
+      {
+        path: 'emailfilter/list',
+        name: 'Email_Marketing_Filter',
+        meta: {
+          visible: true,
+          title: 'Email Filter',
+          icon: 'list'
+        },
+        component: () => import(/* webpackChunkName: "staff-list" */ '@/views/pages/emailfilter/list.vue'),
+        
+      },
+      {
+        path: 'emailfilter/create',
+        name: 'Email_Marketing_Filter_Create',
+        meta: {
+          visible: false,
+          title: 'Email Filter',
+          icon: 'list'
+        },
+        component: () => import(/* webpackChunkName: "staff-list" */ '@/views/pages/emailfilter/filterdetail.vue'),
+        
+      },
     ]
   },
   {

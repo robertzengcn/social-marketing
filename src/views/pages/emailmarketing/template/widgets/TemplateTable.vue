@@ -74,7 +74,7 @@ import router from '@/views/router';
 import {CapitalizeFirstLetter} from "@/views/utils/function"
 
 import {EmailTemplateRespdata} from "@/entityTypes/emailmarketinType"
-
+import {Header} from "@/entityTypes/commonType"
 const {t} = useI18n({inheritLocale: true});
 
 
@@ -98,13 +98,13 @@ const FakeAPI = {
     }
 }
 
-type Header = {
-    title: string | ReturnType<typeof computed>;
-    align: string;
-    sortable: boolean;
-    key: string;
-    width: string;
-};
+// type Header = {
+//     title: string | ReturnType<typeof computed>;
+//     align: string;
+//     sortable: boolean;
+//     key: string;
+//     width: string;
+// };
 
 const headers = ref<Array<Header>>([]);
 let refreshInterval:ReturnType<typeof setInterval> | undefined;

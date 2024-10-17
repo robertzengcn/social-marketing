@@ -1,3 +1,4 @@
+import { computed} from 'vue'
 export type PageSearch={
     page:number,
     size:number
@@ -50,3 +51,11 @@ export interface CommonApiresp <Type>{
 export interface CommonIdrequest<Type>{
     id:Type
 }
+export type Header = {
+    title: string | ReturnType<typeof computed>;
+    align?: string;
+    sortable: boolean;
+    key: string;
+    width?: string;
+    value?:any;
+};

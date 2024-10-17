@@ -14,24 +14,24 @@ export class EmailMarketingFilterApi {
 
     }
     async createEmailFilter(data: EmailFilterdata): Promise<CommonApiresp<CommonIdrequest<number>>> {
-        const res=await this._httpClient.put('/api/emailfilter/create', data);
-        return convertJsonToObject<CommonApiresp<CommonIdrequest<number>>>(res);
+        return await this._httpClient.put('/api/emailfilter/create', data);
+        // return res;
     }
 
     async getEmailFilterById(id: string): Promise<CommonApiresp<EmailFilterdata>> {
-        const res=await this._httpClient.get(`/api/emailfilter/${id}`);
-        return convertJsonToObject<CommonApiresp<EmailFilterdata>>(res);
+        return await this._httpClient.get(`/api/emailfilter/${id}`);
+        // return convertJsonToObject<CommonApiresp<EmailFilterdata>>(res);
     }
 
     async updateEmailFilter(id: string, data: EmailFilterdata): Promise<CommonApiresp<CommonIdrequest<number>>> {
-        const res=await this._httpClient.postJson(`/api/emailfilter/${id}`, data);
-        return convertJsonToObject<CommonApiresp<CommonIdrequest<number>>>(res);
+        return await this._httpClient.postJson(`/api/emailfilter/${id}`, data);
+        // return convertJsonToObject<CommonApiresp<CommonIdrequest<number>>>(res);
        
     }
     //delete email filter
     async deleteEmailFilter(id: string): Promise<CommonApiresp<CommonIdrequest<number>>> {
-        const res=await this._httpClient.delete(`/api/emailfilter/${id}`);
-        return convertJsonToObject<CommonApiresp<CommonIdrequest<number>>>(res);
+        return await this._httpClient.delete(`/api/emailfilter/${id}`);
+        // return convertJsonToObject<CommonApiresp<CommonIdrequest<number>>>(res);
     }
     //list email fileter
     async listEmailFilters( page: number, size: number,search?: string, sortBy?: SortBy): Promise<CommonResponse<EmailFilterdata>> {
@@ -48,7 +48,10 @@ export class EmailMarketingFilterApi {
             }
         }
         }
-        return this._httpClient.get(`/api/emailfilter/list?page=${page}&size=${size}&search=${search}&orderby=${resutsort}`);
+        const res=await this._httpClient.get(`/api/emailfilter/list?page=${page}&size=${size}&search=${search}&orderby=${resutsort}`);
+        console.log(res)
+        // return res as CommonResponse<EmailFilterdata>; 
+        return res;
     }
 
 }

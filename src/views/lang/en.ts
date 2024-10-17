@@ -15,6 +15,7 @@ export default {
         fill_require_field:"Please fill all required fields",
         record_time:"record Time",
         return:"return",
+        created_time:"created time"
     },
     home:{
         search:"Search Extraction",
@@ -183,5 +184,18 @@ export default {
         template_id_require:"Template id is required",
         preview:"preview",
         create_template:"create template",
+    },
+    emailfilter:{
+        id:"id",
+        name:"name",
+        index:"index",
+        filtercontent:"Filter Content",
+        filtercontent_hint:"input filter content",
+        filtertype_hint:"choose filter type",
+        filter_deleted:"Are you sure you want to delete this filter?",
+        confirm_delete_filter:"Filter delete confirm",
+        filter_id_require:"Filter id is required",
+        create_filter:"create filter",
     }
+
 }

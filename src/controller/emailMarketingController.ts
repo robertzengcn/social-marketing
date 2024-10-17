@@ -1,10 +1,13 @@
 import {EmailMarketingTemplateApi} from "@/api/emailMarketingTemplateApi";
-import { CommonApiresp,ListData } from "@/entityTypes/commonType"
-import { EmailTemplateRespdata,EmailTemplatedata} from "@/entityTypes/emailmarketinType"
+import { CommonApiresp,ListData,CommonResponse } from "@/entityTypes/commonType"
+import { EmailTemplateRespdata,EmailTemplatedata,EmailFilterdata} from "@/entityTypes/emailmarketinType"
+import {EmailMarketingFilterApi} from "@/api/emailMarketingFilterApi";
 export class EmailMarketingController {
     emailMarketingTemplateApi: EmailMarketingTemplateApi;
+    emailMarketingFilterApi:EmailMarketingFilterApi
     constructor() {
         this.emailMarketingTemplateApi = new EmailMarketingTemplateApi();
+        this.emailMarketingFilterApi=new EmailMarketingFilterApi();
     }
     //list email template
     public async listEmailTemplate(page: number, size: number, search?: string): Promise<CommonApiresp<ListData<EmailTemplateRespdata>>> {
@@ -26,6 +29,10 @@ export class EmailMarketingController {
         }else{
             return this.emailMarketingTemplateApi.createTemplate(param)
         }
+    }
+    //list email filter
+    public async listEmailFilter(page: number, size: number, search?: string): Promise<CommonResponse<EmailFilterdata>> {
+        return this.emailMarketingFilterApi.listEmailFilters(page, size, search);
     }
 
   

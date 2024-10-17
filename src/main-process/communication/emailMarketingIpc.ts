@@ -1,9 +1,10 @@
 import { EmailMarketingController } from "@/controller/emailMarketingController";
 import { ipcMain } from 'electron';
-import { EMAILMARKETINGTEMPLIST, EMAILMARKETINGTEMPREMOVE,EMAILMARKETINGTEMPDETAIL,EMAILMARKETINGTEMPUPDATE} from "@/config/channellist";
+import { EMAILMARKETINGTEMPLIST, EMAILMARKETINGTEMPREMOVE,EMAILMARKETINGTEMPDETAIL,
+  EMAILMARKETINGTEMPUPDATE,EMAILMARKETINGFILTERLIST} from "@/config/channellist";
 import { ItemSearchparam } from "@/entityTypes/commonType"
 import { CommonResponse, CommonMessage,CommonIdrequest } from "@/entityTypes/commonType"
-import { EmailTemplateRespdata,EmailTemplatedata } from "@/entityTypes/emailmarketinType"
+import { EmailTemplateRespdata,EmailTemplatedata,EmailFilterdata } from "@/entityTypes/emailmarketinType"
 
 export function registerEmailMarketingIpcHandlers() {
   const emailmarketCon = new EmailMarketingController()
@@ -37,7 +38,7 @@ export function registerEmailMarketingIpcHandlers() {
             num: 0
           }
         }
-
+        return resp
       }
     } else {
       const resp: CommonResponse<EmailTemplateRespdata> = {
@@ -121,5 +122,49 @@ export function registerEmailMarketingIpcHandlers() {
       }
       return resp
     }
+  })
+  ipcMain.handle(EMAILMARKETINGFILTERLIST, async (event, arg) => {
+    const qdata = JSON.parse(arg) as ItemSearchparam;
+    if (!Object.prototype.hasOwnProperty.call(qdata, "page")) {
+      qdata.page = 0;
+    }
+    if (!Object.prototype.hasOwnProperty.call(qdata, "size")) {
+      qdata.size = 100;
+    }
+    const res = await emailmarketCon.listEmailFilter(qdata.page, qdata.size, qdata.search)
+
+    if (res.status) {
+      if (res.data) {
+        const resp: CommonResponse<EmailFilterdata> = {
+          status: true,
+          msg: "",
+          data: {
+            records: res.data.records,
+            num: res.data.num
+          }
+        }
+        return resp
+      } else {
+        //data empty
+        const resp: CommonResponse<EmailFilterdata> = {
+          status: true,
+          msg: "",
+          data: {
+            records: [],
+            num: 0
+          }
+        }
+        return resp
+
+      }
+    } else {
+      const resp: CommonResponse<EmailFilterdata> = {
+        status: false,
+        msg: res.msg,
+        data: null
+      }
+      return resp
+    }
+
   })
 }
