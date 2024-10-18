@@ -1,5 +1,5 @@
 import {EmailMarketingTemplateApi} from "@/api/emailMarketingTemplateApi";
-import { CommonApiresp,ListData,CommonResponse } from "@/entityTypes/commonType"
+import { CommonApiresp,ListData,CommonResponse,CommonIdrequest } from "@/entityTypes/commonType"
 import { EmailTemplateRespdata,EmailTemplatedata,EmailFilterdata} from "@/entityTypes/emailmarketinType"
 import {EmailMarketingFilterApi} from "@/api/emailMarketingFilterApi";
 export class EmailMarketingController {
@@ -37,6 +37,23 @@ export class EmailMarketingController {
     // get email filter
     public async getEmailFilterDetail(id: number): Promise<CommonApiresp<EmailFilterdata>> {
         return this.emailMarketingFilterApi.getEmailFilterById(id.toString());
+    }
+    //update email filter
+    public async updateEmailFilter(param:EmailFilterdata): Promise<CommonApiresp<CommonIdrequest<number>>>{
+        if(param.filter_details){
+            param.filter_details.forEach((item)=>{
+                if((!item.id)&&(!item.content)){
+                    //remove empty filter
+                    const index=param.filter_details.indexOf(item)
+                    param.filter_details.splice(index,1)
+                }
+            }) 
+        }
+        if(param.id){
+            return this.emailMarketingFilterApi.updateEmailFilter(param.id.toString(),param);
+        }else{
+            return this.emailMarketingFilterApi.createEmailFilter(param)
+        }
     }
 
   

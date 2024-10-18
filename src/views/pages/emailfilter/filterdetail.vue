@@ -1,35 +1,51 @@
 <template>
   <v-sheet class="mx-auto" rounded>
 
-    <v-form ref="form" @submit.prevent="onSubmit">
-      
+    <v-form ref="form" @submit.prevent="onSubmit" class="ml-2 mr-2">
+      <v-row> 
+        <v-col cols="12" md="12">
           <v-text-field ref="inputs" v-model="filteName" :label="$t('emailfilter.name')" type="input"
-            :hint="$t('emailfilter.inputname_hint')" :readonly="loading" clearable
+            :hint="$t('emailfilter.inputname_hint')" :readonly="loading" clearable 
             required></v-text-field>
           <!-- <v-text-field v-model="tplcontent" :label="$t('emailmarketing.content')" type="input"
             :hint="$t('emailmarketing.title_content')" :rules="[rules.required]" required :readonly="loading"
             clearable></v-text-field> -->
           <!-- https://www.vue2editor.com/examples/#basic-setup -->
           <!-- <vue-editor v-model="tplcontent" /> -->
-              
-     
+        </v-col>        
+      </v-row>
+      <v-row>
+        <v-col v-for="(filter, index) in filterDetailArr" :key="index" cols="12" md="12">
+          <v-row> 
+          <v-col cols="8" md="8">
+          <v-text-field
+            v-model="filter.content"
+            :label="$t('emailfilter.filtercontent')"
+            :hint="$t('emailfilter.filtercontent_hint')"
+            :readonly="loading"
+            clearable
+            required
+          ></v-text-field>
+        </v-col>
+        <v-col  cols="4" md="4">
+          <!--if item is last one in filterDetailArr-->
+          <div class="mt-3">
+          <v-btn  v-if="index === filterDetailArr.length - 1" @click="filterDetailArr.push({content:''})" density="compact" icon="mdi-plus">
+          </v-btn>
+          <v-btn v-if="index !=0" density="compact" icon="mdi-minus" class="ml-2" @click="removeFilter(index)">  </v-btn>
+        </div>
+        </v-col>
+      </v-row>  
+        </v-col>
+      </v-row>
+
       <div class="d-flex flex-column">
-        <v-row>
+        <v-row>  
           <v-col cols="12" md="4">
-            <v-btn color="blue" class="mt-4" block @click="submitpreview" :loading="loading">
-              {{ $t('emailmarketing.preview') }}
-            </v-btn>
-          </v-col>
-          <v-col cols="12" md="4">
-            <v-btn color="success" class="mt-4" block type="submit" :loading="loading">
+            <v-btn color="success" class="mt-4"  type="submit" :loading="loading">
               {{ $t('common.submit') }}
             </v-btn>
-          </v-col>
-          <v-col cols="12" md="4">
-            <v-btn color="error" class="mt-4" block @click="$router.go(-1)">
-              {{ $t('common.return') }}
-            </v-btn>
-          </v-col>
+          </v-col>    
         </v-row>
       </div>
     </v-form>
@@ -39,18 +55,18 @@
 </template>
 <script setup lang="ts">
 // import router from '@/views/router';
-import { ref, onMounted, watch,onBeforeUnmount } from "vue";
+import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
-import { getEmailfilterbyid} from "@/views/api/emailfilter";
-import { EmailFilterdata} from "@/entityTypes/emailmarketinType"
-import { convertVariableInTemplate } from "@/views/utils/function"
+import { getEmailfilterbyid,updateEmailfilter} from "@/views/api/emailfilter";
+import { EmailFilterdata,EmailFilterDetialdata} from "@/entityTypes/emailmarketinType"
+// import { convertVariableInTemplate } from "@/views/utils/function"
 // import { VueEditor } from "vue2-editor";
 import {CommonIdrequest} from "@/entityTypes/commonType"
 import router from "@/views/router";
 
 const { t } = useI18n({ inheritLocale: true });
-const templateId = ref<number>(0);
+const filterId = ref<number>(0);
 
 
 const $route = useRoute();
@@ -65,7 +81,7 @@ const FakeAPI = {
 //defined the value in page
 const form = ref<HTMLFormElement>();
 const filteName = ref<string>(""); //template title
-
+const filterDetailArr=ref<Array<EmailFilterDetialdata>>([]);
 
 const loading = ref<boolean>(false);
 const alert = ref<boolean>(false);
@@ -77,24 +93,27 @@ const isEdit = ref(false);
 // import { RefSymbol } from "@vue/reactivity";
 // const selectedProxy = ref<ProxyListEntity>();
 
-const rules = {
-  required: (value) => !!value || "Field is required",
-};
+// const rules = {
+//   required: (value) => !!value || "Field is required",
+// };
 
 
 const initialize = async () => {
   if ($route.params.id) {
-    templateId.value = parseInt($route.params.id.toString());
+    filterId.value = parseInt($route.params.id.toString());
   }
 
-  if (templateId.value > 0) {
+  if (filterId.value > 0) {
     //edit
     isEdit.value = true;
-    FakeAPI.fetch(parseInt(templateId.value.toString())).then((res) => {
+    FakeAPI.fetch(parseInt(filterId.value.toString())).then((res) => {
       //set value
       if (res) {
         
-
+        filteName.value = res.name;
+        res.filter_details.forEach((element:EmailFilterDetialdata) => {
+          filterDetailArr.value.push(element);
+        });
       }
     });
   } else {
@@ -104,38 +123,14 @@ const initialize = async () => {
     // campaignId.value=parseInt($route.params.campaignId.toString());
     // }
   }
+  const filterdetailinit:EmailFilterDetialdata={
+    content:""
+  }
+  filterDetailArr.value.push(filterdetailinit)
 
 };
 
-watch(Sendervar, (newValue, oldValue) => {
-  //console.log('EmailContentpreview changed from', oldValue, 'to', newValue);
-  // Call your function here
-  onEmailContentpreviewChange();
-});
-watch(Receivervar, (newValue, oldValue) => {
-  //console.log('EmailContentpreview changed from', oldValue, 'to', newValue);
-  // Call your function here
-  onEmailContentpreviewChange();
-});
-function handleFocus(event: FocusEvent) {
-  const target = event.target as HTMLTextAreaElement | HTMLInputElement;
-  if (target && (target.tagName === 'TEXTAREA' || target.tagName === 'INPUT')) {
-    lastFocusedElement = target;
-  }
-}
 
-function onEmailContentpreviewChange() {
-  const changeData: EmailTemplatePreviewdata = {
-    Sender: Sendervar.value,
-    Receiver: Receivervar.value,
-    TplTitle: tplTitle.value,
-    TplContent: tplcontent.value
-  }
-  const tplres = convertVariableInTemplate(changeData)
-  console.log(tplres)
-  EmailTitlepreview.value = tplres.TplTitle;
-  EmailContentpreview.value = tplres.TplContent;
-}
 
 async function onSubmit() {
   console.log("submit");
@@ -149,28 +144,28 @@ async function onSubmit() {
     alertcolor.value = "error";
     alertContent.value = "form is not valid";
   } else {
-    const soacc: EmailTemplateRespdata = {
-
-      TplTitle: tplTitle.value,
-      TplContent: tplcontent.value,
+    const soacc: EmailFilterdata = {
+      name: filteName.value,
+      filter_details: filterDetailArr.value,
     };
 
 
     if ($route.params.id) {
-      soacc.TplId = parseInt($route.params.id.toString());
+      soacc.id = parseInt($route.params.id.toString());
     }
     console.log(soacc);
-    await updateEmailtemplate(soacc)
+    await updateEmailfilter(soacc)
       .then((res) => {
         console.log(res)
-        if (res.id > 0) {
+        if(res){
+        if (res.id&&res.id > 0) {
           alert.value = true;
           alertcolor.value = "success";
           alertContent.value = "Save success";
-          soacc.TplId = res.id;
+          soacc.id = res.id;
           $route.params.id = res.id.toString();
           isEdit.value = true;
-          templateId.value = res.id;
+          filterId.value = res.id;
         } else {
           alert.value = true;
           alertcolor.value = "error";
@@ -178,13 +173,15 @@ async function onSubmit() {
         }
         setTimeout(() => {
           alert.value = false;
-          if (res.id > 0) {
+          if (res.id&&res.id > 0) {
             router.push({
-              path: "/emailmarketing/template/list",
+               name: 'Email_Marketing_Filter_LIST'
             });
           }
         }, 5000);
-      })
+      }
+    }
+    )
       .catch((err) => {
         alert.value = true;
         alertcolor.value = "error";
@@ -194,67 +191,19 @@ async function onSubmit() {
   loading.value = false;
 }
 
-function submitpreview() {
-  previewdialog.value = true;
-  console.log(tplcontent.value)
-  console.log(tplTitle.value)
-  EmailContentpreview.value = tplcontent.value;
-  EmailTitlepreview.value = tplTitle.value;
-  onEmailContentpreviewChange();
+function removeFilter(index: number) {
+  filterDetailArr.value.splice(index, 1);
 }
 
-function insertVariable(variable: string) {
-  const activeElement = lastFocusedElement;
-  console.log(activeElement)
-  if (activeElement && (activeElement.tagName === 'TEXTAREA' || activeElement.tagName === 'INPUT')) {
-  //  console.log(244)
-    //insert variable to content
-    // if (textarea.value) {
-    //   const el = textarea.value;
-    //   if (el) {
-    //     const start = el.selectionStart;
-    //     const end = el.selectionEnd;
-    //     const text = tplcontent.value;
-    //     tplcontent.value = text.slice(0, start) + variable + text.slice(end);
-    //     // Move the cursor to the end of the inserted variable
-    //     el.selectionStart = el.selectionEnd = start + variable.length;
-    //     el.focus();
-    //   }
-    // }
-    const start = activeElement.selectionStart;
-    const end = activeElement.selectionEnd;
-    const text = activeElement.value;
-    if (start !== null && end !== null) {
-      console.log(start, end)
-      activeElement.value = text.slice(0, start) + variable + text.slice(end);
-
-      // Move the cursor to the end of the inserted variable
-      activeElement.selectionStart = activeElement.selectionEnd = start + variable.length;
-      activeElement.focus();
-    }
-    console.log(activeElement)
-    console.log(textarea.value)
-    // Update the corresponding Vue ref if necessary
-
-    if (activeElement.tagName === 'TEXTAREA') {
-      tplcontent.value = activeElement.value;
-    }else if (activeElement.tagName === 'INPUT') {
-      tplTitle.value = activeElement.value;
-    }
-    // if (activeElement) {
-    //   tplcontent.value = activeElement.value;
-    // } else if (activeElement.tagName === 'INPUT' && activeElement.type === 'text') {
-    //   tplTitle.value = activeElement.value;
-    // }
-
-  }
-}
 
 onMounted(() => {
   initialize();
-  document.addEventListener('focusin', handleFocus);
+
 });
-onBeforeUnmount(() => {
-  document.removeEventListener('focusin', handleFocus);
-});
+
 </script>
+<style scoped>
+.rounded-text-field .v-input__control {
+  border-radius: 12px; /* Adjust the value as needed */
+}
+</style>

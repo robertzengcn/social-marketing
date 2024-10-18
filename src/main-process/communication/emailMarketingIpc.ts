@@ -1,7 +1,7 @@
 import { EmailMarketingController } from "@/controller/emailMarketingController";
 import { ipcMain } from 'electron';
 import { EMAILMARKETINGTEMPLIST, EMAILMARKETINGTEMPREMOVE,EMAILMARKETINGTEMPDETAIL,
-  EMAILMARKETINGTEMPUPDATE,EMAILMARKETINGFILTERLIST,EMAILMARKETFILTERDETAIL} from "@/config/channellist";
+  EMAILMARKETINGTEMPUPDATE,EMAILMARKETINGFILTERLIST,EMAILMARKETFILTERDETAIL,EMAILMARKETFILTERUPDATE} from "@/config/channellist";
 import { ItemSearchparam } from "@/entityTypes/commonType"
 import { CommonResponse, CommonMessage,CommonIdrequest } from "@/entityTypes/commonType"
 import { EmailTemplateRespdata,EmailTemplatedata,EmailFilterdata } from "@/entityTypes/emailmarketinType"
@@ -192,5 +192,24 @@ export function registerEmailMarketingIpcHandlers() {
       return resdata
     }
 
+  })
+  ipcMain.handle(EMAILMARKETFILTERUPDATE, async (event, arg) => {
+    const qdata = JSON.parse(arg) as EmailFilterdata;
+    const res=await emailmarketCon.updateEmailFilter(qdata)
+    if (res.status) {
+      const resp: CommonMessage<number> = {
+        status: true,
+        msg: "",
+        data: res.data?.id
+      }
+      return resp
+    } else {
+      const resp: CommonMessage<number> = {
+        status: false,
+        msg: res.msg,
+
+      }
+      return resp
+    }
   })
 }

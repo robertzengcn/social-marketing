@@ -127,9 +127,9 @@ const editItem = (item) => {
     // else if(item.Types=="social task"){
         
     // }
-    // router.push({
-    //     path: '/graphics/oasis-engine',
-    // });
+    router.push({
+        name:"Email_Marketing_Filter_Detail",params: { id: item.id }
+    });
 };
 const openfolder=(item)=>{
     // console.log(item)
