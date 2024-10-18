@@ -2,37 +2,17 @@
   <v-sheet class="mx-auto" rounded>
 
     <v-form ref="form" @submit.prevent="onSubmit">
-      <v-row>
-        <v-col cols="12" md="8">
-          <v-text-field ref="inputs" v-model="tplTitle" :label="$t('emailmarketing.title')" type="input"
-            :hint="$t('emailmarketing.title_hint')" :readonly="loading" clearable
+      
+          <v-text-field ref="inputs" v-model="filteName" :label="$t('emailfilter.name')" type="input"
+            :hint="$t('emailfilter.inputname_hint')" :readonly="loading" clearable
             required></v-text-field>
           <!-- <v-text-field v-model="tplcontent" :label="$t('emailmarketing.content')" type="input"
             :hint="$t('emailmarketing.title_content')" :rules="[rules.required]" required :readonly="loading"
             clearable></v-text-field> -->
           <!-- https://www.vue2editor.com/examples/#basic-setup -->
           <!-- <vue-editor v-model="tplcontent" /> -->
-          <v-textarea ref="textarea" v-model="tplcontent" :label="$t('emailmarketing.content')"
-            :hint="$t('emailmarketing.content_hint')" :rules="[rules.required]" :readonly="loading" clearable rows="10"
-            required auto-grow></v-textarea>
-        </v-col>
-        <v-col cols="12" md="3">
-          <!-- Content for the 1/3 column -->
-          <v-btn @click="insertVariable('{$time}')" color="primary" class="mb-2 ml-2" rounded="lg" size="small">
-            Insert Time Variable
-          </v-btn>
-          <v-btn @click="insertVariable('{$sender}')" color="primary" class="mb-2 ml-2" rounded="lg" size="small">
-            Insert Sender Variable
-          </v-btn>
-          <v-btn @click="insertVariable('{$receiver}')" color="primary" class="mb-2 ml-2" rounded="lg" size="small">
-            Insert Receiver Variable
-          </v-btn>
-        </v-col>
-      </v-row>
-      <v-alert v-model="alert" border="start" variant="tonal" closable close-label="Close Alert" title="Information"
-        :color="alertcolor">
-        {{ alertContent }}
-      </v-alert>
+              
+     
       <div class="d-flex flex-column">
         <v-row>
           <v-col cols="12" md="4">
@@ -54,75 +34,46 @@
       </div>
     </v-form>
   </v-sheet>
-  <!-- preview dialog -->
-  <v-dialog v-model="previewdialog" width="auto" scrollable>
-    <v-card max-width="400" prepend-icon="mdi-update" text="Input follow variable content to preview email"
-      title="Email Preview">
-      <v-card-text>
-        <v-row dense>
-          <v-col cols="12" md="4" sm="6">
-            <v-text-field v-model="Sendervar" label="Sender" required></v-text-field>
-          </v-col>
-          <v-col cols="12" md="4" sm="6">
-            <v-text-field v-model="Receivervar" label="Receiver" required></v-text-field>
 
-          </v-col>
-
-        </v-row>
-        <v-row dense>
-          <v-text-field v-model="EmailTitlepreview" :label="$t('emailmarketing.title')" type="input"
-            readonly></v-text-field>
-        </v-row>
-        <v-row dense>
-          <v-textarea v-model="EmailContentpreview" :label="$t('emailmarketing.content')" readonly rows="10" required
-            auto-grow></v-textarea>
-        </v-row>
-      </v-card-text>
-      <template v-slot:actions>
-        <v-spacer></v-spacer>
-        <v-btn text="Close" @click="previewdialog = false"></v-btn>
-
-      </template>
-    </v-card>
-  </v-dialog>
+  
 </template>
 <script setup lang="ts">
 // import router from '@/views/router';
 import { ref, onMounted, watch,onBeforeUnmount } from "vue";
 import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
-import { getEmailtemplatebyid, updateEmailtemplate } from "@/views/api/emailmarketing"
-import { EmailTemplateRespdata, EmailTemplatePreviewdata } from "@/entityTypes/emailmarketinType"
+import { getEmailfilterbyid} from "@/views/api/emailfilter";
+import { EmailFilterdata} from "@/entityTypes/emailmarketinType"
 import { convertVariableInTemplate } from "@/views/utils/function"
 // import { VueEditor } from "vue2-editor";
+import {CommonIdrequest} from "@/entityTypes/commonType"
+import router from "@/views/router";
+
 const { t } = useI18n({ inheritLocale: true });
 const templateId = ref<number>(0);
 
 
 const $route = useRoute();
 const FakeAPI = {
-  async fetch(id: number): Promise<EmailTemplateRespdata> {
-    return await getEmailtemplatebyid(id.toString());
+  async fetch(id: number): Promise<EmailFilterdata> {
+    const data:CommonIdrequest<number>={
+      id:id
+    }
+    return await getEmailfilterbyid(data);
   },
 };
 //defined the value in page
 const form = ref<HTMLFormElement>();
-const tplTitle = ref<string>(""); //template title
-const tplcontent = ref<string>(""); //template
-const previewdialog = ref<boolean>(false);
+const filteName = ref<string>(""); //template title
+
+
 const loading = ref<boolean>(false);
 const alert = ref<boolean>(false);
 const alertContent = ref("");
 const alertcolor = ref("");
 const isEdit = ref(false);
-const textarea = ref<HTMLTextAreaElement | null>(null);
-const inputs = ref<HTMLInputElement | null>(null);
-const Sendervar = ref<string>("");
-const Receivervar = ref<string>("");
-const EmailTitlepreview = ref<string>("");
-const EmailContentpreview = ref<string>("");
-let lastFocusedElement: HTMLTextAreaElement | HTMLInputElement | null = null;
-import router from "@/views/router";
+
+
 // import { RefSymbol } from "@vue/reactivity";
 // const selectedProxy = ref<ProxyListEntity>();
 
@@ -142,8 +93,7 @@ const initialize = async () => {
     FakeAPI.fetch(parseInt(templateId.value.toString())).then((res) => {
       //set value
       if (res) {
-        tplTitle.value = res.TplTitle;
-        tplcontent.value = res.TplContent;
+        
 
       }
     });

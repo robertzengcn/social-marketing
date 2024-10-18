@@ -34,6 +34,10 @@ export class EmailMarketingController {
     public async listEmailFilter(page: number, size: number, search?: string): Promise<CommonResponse<EmailFilterdata>> {
         return this.emailMarketingFilterApi.listEmailFilters(page, size, search);
     }
+    // get email filter
+    public async getEmailFilterDetail(id: number): Promise<CommonApiresp<EmailFilterdata>> {
+        return this.emailMarketingFilterApi.getEmailFilterById(id.toString());
+    }
 
   
     

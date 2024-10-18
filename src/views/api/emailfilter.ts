@@ -1,6 +1,6 @@
 import {windowInvoke} from '@/views/utils/apirequest'
 import {SearchResult} from '@/views/api/types'
-import {EMAILMARKETINGFILTERLIST} from "@/config/channellist";
+import {EMAILMARKETINGFILTERLIST,EMAILMARKETFILTERDETAIL} from "@/config/channellist";
 import {ItemSearchparam,CommonIdrequest} from "@/entityTypes/commonType"
 import {EmailFilterdata} from "@/entityTypes/emailmarketinType"
 
@@ -19,3 +19,10 @@ export async function getEmailfilterlist(data: ItemSearchparam):Promise<SearchRe
     }
     return resdata;  
 }
+export async function getEmailfilterbyid(data: CommonIdrequest<number>):Promise<EmailFilterdata>{
+    const resp=await windowInvoke(EMAILMARKETFILTERDETAIL,data);
+    if(!resp){
+       throw new Error("unknow error")
+    }
+    return resp;  
+} 

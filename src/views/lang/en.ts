@@ -188,6 +188,7 @@ export default {
     emailfilter:{
         id:"id",
         name:"name",
+        inputname_hint:"input filter name",
         index:"index",
         filtercontent:"Filter Content",
         filtercontent_hint:"input filter content",
