@@ -25,6 +25,7 @@ export type EmailTemplatedata={
 export type EmailFilterdata={
     id?:number
     name:string
+    description:string
     filter_details:Array<EmailFilterDetialdata>
 }
 export type EmailFilterDetialdata={

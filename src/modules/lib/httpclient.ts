@@ -105,10 +105,15 @@ export class HttpClient {
     }
   
     public async put(endpoint:string, data): Promise<any> {
-        return this._fetchJSON(endpoint, {
+      console.log(JSON.stringify(data))  
+      return this._fetchJSON(endpoint, {
         // headers: this._headers,
         body: data ? JSON.stringify(data) : undefined,
-        method: "PUT"
+        method: "PUT",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
       });
     }
   

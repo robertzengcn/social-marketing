@@ -27,7 +27,7 @@ export async function getEmailfilterbyid(data: CommonIdrequest<number>):Promise<
     return resp;  
 } 
 //update email filter
-export async function updateEmailfilter(data: EmailFilterdata):Promise<EmailFilterdata>{
+export async function updateEmailfilter(data: EmailFilterdata):Promise<CommonIdrequest<number>>{
     const resp=await windowInvoke(EMAILMARKETFILTERUPDATE,data);
     console.log(resp)
     if(!resp){

@@ -196,15 +196,16 @@ export function registerEmailMarketingIpcHandlers() {
   ipcMain.handle(EMAILMARKETFILTERUPDATE, async (event, arg) => {
     const qdata = JSON.parse(arg) as EmailFilterdata;
     const res=await emailmarketCon.updateEmailFilter(qdata)
+    console.log(res)
     if (res.status) {
-      const resp: CommonMessage<number> = {
+      const resp: CommonMessage<CommonIdrequest<number>> = {
         status: true,
         msg: "",
-        data: res.data?.id
+        data: res.data
       }
       return resp
     } else {
-      const resp: CommonMessage<number> = {
+      const resp: CommonMessage<CommonIdrequest<number>> = {
         status: false,
         msg: res.msg,
 

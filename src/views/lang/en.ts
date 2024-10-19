@@ -197,6 +197,8 @@ export default {
         confirm_delete_filter:"Filter delete confirm",
         filter_id_require:"Filter id is required",
         create_filter:"create filter",
+        description:"description",
+        description_hint:"input filter description",
     }
 
 }
