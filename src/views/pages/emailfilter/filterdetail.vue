@@ -116,6 +116,7 @@ const initialize = async () => {
     //edit
     isEdit.value = true;
     FakeAPI.fetch(parseInt(filterId.value.toString())).then((res) => {
+      console.log(res)
       //set value
       if (res) {
 

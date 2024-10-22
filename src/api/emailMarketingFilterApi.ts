@@ -4,7 +4,7 @@ import { HttpClient } from "@/modules/lib/httpclient";
 // import { USERSDBPATH } from '@/config/usersetting';
 import { EmailFilterdata} from "@/entityTypes/emailmarketinType"
 import { CommonApiresp,CommonResponse,SortBy,CommonIdrequest } from "@/entityTypes/commonType"
-import {convertJsonToObject} from "@/modules/lib/function"
+//import {convertJsonToObject} from "@/modules/lib/function"
 
 export class EmailMarketingFilterApi {
     private _httpClient: HttpClient;

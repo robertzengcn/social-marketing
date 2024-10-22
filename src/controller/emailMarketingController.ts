@@ -18,11 +18,11 @@ export class EmailMarketingController {
         return this.emailMarketingTemplateApi.readTemplate(id.toString());
     }
     //remove email template
-    public async removeEmailTemplate(id: number): Promise<CommonApiresp<number>> {
+    public async removeEmailTemplate(id: number): Promise<CommonApiresp<CommonIdrequest<number>>> {
         return this.emailMarketingTemplateApi.deleteTemplate(id.toString());
     }
     //update email template
-    public async updateEmailtemplate(param:EmailTemplatedata): Promise<CommonApiresp<number>>{
+    public async updateEmailtemplate(param:EmailTemplatedata): Promise<CommonApiresp<CommonIdrequest<number>>>{
         
         if(param.TplId){
             return this.emailMarketingTemplateApi.updateTemplate(param.TplId.toString(),param);

@@ -62,14 +62,14 @@ export function registerEmailMarketingIpcHandlers() {
     }
     const res = await emailmarketCon.removeEmailTemplate(Number(qdata.id))
     if (res.status) {
-      const resp: CommonMessage<number> = {
+      const resp: CommonMessage<CommonIdrequest<number>> = {
         status: true,
         msg: "",
         data: res.data
       }
       return resp
     } else {
-      const resp: CommonMessage<number> = {
+      const resp: CommonMessage<CommonIdrequest<number>> = {
         status: false,
         msg: res.msg,
 
@@ -108,14 +108,14 @@ export function registerEmailMarketingIpcHandlers() {
     const qdata = JSON.parse(arg) as EmailTemplatedata;
     const res=await emailmarketCon.updateEmailtemplate(qdata)
     if (res.status) {
-      const resp: CommonMessage<number> = {
+      const resp: CommonMessage<CommonIdrequest<number>> = {
         status: true,
         msg: "",
         data: res.data
       }
       return resp
     } else {
-      const resp: CommonMessage<number> = {
+      const resp: CommonMessage<CommonIdrequest<number>> = {
         status: false,
         msg: res.msg,
 

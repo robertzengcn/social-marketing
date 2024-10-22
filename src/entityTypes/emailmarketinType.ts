@@ -32,4 +32,19 @@ export type EmailFilterDetialdata={
     id?:number
     content:string
 }
-
+export type EmailServiceEntitydata={
+    id?: number
+    from: string
+    password: string
+    host: string
+    port: string
+    name: string
+    ssl: number
+}
+export type EmailServicListdata={
+    id:number
+    name: string
+    from: string
+    host: string
+    create_time: string
+}

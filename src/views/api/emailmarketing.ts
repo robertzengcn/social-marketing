@@ -37,7 +37,7 @@ export async function updateEmailtemplate(data:EmailTemplateRespdata):Promise<Co
     return resp;
 }
 //remove email marketing
-export async function removeEmailtemplate(id:number):Promise<number>{
+export async function removeEmailtemplate(id:number):Promise<CommonIdrequest<number>>{
     const resp=await windowInvoke(EMAILMARKETINGTEMPREMOVE,{id:id});
     if(!resp){
         throw new Error("unknow error")

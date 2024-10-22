@@ -30,3 +30,8 @@ export const EMAILMARKETINGTEMPPREVIEW='email:marketing:template:preview'
 export const EMAILMARKETINGFILTERLIST='email:marketing:filter:list'
 export const EMAILMARKETFILTERDETAIL='email:marketing:filter:detail'
 export const EMAILMARKETFILTERUPDATE='email:marketing:filter:update'
+//email service
+export const EMAILSERVICEUPDATE='email:service:update'
+export const EMAILSERVICEDETAIL='email:service:detail'
+export const EMAILSERVICELIST='email:service:list'
+export const EMAILSERVICEDELETE='email:service:delete'

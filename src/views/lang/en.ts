@@ -15,7 +15,9 @@ export default {
         fill_require_field:"Please fill all required fields",
         record_time:"record Time",
         return:"return",
-        created_time:"created time"
+        created_time:"created time",
+        delete_item_failure:"delete item failure",
+        error:"error",
     },
     home:{
         search:"Search Extraction",
