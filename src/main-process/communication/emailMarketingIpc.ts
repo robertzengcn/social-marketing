@@ -1,10 +1,11 @@
 import { EmailMarketingController } from "@/controller/emailMarketingController";
 import { ipcMain } from 'electron';
 import { EMAILMARKETINGTEMPLIST, EMAILMARKETINGTEMPREMOVE,EMAILMARKETINGTEMPDETAIL,
-  EMAILMARKETINGTEMPUPDATE,EMAILMARKETINGFILTERLIST,EMAILMARKETFILTERDETAIL,EMAILMARKETFILTERUPDATE} from "@/config/channellist";
+  EMAILMARKETINGTEMPUPDATE,EMAILMARKETINGFILTERLIST,EMAILMARKETFILTERDETAIL,EMAILMARKETFILTERUPDATE,
+  EMAILSERVICELIST,EMAILSERVICEDETAIL,EMAILSERVICEUPDATE,EMAILSERVICEDELETE} from "@/config/channellist";
 import { ItemSearchparam } from "@/entityTypes/commonType"
 import { CommonResponse, CommonMessage,CommonIdrequest } from "@/entityTypes/commonType"
-import { EmailTemplateRespdata,EmailTemplatedata,EmailFilterdata } from "@/entityTypes/emailmarketinType"
+import { EmailTemplateRespdata,EmailTemplatedata,EmailFilterdata,EmailServiceListdata,EmailServiceEntitydata } from "@/entityTypes/emailmarketingType"
 
 export function registerEmailMarketingIpcHandlers() {
   const emailmarketCon = new EmailMarketingController()
@@ -193,6 +194,7 @@ export function registerEmailMarketingIpcHandlers() {
     }
 
   })
+  //update email filter
   ipcMain.handle(EMAILMARKETFILTERUPDATE, async (event, arg) => {
     const qdata = JSON.parse(arg) as EmailFilterdata;
     const res=await emailmarketCon.updateEmailFilter(qdata)
@@ -213,4 +215,123 @@ export function registerEmailMarketingIpcHandlers() {
       return resp
     }
   })
+  //email service
+  //get email service list
+  ipcMain.handle(EMAILSERVICELIST, async (event, arg) => {
+    const qdata = JSON.parse(arg) as ItemSearchparam;
+    if (!Object.prototype.hasOwnProperty.call(qdata, "page")) {
+      qdata.page = 0;
+    }
+    if (!Object.prototype.hasOwnProperty.call(qdata, "size")) {
+      qdata.size = 100;
+    }
+    const res = await emailmarketCon.getEmailServiceList(qdata.page, qdata.size, qdata.search)
+    console.log(res)
+    if (res.status) {
+      if (res.data) {
+        const resp: CommonResponse<EmailServiceListdata> = {
+          status: true,
+          msg: "",
+          data: {
+            records: res.data.records,
+            num: res.data.num
+          }
+        }
+        return resp
+      } else {
+        //data empty
+        const resp: CommonResponse<EmailServiceListdata> = {
+          status: true,
+          msg: "",
+          data: {
+            records: [],
+            num: 0
+          }
+        }
+        return resp
+      }
+    } else {
+      const resp: CommonResponse<EmailServiceListdata> = {
+        status: false,
+        msg: res.msg,
+        data: null
+      }
+      return resp
+    }
+  });
+  //email service detail
+  ipcMain.handle(EMAILSERVICEDETAIL, async (event, arg) => {
+    const qdata = JSON.parse(arg) as CommonIdrequest<string>;
+    if (!qdata.id) {
+      const resp: CommonMessage<EmailServiceEntitydata> = {
+        status: false,
+        msg: "template_id_require",
+      }
+      return resp
+    }
+    const res = await emailmarketCon.getEmailServiceDetail(Number(qdata.id))
+    if (res.status) {
+      const resp: CommonMessage<EmailServiceEntitydata> = {
+        status: true,
+        msg: "",
+        data: res.data
+      }
+      return resp
+    } else {
+      const resp: CommonMessage<EmailServiceEntitydata> = {
+        status: false,
+        msg: res.msg,
+      }
+      return resp
+    }
+  });
+  //create or update email service
+   ipcMain.handle(EMAILSERVICEUPDATE, async (event, arg) => {
+    const qdata = JSON.parse(arg) as EmailServiceEntitydata;
+    const res=await emailmarketCon.createuEmailService(qdata)
+    if (res.status) {
+      const resp: CommonMessage<CommonIdrequest<number>> = {
+        status: true,
+        msg: "",
+        data: res.data
+      }
+      return resp
+    } else {
+      const resp: CommonMessage<CommonIdrequest<number>> = {
+        status: false,
+        msg: res.msg,
+
+      }
+      return resp
+    }
+  })
+
+  //delete email service
+   ipcMain.handle(EMAILSERVICEDELETE, async (event, arg) => {
+    const qdata = JSON.parse(arg) as CommonIdrequest<string>;
+    if (!qdata.id) {
+      const resp: CommonMessage<number> = {
+        status: false,
+        msg: "Template id is required",
+      }
+      return resp
+    }
+    const res = await emailmarketCon.deleteEmailService(Number(qdata.id))
+    if (res.status) {
+      const resp: CommonMessage<CommonIdrequest<number>> = {
+        status: true,
+        msg: "",
+        data: res.data
+      }
+      return resp
+    } else {
+      const resp: CommonMessage<CommonIdrequest<number>> = {
+        status: false,
+        msg: res.msg,
+
+      }
+      return resp
+    }
+  });
+
 }

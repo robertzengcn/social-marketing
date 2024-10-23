@@ -201,6 +201,25 @@ export default {
         create_filter:"create filter",
         description:"description",
         description_hint:"input filter description",
+    },
+    emailservice:{
+        id:"id",
+        from:"sender account",
+        from_hint:"input email sender account",
+        password:"password",
+        password_hint:"input email password",
+        host:"host",
+        host_hint:"input email host",
+        port:"port",
+        port_hint:"input email port",
+        name:"name",
+        name_hint:"input email name",
+        ssl:"ssl",
+        ssl_hint:"input email ssl",
+        email_service_deleted:"Are you sure you want to delete this email service?",
+        confirm_delete_email_service:"Email service delete confirm",
+        service_id_require:"Service id is required",
+        create_service:"create email service",
     }
 
 }

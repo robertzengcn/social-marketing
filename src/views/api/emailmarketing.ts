@@ -2,7 +2,7 @@ import {windowInvoke} from '@/views/utils/apirequest'
 import {EMAILMARKETINGTEMPLIST,EMAILMARKETINGTEMPDETAIL,EMAILMARKETINGTEMPREMOVE,
     EMAILMARKETINGTEMPPREVIEW,EMAILMARKETINGTEMPUPDATE} from "@/config/channellist";
 import {SearchResult} from '@/views/api/types'
-import {EmailTemplateRespdata,EmailTemplatePreviewdata} from "@/entityTypes/emailmarketinType"
+import {EmailTemplateRespdata,EmailTemplatePreviewdata} from "@/entityTypes/emailmarketingType"
 import {ItemSearchparam,CommonIdrequest} from "@/entityTypes/commonType"
 
 export async function getEmailtemplatelist(data: ItemSearchparam):Promise<SearchResult<EmailTemplateRespdata>>{

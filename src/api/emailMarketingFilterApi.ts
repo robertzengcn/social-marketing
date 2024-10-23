@@ -2,7 +2,7 @@
 import { HttpClient } from "@/modules/lib/httpclient";
 // import { Token } from "@/modules/token"
 // import { USERSDBPATH } from '@/config/usersetting';
-import { EmailFilterdata} from "@/entityTypes/emailmarketinType"
+import { EmailFilterdata} from "@/entityTypes/emailmarketingType"
 import { CommonApiresp,CommonResponse,SortBy,CommonIdrequest } from "@/entityTypes/commonType"
 //import {convertJsonToObject} from "@/modules/lib/function"
 

@@ -92,7 +92,7 @@ import { ref, onMounted, watch,onBeforeUnmount } from "vue";
 import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { getEmailtemplatebyid, updateEmailtemplate } from "@/views/api/emailmarketing"
-import { EmailTemplateRespdata, EmailTemplatePreviewdata } from "@/entityTypes/emailmarketinType"
+import { EmailTemplateRespdata, EmailTemplatePreviewdata } from "@/entityTypes/emailmarketingType"
 import { convertVariableInTemplate } from "@/views/utils/function"
 // import { VueEditor } from "vue2-editor";
 const { t } = useI18n({ inheritLocale: true });

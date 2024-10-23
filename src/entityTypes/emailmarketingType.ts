@@ -41,7 +41,7 @@ export type EmailServiceEntitydata={
     name: string
     ssl: number
 }
-export type EmailServicListdata={
+export type EmailServiceListdata={
     id:number
     name: string
     from: string

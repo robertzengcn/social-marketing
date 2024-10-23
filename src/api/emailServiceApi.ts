@@ -2,8 +2,8 @@
 import { HttpClient } from "@/modules/lib/httpclient";
 // import { Token } from "@/modules/token"
 // import { USERSDBPATH } from '@/config/usersetting';
-import { EmailServiceEntitydata,EmailServicListdata} from "@/entityTypes/emailmarketinType"
-import { CommonApiresp,CommonResponse,SortBy,CommonIdrequest,ListData } from "@/entityTypes/commonType"
+import { EmailServiceEntitydata,EmailServiceListdata} from "@/entityTypes/emailmarketingType"
+import { CommonApiresp,SortBy,CommonIdrequest,ListData } from "@/entityTypes/commonType"
 
 export class EmailServiceApi {
     private _httpClient: HttpClient;
@@ -36,10 +36,10 @@ export class EmailServiceApi {
         if(param.ssl){
             data.append("ssl", param.ssl.toString());
         }
-        return this._httpClient.post('/emailservice/create', data);
+        return this._httpClient.post('/api/emailservice/create', data);
     }
     //get email list service
-    async getEmailServiceList(page: number, size: number, search?: string,sortBy?:SortBy): Promise<CommonApiresp<ListData<EmailServicListdata>>> {
+    async getEmailServiceList(page: number, size: number, search?: string,sortBy?:SortBy): Promise<CommonApiresp<ListData<EmailServiceListdata>>> {
         let resutsort=''
         if(sortBy){
             sortBy.key=sortBy.key.toLowerCase()
@@ -53,16 +53,16 @@ export class EmailServiceApi {
             }
         }
         }
-        return this._httpClient.get(`/emailservice/list?page=${page}&size=${size}&search=${search}&orderby=${resutsort}`);
+        return this._httpClient.get(`/api/emailservice/list?page=${page}&size=${size}&search=${search}&orderby=${resutsort}`);
     }
 //get email service by id
     async getEmailServiceById(id: string): Promise<CommonApiresp<EmailServiceEntitydata>> {
-        return this._httpClient.get(`/emailservice/${id}`);
+        return this._httpClient.get(`/api/emailservice/${id}`);
     }
 
     
 //delete email service
     async deleteEmailService(id: string): Promise<CommonApiresp<CommonIdrequest<number>>> {
-        return this._httpClient.delete(`/emailservice/${id}`);
+        return this._httpClient.delete(`/api/emailservice/${id}`);
     }
 }

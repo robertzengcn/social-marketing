@@ -1,4 +1,4 @@
-import {EmailTemplatePreviewdata,EmailTemplatedata} from "@/entityTypes/emailmarketinType"
+import {EmailTemplatePreviewdata,EmailTemplatedata} from "@/entityTypes/emailmarketingType"
 //split array into groups
 export function SplitArrayIntoGroups<Type>(array: Type[], groupSize: number):Type[][] {
         const groups:Type[][] = [];

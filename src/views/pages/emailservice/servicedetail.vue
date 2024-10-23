@@ -67,31 +67,35 @@
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
-import { getEmailfilterbyid, updateEmailfilter } from "@/views/api/emailfilter";
-import { EmailFilterdata, EmailFilterDetialdata } from "@/entityTypes/emailmarketingType"
+import { getEmailServiceDetail,createupdateEmailService } from "@/views/api/emailservice";
+import { EmailServiceEntitydata } from "@/entityTypes/emailmarketingType"
 // import { convertVariableInTemplate } from "@/views/utils/function"
 // import { VueEditor } from "vue2-editor";
 import { CommonIdrequest } from "@/entityTypes/commonType"
 import router from "@/views/router";
 
 const { t } = useI18n({ inheritLocale: true });
-const filterId = ref<number>(0);
+const Id = ref<number>(0);
 
 
 const $route = useRoute();
 const FakeAPI = {
-  async fetch(id: number): Promise<EmailFilterdata> {
-    const data: CommonIdrequest<number> = {
-      id: id
-    }
-    return await getEmailfilterbyid(data);
+  async fetch(id: number): Promise<EmailServiceEntitydata> {
+    // const data: CommonIdrequest<number> = {
+    //   id: id
+    // }
+    return await getEmailServiceDetail(id);
   },
 };
 //defined the value in page
 const form = ref<HTMLFormElement>();
-const filteName = ref<string>(""); //template title
-const filterDetailArr = ref<Array<EmailFilterDetialdata>>([]);
-const description = ref<string>("");
+const from= ref<string>(""); //template title
+const password= ref<string>(""); 
+const host= ref<string>(""); 
+const port= ref<string>(""); 
+const name= ref<string>(""); 
+const ssl= ref<number>(0); 
+
 const loading = ref<boolean>(false);
 const alert = ref<boolean>(false);
 const alertContent = ref("");
@@ -109,33 +113,30 @@ const isEdit = ref(false);
 
 const initialize = async () => {
   if ($route.params.id) {
-    filterId.value = parseInt($route.params.id.toString());
+    Id.value = parseInt($route.params.id.toString());
   }
 
-  if (filterId.value > 0) {
+  if (Id.value > 0) {
     //edit
     isEdit.value = true;
-    FakeAPI.fetch(parseInt(filterId.value.toString())).then((res) => {
+    FakeAPI.fetch(parseInt(Id.value.toString())).then((res) => {
       console.log(res)
       //set value
       if (res) {
 
-        filteName.value = res.name;
-        description.value = res.description;
-        if(res.filter_details){
-        res.filter_details.forEach((element: EmailFilterDetialdata) => {
-          filterDetailArr.value.push(element);
-        });
-      }
+        from.value = res.name;
+        password.value = res.password;
+        host.value = res.host;
+        port.value = res.port;
+        name.value = res.name;
+        ssl.value = res.ssl;
+       
       }
     });
   } else {
     //add new item
     isEdit.value = false;
-    const filterdetailinit: EmailFilterDetialdata = {
-      content: ""
-    }
-    filterDetailArr.value.push(filterdetailinit)
+
   }
 
 
@@ -155,10 +156,13 @@ async function onSubmit() {
     alertcolor.value = "error";
     alertContent.value = "form is not valid";
   } else {
-    const soacc: EmailFilterdata = {
-      name: filteName.value,
-      description: description.value,
-      filter_details: filterDetailArr.value,
+    const soacc: EmailServiceEntitydata = {
+      name: name.value,
+      from: from.value,
+      password: password.value,
+      host: host.value,
+      port: port.value,
+      ssl: ssl.value,
     };
 
 
@@ -166,7 +170,7 @@ async function onSubmit() {
       soacc.id = parseInt($route.params.id.toString());
     }
     console.log(soacc);
-    await updateEmailfilter(soacc)
+    await createupdateEmailService(soacc)
       .then((res) => {
         console.log(res)
         if (res) {
@@ -177,7 +181,7 @@ async function onSubmit() {
             soacc.id = res.id;
             $route.params.id = res.id.toString();
             isEdit.value = true;
-            filterId.value = res.id;
+            Id.value = res.id;
           } else {
             alert.value = true;
             alertcolor.value = "error";

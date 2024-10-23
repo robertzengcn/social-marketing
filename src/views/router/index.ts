@@ -443,7 +443,7 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: 'Email_Marketing_Filter_Create',
         meta: {
           visible: false,
-          title: 'Email Filter',
+          title: 'Email Filter Create',
           icon: 'list'
         },
         component: () => import(/* webpackChunkName: "staff-list" */ '@/views/pages/emailfilter/filterdetail.vue'),
@@ -454,10 +454,43 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: 'Email_Marketing_Filter_Detail',
         meta: {
           visible: false,
-          title: 'Email Filter',
+          title: 'Email Filter Edit',
           icon: 'list'
         },
         component: () => import(/* webpackChunkName: "staff-list" */ '@/views/pages/emailfilter/filterdetail.vue'),
+        
+      },
+      {
+        path: 'emailservice/list',
+        name: 'Email_Marketing_Service_LIST',
+        meta: {
+          visible: true,
+          title: 'Email Service',
+          icon: 'list'
+        },
+        component: () => import(/* webpackChunkName: "staff-list" */ '@/views/pages/emailservice/list.vue'),
+        
+      },
+      {
+        path: 'emailservice/create',
+        name: 'Email_Marketing_Service_Create',
+        meta: {
+          visible: false,
+          title: 'Email Service Create',
+          icon: 'list'
+        },
+        component: () => import(/* webpackChunkName: "staff-list" */ '@/views/pages/emailservice/servicedetail.vue'),
+        
+      },
+      {
+        path: 'emailservice/detail/:id(\\d+)',
+        name: 'Email_Marketing_Service_Detail',
+        meta: {
+          visible: false,
+          title: 'Email Service Edit',
+          icon: 'list'
+        },
+        component: () => import(/* webpackChunkName: "staff-list" */ '@/views/pages/emailservice/servicedetail.vue'),
         
       },
     ]

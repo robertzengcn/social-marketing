@@ -7,7 +7,7 @@
             </div>
             
             <v-btn class="btn ml-3" variant="flat" prepend-icon="mdi-plus" color="#5865f2" @click="createFilter()">
-                {{CapitalizeFirstLetter($t('emailfilter.create_filter'))}}
+                {{CapitalizeFirstLetter($t('emailservice.create_service'))}}
              </v-btn> 
         </div>
    
@@ -43,8 +43,8 @@
 
 <script setup lang="ts">
 import {useI18n} from "vue-i18n";
-import {EmailFilterdata} from "@/entityTypes/emailmarketingType"
-import {getEmailfilterlist} from '@/views/api/emailfilter'
+import {EmailServiceListdata} from "@/entityTypes/emailmarketingType"
+import {getEmailServiceList} from '@/views/api/emailservice'
 import { ref,computed } from 'vue'
 import { SearchResult } from '@/views/api/types'
 import {CapitalizeFirstLetter} from "@/views/utils/function"
@@ -62,38 +62,44 @@ type Fetchparam = {
 }
 
 const FakeAPI = {
-    async fetch(fetchparam: Fetchparam): Promise<SearchResult<EmailFilterdata>> {
+    async fetch(fetchparam: Fetchparam): Promise<SearchResult<EmailServiceListdata>> {
         const fpage=(fetchparam.page-1)*fetchparam.itemsPerPage
-        return await getEmailfilterlist({ page: fpage, size: fetchparam.itemsPerPage, sortby: fetchparam.sortBy, search: fetchparam.search })
+        return await getEmailServiceList({ page: fpage, size: fetchparam.itemsPerPage, sortby: fetchparam.sortBy, search: fetchparam.search })
     }
 }
 
 const headers=ref<Array<Header>>([])
 headers.value = [
     {
-        title: computed(_ => CapitalizeFirstLetter(t("emailfilter.id"))),
+        title: computed(_ => CapitalizeFirstLetter(t("emailservice.id"))),
         align: 'start',
         sortable: false,
         key: 'id',
     },
     {
-        title: computed(_ => CapitalizeFirstLetter(t("emailfilter.name"))),
+        title: computed(_ => CapitalizeFirstLetter(t("emailservice.name"))),
         align: 'start',
         sortable: false,
         key: 'name',
     },
    
     {
+        title: computed(_ => CapitalizeFirstLetter(t("emailservice.from"))),
+        align: 'start',
+        sortable: false,
+        key: 'from',
+    },
+    {
         title: computed(_ => CapitalizeFirstLetter(t("common.created_time"))),
         align: 'start',
         sortable: false,
-        key: 'created_time',
+        key: 'create_time',
     },
     { title: computed(_ => CapitalizeFirstLetter(t("common.actions"))), key: 'actions', sortable: false },
 
 ];
 const itemsPerPage = ref(10);
-const serverItems = ref<Array<EmailFilterdata>>([]);
+const serverItems = ref<Array<EmailServiceListdata>>([]);
 const loading = ref(false);
 const totalItems = ref(0);
 const search = ref('');
@@ -128,7 +134,7 @@ const editItem = (item) => {
         
     // }
     router.push({
-        name:"Email_Marketing_Filter_Detail",params: { id: item.id }
+        name:"Email_Marketing_Service_Detail",params: { id: item.id }
     });
 };
 const openfolder=(item)=>{
@@ -141,7 +147,7 @@ const openfolder=(item)=>{
 }
 function createFilter(){
     router.push({
-        name: 'Email_Marketing_Filter_Create'
+        name: 'Email_Marketing_Service_Create'
     });
 }
 </script>

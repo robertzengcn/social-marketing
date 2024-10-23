@@ -2,7 +2,7 @@ import {windowInvoke} from '@/views/utils/apirequest'
 import {SearchResult} from '@/views/api/types'
 import {EMAILMARKETINGFILTERLIST,EMAILMARKETFILTERDETAIL,EMAILMARKETFILTERUPDATE} from "@/config/channellist";
 import {ItemSearchparam,CommonIdrequest} from "@/entityTypes/commonType"
-import {EmailFilterdata} from "@/entityTypes/emailmarketinType"
+import {EmailFilterdata} from "@/entityTypes/emailmarketingType"
 
 export async function getEmailfilterlist(data: ItemSearchparam):Promise<SearchResult<EmailFilterdata>>{
      

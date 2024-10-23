@@ -58,7 +58,7 @@ import router from '@/views/router';
 // import {SearchtaskItem } from "@/entityTypes/searchControlType"
 import { CapitalizeFirstLetter } from "@/views/utils/function"
 
-import { EmailTemplateRespdata } from "@/entityTypes/emailmarketinType"
+import { EmailTemplateRespdata } from "@/entityTypes/emailmarketingType"
 import { Header } from "@/entityTypes/commonType"
 const { t } = useI18n({ inheritLocale: true });
 const alert = ref<boolean>(false);

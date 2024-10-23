@@ -1,13 +1,16 @@
 import {EmailMarketingTemplateApi} from "@/api/emailMarketingTemplateApi";
 import { CommonApiresp,ListData,CommonResponse,CommonIdrequest } from "@/entityTypes/commonType"
-import { EmailTemplateRespdata,EmailTemplatedata,EmailFilterdata} from "@/entityTypes/emailmarketinType"
+import { EmailTemplateRespdata,EmailTemplatedata,EmailFilterdata,EmailServiceListdata,EmailServiceEntitydata} from "@/entityTypes/emailmarketingType"
 import {EmailMarketingFilterApi} from "@/api/emailMarketingFilterApi";
+import {EmailServiceApi} from "@/api/emailServiceApi";
 export class EmailMarketingController {
     emailMarketingTemplateApi: EmailMarketingTemplateApi;
     emailMarketingFilterApi:EmailMarketingFilterApi
+    emailServiceApi:EmailServiceApi
     constructor() {
         this.emailMarketingTemplateApi = new EmailMarketingTemplateApi();
         this.emailMarketingFilterApi=new EmailMarketingFilterApi();
+        this.emailServiceApi=new EmailServiceApi();
     }
     //list email template
     public async listEmailTemplate(page: number, size: number, search?: string): Promise<CommonApiresp<ListData<EmailTemplateRespdata>>> {
@@ -54,6 +57,22 @@ export class EmailMarketingController {
         }else{
             return this.emailMarketingFilterApi.createEmailFilter(param)
         }
+    }
+    //get email service list
+    public async getEmailServiceList(page: number, size: number, search?: string): Promise<CommonApiresp<ListData<EmailServiceListdata>>> {
+        return this.emailServiceApi.getEmailServiceList(page, size, search);
+    }
+    //get email service detail
+    public async getEmailServiceDetail(id: number): Promise<CommonApiresp<EmailServiceEntitydata>> {
+        return this.emailServiceApi.getEmailServiceById(id.toString());
+    }
+    //create or update email service
+    public async createuEmailService(param:EmailServiceEntitydata): Promise<CommonApiresp<CommonIdrequest<number>>>{
+        return this.emailServiceApi.createuEmailService(param);
+    }
+    //delete email service
+    public async deleteEmailService(id: number): Promise<CommonApiresp<CommonIdrequest<number>>> {
+        return this.emailServiceApi.deleteEmailService(id.toString());
     }
 
   
