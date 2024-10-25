@@ -2,8 +2,8 @@
     <div class="search_bar mt-4 d-flex jsb">
         <div class="d-flex jsb search_tool">
             <div class="search_wrap mr-4">
-                <v-text-field rounded class="elevation-0" density="compact" variant="solo" label="Search sample"
-                    append-inner-icon="mdi-magnify" single-line hide-details></v-text-field>
+                <v-text-field rounded class="elevation-0" density="compact" variant="solo" label="Search"
+                    append-inner-icon="mdi-magnify" single-line hide-details v-model="search"></v-text-field>
             </div>
             
             <v-btn class="btn ml-3" variant="flat" prepend-icon="mdi-plus" color="#5865f2" @click="createFilter()">
@@ -32,8 +32,9 @@
         </template>
     </v-data-table-server>
     <delete-dialog
-      :dialog.sync="showDeleteModal"     
+      :dialog="showDeleteModal"     
       @confirm-delete="handleDelete"
+        @confirm-close="showDeleteModal = false"
     ></delete-dialog>
 
 </template>
@@ -48,7 +49,7 @@ import {CapitalizeFirstLetter} from "@/views/utils/function"
 // import type { VDataTable } from 'vuetify/lib/components/index.mjs'
 import router from '@/views/router';
 import {Header} from "@/entityTypes/commonType"
-import DeleteDialog from '@/views/deleteDialog.vue';
+import DeleteDialog from '@/views/components/widgets/deleteDialog.vue';
 const {t} = useI18n({inheritLocale: true});
 
 // const campaignId = i18n.t("campaignId");
@@ -146,9 +147,14 @@ const deleteitem=(item:EmailServiceListdata)=>{
   }  
   showDeleteModal.value = true;
 }
-const handleDelete=()=>{
+const handleDelete=async ()=>{
     showDeleteModal.value = false;
-    deleteEmailService(deleteId.value)
+    loading.value = true;
+    const res=await deleteEmailService(deleteId.value)
+    if(res){
+        loading.value = false;
+        loadItems({ page: 1, itemsPerPage: itemsPerPage.value, sortBy: "" });
+    }
 }
 function createFilter(){
     router.push({

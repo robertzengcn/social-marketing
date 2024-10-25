@@ -1,5 +1,5 @@
 <template>
-<v-dialog v-model="dialog" width="auto">
+<v-dialog :modelValue="dialog" width="auto">
     <v-card>
       <v-card-title class="headline">{{ CapitalizeFirstLetter(t('common.comfirm_delete')) }}</v-card-title>
       <v-card-text>
@@ -27,11 +27,12 @@ const props = defineProps({
   }
   
 });
-const emit = defineEmits(['update:dialog', 'confirm-delete']);
+const emit = defineEmits(['confirm-close', 'confirm-delete']);
 
 // Methods
 const closeDialog = () => {
-  emit('update:dialog', false);
+  // props.dialog = false;
+  emit('confirm-close');
 };
 
 const confirmDelete = () => {

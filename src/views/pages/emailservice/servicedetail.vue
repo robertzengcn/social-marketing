@@ -21,8 +21,8 @@
       </v-row>
       <v-row>
         <v-col cols="12" md="12">
-          <v-text-field v-model="password" :label="$t('emailservice.password')" type="input"
-            :hint="$t('emailservice.password')" :readonly="loading" clearable required></v-text-field>
+          <v-text-field v-model="password" :label="$t('emailservice.password')" :type="show ? 'text' : 'password'" @click:append="show = !show"
+            :hint="$t('emailservice.password')" :readonly="loading" clearable required  :append-icon="show ? 'mdi-eye' : 'mdi-eye-off'"></v-text-field>
         </v-col>
       </v-row>
       <v-row>
@@ -126,6 +126,7 @@ const name = ref<string>("");
 const ssl = ref<number>(0);
 
 const loading = ref<boolean>(false);
+const show = ref<boolean>(false);
 const alert = ref<boolean>(false);
 const alertContent = ref("");
 const alertcolor = ref("");

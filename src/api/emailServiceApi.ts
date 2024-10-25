@@ -63,6 +63,6 @@ export class EmailServiceApi {
     
 //delete email service
     async deleteEmailService(id: string): Promise<CommonApiresp<CommonIdrequest<number>>> {
-        return this._httpClient.delete(`/api/emailservice/${id}`);
+        return this._httpClient.delete(`/api/emailservice/delete/${id}`);
     }
 }

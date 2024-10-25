@@ -1,6 +1,6 @@
 import {windowInvoke} from '@/views/utils/apirequest'
 import {SearchResult} from '@/views/api/types'
-import {EMAILMARKETINGFILTERLIST,EMAILMARKETFILTERDETAIL,EMAILMARKETFILTERUPDATE} from "@/config/channellist";
+import {EMAILMARKETINGFILTERLIST,EMAILMARKETFILTERDETAIL,EMAILMARKETFILTERUPDATE,EMAILFILTERDELETE} from "@/config/channellist";
 import {ItemSearchparam,CommonIdrequest} from "@/entityTypes/commonType"
 import {EmailFilterdata} from "@/entityTypes/emailmarketingType"
 
@@ -35,3 +35,7 @@ export async function updateEmailfilter(data: EmailFilterdata):Promise<CommonIdr
     }
     return resp;  
 } 
+export async function deleteEmailFilter(id: number): Promise<CommonIdrequest<number>> {
+    const params: CommonIdrequest<number>  = { id:id };
+    return windowInvoke(EMAILFILTERDELETE, params);
+}

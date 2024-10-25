@@ -15,13 +15,7 @@
     <v-data-table-server v-model:items-per-page="itemsPerPage" :search="search" :headers="headers"
         :items-length="totalItems" :items="serverItems" :loading="loading" item-value="name" @update:options="loadItems" class="mt-5">
         <template v-slot:[`item.actions`]="{ item }">
-            <v-icon
-            size="small"
-            class="me-2"
-            @click="openfolder(item)"
-          >
-            mdi-folder
-          </v-icon>
+            
             <v-icon
             size="small"
             class="me-2"
@@ -31,26 +25,31 @@
           </v-icon>
           <v-icon
             size="small"
-           
+            @click="deleteitem(item)"
           >
             mdi-delete
           </v-icon>
         </template>
     </v-data-table-server>
-    
+    <delete-dialog
+    :dialog="showDeleteModal"     
+    @confirm-delete="handleDelete"
+      @confirm-close="showDeleteModal = false"
+  ></delete-dialog>
 
 </template>
 
 <script setup lang="ts">
 import {useI18n} from "vue-i18n";
 import {EmailFilterdata} from "@/entityTypes/emailmarketingType"
-import {getEmailfilterlist} from '@/views/api/emailfilter'
+import {getEmailfilterlist,deleteEmailFilter} from '@/views/api/emailfilter'
 import { ref,computed } from 'vue'
 import { SearchResult } from '@/views/api/types'
 import {CapitalizeFirstLetter} from "@/views/utils/function"
 // import type { VDataTable } from 'vuetify/lib/components/index.mjs'
 import router from '@/views/router';
 import {Header} from "@/entityTypes/commonType"
+import DeleteDialog from '@/views/components/widgets/deleteDialog.vue';
 const {t} = useI18n({inheritLocale: true});
 
 // const campaignId = i18n.t("campaignId");
@@ -97,6 +96,8 @@ const serverItems = ref<Array<EmailFilterdata>>([]);
 const loading = ref(false);
 const totalItems = ref(0);
 const search = ref('');
+const deleteId = ref(0);
+const showDeleteModal = ref(false);
 
 function loadItems({ page, itemsPerPage, sortBy }) {
     loading.value = true
@@ -131,17 +132,26 @@ const editItem = (item) => {
         name:"Email_Marketing_Filter_Detail",params: { id: item.id }
     });
 };
-const openfolder=(item)=>{
-    // console.log(item)
-    // if(item.Types=="social task"){
-    //     router.push({
-    //         name: 'SocialtaskList',params: { id: item.CampaignId } 
-    //     });
-    // }
-}
+const deleteitem=(item:EmailFilterdata)=>{
+    
+    if (item.id) {
+      deleteId.value = item.id;
+    }  
+    showDeleteModal.value = true;
+  }
 function createFilter(){
     router.push({
         name: 'Email_Marketing_Filter_Create'
     });
+}
+const handleDelete=async ()=>{
+    showDeleteModal.value = false;
+    loading.value = true;
+    const res=await deleteEmailFilter(deleteId.value)
+    if(res){
+        console.log(res)
+        loading.value = false;
+        loadItems({ page: 1, itemsPerPage: itemsPerPage.value, sortBy: "" });
+    }
 }
 </script>

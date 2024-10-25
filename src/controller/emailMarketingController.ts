@@ -58,6 +58,10 @@ export class EmailMarketingController {
             return this.emailMarketingFilterApi.createEmailFilter(param)
         }
     }
+    //delete email filter
+    public async deleteEmailFilter(id: number): Promise<CommonApiresp<CommonIdrequest<number>>> {
+        return this.emailMarketingFilterApi.deleteEmailFilter(id.toString());
+    }
     //get email service list
     public async getEmailServiceList(page: number, size: number, search?: string): Promise<CommonApiresp<ListData<EmailServiceListdata>>> {
         return this.emailServiceApi.getEmailServiceList(page, size, search);

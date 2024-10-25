@@ -2,7 +2,7 @@ import { EmailMarketingController } from "@/controller/emailMarketingController"
 import { ipcMain } from 'electron';
 import { EMAILMARKETINGTEMPLIST, EMAILMARKETINGTEMPREMOVE,EMAILMARKETINGTEMPDETAIL,
   EMAILMARKETINGTEMPUPDATE,EMAILMARKETINGFILTERLIST,EMAILMARKETFILTERDETAIL,EMAILMARKETFILTERUPDATE,
-  EMAILSERVICELIST,EMAILSERVICEDETAIL,EMAILSERVICEUPDATE,EMAILSERVICEDELETE} from "@/config/channellist";
+  EMAILSERVICELIST,EMAILSERVICEDETAIL,EMAILSERVICEUPDATE,EMAILSERVICEDELETE,EMAILFILTERDELETE} from "@/config/channellist";
 import { ItemSearchparam } from "@/entityTypes/commonType"
 import { CommonResponse, CommonMessage,CommonIdrequest } from "@/entityTypes/commonType"
 import { EmailTemplateRespdata,EmailTemplatedata,EmailFilterdata,EmailServiceListdata,EmailServiceEntitydata } from "@/entityTypes/emailmarketingType"
@@ -215,6 +215,34 @@ export function registerEmailMarketingIpcHandlers() {
       return resp
     }
   })
+  //delete email filter
+ ipcMain.handle(EMAILFILTERDELETE, async (event, arg) => {
+  const qdata = JSON.parse(arg) as CommonIdrequest<string>;
+  if (!qdata.id) {
+    const resp: CommonMessage<number> = {
+      status: false,
+      msg: "Template id is required",
+    }
+    return resp
+  }
+  const res = await emailmarketCon.deleteEmailFilter(Number(qdata.id))
+  if (res.status) {
+    const resp: CommonMessage<CommonIdrequest<number>> = {
+      status: true,
+      msg: "",
+      data: res.data
+    }
+    return resp
+  } else {
+    const resp: CommonMessage<CommonIdrequest<number>> = {
+      status: false,
+      msg: res.msg,
+
+    }
+    return resp
+  }
+});
+
   //email service
   //get email service list
   ipcMain.handle(EMAILSERVICELIST, async (event, arg) => {
