@@ -19,22 +19,22 @@ export class EmailServiceApi {
             data.append("id", param.id.toString());
         }
         if(param.from){
-            data.append("from", param.from);
+            data.append("service_from", param.from);
         }
         if(param.password){
-            data.append("password", param.password);
+            data.append("service_pass", param.password);
         }
         if(param.host){
-            data.append("host", param.host);
+            data.append("service_host", param.host);
         }
         if(param.port){
-            data.append("port", param.port);
+            data.append("service_port", param.port);
         }
         if(param.name){
-            data.append("name", param.name);
+            data.append("service_name", param.name);
         }
         if(param.ssl){
-            data.append("ssl", param.ssl.toString());
+            data.append("service_ssl", param.ssl.toString());
         }
         return this._httpClient.post('/api/emailservice/create', data);
     }

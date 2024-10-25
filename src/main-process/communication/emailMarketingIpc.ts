@@ -289,6 +289,7 @@ export function registerEmailMarketingIpcHandlers() {
    ipcMain.handle(EMAILSERVICEUPDATE, async (event, arg) => {
     const qdata = JSON.parse(arg) as EmailServiceEntitydata;
     const res=await emailmarketCon.createuEmailService(qdata)
+    console.log(res)
     if (res.status) {
       const resp: CommonMessage<CommonIdrequest<number>> = {
         status: true,

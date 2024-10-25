@@ -6,51 +6,60 @@
         :color="alertcolor">
         {{ alertContent }}
       </v-alert>
-      <v-row>
-        <v-col cols="12" md="12">
-          <v-text-field ref="inputs" v-model="filteName" :label="$t('emailfilter.name')" type="input"
-            :hint="$t('emailfilter.inputname_hint')" :readonly="loading" clearable required></v-text-field>
-          <!-- <v-text-field v-model="tplcontent" :label="$t('emailmarketing.content')" type="input"
-            :hint="$t('emailmarketing.title_content')" :rules="[rules.required]" required :readonly="loading"
-            clearable></v-text-field> -->
-          <!-- https://www.vue2editor.com/examples/#basic-setup -->
-          <!-- <vue-editor v-model="tplcontent" /> -->
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col cols="12" md="12">
-          <v-text-field v-model="description" :label="$t('emailfilter.description')" type="input"
-            :hint="$t('emailfilter.description_hint')" :readonly="loading" clearable required></v-text-field>
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col v-for="(filter, index) in filterDetailArr" :key="index" cols="12" md="12">
-          <v-row>
-            <v-col cols="8" md="8">
-              <v-text-field v-model="filter.content" :label="$t('emailfilter.filtercontent')"
-                :hint="$t('emailfilter.filtercontent_hint')" :readonly="loading" clearable required></v-text-field>
-            </v-col>
-            <v-col cols="4" md="4">
-              <!--if item is last one in filterDetailArr-->
-              <div class="mt-3">
-                <v-btn v-if="index === filterDetailArr.length - 1" @click="filterDetailArr.push({ content: '' })"
-                  density="compact" icon="mdi-plus">
-                </v-btn>
-                <v-btn v-if="index != 0" density="compact" icon="mdi-minus" class="ml-2" @click="removeFilter(index)">
-                </v-btn>
-              </div>
-            </v-col>
-          </v-row>
-        </v-col>
-      </v-row>
 
-      <div class="d-flex flex-column">
-        <v-row>
-          <v-col cols="12" md="4">
-            <v-btn color="success" class="mt-4 mb-4" type="submit" :loading="loading">
+      <v-row>
+        <v-col cols="12" md="12">
+          <v-text-field v-model="name" :label="$t('emailservice.name')" type="input"
+            :hint="$t('emailservice.name_hint')" :readonly="loading" clearable required  :rules="[rules.required]"></v-text-field>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12" md="12">
+          <v-text-field v-model="from" :label="$t('emailservice.from')" type="email"
+            :hint="$t('emailservice.from_hint')" :readonly="loading" clearable required :rules="[rules.email]"></v-text-field>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12" md="12">
+          <v-text-field v-model="password" :label="$t('emailservice.password')" type="input"
+            :hint="$t('emailservice.password')" :readonly="loading" clearable required></v-text-field>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12" md="12">
+          <v-text-field v-model="host" :label="$t('emailservice.host')" type="input"
+            :hint="$t('emailservice.host_hint')" :readonly="loading" clearable required></v-text-field>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12" md="12">
+          <v-number-input :reverse="false" controlVariant="default" label="port" :hint="$t('emailservice.port_hint')"
+            :min="1" :max="65535" v-model="port" :readonly="loading" clearable></v-number-input>
+
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12" md="12">
+          <p><b>{{ $t('emailservice.ssl') }}:</b></p>
+      <v-btn-toggle v-model="ssl" mandatory>
+        <v-btn :value="1" color="primary"> {{ $t('common.yes') }}</v-btn>
+        <v-btn :value="0" color="success">{{ $t('common.no') }}</v-btn>
+      </v-btn-toggle>
+    </v-col>
+  </v-row>
+
+      <div class="d-flex flex-column mt-4 mb-4">
+        <v-row >
+          <v-col cols="6" md="5">
+            <v-btn color="success"  type="submit" :loading="loading">
               {{ $t('common.submit') }}
             </v-btn>
           </v-col>
+          <v-col cols="6" md="5">
+          <v-btn color="error"  block @click="$router.go(-1)">
+            {{ $t('common.return') }}
+          </v-btn>
+        </v-col>
         </v-row>
       </div>
       <v-alert v-model="alert" border="start" variant="tonal" closable close-label="Close Alert" title="Information"
@@ -67,17 +76,37 @@
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
-import { getEmailServiceDetail,createupdateEmailService } from "@/views/api/emailservice";
+import { getEmailServiceDetail, createupdateEmailService } from "@/views/api/emailservice";
 import { EmailServiceEntitydata } from "@/entityTypes/emailmarketingType"
 // import { convertVariableInTemplate } from "@/views/utils/function"
 // import { VueEditor } from "vue2-editor";
-import { CommonIdrequest } from "@/entityTypes/commonType"
+// import { CommonIdrequest } from "@/entityTypes/commonType"
 import router from "@/views/router";
+import {CapitalizeFirstLetter} from "@/views/utils/function"
 
 const { t } = useI18n({ inheritLocale: true });
 const Id = ref<number>(0);
 
+const emailRules = [
+  (v: string) => {
+    if(v) return true
+return 'Email is required'
+  },
+  (v: string) =>{
+    if (/.+@.+\..+/.test(v)) return true
 
+return 'E-mail must be valid.'
+  },
+];
+
+const rules = {
+  required: (value) => !!value || "Field is required",
+  email: (value) => {
+    if (!value) return "E-mail is required";
+    if (!/.+@.+\..+/.test(value)) return "E-mail must be valid.";
+    return true;
+  },
+};
 const $route = useRoute();
 const FakeAPI = {
   async fetch(id: number): Promise<EmailServiceEntitydata> {
@@ -89,12 +118,12 @@ const FakeAPI = {
 };
 //defined the value in page
 const form = ref<HTMLFormElement>();
-const from= ref<string>(""); //template title
-const password= ref<string>(""); 
-const host= ref<string>(""); 
-const port= ref<string>(""); 
-const name= ref<string>(""); 
-const ssl= ref<number>(0); 
+const from = ref<string>(""); //template title
+const password = ref<string>("");
+const host = ref<string>("");
+const port = ref<string>("");
+const name = ref<string>("");
+const ssl = ref<number>(0);
 
 const loading = ref<boolean>(false);
 const alert = ref<boolean>(false);
@@ -130,7 +159,7 @@ const initialize = async () => {
         port.value = res.port;
         name.value = res.name;
         ssl.value = res.ssl;
-       
+
       }
     });
   } else {
@@ -155,7 +184,18 @@ async function onSubmit() {
     alert.value = true;
     alertcolor.value = "error";
     alertContent.value = "form is not valid";
+    loading.value = false;
+    return
   } else {
+   // console.log(port.value.length)
+    if(port.value.length>5){
+      
+      alert.value = true;
+      alertcolor.value = "error";
+      alertContent.value = t("emailservice.port_lenght_error");
+      loading.value = false;
+      return;
+    }
     const soacc: EmailServiceEntitydata = {
       name: name.value,
       from: from.value,
@@ -177,7 +217,7 @@ async function onSubmit() {
           if (res.id && res.id > 0) {
             alert.value = true;
             alertcolor.value = "success";
-            alertContent.value = "Save success";
+            alertContent.value = CapitalizeFirstLetter(t("common.save_success"));
             soacc.id = res.id;
             $route.params.id = res.id.toString();
             isEdit.value = true;
@@ -191,10 +231,10 @@ async function onSubmit() {
             alert.value = false;
             if (res.id && res.id > 0) {
               router.push({
-                name: 'Email_Marketing_Filter_LIST'
+                name: 'Email_Marketing_Service_LIST'
               });
             }
-          }, 5000);
+          }, 3000);
         }
       }
       )
@@ -207,9 +247,7 @@ async function onSubmit() {
   loading.value = false;
 }
 
-function removeFilter(index: number) {
-  filterDetailArr.value.splice(index, 1);
-}
+
 
 
 onMounted(() => {

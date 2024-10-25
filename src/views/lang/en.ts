@@ -1,4 +1,5 @@
 import { proxy } from "jquery";
+import No from "../feedback/no.vue";
 
 export default {
     common:{
@@ -18,6 +19,9 @@ export default {
         created_time:"created time",
         delete_item_failure:"delete item failure",
         error:"error",
+        yes:"yes",
+        no:"no",
+        save_success:"save success",
     },
     home:{
         search:"Search Extraction",
@@ -220,6 +224,7 @@ export default {
         confirm_delete_email_service:"Email service delete confirm",
         service_id_require:"Service id is required",
         create_service:"create email service",
+        port_lenght_error:"port length error",
     }
 
 }
