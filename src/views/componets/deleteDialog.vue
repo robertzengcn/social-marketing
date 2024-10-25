@@ -1,0 +1,40 @@
+<template>
+<v-dialog v-model="dialog" width="auto">
+    <v-card>
+      <v-card-title class="headline">{{ CapitalizeFirstLetter(t('common.comfirm_delete')) }}</v-card-title>
+      <v-card-text>
+        {{ t('common.delete_confirm_tip') }} ?
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn color="green darken-1" text @click="confirmDelete">Yes</v-btn>
+        <v-btn color="red darken-1" text @click="closeDialog">No</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>    
+</template>
+<script setup lang="ts">
+import { defineProps, defineEmits } from 'vue';
+import { useI18n } from "vue-i18n";
+const { t } = useI18n({ inheritLocale: true });
+import {CapitalizeFirstLetter} from "@/views/utils/function"
+
+// Define props
+const props = defineProps({
+  dialog: {
+    type: Boolean,
+    required: true
+  }
+  
+});
+const emit = defineEmits(['update:dialog', 'confirm-delete']);
+
+// Methods
+const closeDialog = () => {
+  emit('update:dialog', false);
+};
+
+const confirmDelete = () => {
+  emit('confirm-delete');
+};
+</script>

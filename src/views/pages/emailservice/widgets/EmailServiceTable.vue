@@ -15,13 +15,7 @@
     <v-data-table-server v-model:items-per-page="itemsPerPage" :search="search" :headers="headers"
         :items-length="totalItems" :items="serverItems" :loading="loading" item-value="name" @update:options="loadItems" class="mt-5">
         <template v-slot:[`item.actions`]="{ item }">
-            <v-icon
-            size="small"
-            class="me-2"
-            @click="openfolder(item)"
-          >
-            mdi-folder
-          </v-icon>
+            
             <v-icon
             size="small"
             class="me-2"
@@ -31,26 +25,30 @@
           </v-icon>
           <v-icon
             size="small"
-           
+            @click="deleteitem(item)"
           >
             mdi-delete
           </v-icon>
         </template>
     </v-data-table-server>
-    
+    <delete-dialog
+      :dialog.sync="showDeleteModal"     
+      @confirm-delete="handleDelete"
+    ></delete-dialog>
 
 </template>
 
 <script setup lang="ts">
 import {useI18n} from "vue-i18n";
 import {EmailServiceListdata} from "@/entityTypes/emailmarketingType"
-import {getEmailServiceList} from '@/views/api/emailservice'
+import {getEmailServiceList,deleteEmailService} from '@/views/api/emailservice'
 import { ref,computed } from 'vue'
 import { SearchResult } from '@/views/api/types'
 import {CapitalizeFirstLetter} from "@/views/utils/function"
 // import type { VDataTable } from 'vuetify/lib/components/index.mjs'
 import router from '@/views/router';
 import {Header} from "@/entityTypes/commonType"
+import DeleteDialog from '@/views/deleteDialog.vue';
 const {t} = useI18n({inheritLocale: true});
 
 // const campaignId = i18n.t("campaignId");
@@ -103,6 +101,8 @@ const serverItems = ref<Array<EmailServiceListdata>>([]);
 const loading = ref(false);
 const totalItems = ref(0);
 const search = ref('');
+const showDeleteModal = ref(false);
+const deleteId = ref(0);
 
 function loadItems({ page, itemsPerPage, sortBy }) {
     loading.value = true
@@ -118,7 +118,9 @@ function loadItems({ page, itemsPerPage, sortBy }) {
              console.log(data)
             // console.log(total)
             //loop data
-            
+            if(!data){
+                data=[]
+            }
             serverItems.value = data
             totalItems.value = total
             loading.value = false
@@ -128,7 +130,7 @@ function loadItems({ page, itemsPerPage, sortBy }) {
 }
 // },
 // }
-const editItem = (item) => {
+const editItem = (item:EmailServiceListdata) => {
  
     // else if(item.Types=="social task"){
         
@@ -137,13 +139,16 @@ const editItem = (item) => {
         name:"Email_Marketing_Service_Detail",params: { id: item.id }
     });
 };
-const openfolder=(item)=>{
-    // console.log(item)
-    // if(item.Types=="social task"){
-    //     router.push({
-    //         name: 'SocialtaskList',params: { id: item.CampaignId } 
-    //     });
-    // }
+const deleteitem=(item:EmailServiceListdata)=>{
+    
+  if (item.id) {
+    deleteId.value = item.id;
+  }  
+  showDeleteModal.value = true;
+}
+const handleDelete=()=>{
+    showDeleteModal.value = false;
+    deleteEmailService(deleteId.value)
 }
 function createFilter(){
     router.push({

@@ -22,6 +22,8 @@ export default {
         yes:"yes",
         no:"no",
         save_success:"save success",
+        delete_confirm_tip:"Are you sure to delete",
+        comfirm_delete:"Confirm delete"
     },
     home:{
         search:"Search Extraction",
