@@ -5,6 +5,13 @@
         :readonly="loading" :rules="[rules.required]" class="mt-3"  
           return-object
           ></v-select>
+          <div v-if="useemailsource?.key==1">
+          <EmailresultTable  :isSelectedtable="true" />
+          </div>
+          <div v-if="useemailsource?.key==1" class="mt-3">
+            
+          </div>
+
             </v-form>
             </v-sheet>
 </template>
@@ -13,6 +20,7 @@ import { ref, computed,onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import router from '@/views/router';
 import {EmailMarketingType} from '@/config/emailmarketing';
+import EmailresultTable from '@/views/pages/emailextraction/widgets/EmailResultTable.vue'
 const { t } = useI18n({ inheritLocale: true });
 type marketType={
     key:number;
@@ -38,7 +46,7 @@ const initialize = () => {
     .map(([key, value]) => ({
       key: value as number,
       name: key,
-      tranme: t("emailmarket."+key)
+      tranme: t("emailmarketing."+key)
     }));
     console.log(marketTypeList);
     marketTypeList.map((item)=>{

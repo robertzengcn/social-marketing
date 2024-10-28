@@ -1,8 +1,8 @@
 <template>
 
     <v-data-table-server v-model:items-per-page="itemsPerPage" :search="search" :headers="headers"
-        :items-length="totalItems" :items="serverItems" :loading="loading" item-value="name" @update:options="loadItems" class="custom-data-table" show-expand>
-        <template v-slot:[`item.actions`]="{ item }">
+        :items-length="totalItems" :items="serverItems" :loading="loading" item-value="name" @update:options="loadItems" class="custom-data-table" show-expand :show-select="isSelectedtable" select-strategy="single" >
+        <template v-slot:[`item.actions`]="{ item }" v-if="isSelectedtable==true">
             <v-icon
             size="small"
             class="me-2"
@@ -49,6 +49,15 @@ import {CapitalizeFirstLetter} from "@/views/utils/function"
 import { useRoute } from "vue-router";
 const {t} = useI18n({inheritLocale: true});
 const $route = useRoute();
+// Define props
+const props = defineProps({
+  isSelectedtable: {
+    type: Boolean,
+    
+    default:false,
+  }
+  
+});
 
 const options = reactive({
       page: 1, // Initial page

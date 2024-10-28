@@ -1,3 +1,3 @@
 export enum EmailMarketingType{
-    SEARCHRESULT=1
+    EMAIL_EXTRA_TASK_LIST=1
 }

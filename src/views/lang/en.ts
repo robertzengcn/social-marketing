@@ -192,6 +192,8 @@ export default {
         template_id_require:"Template id is required",
         preview:"preview",
         create_template:"create template",
+        SEARCHRESULT:"serach result",
+        EMAIL_EXTRA_TASK_LIST:"email extraction task list",
     },
     emailfilter:{
         id:"id",

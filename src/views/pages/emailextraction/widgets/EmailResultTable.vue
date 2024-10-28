@@ -1,8 +1,9 @@
-<template>
 
-    <v-data-table-server v-model:items-per-page="itemsPerPage" :search="search" :headers="headers"
-        :items-length="totalItems" :items="serverItems" :loading="loading" item-value="name" @update:options="loadItems" class="custom-data-table" show-expand>
-        <template v-slot:[`item.actions`]="{ item }">
+<template>
+<!-- extraction task list table -->
+    <v-data-table-server v-model:items-per-page="itemsPerPage" :search="search" :headers="computedHeaders"
+        :items-length="totalItems" :items="serverItems" :loading="loading"  item-key="id" @update:options="loadItems" class="custom-data-table" show-expand :show-select="isSelectedtable" select-strategy="single">
+        <template v-slot:[`item.actions`]="{ item }" v-if="isSelectedtable!=true">
             <v-icon
             size="small"
             class="me-2"
@@ -22,7 +23,7 @@
         </template>
         <template v-slot:expanded-row="{ columns, item }">
       <tr>
-        <td :colspan="columns.length" >
+        <td :colspan="columns.length">
          <div class="ellipsis-cell"> 
             <div v-for="(url, index) in item.urls" :key="index" class="url-item">
          {{ url }}
@@ -48,6 +49,17 @@ import router from '@/views/router';
 import {CapitalizeFirstLetter} from "@/views/utils/function"
 import {EmailsearchTaskEntityDisplay} from '@/entityTypes/emailextraction-type'
 const {t} = useI18n({inheritLocale: true});
+import { Header } from "@/entityTypes/commonType"
+// Define props
+const props = defineProps({
+  isSelectedtable: {
+    type: Boolean,
+    
+    default:false,
+  }
+  
+});
+
 
 
 const options = reactive({
@@ -70,7 +82,17 @@ const FakeAPI = {
     }
 }
 
-const headers=ref<Array<any>>([])
+const headers=ref<Array<Header>>([])
+
+
+// Computed headers array based on the condition
+const computedHeaders = computed(() => {
+  if (props.isSelectedtable) {
+    return headers.value.filter(value => value.key !== 'actions');
+  } else {
+    return headers;
+  }
+});  
 let refreshInterval:ReturnType<typeof setInterval> | undefined;
 
 headers.value = [
@@ -114,6 +136,7 @@ headers.value = [
     sortable: false,
     width: '10%'
  },
+ { title: '', key: 'data-table-expand',sortable: false },
 ];
 const itemsPerPage = ref(10);
 const serverItems = ref<Array<EmailsearchTaskEntityDisplay>>([]);
