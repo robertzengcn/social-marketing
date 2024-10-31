@@ -133,7 +133,7 @@ export function registerEmailMarketingIpcHandlers() {
       qdata.size = 100;
     }
     const res = await emailmarketCon.listEmailFilter(qdata.page, qdata.size, qdata.search)
-
+    // console.log(res)
     if (res.status) {
       if (res.data) {
         const resp: CommonResponse<EmailFilterdata> = {

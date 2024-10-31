@@ -5,69 +5,77 @@
                 <v-text-field rounded class="elevation-0" density="compact" variant="solo" label="Search"
                     append-inner-icon="mdi-magnify" single-line hide-details v-model="search"></v-text-field>
             </div>
-            
+
             <v-btn class="btn ml-3" variant="flat" prepend-icon="mdi-plus" color="#5865f2" @click="createFilter()">
-                {{CapitalizeFirstLetter($t('emailservice.create_service'))}}
-             </v-btn> 
+                {{ CapitalizeFirstLetter($t('emailservice.create_service')) }}
+            </v-btn>
         </div>
-   
+
     </div>
-    <v-data-table-server v-model:items-per-page="itemsPerPage" :search="search" :headers="headers"
-        :items-length="totalItems" :items="serverItems" :loading="loading" item-value="name" @update:options="loadItems" class="mt-5">
-        <template v-slot:[`item.actions`]="{ item }">
-            
-            <v-icon
-            size="small"
-            class="me-2"
-            @click="editItem(item)"
-          >
-            mdi-pencil
-          </v-icon>
-          <v-icon
-            size="small"
-            @click="deleteitem(item)"
-          >
-            mdi-delete
-          </v-icon>
+    <v-data-table-server v-model="selected" :items-per-page="itemsPerPage" :search="search" :headers="computedHeaders"
+        :items-length="totalItems" :items="serverItems" :loading="loading" item-value="id" @update:options="loadItems"
+        class="mt-5" :show-select="isSelectedtable">
+        <template v-slot:[`item.actions`]="{ item }" v-if="isSelectedtable!=true">
+
+            <v-icon size="small" class="me-2" @click="editItem(item)">
+                mdi-pencil
+            </v-icon>
+            <v-icon size="small" @click="deleteitem(item)">
+                mdi-delete
+            </v-icon>
         </template>
     </v-data-table-server>
-    <delete-dialog
-      :dialog="showDeleteModal"     
-      @confirm-delete="handleDelete"
-        @confirm-close="showDeleteModal = false"
-    ></delete-dialog>
+    <delete-dialog :dialog="showDeleteModal" @confirm-delete="handleDelete"
+        @confirm-close="showDeleteModal = false"></delete-dialog>
 
 </template>
 
 <script setup lang="ts">
-import {useI18n} from "vue-i18n";
-import {EmailServiceListdata} from "@/entityTypes/emailmarketingType"
-import {getEmailServiceList,deleteEmailService} from '@/views/api/emailservice'
-import { ref,computed } from 'vue'
+import { useI18n } from "vue-i18n";
+import { EmailServiceListdata } from "@/entityTypes/emailmarketingType"
+import { getEmailServiceList, deleteEmailService } from '@/views/api/emailservice'
+import { ref, computed,watch } from 'vue'
 import { SearchResult } from '@/views/api/types'
-import {CapitalizeFirstLetter} from "@/views/utils/function"
+import { CapitalizeFirstLetter } from "@/views/utils/function"
 // import type { VDataTable } from 'vuetify/lib/components/index.mjs'
 import router from '@/views/router';
-import {Header} from "@/entityTypes/commonType"
+import { Header } from "@/entityTypes/commonType"
 import DeleteDialog from '@/views/components/widgets/deleteDialog.vue';
-const {t} = useI18n({inheritLocale: true});
+const { t } = useI18n({ inheritLocale: true });
+const selected = ref<Array<EmailServiceListdata>>([]);
+const computedHeaders = computed(() => {
+    if (props.isSelectedtable) {
+        return headers.value.filter(value => value.key !== 'actions');
+    } else {
+        return headers.value;
+    }
+});
+// Define props
+const props = defineProps({
+    isSelectedtable: {
+        type: Boolean,
+
+        default: false,
+    }
+
+});
 
 // const campaignId = i18n.t("campaignId");
 type Fetchparam = {
     page: number,
     itemsPerPage: number,
-    sortBy?: {key:string,order:string},
+    sortBy?: { key: string, order: string },
     search: string
 }
 
 const FakeAPI = {
     async fetch(fetchparam: Fetchparam): Promise<SearchResult<EmailServiceListdata>> {
-        const fpage=(fetchparam.page-1)*fetchparam.itemsPerPage
+        const fpage = (fetchparam.page - 1) * fetchparam.itemsPerPage
         return await getEmailServiceList({ page: fpage, size: fetchparam.itemsPerPage, sortby: fetchparam.sortBy, search: fetchparam.search })
     }
 }
 
-const headers=ref<Array<Header>>([])
+const headers = ref<Array<Header>>([])
 headers.value = [
     {
         title: computed(_ => CapitalizeFirstLetter(t("emailservice.id"))),
@@ -81,7 +89,7 @@ headers.value = [
         sortable: false,
         key: 'name',
     },
-   
+
     {
         title: computed(_ => CapitalizeFirstLetter(t("emailservice.from"))),
         align: 'start',
@@ -116,11 +124,11 @@ function loadItems({ page, itemsPerPage, sortBy }) {
     }
     FakeAPI.fetch(fetchitem).then(
         ({ data, total }) => {
-             console.log(data)
+            console.log(data)
             // console.log(total)
             //loop data
-            if(!data){
-                data=[]
+            if (!data) {
+                data = []
             }
             serverItems.value = data
             totalItems.value = total
@@ -131,34 +139,41 @@ function loadItems({ page, itemsPerPage, sortBy }) {
 }
 // },
 // }
-const editItem = (item:EmailServiceListdata) => {
- 
+const editItem = (item: EmailServiceListdata) => {
+
     // else if(item.Types=="social task"){
-        
+
     // }
     router.push({
-        name:"Email_Marketing_Service_Detail",params: { id: item.id }
+        name: "Email_Marketing_Service_Detail", params: { id: item.id }
     });
 };
-const deleteitem=(item:EmailServiceListdata)=>{
-    
-  if (item.id) {
-    deleteId.value = item.id;
-  }  
-  showDeleteModal.value = true;
+const deleteitem = (item: EmailServiceListdata) => {
+
+    if (item.id) {
+        deleteId.value = item.id;
+    }
+    showDeleteModal.value = true;
 }
-const handleDelete=async ()=>{
+const handleDelete = async () => {
     showDeleteModal.value = false;
     loading.value = true;
-    const res=await deleteEmailService(deleteId.value)
-    if(res){
+    const res = await deleteEmailService(deleteId.value)
+    if (res) {
         loading.value = false;
         loadItems({ page: 1, itemsPerPage: itemsPerPage.value, sortBy: "" });
     }
 }
-function createFilter(){
+function createFilter() {
     router.push({
         name: 'Email_Marketing_Service_Create'
     });
 }
+
+const emit = defineEmits(['change'])
+watch(selected, (newValue:Array<EmailServiceListdata>|undefined, oldValue:Array<EmailServiceListdata>|undefined) => {
+  console.log(`selected filter changed from ${oldValue} to ${newValue}`);
+  console.log(newValue)
+  emit('change', newValue);
+});
 </script>

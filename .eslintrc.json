@@ -27,7 +27,10 @@
         "vue/html-closing-bracket-newline": "off",
         "vue/v-slot-style": "off",
         "vue/multiline-html-element-content-newline": "off",
-        "vue/no-multi-spaces": "off"
+        "vue/no-multi-spaces": "off",
+        "vue/valid-v-slot": ["error", {
+            "allowModifiers": true,
+          }],
     }
     
 }

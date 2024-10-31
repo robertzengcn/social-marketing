@@ -1,4 +1,5 @@
 <template>
+<!-- email template list table-->
   <div class="search_bar mt-4 d-flex jsb">
     <div class="d-flex jsb search_tool">
       <div class="search_wrap mr-4">
@@ -6,17 +7,17 @@
           append-inner-icon="mdi-magnify" single-line hide-details v-model="search"></v-text-field>
       </div>
       <!-- <v-btn class="btn" variant="flat" prepend-icon="mdi-filter-variant"><span> More</span></v-btn> -->
-      <v-btn class="btn ml-3" variant="flat" prepend-icon="mdi-plus" color="#5865f2" @click="createTemplate()">
+      <v-btn class="btn ml-3" variant="flat" prepend-icon="mdi-plus" color="#5865f2" @click="createTemplate()" >
         {{ CapitalizeFirstLetter($t('emailmarketing.create_template')) }}
       </v-btn>
     </div>
     <div>
     </div>
   </div>
-  <v-data-table-server v-model:items-per-page="itemsPerPage" :search="search" :headers="headers"
-    :items-length="totalItems" :items="serverItems" :loading="loading" item-value="name" @update:options="loadItems"
-    class="custom-data-table mt-4">
-    <template v-slot:[`item.actions`]="{ item }">
+  <v-data-table-server v-model="selected" :items-per-page="itemsPerPage" :search="search" :headers="computedHeaders"
+    :items-length="totalItems" :items="serverItems" :loading="loading" item-key="TplId"   item-value="TplId" @update:options="loadItems" 
+    class="custom-data-table mt-4" :show-select="isSelectedtable"  >
+    <template v-slot:[`item.actions`]="{ item }" v-if="isSelectedtable!=true">
       <v-icon size="small" class="me-2" @click="editItem(item)">
         mdi-pencil
       </v-icon>
@@ -51,7 +52,7 @@
 import { useI18n } from "vue-i18n";
 import { getEmailtemplatelist, removeEmailtemplate } from '@/views/api/emailmarketing'
 //import {SearchTaskItemdisplay} from '@/entityTypes/emailextraction-type'
-import { ref, computed, onMounted, onUnmounted, reactive } from 'vue'
+import { ref, computed, onMounted, onUnmounted, reactive,watch } from 'vue'
 import { SearchResult } from '@/views/api/types'
 // import type { VDataTable } from 'vuetify/lib/components/index.mjs'
 import router from '@/views/router';
@@ -64,7 +65,7 @@ const { t } = useI18n({ inheritLocale: true });
 const alert = ref<boolean>(false);
 const alertContent = ref("");
 const alertcolor = ref("");
-
+const selected=ref<Array<EmailTemplateRespdata>>([]);
 const options = reactive({
   page: 1, // Initial page
   itemsPerPage: 10, // Items per page
@@ -78,6 +79,14 @@ type Fetchparam = {
   search: string
 }
 
+// Computed headers array based on the condition
+const computedHeaders = computed(() => {
+  if (props.isSelectedtable) {
+    return headers.value.filter(value => value.key !== 'actions');
+  } else {
+    return headers.value;
+  }
+});  
 const FakeAPI = {
   async fetch(fetchparam: Fetchparam): Promise<SearchResult<EmailTemplateRespdata>> {
     const fpage = (fetchparam.page - 1) * fetchparam.itemsPerPage
@@ -101,38 +110,40 @@ headers.value = [
     title: computed(_ => CapitalizeFirstLetter(t("emailmarketing.index"))),
     align: 'center',
     sortable: true,
-    key: 'Index',
-    width: '5%'
+    key: 'TplId',
+    
   },
   {
     title: computed(_ => CapitalizeFirstLetter(t("emailmarketing.title"))),
     align: 'center',
     sortable: false,
     key: 'TplTitle',
-    width: '10%'
+    
   },
-  // {
-  //     title: computed(_ => CapitalizeFirstLetter(t("emailextraction.url"))),
-  //     align: 'start',
-  //     sortable: false,
-  //     key: 'url',
-  //     // value: computed(value => value.join(', '))
-  // },
   {
     title: computed(_ => CapitalizeFirstLetter(t("common.record_time"))),
     align: 'start',
     sortable: false,
     key: 'TplRecord',
-    width: '10%'
+    
   },
   {
     title: 'Actions',
     align: 'start',
     key: 'actions',
     sortable: false,
-    width: '10%'
+    
   },
 ];
+// Define props
+const props = defineProps({
+  isSelectedtable: {
+    type: Boolean,
+    
+    default:false,
+  }
+  
+});
 const itemsPerPage = ref(10);
 const serverItems = ref<Array<EmailTemplateRespdata>>([]);
 const loading = ref(false);
@@ -253,7 +264,12 @@ onMounted(() => {
 onUnmounted(() => {
   stopAutoRefresh();
 });
-
+const emit = defineEmits(['change'])
+watch(selected, (newValue:Array<EmailTemplateRespdata>|undefined, oldValue:Array<EmailTemplateRespdata>|undefined) => {
+  console.log(`selectedtask changed from ${oldValue} to ${newValue}`);
+  console.log(newValue)
+  emit('change', newValue);
+});
 </script>
 <style scoped>
 .custom-data-table .v-data-table__wrapper tr {

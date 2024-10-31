@@ -1,4 +1,5 @@
 <template>
+    <!-- Email filter list table-->
     <div class="search_bar mt-4 d-flex jsb">
         <div class="d-flex jsb search_tool">
             <div class="search_wrap mr-4">
@@ -12,9 +13,10 @@
         </div>
    
     </div>
-    <v-data-table-server v-model:items-per-page="itemsPerPage" :search="search" :headers="headers"
-        :items-length="totalItems" :items="serverItems" :loading="loading" item-value="name" @update:options="loadItems" class="mt-5">
-        <template v-slot:[`item.actions`]="{ item }">
+    <v-data-table-server v-model="selected" :items-per-page="itemsPerPage" :search="search" :headers="computedHeaders"
+        :items-length="totalItems" :items="serverItems" :loading="loading"  item-value="id" @update:options="loadItems" 
+        class="mt-5" :show-select="isSelectedtable"  >
+        <template v-slot:[`item.actions`]="{ item }" v-if="isSelectedtable!=true">
             
             <v-icon
             size="small"
@@ -43,7 +45,7 @@
 import {useI18n} from "vue-i18n";
 import {EmailFilterdata} from "@/entityTypes/emailmarketingType"
 import {getEmailfilterlist,deleteEmailFilter} from '@/views/api/emailfilter'
-import { ref,computed } from 'vue'
+import { ref,computed,watch } from 'vue'
 import { SearchResult } from '@/views/api/types'
 import {CapitalizeFirstLetter} from "@/views/utils/function"
 // import type { VDataTable } from 'vuetify/lib/components/index.mjs'
@@ -66,7 +68,7 @@ const FakeAPI = {
         return await getEmailfilterlist({ page: fpage, size: fetchparam.itemsPerPage, sortby: fetchparam.sortBy, search: fetchparam.search })
     }
 }
-
+const selected=ref<Array<EmailFilterdata>>([]);
 const headers=ref<Array<Header>>([])
 headers.value = [
     {
@@ -99,6 +101,25 @@ const search = ref('');
 const deleteId = ref(0);
 const showDeleteModal = ref(false);
 
+// Define props
+const props = defineProps({
+  isSelectedtable: {
+    type: Boolean,
+    
+    default:false,
+  }
+  
+});
+
+// Computed headers array based on the condition
+const computedHeaders = computed(() => {
+  if (props.isSelectedtable) {
+    return headers.value.filter(value => value.key !== 'actions');
+  } else {
+    return headers.value;
+  }
+});  
+
 function loadItems({ page, itemsPerPage, sortBy }) {
     loading.value = true
     // console.log(page);
@@ -113,7 +134,9 @@ function loadItems({ page, itemsPerPage, sortBy }) {
              console.log(data)
             // console.log(total)
             //loop data
-            
+            if(!data){
+                data=[]
+            }
             serverItems.value = data
             totalItems.value = total
             loading.value = false
@@ -154,4 +177,11 @@ const handleDelete=async ()=>{
         loadItems({ page: 1, itemsPerPage: itemsPerPage.value, sortBy: "" });
     }
 }
+
+const emit = defineEmits(['change'])
+watch(selected, (newValue:Array<EmailFilterdata>|undefined, oldValue:Array<EmailFilterdata>|undefined) => {
+  console.log(`selected filter changed from ${oldValue} to ${newValue}`);
+  console.log(newValue)
+  emit('change', newValue);
+});
 </script>

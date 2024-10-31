@@ -23,7 +23,9 @@ export default {
         no:"no",
         save_success:"save success",
         delete_confirm_tip:"Are you sure to delete",
-        comfirm_delete:"Confirm delete"
+        comfirm_delete:"Confirm delete",
+        single_choose:"single choose",
+        multiple_choice:"multiple choice",
     },
     home:{
         search:"Search Extraction",
@@ -229,6 +231,16 @@ export default {
         service_id_require:"Service id is required",
         create_service:"create email service",
         port_lenght_error:"port length error",
+    },
+    buckemailsend:{
+        email_source:"Email Source",
+        email_template:"Email Template",
+        email_filter:"Email Filter",
+        email_service:"Email Service",
+        choose_email_source:"choose email source",
+        choose_email_template:"choose email template",
+        choose_email_filter:"choose email filter",
+        choose_email_service:"choose email service",
     }
 
 }
