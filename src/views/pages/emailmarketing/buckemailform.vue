@@ -47,17 +47,13 @@
       </v-stepper-window-item>
     </v-stepper-window>
     <div class="button-container mb-5 mr-5 ml-5">
-    <v-btn text v-if="thisstep>1" @click="backStep(thisstep)">Back</v-btn>
-    <div class="spacer"></div>
-    <v-btn v-if="thisstep < totalstep" color="primary" @click="validstep(thisstep)" >Continue</v-btn>
-    <v-btn v-else color="success">Done</v-btn>
-  </div>
+      <v-btn text v-if="thisstep > 1" @click="backStep(thisstep)">Back</v-btn>
+      <div class="spacer"></div>
+      <v-btn v-if="thisstep < totalstep" color="primary" @click="validstep(thisstep)">Continue</v-btn>
+      <v-btn v-else color="success" @click="validstep(thisstep)">Done</v-btn>
+    </div>
   </v-stepper>
-  <v-dialog v-model="showDialog" max-width="500px">
-    <v-alert color="pink" dark border="top" icon="mdi-error" transition="slide-y-transition">
-      {{ alertext }}
-    </v-alert>
-  </v-dialog>
+  <ErrorDialog :showDialog="showDialog" :alertext="alertext" />
 </template>
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
@@ -72,6 +68,7 @@ import EmailFilterTable from "@/views/pages/emailfilter/widgets/EmailFilterTable
 import EmailServiceTable from "@/views/pages/emailservice/widgets/EmailServiceTable.vue"
 import { VslotHeader } from '@/entityTypes/commonType'
 import { CapitalizeFirstLetter } from "@/views/utils/function"
+import ErrorDialog from "@/views/components/widgets/errorDialog.vue"
 const vslotheaders = ref<Array<VslotHeader>>([]);
 const { t } = useI18n({ inheritLocale: true });
 import { EmailTemplateRespdata, EmailFilterdata, EmailServiceListdata } from "@/entityTypes/emailmarketingType"
@@ -83,13 +80,14 @@ type marketType = {
 }
 const emailsourcesdata = ref<EmailsearchTaskEntityDisplay>();
 const emailtemplateresdata = ref<Array<EmailTemplateRespdata>>();
-const emailfilterdatas=ref<Array<EmailFilterdata>>([]);
-const emailservicelist=ref<Array<EmailServiceListdata>>()
+const emailfilterdatas = ref<Array<EmailFilterdata>>([]);
+const emailservicelist = ref<Array<EmailServiceListdata>>()
 
-const requiredRule = (value: any) => !!value || 'Required.';
-const step1Rules = [requiredRule];
-const step2Rules = [requiredRule];
-const step3Rules = [requiredRule];
+// const requiredRule = (value: any) => !!value || 'Required.';
+// const step1Rules = [requiredRule];
+// const step2Rules = [requiredRule];
+// const step3Rules = [requiredRule];
+
 vslotheaders.value = [
   { step: 1, title: computed(_ => CapitalizeFirstLetter(t("buckemailsend.email_source"))), valid: true },
   { step: 2, title: computed(_ => CapitalizeFirstLetter(t("buckemailsend.email_template"))), valid: true },
@@ -124,7 +122,7 @@ const validstep = (n: number) => {
     // useemailsource.value?.validate();
     if (useemailsource.value?.key == 1) {
       if (!emailsourcesdata.value) {
-        alertext.value = t("choose_at_least_one_souce")
+        alertext.value = t("buckemailsend.choose_at_least_one_souce")
         showDialog.value = true
         vslotheaders.value[0].valid = false
         return
@@ -135,24 +133,38 @@ const validstep = (n: number) => {
     } else {
       //else check
     }
-  }else if(n==2){
-    showDialog.value = true
-    alertext.value = t("buckemailsend.email_template_empty")
-    if(!emailtemplateresdata.value||emailtemplateresdata.value?.length<1){
+  } else if (n == 2) {
+
+    if (!emailtemplateresdata.value || emailtemplateresdata.value?.length < 1) {
+      showDialog.value = true
+      alertext.value = t("buckemailsend.email_template_empty")
       vslotheaders.value[1].valid = false
       return
+    }else{
+      vslotheaders.value[1].valid =true
     }
-  }else if(n==3){
-    showDialog.value = true
-    alertext.value = t("buckemailsend.email_filter_empty")
-    if(!emailfilterdatas.value||emailfilterdatas.value.length<1)
-    vslotheaders.value[2].valid = false
-    return
-  }else if(n==4){
-    showDialog.value = true
-    alertext.value = t("buckemailsend.email_service_empty")
-    if(!emailservicelist.value||emailservicelist.value.length<1)
-    vslotheaders.value[3].valid = false
+  } else if (n == 3) {
+
+    if (!emailfilterdatas.value || emailfilterdatas.value.length < 1) {
+      showDialog.value = true
+      alertext.value = t("buckemailsend.email_filter_empty")
+      vslotheaders.value[2].valid = false
+      return
+    }else{
+      vslotheaders.value[2].valid = true
+    }
+  } else if (n == 4) {
+
+    if (!emailservicelist.value || emailservicelist.value.length < 1) {
+      showDialog.value = true
+      alertext.value = t("buckemailsend.email_service_empty")
+      vslotheaders.value[3].valid = false
+      return
+    }else{
+      vslotheaders.value[3].valid = true
+    }
+    //submit data
+
     return
   }
   thisstep.value++
@@ -192,15 +204,15 @@ const handleEmailsourceChanged = (newValue: EmailsearchTaskEntityDisplay) => {
 }
 const handleEmailtemplateChanged = (newValue: Array<EmailTemplateRespdata>) => {
   //email task selected change
-  emailtemplateresdata.value=newValue
+  emailtemplateresdata.value = newValue
 }
 const handleEmailfilterChanged = (newValue: Array<EmailFilterdata>) => {
   //email task selected change
-  emailfilterdatas.value=newValue
+  emailfilterdatas.value = newValue
 }
 const handleEmailserviceChanged = (newValue: Array<EmailServiceListdata>) => {
   //email task selected change
-  emailservicelist.value=newValue
+  emailservicelist.value = newValue
 }
 function onSubmit() {
   // Your submit logic here
@@ -209,11 +221,14 @@ function onSubmit() {
 <style scoped>
 .button-container {
   display: flex;
-  justify-content: space-between; /* Distribute space between buttons */
-  align-items: center; /* Align items vertically */
+  justify-content: space-between;
+  /* Distribute space between buttons */
+  align-items: center;
+  /* Align items vertically */
 }
 
 .spacer {
-  flex: 1; /* Take up remaining space */
+  flex: 1;
+  /* Take up remaining space */
 }
 </style>
