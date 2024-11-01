@@ -2,7 +2,9 @@
   <v-stepper alt-labels v-model="thisstep" show-actions>
     <v-stepper-header>
       <v-stepper-item v-for="(step, n) in vslotheaders" :title="step.title" :value="step.step"
-        :rules="[value => !!step.valid]">
+        :rules="[value => !!step.valid]"
+         :complete="stepComplete(n+1)"
+        >
 
       </v-stepper-item>
     </v-stepper-header>
@@ -53,7 +55,7 @@
       <v-btn v-else color="success" @click="validstep(thisstep)">Done</v-btn>
     </div>
   </v-stepper>
-  <ErrorDialog :showDialog="showDialog" :alertext="alertext" />
+  <ErrorDialog :showDialog="showDialog" :alertext="alertext" @dialogclose="showDialog=false" />
 </template>
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
@@ -71,8 +73,8 @@ import { CapitalizeFirstLetter } from "@/views/utils/function"
 import ErrorDialog from "@/views/components/widgets/errorDialog.vue"
 const vslotheaders = ref<Array<VslotHeader>>([]);
 const { t } = useI18n({ inheritLocale: true });
-import { EmailTemplateRespdata, EmailFilterdata, EmailServiceListdata } from "@/entityTypes/emailmarketingType"
-
+import { EmailTemplateRespdata, EmailFilterdata, EmailServiceListdata,EmailMarketingsubdata } from "@/entityTypes/emailmarketingType"
+import {buckEmailsend} from "@/views/api/buckemail"
 type marketType = {
   key: number;
   name: string;
@@ -164,7 +166,7 @@ const validstep = (n: number) => {
       vslotheaders.value[3].valid = true
     }
     //submit data
-
+    Submitdata()
     return
   }
   thisstep.value++
@@ -176,9 +178,13 @@ const backStep = (n: number) => {
     thisstep.value--
   }
 }
-const stepComplete = (step: number) => {
-  return thisstep.value > step
-}
+// const closeDialog=()=>{
+//   console.log("close dialog")
+//   showDialog.value = false
+// }
+// const stepComplete = (step: number) => {
+//   return thisstep.value > step
+// }
 const initialize = () => {
   marketTypeOption.value = []
   const marketTypeList = Object.entries(EmailMarketingType)
@@ -214,8 +220,39 @@ const handleEmailserviceChanged = (newValue: Array<EmailServiceListdata>) => {
   //email task selected change
   emailservicelist.value = newValue
 }
-function onSubmit() {
+const stepComplete=(step:number) =>{
+            return thisstep.value > step
+  }
+function Submitdata() {
+  if(!emailtemplateresdata.value){
+    showDialog.value = true
+    alertext.value = t("buckemailsend.email_template_empty")
+    return
+  }
+  if(!emailfilterdatas.value){
+    showDialog.value = true
+      alertext.value = t("buckemailsend.email_filter_empty")
+    return
+  }
+  if(!emailservicelist.value){
+    showDialog.value = true
+    alertext.value = t("buckemailsend.email_service_empty")
+    return
+  }
+  if(!useemailsource.value){
+    alertext.value = t("buckemailsend.choose_at_least_one_souce")
+    showDialog.value = true
+    return
+  }
   // Your submit logic here
+  const emailformdata:EmailMarketingsubdata={
+    sourceType:useemailsource.value?.name,
+    EmailTemplateslist:emailtemplateresdata.value,
+    EmailFilterlist:emailfilterdatas.value,
+    EmailServicelist:emailservicelist.value
+  }
+  console.log(emailformdata)
+  buckEmailsend(emailformdata)
 }
 </script>
 <style scoped>

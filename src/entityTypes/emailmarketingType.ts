@@ -1,3 +1,4 @@
+import { EmailsearchTaskEntityDisplay } from '@/entityTypes/emailextraction-type'
 export type EmailsTemplagedata = {
     TplTitle:string
     TplContent:string
@@ -47,4 +48,11 @@ export type EmailServiceListdata={
     from: string
     host: string
     create_time: string
+}
+export type  EmailMarketingsubdata={
+    sourceType:string
+    emailtaskentity?:EmailsearchTaskEntityDisplay
+    EmailTemplateslist:Array<EmailTemplateRespdata>
+    EmailFilterlist:Array<EmailFilterdata>
+    EmailServicelist:Array<EmailServiceListdata>
 }

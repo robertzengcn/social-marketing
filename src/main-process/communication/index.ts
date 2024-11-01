@@ -9,6 +9,7 @@ import {registerSearchIpcHandlers} from "@/main-process/communication/search-ipc
 import {registeProxyIpcHandlers} from "@/main-process/communication/proxy-ipc";
 import {registerEmailextractionIpcHandlers} from "@/main-process/communication/emailextraction-ipc";
 import {registerEmailMarketingIpcHandlers} from "@/main-process/communication/emailMarketingIpc";
+import {registerBuckEmailIpcHandlers} from "@/main-process/communication/buckemail-ipc";
 export function registerCommunicationIpcHandlers(win: BrowserWindow) {
     SyncMsg(win)
     registerExtraModulesIpcHandlers()
@@ -17,6 +18,7 @@ export function registerCommunicationIpcHandlers(win: BrowserWindow) {
     registeProxyIpcHandlers()
     registerEmailextractionIpcHandlers()
     registerEmailMarketingIpcHandlers()
+    registerBuckEmailIpcHandlers()
     AsyncMsg()
     // Register extra modules IPC handlers
     

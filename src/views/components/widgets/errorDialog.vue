@@ -1,10 +1,44 @@
 <template>
-    <v-dialog :modelValue="showDialog" max-width="500px">
+  <!-- <v-dialog :model-value="showDialog" max-width="500px">
+    <v-card>
+      <v-card-title class="headline">
+        Error
+        <v-spacer></v-spacer>
+        <v-btn icon @click="closeDialog">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+      </v-card-title>
+      <v-card-text>
+       
+          {{ alertext }}
       
-    <v-alert color="pink" dark border="top" icon="mdi-error" transition="slide-y-transition">
-      {{ alertext }}
-    </v-alert>
-  </v-dialog>
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn color="primary" @click="closeDialog">Close</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog> -->
+  <v-dialog
+  persistent
+      :model-value="showDialog"
+      width="auto"
+    >
+      <v-card
+        max-width="400"
+        prepend-icon="mdi-update"
+        :text="alertext"
+        title="Error"
+      >
+        <template v-slot:actions>
+          <v-btn
+            class="ms-auto"
+            text="Ok"
+            @click="closeDialog"
+          ></v-btn>
+        </template>
+      </v-card>
+    </v-dialog>
 </template>
 <script setup lang="ts">
 const props = defineProps({
@@ -18,4 +52,10 @@ const props = defineProps({
     }
     
   });
+  const emit = defineEmits(['dialogclose']);
+
+  const closeDialog = () => {
+  // props.dialog = false;
+  emit('dialogclose');
+};
 </script>  

@@ -36,3 +36,6 @@ export const EMAILSERVICEUPDATE='email:service:update'
 export const EMAILSERVICEDETAIL='email:service:detail'
 export const EMAILSERVICELIST='email:service:list'
 export const EMAILSERVICEDELETE='email:service:delete'
+
+//buck email send
+export const BUCKEMAILSEND='buck:email:send'
