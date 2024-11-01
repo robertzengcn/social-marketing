@@ -46,10 +46,18 @@
         <!-- </template> -->
       </v-stepper-window-item>
     </v-stepper-window>
-    <v-btn v-if="thisstep < totalstep" color="primary" @click="validstep(thisstep)">Continue</v-btn>
+    <div class="button-container mb-5 mr-5 ml-5">
+    <v-btn text v-if="thisstep>1" @click="backStep(thisstep)">Back</v-btn>
+    <div class="spacer"></div>
+    <v-btn v-if="thisstep < totalstep" color="primary" @click="validstep(thisstep)" >Continue</v-btn>
     <v-btn v-else color="success">Done</v-btn>
-    <v-btn text @click="backStep(thisstep)">Back</v-btn>
+  </div>
   </v-stepper>
+  <v-dialog v-model="showDialog" max-width="500px">
+    <v-alert color="pink" dark border="top" icon="mdi-error" transition="slide-y-transition">
+      {{ alertext }}
+    </v-alert>
+  </v-dialog>
 </template>
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
@@ -74,7 +82,10 @@ type marketType = {
   tranme: string;
 }
 const emailsourcesdata = ref<EmailsearchTaskEntityDisplay>();
-const emailtemplateresdata = ref<EmailTemplateRespdata>();
+const emailtemplateresdata = ref<Array<EmailTemplateRespdata>>();
+const emailfilterdatas=ref<Array<EmailFilterdata>>([]);
+const emailservicelist=ref<Array<EmailServiceListdata>>()
+
 const requiredRule = (value: any) => !!value || 'Required.';
 const step1Rules = [requiredRule];
 const step2Rules = [requiredRule];
@@ -88,6 +99,8 @@ vslotheaders.value = [
 const thisstep = ref(1);
 const totalstep = ref<number>(4)
 const loading = ref<boolean>(false);
+const showDialog = ref<boolean>(false);
+const alertext = ref<string>("")
 const marketTypeOption = ref<marketType[]>([]);
 const rules = {
   required: (value: any) => !!value || 'Required.',
@@ -104,10 +117,15 @@ const validstep = (n: number) => {
   //valid item
   if (n == 1) {
     if (!useemailsource.value) {
+      showDialog.value = true
+      alertext.value = t("buckemailsend.email_souce_empty")
       return
     }
+    // useemailsource.value?.validate();
     if (useemailsource.value?.key == 1) {
       if (!emailsourcesdata.value) {
+        alertext.value = t("choose_at_least_one_souce")
+        showDialog.value = true
         vslotheaders.value[0].valid = false
         return
       } else {
@@ -117,6 +135,25 @@ const validstep = (n: number) => {
     } else {
       //else check
     }
+  }else if(n==2){
+    showDialog.value = true
+    alertext.value = t("buckemailsend.email_template_empty")
+    if(!emailtemplateresdata.value||emailtemplateresdata.value?.length<1){
+      vslotheaders.value[1].valid = false
+      return
+    }
+  }else if(n==3){
+    showDialog.value = true
+    alertext.value = t("buckemailsend.email_filter_empty")
+    if(!emailfilterdatas.value||emailfilterdatas.value.length<1)
+    vslotheaders.value[2].valid = false
+    return
+  }else if(n==4){
+    showDialog.value = true
+    alertext.value = t("buckemailsend.email_service_empty")
+    if(!emailservicelist.value||emailservicelist.value.length<1)
+    vslotheaders.value[3].valid = false
+    return
   }
   thisstep.value++
 }
@@ -155,17 +192,28 @@ const handleEmailsourceChanged = (newValue: EmailsearchTaskEntityDisplay) => {
 }
 const handleEmailtemplateChanged = (newValue: Array<EmailTemplateRespdata>) => {
   //email task selected change
-
+  emailtemplateresdata.value=newValue
 }
 const handleEmailfilterChanged = (newValue: Array<EmailFilterdata>) => {
   //email task selected change
-
+  emailfilterdatas.value=newValue
 }
 const handleEmailserviceChanged = (newValue: Array<EmailServiceListdata>) => {
   //email task selected change
-
+  emailservicelist.value=newValue
 }
 function onSubmit() {
   // Your submit logic here
 }
 </script>
+<style scoped>
+.button-container {
+  display: flex;
+  justify-content: space-between; /* Distribute space between buttons */
+  align-items: center; /* Align items vertically */
+}
+
+.spacer {
+  flex: 1; /* Take up remaining space */
+}
+</style>

@@ -241,6 +241,11 @@ export default {
         choose_email_template:"choose email template",
         choose_email_filter:"choose email filter",
         choose_email_service:"choose email service",
+        email_souce_empty:"email souce should not be empty ",
+        email_template_empty:"email template should not be empty",
+        email_filter_empty:"email filter should not be empty",
+        email_service_empty:"email service should bot be empty",
+        choose_at_least_one_souce:"you should choose at least one source"
     }
 
 }
