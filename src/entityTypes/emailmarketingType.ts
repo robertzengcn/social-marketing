@@ -56,3 +56,18 @@ export type  EmailMarketingsubdata={
     EmailFilterlist:Array<EmailFilterdata>
     EmailServicelist:Array<EmailServiceListdata>
 }
+export type EmailItem={
+    address:string
+    source:string
+}
+export type Buckemailstruct={
+    EmailList:Array<EmailItem>
+    EmailTemplateslist:Array<number>
+    EmailFilterlist:Array<number>
+    EmailServicelist:Array<number>
+}
+export type Buckemailremotedata={
+    Emailtemplist: Array<EmailTemplateRespdata>
+    Emailfilterlist: Array<EmailFilterdata>
+    Emailservicelist: Array<EmailServiceEntitydata>
+}

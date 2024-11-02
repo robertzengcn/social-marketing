@@ -8,6 +8,7 @@ import { Page } from 'puppeteer';
 import os from "os";
 import * as crypto from 'crypto';
 import {ProxyParseItem,ProxyServer} from "@/entityTypes/proxyType"
+import {TaskStatus} from "@/config/common"
 // import { contextIsolated } from "process";
 //import { utilityProcess, MessageChannelMain} from "electron";
 export type queryParams = {
@@ -463,6 +464,19 @@ export function getDomain(url) {
 // Function to convert JSON string to object
 export function convertJsonToObject<T>(jsonString: string): T {
   return JSON.parse(jsonString) as T;
+}
+
+export function getStatusName(status: TaskStatus): string {
+  switch (status) {
+      case EmailMarketingTaskStatus.Processing:
+          return "Processing";
+      case EmailMarketingTaskStatus.Complete:
+          return "Complete";
+      case EmailMarketingTaskStatus.Error:
+          return "Error";
+      default:
+          throw new Error("Invalid status");
+  }
 }
 
 
