@@ -1,12 +1,14 @@
 
 import { Database } from 'better-sqlite3';
 import { Scraperdb } from "@/model/scraperdb";
-import { getRecorddatetime } from "@/modules/lib/function";
+import { getRecorddatetime,getStatusName } from "@/modules/lib/function";
 import {TaskStatus} from "@/config/common"
 export interface BuckemailEntity {
     id?: number;
     type: BuckEmailType;
     record_time?: string;
+    log_file:string;
+    error_file:string;
     status?: TaskStatus;   
 }
 
@@ -21,8 +23,8 @@ export class BuckEmailTaskdb {
     }
     create(task: BuckemailEntity): number {
         const stmt = this.db.prepare(`
-            INSERT INTO buckemail (type, status,record_time)
-            VALUES (@type,@status, @record_time)
+            INSERT INTO buckemail (type, status,record_time,log_file,error_file)
+            VALUES (@type,@status, @record_time,@log_file,@error_file)
         `);
         const info = stmt.run({
             type: task.type,
@@ -38,15 +40,15 @@ export class BuckEmailTaskdb {
         `);
         return stmt.get(id) as BuckemailEntity | undefined;
     }
-
-    update(task: BuckemailEntity): void {
+    //update buck email task
+    update(id:number,task: BuckemailEntity): void {
         const stmt = this.db.prepare(`
             UPDATE buckemail
             SET type = @type, record_time = @record_time,status = @status
             WHERE id = @id
         `);
         stmt.run({
-            id: task.id,
+            id: id,
             type: task.type,
             record_time: task.record_time || getRecorddatetime(),
             status: task.status
@@ -58,5 +60,21 @@ export class BuckEmailTaskdb {
             DELETE FROM buckemail WHERE id = ?
         `);
         stmt.run(id);
+    }
+    //get buck email status
+    public getBuckEmailStatusName(taskStatus: TaskStatus): String {
+        return getStatusName(taskStatus)
+    }
+    public updateTaskLogfile(id: number, runtimeLog: string, errorLog: string) {
+        const stmt = this.db.prepare(`
+            UPDATE buckemail
+            SET log_file = @log_file, error_file = @error_file
+            WHERE id = @id
+        `);
+        stmt.run({
+            id: id,
+            log_file: runtimeLog,
+            error_file: errorLog
+        });
     }
 }

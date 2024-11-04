@@ -8,7 +8,7 @@ import { Page } from 'puppeteer';
 import os from "os";
 import * as crypto from 'crypto';
 import {ProxyParseItem,ProxyServer} from "@/entityTypes/proxyType"
-import {TaskStatus} from "@/config/common"
+import {TaskStatus} from "@/config/common";
 // import { contextIsolated } from "process";
 //import { utilityProcess, MessageChannelMain} from "electron";
 export type queryParams = {
@@ -466,17 +466,21 @@ export function convertJsonToObject<T>(jsonString: string): T {
   return JSON.parse(jsonString) as T;
 }
 
-export function getStatusName(status: TaskStatus): string {
-  switch (status) {
-      case EmailMarketingTaskStatus.Processing:
+export function getStatusName(taskStatus: TaskStatus): string {
+  switch (taskStatus) {
+      case TaskStatus.Processing:
           return "Processing";
-      case EmailMarketingTaskStatus.Complete:
+      case TaskStatus.Complete:
           return "Complete";
-      case EmailMarketingTaskStatus.Error:
+      case  TaskStatus.Error:
           return "Error";
       default:
           throw new Error("Invalid status");
   }
+}
+// Function to remove duplicates from an array
+export function removeDuplicates(array: any[]): any[] {
+  return array.filter((item, index) => array.indexOf(item) === index);
 }
 
 

@@ -1,4 +1,5 @@
 import { EmailsearchTaskEntityDisplay } from '@/entityTypes/emailextraction-type'
+import {BuckEmailType} from "@/model/buckEmailTaskdb"
 export type EmailsTemplagedata = {
     TplTitle:string
     TplContent:string
@@ -61,13 +62,16 @@ export type EmailItem={
     source:string
 }
 export type Buckemailstruct={
+    EmailBtype:BuckEmailType
     EmailList:Array<EmailItem>
     EmailTemplateslist:Array<number>
     EmailFilterlist:Array<number>
     EmailServicelist:Array<number>
+    NotDuplicate:boolean
 }
 export type Buckemailremotedata={
     Emailtemplist: Array<EmailTemplateRespdata>
     Emailfilterlist: Array<EmailFilterdata>
     Emailservicelist: Array<EmailServiceEntitydata>
 }
+
