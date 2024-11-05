@@ -1,7 +1,7 @@
 
 import { Buckemailstruct } from "@/entityTypes/emailmarketingType";
 import { EmailMarketingTemplateApi } from "@/api/emailMarketingTemplateApi";
-import { EmailTemplateRespdata,EmailFilterdata,EmailServiceEntitydata,Buckemailremotedata } from "@/entityTypes/emailmarketingType";
+import { EmailTemplateRespdata,EmailFilterdata,EmailServiceEntitydata,Buckemailremotedata} from "@/entityTypes/emailmarketingType";
 import { EmailMarketingFilterApi } from "@/api/emailMarketingFilterApi";
 import { EmailServiceApi } from "@/api/emailServiceApi";
 import * as path from 'path';
@@ -14,6 +14,7 @@ import { v4 as uuidv4 } from 'uuid';
 import {BuckEmailTaskMoudule} from "@/modules/buckEmailTaskMoudule"
 import {BuckemailEntity,BuckEmailType} from "@/model/buckEmailTaskdb"
 import {TaskStatus} from "@/config/common"
+import {ProcessMessage} from "@/entityTypes/processMessage-type"
 export class BuckemailController {
     private emailtemAPI: EmailMarketingTemplateApi
     private emailfilterAPI:EmailMarketingFilterApi
@@ -28,6 +29,83 @@ export class BuckemailController {
     //send email
     public async buckEmailsend(param: Buckemailstruct): Promise<any> {
 
+           
+        const data=this.prepareData(param)
+
+        const tokenService=new Token()
+         // console.log(path.join(__dirname, 'utilityCode.js'))
+         let logpath=tokenService.getValue(USERLOGPATH)
+         if(!logpath){
+             const useremail=tokenService.getValue(USEREMAIL)
+             //create log path
+             logpath=getApplogspath(useremail)
+         }
+         // console.log(logpath)
+         const uuid=uuidv4({random: getRandomValues(new Uint8Array(16))})
+         const errorLogfile=path.join(logpath,'emailsend_'+'_'+uuid+'.error.log')
+         const runLogfile=path.join(logpath,'emailsend_'+uuid+'.runtime.log')
+        //create buck email task
+        const entity:BuckemailEntity={
+            type: param.EmailBtype,
+            status: TaskStatus.Processing,
+            log_file:errorLogfile,
+            error_file:runLogfile
+        }
+
+        const taskId=await this.buckEmailTaskMoudule.createTask(entity)
+
+        const childPath = path.join(__dirname, 'buckEmail.js')
+        if (!fs.existsSync(childPath)) {
+            throw new Error("child js path not exist for the path " + childPath);
+        }
+        const { port1, port2 } = new MessageChannelMain()
+       
+        
+        const child = utilityProcess.fork(childPath, [],{stdio:"pipe"} )
+        
+        
+        
+        child.on("spawn", () => {
+            console.log("child process satart, pid is"+child.pid)
+            child.postMessage(JSON.stringify({action:"sendEmail",data:data}),[port1])
+           
+        })
+        
+        child.stdout?.on('data', (data) => {
+            console.log(`Received data chunk ${data}`)
+            WriteLog(runLogfile,data)
+           // child.kill()
+        })
+        child.stderr?.on('data', (data) => {
+            const ingoreStr=["Debugger attached","Waiting for the debugger to disconnect","Most NODE_OPTIONs are not supported in packaged apps"]
+            if(!ingoreStr.some((value)=>data.includes(value))){
+                    
+            // seModel.saveTaskerrorlog(taskId,data)
+            console.log(`Received error chunk ${data}`)
+            WriteLog(errorLogfile,data)
+            // this.emailSeachTaskModule.updateTaskStatus(taskId,EmailsearchTaskStatus.Error)
+            //child.kill()
+            }
+            
+        })
+        child.on("exit", (code) => {
+            if (code !== 0) {
+                console.error(`Child process exited with code ${code}`);
+                
+            } else {
+                console.log('Child process exited successfully');
+            }
+        })
+        child.on('message', (message) => {
+            console.log("get message from child")
+            console.log('Message from child:', JSON.parse(message));
+            // const childdata=JSON.parse(message) as ProcessMessage<EmailResult>
+           
+        });
+
+    }
+    //convert local number array to list
+    public async prepareData(param: Buckemailstruct):Promise<Buckemailremotedata>{
         const emailtemplist: EmailTemplateRespdata[] = []
         const emailfilterlist: EmailFilterdata[] = []
         const emailservicelist: EmailServiceEntitydata[] = []
@@ -64,89 +142,14 @@ export class BuckemailController {
             const newEmailList=emailList.filter((value,index,self)=>self.indexOf(value)===index)
             param.EmailList=newEmailList
         }
-        
 
-
-        const tokenService=new Token()
-         // console.log(path.join(__dirname, 'utilityCode.js'))
-         let logpath=tokenService.getValue(USERLOGPATH)
-         if(!logpath){
-             const useremail=tokenService.getValue(USEREMAIL)
-             //create log path
-             logpath=getApplogspath(useremail)
-         }
-         // console.log(logpath)
-         const uuid=uuidv4({random: getRandomValues(new Uint8Array(16))})
-         const errorLogfile=path.join(logpath,'emailsend_'+'_'+uuid+'.error.log')
-         const runLogfile=path.join(logpath,'emailsend_'+uuid+'.runtime.log')
-        //create buck email task
-        const entity:BuckemailEntity={
-            type: param.EmailBtype,
-            status: TaskStatus.Processing,
-            log_file:errorLogfile,
-            error_file:runLogfile
-        }
-
-        const taskId=await this.buckEmailTaskMoudule.createTask(entity)
-
-        const childPath = path.join(__dirname, 'utilityCode.js')
-        if (!fs.existsSync(childPath)) {
-            throw new Error("child js path not exist for the path " + childPath);
-        }
-        const { port1, port2 } = new MessageChannelMain()
-       
-        
-        const child = utilityProcess.fork(childPath, [],{stdio:"pipe"} )
-        
-        
         const data:Buckemailremotedata={
+            Receiverlist:param.EmailList,
             Emailtemplist: emailtemplist,
     Emailfilterlist: emailfilterlist,
     Emailservicelist: emailservicelist
         }
-        child.on("spawn", () => {
-            console.log("child process satart, pid is"+child.pid)
-            child.postMessage(JSON.stringify({action:"searchEmail",data:data}),[port1])
-           
-        })
-        
-        child.stdout?.on('data', (data) => {
-            console.log(`Received data chunk ${data}`)
-            WriteLog(runLogfile,data)
-           // child.kill()
-        })
-        child.stderr?.on('data', (data) => {
-            const ingoreStr=["Debugger attached","Waiting for the debugger to disconnect","Most NODE_OPTIONs are not supported in packaged apps"]
-            if(!ingoreStr.some((value)=>data.includes(value))){
-                    
-            // seModel.saveTaskerrorlog(taskId,data)
-            console.log(`Received error chunk ${data}`)
-            WriteLog(errorLogfile,data)
-            this.emailSeachTaskModule.updateTaskStatus(taskId,EmailsearchTaskStatus.Error)
-            //child.kill()
-            }
-            
-        })
-        child.on("exit", (code) => {
-            if (code !== 0) {
-                console.error(`Child process exited with code ${code}`);
-                
-            } else {
-                console.log('Child process exited successfully');
-            }
-        })
-        child.on('message', (message) => {
-            console.log("get message from child")
-            console.log('Message from child:', JSON.parse(message));
-            const childdata=JSON.parse(message) as ProcessMessage<EmailResult>
-            if(childdata.action=="saveres"){
-                //save result
-                this.emailSeachTaskModule.saveSearchResult(taskId,childdata.data)
-                this.emailSeachTaskModule.updateTaskStatus(taskId,EmailsearchTaskStatus.Complete)
-                //child.kill()
-            }
-        });
-
+        return data
     }
 
   

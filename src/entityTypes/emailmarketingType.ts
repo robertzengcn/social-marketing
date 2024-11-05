@@ -62,7 +62,7 @@ export type EmailItem={
     source:string
 }
 export type Buckemailstruct={
-    EmailBtype:BuckEmailType
+    EmailBtype:BuckEmailType //email source type
     EmailList:Array<EmailItem>
     EmailTemplateslist:Array<number>
     EmailFilterlist:Array<number>
@@ -70,8 +70,14 @@ export type Buckemailstruct={
     NotDuplicate:boolean
 }
 export type Buckemailremotedata={
+    Receiverlist:Array<EmailItem>
     Emailtemplist: Array<EmailTemplateRespdata>
     Emailfilterlist: Array<EmailFilterdata>
     Emailservicelist: Array<EmailServiceEntitydata>
 }
+// export type BuckemailPreparedata={
+//     Emailtemplist: Array<EmailTemplateRespdata>
+//     Emailfilterlist: Array<EmailFilterdata>
+//     Emailservicelist: Array<EmailServiceEntitydata>
+// }
 
