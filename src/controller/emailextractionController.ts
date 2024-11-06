@@ -80,9 +80,11 @@ export class EmailextractionController {
             console.log('Message from child:', JSON.parse(message));
             const childdata=JSON.parse(message) as ProcessMessage<EmailResult>
             if(childdata.action=="saveres"){
+                if(childdata.data){
                 //save result
                 this.emailSeachTaskModule.saveSearchResult(taskId,childdata.data)
                 this.emailSeachTaskModule.updateTaskStatus(taskId,EmailsearchTaskStatus.Complete)
+                }
                 //child.kill()
             }
         });

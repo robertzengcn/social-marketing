@@ -93,7 +93,7 @@ import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { getEmailtemplatebyid, updateEmailtemplate } from "@/views/api/emailmarketing"
 import { EmailTemplateRespdata, EmailTemplatePreviewdata } from "@/entityTypes/emailmarketingType"
-import { convertVariableInTemplate } from "@/views/utils/function"
+import { convertVariableInTemplate } from "@/views/utils/emailFun"
 // import { VueEditor } from "vue2-editor";
 const { t } = useI18n({ inheritLocale: true });
 const templateId = ref<number>(0);
