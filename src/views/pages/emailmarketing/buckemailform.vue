@@ -22,6 +22,11 @@
           <div v-if="useemailsource?.key == 1">
             <EmailresultTable :isSelectedtable="true" @change="handleEmailsourceChanged" />
           </div>
+          <v-container fluid>
+            <v-checkbox
+      v-model="notduplicate"
+      :label="CapitalizeFirstLetter($t('emsourceTypeailmarketing.avoid_duplicate')) as string"></v-checkbox>
+          </v-container> 
         </v-sheet>
       </v-stepper-window-item>
       <v-stepper-window-item key="2-content" :value="2">
@@ -84,7 +89,7 @@ const emailsourcesdata = ref<EmailsearchTaskEntityDisplay>();
 const emailtemplateresdata = ref<Array<EmailTemplateRespdata>>();
 const emailfilterdatas = ref<Array<EmailFilterdata>>([]);
 const emailservicelist = ref<Array<EmailServiceListdata>>()
-
+const notduplicate=ref<boolean>(true)
 // const requiredRule = (value: any) => !!value || 'Required.';
 // const step1Rules = [requiredRule];
 // const step2Rules = [requiredRule];
@@ -244,6 +249,7 @@ function Submitdata() {
     showDialog.value = true
     return
   }
+  
   // Your submit logic here
   const emailformdata:EmailMarketingsubdata={
     sourceType:useemailsource.value?.name,

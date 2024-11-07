@@ -1,23 +1,23 @@
 
 import { Database } from 'better-sqlite3';
 import { Scraperdb } from "@/model/scraperdb";
-import { getRecorddatetime,getStatusName } from "@/modules/lib/function";
-import {TaskStatus} from "@/config/common"
+import { getRecorddatetime, getStatusName } from "@/modules/lib/function";
+import { TaskStatus } from "@/config/common"
 export interface BuckemailEntity {
     id?: number;
     type: BuckEmailType;
     record_time?: string;
-    log_file:string;
-    error_file:string;
-    status?: TaskStatus;   
+    log_file: string;
+    error_file: string;
+    status?: TaskStatus;
 }
 
 export enum BuckEmailType {
     EXTRACTEMAIL = 1,
-  }
+}
 export class BuckEmailTaskdb {
     db: Database;
-    constructor(filepath:string) {
+    constructor(filepath: string) {
         const scraperModel = Scraperdb.getInstance(filepath);
         this.db = scraperModel.getdb();
     }
@@ -41,7 +41,7 @@ export class BuckEmailTaskdb {
         return stmt.get(id) as BuckemailEntity | undefined;
     }
     //update buck email task
-    update(id:number,task: BuckemailEntity): void {
+    update(id: number, task: BuckemailEntity): void {
         const stmt = this.db.prepare(`
             UPDATE buckemail
             SET type = @type, record_time = @record_time,status = @status
@@ -75,6 +75,18 @@ export class BuckEmailTaskdb {
             id: id,
             log_file: runtimeLog,
             error_file: errorLog
+        });
+    }
+    //update task log status
+    updateTaskStatus(id: number, status: TaskStatus) {
+        const stmt = this.db.prepare(`
+            UPDATE buckemail
+            SET status = @status
+            WHERE id = @id
+        `);
+        stmt.run({
+            id: id,
+            status: status
         });
     }
 }

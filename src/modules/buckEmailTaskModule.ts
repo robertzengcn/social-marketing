@@ -1,7 +1,8 @@
 import { Token } from "@/modules/token"
 import { USERSDBPATH } from '@/config/usersetting';
 import {BuckEmailTaskdb,BuckemailEntity} from "@/model/buckEmailTaskdb"
-export class BuckEmailTaskMoudule {
+import {TaskStatus} from "@/config/common"
+export class BuckEmailTaskModule {
     private dbpath: string
     private buckemailtaskdb: BuckEmailTaskdb
     constructor() {
@@ -31,9 +32,12 @@ export class BuckEmailTaskMoudule {
     deleteTask(id: string) {
         this.buckemailtaskdb.delete(Number(id));
     }
-
+    //update task log path
     updateTasklog(id: number, log_file: string, error_file: string) {
-        
+        this.buckemailtaskdb.updateTaskLogfile(id, log_file, error_file)
     }
-
+    //update task log status
+    updateTaskStatus(id: number, status: TaskStatus) {
+        this.buckemailtaskdb.updateTaskStatus(id, status)
+    }
 }

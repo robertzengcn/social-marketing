@@ -53,9 +53,10 @@ export type EmailServiceListdata={
 export type  EmailMarketingsubdata={
     sourceType:string
     emailtaskentity?:EmailsearchTaskEntityDisplay
-    EmailTemplateslist:Array<EmailTemplateRespdata>
-    EmailFilterlist:Array<EmailFilterdata>
-    EmailServicelist:Array<EmailServiceListdata>
+    EmailTemplateslist:Array<number>
+    EmailFilterlist:Array<number>
+    EmailServicelist:Array<number>
+    NotDuplicate:boolean
 }
 export type EmailItem={
     address:string
@@ -80,4 +81,11 @@ export type Buckemailremotedata={
 //     Emailfilterlist: Array<EmailFilterdata>
 //     Emailservicelist: Array<EmailServiceEntitydata>
 // }
+export type EmailSendResult={
+    receiver:string
+    status:boolean
+    title:string
+    content:string
+    info?:string
+}
 

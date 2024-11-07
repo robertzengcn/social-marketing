@@ -1,7 +1,7 @@
 "use strict";
 export {};
 import {ProcessMessage} from "@/entityTypes/processMessage-type"
-import {Buckemailremotedata} from "@/entityTypes/emailmarketingType"
+import {Buckemailremotedata,EmailSendResult} from "@/entityTypes/emailmarketingType"
 import {EmailSend} from "@/childprocess/emailSend"
 process.parentPort.on('message', async (e) => {
     const [port] = e.ports
@@ -13,9 +13,34 @@ process.parentPort.on('message', async (e) => {
                 console.error("data is null")
                 return 
             }
-            await emailsendModel.send(pme.data).then((res)=>{
+            await emailsendModel.send(pme.data,(receiver,title,content)=>{
+                const senddata:EmailSendResult={
+                    receiver:receiver,
+                    status:true,
+                    title:title,
+                    content:content
+                }
+                const message:ProcessMessage<EmailSendResult>={
+                    action:"EmailSendSuccess",
+                    data:senddata
+                }
+                port.postMessage(JSON.stringify(message))
+            },(receiver,info,title,content)=>{
+                const senddata:EmailSendResult={
+                    receiver:receiver,
+                    status:false,
+                    info:info,
+                    title:title,
+                    content:content
+                }
+                const message:ProcessMessage<EmailSendResult>={
+                    action:"EmailSendFailure",
+                    data:senddata
+                }
+                port.postMessage(JSON.stringify(message))
+            }).then(()=>{
                 const message:ProcessMessage<null>={
-                    action:"sendEmail",
+                    action:"sendEmailEnd",
                    
                 }
                 port.postMessage(JSON.stringify(message))
