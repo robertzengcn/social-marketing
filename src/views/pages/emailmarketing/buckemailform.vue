@@ -229,16 +229,24 @@ const stepComplete=(step:number) =>{
             return thisstep.value > step
   }
 function Submitdata() {
+  const emailtplids:Array<number>=[]
+  const emailfilters:Array<number>=[]
   if(!emailtemplateresdata.value){
     showDialog.value = true
     alertext.value = t("buckemailsend.email_template_empty")
     return
   }
+  emailtemplateresdata.value.forEach((item)=>{
+    if(item.TplId){
+    emailtplids.push(item.TplId)
+    }
+  })
   if(!emailfilterdatas.value){
     showDialog.value = true
       alertext.value = t("buckemailsend.email_filter_empty")
     return
   }
+  
   if(!emailservicelist.value){
     showDialog.value = true
     alertext.value = t("buckemailsend.email_service_empty")
