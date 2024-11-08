@@ -7,6 +7,7 @@ import { EmailsearchResultdb, EmailsearchResultEntity } from "@/model/emailsearc
 import { EmailsearchResultDetailEntity, EmailsearchResultDetaildb } from "@/model/emailsearchResultDetaildb"
 import { EmailExtractionTypes } from "@/config/emailextraction"
 import { SortBy } from "@/entityTypes/commonType"
+import {EmailItem} from '@/entityTypes/emailmarketingType'
 export class EmailSearchTaskModule {
     private dbpath: string
     private emailsearchTaskdb: EmailsearchTaskdb
@@ -145,6 +146,28 @@ export class EmailSearchTaskModule {
     //get task detail count
     public getTaskResultCount(taskId: number): number {
         return this.emailsearchresultdb.getTaskResultCount(taskId)
+    }
+    //get all email in email search task
+    public getAllEmails(taskId: number): EmailItem[] {
+        const res = this.emailsearchresultdb.getTaskResultCount(taskId)
+        const emails: EmailItem[] = []
+        for (let i = 0; i < res; i=i+10) {
+            const result = this.emailsearchresultdb.getTaskResult(taskId, i, 10)
+            result.forEach((value) => {
+                if(value.id){
+                const emailsArr = this.emailsearchResultDetaildb.getItemsByResultId(value.id)
+                emailsArr.forEach((email) => {
+                    const emailItem: EmailItem = {
+                        title: value.title,
+                        address: email.email,
+                        source: value.url
+                    }
+                    emails.push(emailItem)
+                })
+                }
+            })
+        }
+        return emails
     }
 
 }

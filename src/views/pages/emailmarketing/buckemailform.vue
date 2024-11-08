@@ -25,7 +25,7 @@
           <v-container fluid>
             <v-checkbox
       v-model="notduplicate"
-      :label="CapitalizeFirstLetter($t('emsourceTypeailmarketing.avoid_duplicate')) as string"></v-checkbox>
+      :label="CapitalizeFirstLetter($t('buckemailsend.avoid_duplicate')) as string"></v-checkbox>
           </v-container> 
         </v-sheet>
       </v-stepper-window-item>
@@ -79,7 +79,8 @@ import ErrorDialog from "@/views/components/widgets/errorDialog.vue"
 const vslotheaders = ref<Array<VslotHeader>>([]);
 const { t } = useI18n({ inheritLocale: true });
 import { EmailTemplateRespdata, EmailFilterdata, EmailServiceListdata,EmailMarketingsubdata } from "@/entityTypes/emailmarketingType"
-import {buckEmailsend} from "@/views/api/buckemail"
+import {buckEmailsend,receiveBuckEmailevent} from "@/views/api/buckemail"
+import {BUCKEMAILSENDMESSAGE} from "@/config/channellist"
 type marketType = {
   key: number;
   name: string;
@@ -110,7 +111,7 @@ const marketTypeOption = ref<marketType[]>([]);
 const rules = {
   required: (value: any) => !!value || 'Required.',
 };
-
+import { CommonDialogMsg } from "@/entityTypes/commonType";
 
 
 onMounted(() => {
@@ -228,9 +229,30 @@ const handleEmailserviceChanged = (newValue: Array<EmailServiceListdata>) => {
 const stepComplete=(step:number) =>{
             return thisstep.value > step
   }
-function Submitdata() {
+  const receiveMsg = () => {
+    receiveBuckEmailevent(BUCKEMAILSENDMESSAGE, function (res) {
+    console.log(res)
+    const obj = JSON.parse(res) as CommonDialogMsg
+      if(!obj.status){
+        if(obj.data?.action){
+          if(obj.data.action=="error"){
+            showDialog.value = true
+            alertext.value = t(obj.data.title)
+          }
+        }
+      }else{
+        if(obj.data?.action){
+          if(obj.data.action=="success"){
+            //jump to list page
+          }
+        }
+      }
+  })
+}
+const  Submitdata=()=> {
   const emailtplids:Array<number>=[]
   const emailfilters:Array<number>=[]
+  const emailserviceidlist:Array<number>=[]
   if(!emailtemplateresdata.value){
     showDialog.value = true
     alertext.value = t("buckemailsend.email_template_empty")
@@ -241,17 +263,28 @@ function Submitdata() {
     emailtplids.push(item.TplId)
     }
   })
+
   if(!emailfilterdatas.value){
     showDialog.value = true
       alertext.value = t("buckemailsend.email_filter_empty")
     return
   }
-  
+  emailfilterdatas.value.forEach((item)=>{
+    if(item.id){
+    emailfilters.push(item.id)
+    }
+  })
   if(!emailservicelist.value){
     showDialog.value = true
     alertext.value = t("buckemailsend.email_service_empty")
     return
   }
+  emailservicelist.value.forEach((item)=>{
+    if(item.id){
+    emailserviceidlist.push(item.id)
+    }
+  })
+
   if(!useemailsource.value){
     alertext.value = t("buckemailsend.choose_at_least_one_souce")
     showDialog.value = true
@@ -260,10 +293,14 @@ function Submitdata() {
   
   // Your submit logic here
   const emailformdata:EmailMarketingsubdata={
-    sourceType:useemailsource.value?.name,
-    EmailTemplateslist:emailtemplateresdata.value,
-    EmailFilterlist:emailfilterdatas.value,
-    EmailServicelist:emailservicelist.value
+    sourceType:useemailsource.value?.key,
+    NotDuplicate:notduplicate.value,
+    EmailTemplateslist:emailtplids,
+    EmailFilterlist:emailfilters,
+    EmailServicelist:emailserviceidlist
+  }
+  if (useemailsource.value?.key == 1) {
+    emailformdata.emailtaskentity=emailsourcesdata.value
   }
   console.log(emailformdata)
   buckEmailsend(emailformdata)

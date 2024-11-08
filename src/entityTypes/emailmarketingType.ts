@@ -51,7 +51,7 @@ export type EmailServiceListdata={
     create_time: string
 }
 export type  EmailMarketingsubdata={
-    sourceType:string
+    sourceType:number
     emailtaskentity?:EmailsearchTaskEntityDisplay
     EmailTemplateslist:Array<number>
     EmailFilterlist:Array<number>
@@ -59,6 +59,7 @@ export type  EmailMarketingsubdata={
     NotDuplicate:boolean
 }
 export type EmailItem={
+    title?:string
     address:string
     source:string
 }

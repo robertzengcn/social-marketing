@@ -247,6 +247,10 @@ export default {
         email_service_empty:"email service should bot be empty",
         choose_at_least_one_souce:"you should choose at least one source",
         avoid_duplicate:"avoid user to receive duplicate email",
+        check_email_souce:"please check email source correct",
+        email_list_task_empty:"email list from task is empty",
+        email_list_empty:"email list is empty",
+        start_send_email:"start send email",
     }
 
 }

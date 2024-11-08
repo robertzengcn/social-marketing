@@ -33,7 +33,7 @@ export class BuckemailController {
     }
 
     //send email
-    public async buckEmailsend(param: Buckemailstruct): Promise<void> {
+    public async buckEmailsend(param: Buckemailstruct): Promise<number> {
 
 
         const data = this.prepareData(param)
@@ -141,7 +141,7 @@ export class BuckemailController {
                     break;
             }
         });
-
+        return taskId
     }
     //convert local number array to list
     public async prepareData(param: Buckemailstruct): Promise<Buckemailremotedata> {
