@@ -16,7 +16,7 @@
   </div>
   <v-data-table-server v-model="selected" :items-per-page="itemsPerPage" :search="search" :headers="computedHeaders"
     :items-length="totalItems" :items="serverItems" :loading="loading" item-key="TplId"   item-value="TplId" @update:options="loadItems" 
-    class="custom-data-table mt-4" :show-select="isSelectedtable"  >
+    class="custom-data-table mt-4" :show-select="isSelectedtable" return-object>
     <template v-slot:[`item.actions`]="{ item }" v-if="isSelectedtable!=true">
       <v-icon size="small" class="me-2" @click="editItem(item)">
         mdi-pencil

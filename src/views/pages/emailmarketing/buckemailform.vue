@@ -153,14 +153,14 @@ const validstep = (n: number) => {
     }
   } else if (n == 3) {
 
-    if (!emailfilterdatas.value || emailfilterdatas.value.length < 1) {
-      showDialog.value = true
-      alertext.value = t("buckemailsend.email_filter_empty")
-      vslotheaders.value[2].valid = false
-      return
-    }else{
-      vslotheaders.value[2].valid = true
-    }
+    // if (!emailfilterdatas.value || emailfilterdatas.value.length < 1) {
+    //   showDialog.value = true
+    //   alertext.value = t("buckemailsend.email_filter_empty")
+    //   vslotheaders.value[2].valid = false
+    //   return
+    // }else{
+       vslotheaders.value[2].valid = true
+    // }
   } else if (n == 4) {
 
     if (!emailservicelist.value || emailservicelist.value.length < 1) {
@@ -205,14 +205,19 @@ const initialize = () => {
     marketTypeOption.value.push(item);
   })
   console.log(marketTypeOption.value);
+  //receiveMsg()
 }
 
 
 const form = ref<HTMLFormElement>();
 const useemailsource = ref<marketType>();
-const handleEmailsourceChanged = (newValue: EmailsearchTaskEntityDisplay) => {
+const handleEmailsourceChanged = (newValue: Array<EmailsearchTaskEntityDisplay>|undefined) => {
+  //console.warn(newValue)
   //email task selected change
-  emailsourcesdata.value = newValue
+  if(newValue){
+  emailsourcesdata.value = newValue[0]
+  }
+  //console.log(emailsourcesdata.value)
 }
 const handleEmailtemplateChanged = (newValue: Array<EmailTemplateRespdata>) => {
   //email task selected change
@@ -244,6 +249,7 @@ const stepComplete=(step:number) =>{
         if(obj.data?.action){
           if(obj.data.action=="success"){
             //jump to list page
+            console.log("success send buck email data")
           }
         }
       }
@@ -259,17 +265,19 @@ const  Submitdata=()=> {
     return
   }
   emailtemplateresdata.value.forEach((item)=>{
+    console.log(item)
     if(item.TplId){
     emailtplids.push(item.TplId)
     }
   })
 
-  if(!emailfilterdatas.value){
-    showDialog.value = true
-      alertext.value = t("buckemailsend.email_filter_empty")
-    return
-  }
+  // if(!emailfilterdatas.value){
+  //   showDialog.value = true
+  //     alertext.value = t("buckemailsend.email_filter_empty")
+  //   return
+  // }
   emailfilterdatas.value.forEach((item)=>{
+    console.log(item)
     if(item.id){
     emailfilters.push(item.id)
     }
@@ -280,6 +288,7 @@ const  Submitdata=()=> {
     return
   }
   emailservicelist.value.forEach((item)=>{
+   //console.log(item)
     if(item.id){
     emailserviceidlist.push(item.id)
     }
@@ -300,11 +309,15 @@ const  Submitdata=()=> {
     EmailServicelist:emailserviceidlist
   }
   if (useemailsource.value?.key == 1) {
-    emailformdata.emailtaskentity=emailsourcesdata.value
+    console.log(310)
+    emailformdata.emailtaskentityId=emailsourcesdata.value?.id
   }
   console.log(emailformdata)
   buckEmailsend(emailformdata)
 }
+onMounted(() => {
+  receiveMsg()
+})
 </script>
 <style scoped>
 .button-container {

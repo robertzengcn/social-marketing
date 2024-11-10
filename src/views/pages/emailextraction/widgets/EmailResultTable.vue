@@ -2,7 +2,7 @@
   <!-- extraction task list table -->
   <v-data-table-server v-model="selected" :items-per-page="itemsPerPage" :search="search" :headers="computedHeaders"
     :items-length="totalItems" :items="serverItems" :loading="loading" item-key="id" @update:options="loadItems"
-    class="custom-data-table" show-expand :show-select="isSelectedtable" select-strategy="single">
+    class="custom-data-table" show-expand :show-select="isSelectedtable" select-strategy="single" return-object>
     <template v-slot:[`item.actions`]="{ item }" v-if="isSelectedtable != true">
       <v-icon size="small" class="me-2" @click="openfolder(item)">
         mdi-folder

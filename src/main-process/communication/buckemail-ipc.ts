@@ -16,7 +16,7 @@ export function registerBuckEmailIpcHandlers() {
         const qdata = JSON.parse(data) as EmailMarketingsubdata;
         switch (qdata.sourceType) {
             case 1: {
-                if (!qdata.emailtaskentity) {
+                if (!qdata.emailtaskentityId) {
                     const comMsgs: CommonDialogMsg = {
                         status: false,
                         code: 20241108110518,
@@ -32,7 +32,7 @@ export function registerBuckEmailIpcHandlers() {
                 //get email address in search result
                 // const emailList:Array<EmailItem>=[]
                 const emailsearModuel = new EmailSearchTaskModule()
-                const emailList = emailsearModuel.getAllEmails(qdata.emailtaskentity.id)
+                const emailList = emailsearModuel.getAllEmails(qdata.emailtaskentityId)
                 if(emailList.length==0){
                     const comMsgs: CommonDialogMsg = {
                         status: false,

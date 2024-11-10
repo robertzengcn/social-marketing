@@ -22,12 +22,12 @@
 
     <v-dialog v-model="dialog" persistent max-width="290">
         <v-card>
-          <v-card-title class="headline">{{capitalizeFirstLetter($t('common.confirmation'))}}</v-card-title>
+          <v-card-title class="headline">{{CapitalizeFirstLetter($t('common.confirmation'))}}</v-card-title>
           <v-card-text>{{dialogtext}}</v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="green darken-1" @click="dialog = false">{{capitalizeFirstLetter($t('common.cancel'))}}</v-btn>
-            <v-btn color="green darken-1" @click="confirmAction">{{capitalizeFirstLetter($t('common.confirm'))}}</v-btn>
+            <v-btn color="green darken-1" @click="dialog = false">{{CapitalizeFirstLetter($t('common.cancel'))}}</v-btn>
+            <v-btn color="green darken-1" @click="confirmAction">{{CapitalizeFirstLetter($t('common.confirm'))}}</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -42,7 +42,7 @@ import { SearchResult } from '@/views/api/types'
 // import router from '@/views/router';
 import {ExtraPipModule,ExtraPipModuleItem} from "@/entityTypes/extramodule-type"
 const {t} = useI18n({inheritLocale: true});
-import {capitalizeFirstLetter} from '@/views/utils/function'
+import {CapitalizeFirstLetter} from '@/views/utils/function'
 
 // const campaignId = i18n.t("campaignId");
 type Fetchparam = {

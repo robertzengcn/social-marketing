@@ -15,7 +15,7 @@
     </div>
     <v-data-table-server v-model="selected" :items-per-page="itemsPerPage" :search="search" :headers="computedHeaders"
         :items-length="totalItems" :items="serverItems" :loading="loading"  item-value="id" @update:options="loadItems" 
-        class="mt-5" :show-select="isSelectedtable"  >
+        class="mt-5" :show-select="isSelectedtable"  return-object>
         <template v-slot:[`item.actions`]="{ item }" v-if="isSelectedtable!=true">
             
             <v-icon

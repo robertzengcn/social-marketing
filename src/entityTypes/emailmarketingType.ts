@@ -52,7 +52,7 @@ export type EmailServiceListdata={
 }
 export type  EmailMarketingsubdata={
     sourceType:number
-    emailtaskentity?:EmailsearchTaskEntityDisplay
+    emailtaskentityId?:number
     EmailTemplateslist:Array<number>
     EmailFilterlist:Array<number>
     EmailServicelist:Array<number>

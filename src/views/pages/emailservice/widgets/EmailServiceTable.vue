@@ -13,7 +13,7 @@
 
     </div>
     <v-data-table-server v-model="selected" :items-per-page="itemsPerPage" :search="search" :headers="computedHeaders"
-        :items-length="totalItems" :items="serverItems" :loading="loading" item-value="id" @update:options="loadItems"
+        :items-length="totalItems" :items="serverItems" :loading="loading" item-value="id" @update:options="loadItems" return-object
         class="mt-5" :show-select="isSelectedtable">
         <template v-slot:[`item.actions`]="{ item }" v-if="isSelectedtable!=true">
 
