@@ -26,6 +26,8 @@ export default {
         comfirm_delete:"Confirm delete",
         single_choose:"single choose",
         multiple_choice:"multiple choice",
+        test:"test"
+
     },
     home:{
         search:"Search Extraction",
@@ -231,6 +233,10 @@ export default {
         service_id_require:"Service id is required",
         create_service:"create email service",
         port_lenght_error:"port length error",
+        test_email_title:"test email title",
+        test_email_title_hint:"input test email title",        
+        test_email_content:"test email content",
+        test_email_content_hint:"input test email content",
     },
     buckemailsend:{
         email_source:"Email Source",
@@ -251,6 +257,7 @@ export default {
         email_list_task_empty:"email list from task is empty",
         email_list_empty:"email list is empty",
         start_send_email:"start send email",
+        receiver_email_list_empty:"receiver email list is empty",
     }
 
 }

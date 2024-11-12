@@ -29,15 +29,16 @@ export class BuckemailController {
         this.emailtemAPI = new EmailMarketingTemplateApi()
         this.emailfilterAPI = new EmailMarketingFilterApi()
         this.buckEmailTaskMoudule = new BuckEmailTaskModule()
+        this.emailserviceAPI = new EmailServiceApi()
         this.emailMarketingSendlogModule = new EmailMarketingSendLogModule()
     }
 
     //send email
     public async buckEmailsend(param: Buckemailstruct): Promise<number> {
 
-
-        const data = this.prepareData(param)
-
+        console.log(param)
+        const data = await this.prepareData(param)
+        console.log(data)
         const tokenService = new Token()
         // console.log(path.join(__dirname, 'utilityCode.js'))
         let logpath = tokenService.getValue(USERLOGPATH)
@@ -148,32 +149,57 @@ export class BuckemailController {
         const emailtemplist: EmailTemplateRespdata[] = []
         const emailfilterlist: EmailFilterdata[] = []
         const emailservicelist: EmailServiceEntitydata[] = []
+        //console.log(param)
         //loop email template to get template content
-        param.EmailTemplateslist.forEach((element) => {
-            this.emailtemAPI.readTemplate(element.toString()).then((res) => {
-                if (res.data) {
-                    emailtemplist.push(res.data)
-                }
+        // param.EmailTemplateslist.forEach(async (element) => {
+            
+        //     await this.emailtemAPI.readTemplate(element.toString()).then((res) => {
+        //         console.log(res.data)
+        //         if (res.data) {
+        //             emailtemplist.push(res.data)
+        //         }
 
-            })
+        //     })
+        // }
+        // )
+        for (let i = 0; i < param.EmailTemplateslist.length; i++) {
+            const element = param.EmailTemplateslist[i];
+            const res = await this.emailtemAPI.readTemplate(element.toString())
+            if (res.data) {
+                emailtemplist.push(res.data)
+            }
         }
-        )
+       
         //loop email filter list
-        param.EmailFilterlist.forEach((element) => {
-            this.emailfilterAPI.getEmailFilterById(element.toString()).then((res) => {
-                if (res.data) {
-                    emailfilterlist.push(res.data)
-                }
-            })
-        })
+        // param.EmailFilterlist.forEach(async (element) => {
+        //     await this.emailfilterAPI.getEmailFilterById(element.toString()).then((res) => {
+        //         if (res.data) {
+        //             emailfilterlist.push(res.data)
+        //         }
+        //     })
+        // })
+        for (let i = 0; i < param.EmailFilterlist.length; i++) {
+            const element = param.EmailFilterlist[i];
+            const res = await this.emailfilterAPI.getEmailFilterById(element.toString())
+            if (res.data) {
+                emailfilterlist.push(res.data)
+            }
+        }
         //loop email service list
-        param.EmailServicelist.forEach((element) => {
-            this.emailserviceAPI.getEmailServiceById(element.toString()).then((res) => {
-                if (res.data) {
-                    emailservicelist.push(res.data)
-                }
-            })
-        })
+        // param.EmailServicelist.forEach(async(element) => {
+        //     await this.emailserviceAPI.getEmailServiceById(element.toString()).then((res) => {
+        //         if (res.data) {
+        //             emailservicelist.push(res.data)
+        //         }
+        //     })
+        // })
+        for (let i = 0; i < param.EmailServicelist.length; i++) {
+            const element = param.EmailServicelist[i];
+            const res = await this.emailserviceAPI.getEmailServiceById(element.toString())
+            if (res.data) {
+                emailservicelist.push(res.data)
+            }
+        }
         //check if need to remove duplicate email receiver
         if (param.NotDuplicate == true) {
             //remove duplicate email

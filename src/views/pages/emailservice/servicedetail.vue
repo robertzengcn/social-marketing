@@ -10,19 +10,22 @@
       <v-row>
         <v-col cols="12" md="12">
           <v-text-field v-model="name" :label="$t('emailservice.name')" type="input"
-            :hint="$t('emailservice.name_hint')" :readonly="loading" clearable required  :rules="[rules.required]"></v-text-field>
+            :hint="$t('emailservice.name_hint')" :readonly="loading" clearable required
+            :rules="[rules.required]"></v-text-field>
         </v-col>
       </v-row>
       <v-row>
         <v-col cols="12" md="12">
           <v-text-field v-model="from" :label="$t('emailservice.from')" type="email"
-            :hint="$t('emailservice.from_hint')" :readonly="loading" clearable required :rules="[rules.email]"></v-text-field>
+            :hint="$t('emailservice.from_hint')" :readonly="loading" clearable required
+            :rules="[rules.email]"></v-text-field>
         </v-col>
       </v-row>
       <v-row>
         <v-col cols="12" md="12">
-          <v-text-field v-model="password" :label="$t('emailservice.password')" :type="show ? 'text' : 'password'" @click:append="show = !show"
-            :hint="$t('emailservice.password')" :readonly="loading" clearable required  :append-icon="show ? 'mdi-eye' : 'mdi-eye-off'"></v-text-field>
+          <v-text-field v-model="password" :label="$t('emailservice.password')" :type="show ? 'text' : 'password'"
+            @click:append="show = !show" :hint="$t('emailservice.password')" :readonly="loading" clearable required
+            :append-icon="show ? 'mdi-eye' : 'mdi-eye-off'"></v-text-field>
         </v-col>
       </v-row>
       <v-row>
@@ -41,25 +44,30 @@
       <v-row>
         <v-col cols="12" md="12">
           <p><b>{{ $t('emailservice.ssl') }}:</b></p>
-      <v-btn-toggle v-model="ssl" mandatory>
-        <v-btn :value="1" color="primary"> {{ $t('common.yes') }}</v-btn>
-        <v-btn :value="0" color="success">{{ $t('common.no') }}</v-btn>
-      </v-btn-toggle>
-    </v-col>
-  </v-row>
+          <v-btn-toggle v-model="ssl" mandatory>
+            <v-btn :value="1" color="primary"> {{ $t('common.yes') }}</v-btn>
+            <v-btn :value="0" color="success">{{ $t('common.no') }}</v-btn>
+          </v-btn-toggle>
+        </v-col>
+      </v-row>
 
       <div class="d-flex flex-column mt-4 mb-4">
-        <v-row >
-          <v-col cols="6" md="5">
-            <v-btn color="success"  type="submit" :loading="loading">
-              {{ $t('common.submit') }}
+        <v-row>
+          <v-col cols="4" md="5">
+            <v-btn color="success" type="submit" :loading="loading">
+              {{ $t('common.test') }}
             </v-btn>
           </v-col>
-          <v-col cols="6" md="5">
-          <v-btn color="error"  block @click="$router.go(-1)">
-            {{ $t('common.return') }}
-          </v-btn>
-        </v-col>
+          <v-col cols="4" md="5">
+            <v-btn color="blue" block @click="$router.go(-1)">
+              {{ $t('common.return') }}
+            </v-btn>
+          </v-col>
+          <v-col cols="4" md="5">
+            <v-btn color="error" block @click="$router.go(-1)">
+              {{ $t('common.return') }}
+            </v-btn>
+          </v-col>
         </v-row>
       </div>
       <v-alert v-model="alert" border="start" variant="tonal" closable close-label="Close Alert" title="Information"
@@ -68,7 +76,27 @@
       </v-alert>
     </v-form>
   </v-sheet>
+  <!-- test service valid dialog -->
+  <v-dialog v-model="showtestdialog" max-width="600">
+    <v-card prepend-icon="mdi-account" title="User Profile">
+      <v-card-text>
+        <v-container fluid>
+          <v-row>
+            <v-col cols="12" md="12">
+              <v-text-field v-model="testemailTitle" :label="$t('emailservice.test_email_title')" type="input"
+                :hint="$t('emailservice.test_email_title_hint')" :readonly="loading" clearable required
+                :rules="[rules.required]"></v-text-field>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-textarea :label="$t('emailservice.test_email_content_hint')" v-model="testemailContent" name="input-7-1" variant="filled" auto-grow></v-textarea>
+          </v-row>
+        </v-container>
 
+      </v-card-text>
+    </v-card>
+
+  </v-dialog>
 
 </template>
 <script setup lang="ts">
@@ -82,20 +110,20 @@ import { EmailServiceEntitydata } from "@/entityTypes/emailmarketingType"
 // import { VueEditor } from "vue2-editor";
 // import { CommonIdrequest } from "@/entityTypes/commonType"
 import router from "@/views/router";
-import {CapitalizeFirstLetter} from "@/views/utils/function"
+import { CapitalizeFirstLetter } from "@/views/utils/function"
 
 const { t } = useI18n({ inheritLocale: true });
 const Id = ref<number>(0);
-
+const showtestdialog = ref<boolean>(false);
 const emailRules = [
   (v: string) => {
-    if(v) return true
-return 'Email is required'
+    if (v) return true
+    return 'Email is required'
   },
-  (v: string) =>{
+  (v: string) => {
     if (/.+@.+\..+/.test(v)) return true
 
-return 'E-mail must be valid.'
+    return 'E-mail must be valid.'
   },
 ];
 
@@ -131,7 +159,8 @@ const alert = ref<boolean>(false);
 const alertContent = ref("");
 const alertcolor = ref("");
 const isEdit = ref(false);
-
+const testemailTitle = ref<string>("")
+const testemailContent = ref<string>("")
 
 // import { RefSymbol } from "@vue/reactivity";
 // const selectedProxy = ref<ProxyListEntity>();
@@ -188,9 +217,9 @@ async function onSubmit() {
     loading.value = false;
     return
   } else {
-   // console.log(port.value.length)
-    if(port.value.length>5){
-      
+    // console.log(port.value.length)
+    if (port.value.length > 5) {
+
       alert.value = true;
       alertcolor.value = "error";
       alertContent.value = t("emailservice.port_lenght_error");

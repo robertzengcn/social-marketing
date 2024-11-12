@@ -1,17 +1,19 @@
 import { Buckemailremotedata } from "@/entityTypes/emailmarketingType";
 import nodemailer from 'nodemailer';
 import { convertVariableInTemplate } from "@/views/utils/emailFun"
-import { EmailTemplatePreviewdata} from "@/entityTypes/emailmarketingType"
+import { EmailTemplatePreviewdata } from "@/entityTypes/emailmarketingType"
 
 export class EmailSend {
 
-    public async send(param: Buckemailremotedata,successCallback?:(receiver: string,title:string,content:string) => void | undefined | null,errorCallback?:(receiver: string,info:string,title:string,content:string) => void | undefined | null): Promise<any> {
+    public async send(param: Buckemailremotedata, successCallback?: (receiver: string, title: string, content: string) => void | undefined | null, errorCallback?: (receiver: string, info: string, title: string, content: string) => void | undefined | null): Promise<any> {
         const totalfilter: string[] = []
-        param.Emailfilterlist.forEach((item) => {
-            item.filter_details.forEach((filterdetail) => {
-                totalfilter.push(filterdetail.content)
+        if (param.Emailfilterlist) {
+            param.Emailfilterlist.forEach((item) => {
+                item.filter_details.forEach((filterdetail) => {
+                    totalfilter.push(filterdetail.content)
+                })
             })
-        })
+        }
 
         //loop receiver
         param.Receiverlist.forEach((item) => {
@@ -20,14 +22,42 @@ export class EmailSend {
             if (totalfilter.includes(item.address)) {
                 return
             }
-            param.Emailfilterlist.forEach((filterlist) => {
-                filterlist.filter_details.forEach((filterdetail) => {
-                    const regex = new RegExp(filterdetail.content);
-                    if (regex.test(item.address)) {
-                        return;
+
+            // param.Emailfilterlist.forEach((filterlist) => {
+            //     filterlist.filter_details.forEach((filterdetail) => {
+            //         const regex = new RegExp(filterdetail.content);
+            //         if (regex.test(item.address)) {
+            //             return;
+            //         }
+            //     })
+            // })
+            for (const filterlist of param.Emailfilterlist) {
+
+                for (const filterdetail of filterlist.filter_details) {
+                    try {
+                        const regex = new RegExp(filterdetail.content);
+                        if (regex.test(item.address)) {
+                            return;
+                        }
+                    } catch (error) {
+                        if (filterdetail.content.includes('*')) {
+                            try {
+                                const regex = new RegExp(filterdetail.content.replace(/\*/g, '.*'));
+
+                                if (regex.test(item.address)) {
+                                    return;
+                                }
+                            } catch (rerr) {
+                                console.log(`Invalid regular expression second: ${filterdetail.content}`, rerr)
+                            }
+                        }else{
+                             console.log(`Invalid regular expression: ${filterdetail.content}`, error);
+                        }
+                       
                     }
-                })
-            })
+                }
+            }
+
 
             //get random one from email send list
             const randomEmailservice = this.getRandomItem(param.Emailservicelist);
@@ -57,21 +87,21 @@ export class EmailSend {
             const mailOptions = {
                 from: randomEmailservice.from,
                 to: item.address,
-                subject: randEmailtpl.TplTitle,
-                text: randEmailtpl.TplContent
+                subject: emailTpldata.TplTitle,
+                text: emailTpldata.TplContent
             };
 
             // Send the email
             transporter.sendMail(mailOptions, function (error, info) {
                 if (error) {
                     console.error('Error:', error);
-                    if(errorCallback){
-                        errorCallback(item.address,error.message,randEmailtpl.TplTitle,randEmailtpl.TplContent)
+                    if (errorCallback) {
+                        errorCallback(item.address, error.message, emailTpldata.TplTitle, emailTpldata.TplContent)
                     }
                 } else {
                     console.log('Email sent:', info.response);
-                    if(successCallback){
-                    successCallback(item.address,randEmailtpl.TplTitle,randEmailtpl.TplContent)
+                    if (successCallback) {
+                        successCallback(item.address, emailTpldata.TplTitle, emailTpldata.TplContent)
                     }
                 }
             });

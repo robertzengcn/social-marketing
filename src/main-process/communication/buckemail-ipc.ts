@@ -39,8 +39,8 @@ export function registerBuckEmailIpcHandlers() {
                         code: 20241108151239,
                         data: {
                             action: "error",
-                            title: "buckemailsend.email_list_empty",
-                            content: "buckemailsend.email_list_task_empty"
+                            title: "buckemailsend.receiver_email_list_empty",
+                            content: "buckemailsend.receiver_email_list_empty"
                         }
                     }
                     event.sender.send(BUCKEMAILSENDMESSAGE, JSON.stringify(comMsgs))

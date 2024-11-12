@@ -151,8 +151,9 @@ export class EmailSearchTaskModule {
     public getAllEmails(taskId: number): EmailItem[] {
         const res = this.emailsearchresultdb.getTaskResultCount(taskId)
         const emails: EmailItem[] = []
-        for (let i = 0; i < res; i=i+10) {
-            const result = this.emailsearchresultdb.getTaskResult(taskId, i, 10)
+        const loopNum=100
+        for (let i = 0; i < res; i=i+loopNum) {
+            const result = this.emailsearchresultdb.getTaskResult(taskId, i, loopNum)
             result.forEach((value) => {
                 if(value.id){
                 const emailsArr = this.emailsearchResultDetaildb.getItemsByResultId(value.id)
