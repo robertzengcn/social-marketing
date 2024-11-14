@@ -26,8 +26,8 @@ export default {
         comfirm_delete:"Confirm delete",
         single_choose:"single choose",
         multiple_choice:"multiple choice",
-        test:"test"
-
+        test:"test",
+        unkonw_error:"unkonw error"
     },
     home:{
         search:"Search Extraction",
@@ -237,6 +237,9 @@ export default {
         test_email_title_hint:"input test email title",        
         test_email_content:"test email content",
         test_email_content_hint:"input test email content",
+        test_email_service:"test email service",
+        test_email_receiver:"test email receiver",
+        test_email_receiver_hint:"input test email receiver",
     },
     buckemailsend:{
         email_source:"Email Source",

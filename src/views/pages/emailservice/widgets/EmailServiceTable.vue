@@ -6,7 +6,7 @@
                     append-inner-icon="mdi-magnify" single-line hide-details v-model="search"></v-text-field>
             </div>
 
-            <v-btn class="btn ml-3" variant="flat" prepend-icon="mdi-plus" color="#5865f2" @click="createFilter()">
+            <v-btn class="btn ml-3" variant="flat" prepend-icon="mdi-plus" color="#5865f2" @click="createService()">
                 {{ CapitalizeFirstLetter($t('emailservice.create_service')) }}
             </v-btn>
         </div>
@@ -164,7 +164,8 @@ const handleDelete = async () => {
         loadItems({ page: 1, itemsPerPage: itemsPerPage.value, sortBy: "" });
     }
 }
-function createFilter() {
+function createService() {
+    console.log("create email Service")
     router.push({
         name: 'Email_Marketing_Service_Create'
     });

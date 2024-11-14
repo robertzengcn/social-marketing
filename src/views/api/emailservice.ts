@@ -1,8 +1,8 @@
-import {windowInvoke} from '@/views/utils/apirequest'
-import {EMAILSERVICEUPDATE,EMAILSERVICEDETAIL,EMAILSERVICELIST,EMAILSERVICEDELETE} from "@/config/channellist";
+import {windowInvoke,windowSend,windowReceive} from '@/views/utils/apirequest'
+import {EMAILSERVICEUPDATE,EMAILSERVICEDETAIL,EMAILSERVICELIST,EMAILSERVICEDELETE,SENDTESTEMAIL,RECEIVESENDTESTEMAILMESSAGE} from "@/config/channellist";
 import {SearchResult} from '@/views/api/types'
-import {ItemSearchparam,CommonIdrequest,CommonResponse} from "@/entityTypes/commonType"
-import {EmailServiceEntitydata,EmailServiceListdata} from "@/entityTypes/emailmarketingType"
+import {ItemSearchparam,CommonIdrequest} from "@/entityTypes/commonType"
+import {EmailServiceEntitydata,EmailServiceListdata,EmailSendParam} from "@/entityTypes/emailmarketingType"
 //get email service list
 export async function getEmailServiceList(params: ItemSearchparam): Promise<SearchResult<EmailServiceListdata>> {
     const resp= await windowInvoke(EMAILSERVICELIST, params);
@@ -20,14 +20,24 @@ export async function getEmailServiceList(params: ItemSearchparam): Promise<Sear
 //get email service detail
 export async function getEmailServiceDetail(id: number): Promise<EmailServiceEntitydata> {
     const params: CommonIdrequest<number> = { id:id };
-    return windowInvoke(EMAILSERVICEDETAIL, params);
+    return await windowInvoke(EMAILSERVICEDETAIL, params);
 }
 
 export async function createupdateEmailService(data: EmailServiceEntitydata): Promise<CommonIdrequest<number>> {
-    return windowInvoke(EMAILSERVICEUPDATE, data);
+    return await windowInvoke(EMAILSERVICEUPDATE, data);
 }
 
 export async function deleteEmailService(id: number): Promise<CommonIdrequest<number>> {
     const params: CommonIdrequest<number>  = { id:id };
-    return windowInvoke(EMAILSERVICEDELETE, params);
+    return await windowInvoke(EMAILSERVICEDELETE, params);
+}
+//send test email
+export async function sendTestemail(params: EmailSendParam) {
+ 
+    windowSend(SENDTESTEMAIL, params);
+}
+
+export function receiveEmailsendevent(cb:(data:any)=>void){
+   
+    windowReceive(RECEIVESENDTESTEMAILMESSAGE,cb)
 }

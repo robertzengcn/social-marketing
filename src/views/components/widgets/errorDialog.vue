@@ -28,7 +28,7 @@
         max-width="400"
         prepend-icon="mdi-update"
         :text="alertext"
-        title="Error"
+        :title="alertitle"
       >
         <template v-slot:actions>
           <v-btn
@@ -41,6 +41,9 @@
     </v-dialog>
 </template>
 <script setup lang="ts">
+import { useI18n } from "vue-i18n";
+const { t } = useI18n({ inheritLocale: true });
+import {CapitalizeFirstLetter} from "@/views/utils/function"
 const props = defineProps({
     showDialog: {
       type: Boolean,
@@ -49,6 +52,11 @@ const props = defineProps({
     alertext:{
         type:String,
         required: true
+    },
+    alertitle:{
+        type:String,
+        required: false,
+        default:t("common.error")
     }
     
   });

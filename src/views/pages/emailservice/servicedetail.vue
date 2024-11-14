@@ -53,21 +53,24 @@
 
       <div class="d-flex flex-column mt-4 mb-4">
         <v-row>
-          <v-col cols="4" md="5">
-            <v-btn color="success" type="submit" :loading="loading">
-              {{ $t('common.test') }}
-            </v-btn>
-          </v-col>
-          <v-col cols="4" md="5">
-            <v-btn color="blue" block @click="$router.go(-1)">
-              {{ $t('common.return') }}
-            </v-btn>
-          </v-col>
+
           <v-col cols="4" md="5">
             <v-btn color="error" block @click="$router.go(-1)">
               {{ $t('common.return') }}
             </v-btn>
           </v-col>
+          <v-col cols="4" md="5">
+            <v-btn color="blue" block @click="showtestdialog=true">
+              {{ $t('common.test') }}
+            </v-btn>
+          </v-col>
+          <v-col cols="4" md="5">
+            <v-btn color="success" type="submit" :loading="loading">
+              {{ $t('common.submit') }}
+            </v-btn>
+          </v-col>
+          
+          
         </v-row>
       </div>
       <v-alert v-model="alert" border="start" variant="tonal" closable close-label="Close Alert" title="Information"
@@ -77,10 +80,17 @@
     </v-form>
   </v-sheet>
   <!-- test service valid dialog -->
-  <v-dialog v-model="showtestdialog" max-width="600">
-    <v-card prepend-icon="mdi-account" title="User Profile">
+  <v-dialog v-model="showtestdialog" max-width="600" persistent>
+    <v-card prepend-icon="mdi-account" :title="CapitalizeFirstLetter(t('emailservice.test_email_service'))">
       <v-card-text>
         <v-container fluid>
+          <v-row>
+            <v-col cols="12" md="12">
+              <v-text-field v-model="testemailReceiver" :label="$t('emailservice.test_email_receiver')" type="input"
+                :hint="$t('emailservice.test_email_receiver_hint')" :readonly="loading" clearable required
+                :rules="[rules.required,rules.email]"></v-text-field>
+            </v-col>
+          </v-row>
           <v-row>
             <v-col cols="12" md="12">
               <v-text-field v-model="testemailTitle" :label="$t('emailservice.test_email_title')" type="input"
@@ -94,24 +104,47 @@
         </v-container>
 
       </v-card-text>
+
+      <v-divider></v-divider>
+
+      <v-card-actions>
+        <v-spacer></v-spacer>
+
+        <v-btn
+          text="Close"
+          variant="plain"
+          @click="showtestdialog = false"
+        ></v-btn>
+
+        <v-btn
+          color="primary"
+          text="Save"
+          variant="tonal"
+          @click="submitTestemail"
+        ></v-btn>
+      </v-card-actions>
     </v-card>
 
   </v-dialog>
-
+  <ErrorDialog :showDialog="showDialog" :alertext="alertdiatext" :alertitle="alertdiatitle" @dialogclose="showDialog=false" />
 </template>
 <script setup lang="ts">
 // import router from '@/views/router';
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
-import { getEmailServiceDetail, createupdateEmailService } from "@/views/api/emailservice";
-import { EmailServiceEntitydata } from "@/entityTypes/emailmarketingType"
+import { getEmailServiceDetail, createupdateEmailService,sendTestemail,receiveEmailsendevent } from "@/views/api/emailservice";
+import { EmailServiceEntitydata,EmailSendParam,EmailRequestData } from "@/entityTypes/emailmarketingType"
 // import { convertVariableInTemplate } from "@/views/utils/function"
 // import { VueEditor } from "vue2-editor";
 // import { CommonIdrequest } from "@/entityTypes/commonType"
 import router from "@/views/router";
 import { CapitalizeFirstLetter } from "@/views/utils/function"
-
+import {CommonDialogMsg } from "@/entityTypes/commonType"
+import ErrorDialog from "@/views/components/widgets/errorDialog.vue"
+const showDialog = ref<boolean>(false);
+const alertdiatext = ref<string>("")
+const alertdiatitle=ref<string>("")
 const { t } = useI18n({ inheritLocale: true });
 const Id = ref<number>(0);
 const showtestdialog = ref<boolean>(false);
@@ -158,7 +191,9 @@ const show = ref<boolean>(false);
 const alert = ref<boolean>(false);
 const alertContent = ref("");
 const alertcolor = ref("");
+
 const isEdit = ref(false);
+const testemailReceiver=ref<string>("")
 const testemailTitle = ref<string>("")
 const testemailContent = ref<string>("")
 
@@ -276,13 +311,54 @@ async function onSubmit() {
   }
   loading.value = false;
 }
+//test email setting by send out test email 
+const submitTestemail=async() =>{
+  const emailSetting:EmailServiceEntitydata={
+    name:name.value,
+    from:from.value,
+    password:password.value,
+    host:host.value,
+    port:port.value,
+    ssl:ssl.value
+  }
+  const emailRequestdata:EmailRequestData={
+    From:from.value,
+    Title:testemailTitle.value,
+    Content:testemailContent.value,
+    Receiver:testemailReceiver.value
+  }
+  const emailsendParam:EmailSendParam={
+    Setting:emailSetting,
+    EmailRequestData:emailRequestdata
+  }
+  
+  sendTestemail(emailsendParam)
+  
+}
 
+const receiveMsg = () => {
+  receiveEmailsendevent( function (res) {
+    const obj = JSON.parse(res) as CommonDialogMsg
+    if(obj.status){
 
+    }else{
+      showDialog.value=true
+      if(obj.data){
+        alertdiatext.value = t(obj.data?.content)
+        alertdiatitle.value=t(obj.data?.title)
+      }else{
+        alertdiatext.value = t("common.unkonw_error")
+        alertdiatitle.value=t("common.unkonw_error")
+      }
+     
+    }
+  })
+}
 
 
 onMounted(() => {
   initialize();
-
+  receiveMsg()
 });
 
 </script>

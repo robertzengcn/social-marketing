@@ -1,11 +1,13 @@
 import { EmailMarketingController } from "@/controller/emailMarketingController";
 import { ipcMain } from 'electron';
-import { EMAILMARKETINGTEMPLIST, EMAILMARKETINGTEMPREMOVE,EMAILMARKETINGTEMPDETAIL,
-  EMAILMARKETINGTEMPUPDATE,EMAILMARKETINGFILTERLIST,EMAILMARKETFILTERDETAIL,EMAILMARKETFILTERUPDATE,
-  EMAILSERVICELIST,EMAILSERVICEDETAIL,EMAILSERVICEUPDATE,EMAILSERVICEDELETE,EMAILFILTERDELETE} from "@/config/channellist";
+import {
+  EMAILMARKETINGTEMPLIST, EMAILMARKETINGTEMPREMOVE, EMAILMARKETINGTEMPDETAIL,
+  EMAILMARKETINGTEMPUPDATE, EMAILMARKETINGFILTERLIST, EMAILMARKETFILTERDETAIL, EMAILMARKETFILTERUPDATE,
+  EMAILSERVICELIST, EMAILSERVICEDETAIL, EMAILSERVICEUPDATE, EMAILSERVICEDELETE, EMAILFILTERDELETE, SENDTESTEMAIL, RECEIVESENDTESTEMAILMESSAGE
+} from "@/config/channellist";
 import { ItemSearchparam } from "@/entityTypes/commonType"
-import { CommonResponse, CommonMessage,CommonIdrequest } from "@/entityTypes/commonType"
-import { EmailTemplateRespdata,EmailTemplatedata,EmailFilterdata,EmailServiceListdata,EmailServiceEntitydata } from "@/entityTypes/emailmarketingType"
+import { CommonResponse, CommonMessage, CommonIdrequest, CommonDialogMsg } from "@/entityTypes/commonType"
+import { EmailTemplateRespdata, EmailTemplatedata, EmailFilterdata, EmailServiceListdata, EmailServiceEntitydata, EmailSendParam } from "@/entityTypes/emailmarketingType"
 
 export function registerEmailMarketingIpcHandlers() {
   const emailmarketCon = new EmailMarketingController()
@@ -107,7 +109,7 @@ export function registerEmailMarketingIpcHandlers() {
   //update email template data
   ipcMain.handle(EMAILMARKETINGTEMPUPDATE, async (event, arg) => {
     const qdata = JSON.parse(arg) as EmailTemplatedata;
-    const res=await emailmarketCon.updateEmailtemplate(qdata)
+    const res = await emailmarketCon.updateEmailtemplate(qdata)
     if (res.status) {
       const resp: CommonMessage<CommonIdrequest<number>> = {
         status: true,
@@ -177,7 +179,7 @@ export function registerEmailMarketingIpcHandlers() {
       }
       return resp
     }
-    const resp=await emailmarketCon.getEmailFilterDetail(Number(qdata.id))
+    const resp = await emailmarketCon.getEmailFilterDetail(Number(qdata.id))
     if (resp.status) {
       const resdata: CommonMessage<EmailFilterdata> = {
         status: true,
@@ -185,7 +187,7 @@ export function registerEmailMarketingIpcHandlers() {
         data: resp.data
       }
       return resdata
-    }else{
+    } else {
       const resdata: CommonMessage<EmailFilterdata> = {
         status: false,
         msg: resp.msg,
@@ -197,7 +199,7 @@ export function registerEmailMarketingIpcHandlers() {
   //update email filter
   ipcMain.handle(EMAILMARKETFILTERUPDATE, async (event, arg) => {
     const qdata = JSON.parse(arg) as EmailFilterdata;
-    const res=await emailmarketCon.updateEmailFilter(qdata)
+    const res = await emailmarketCon.updateEmailFilter(qdata)
     console.log(res)
     if (res.status) {
       const resp: CommonMessage<CommonIdrequest<number>> = {
@@ -216,32 +218,32 @@ export function registerEmailMarketingIpcHandlers() {
     }
   })
   //delete email filter
- ipcMain.handle(EMAILFILTERDELETE, async (event, arg) => {
-  const qdata = JSON.parse(arg) as CommonIdrequest<string>;
-  if (!qdata.id) {
-    const resp: CommonMessage<number> = {
-      status: false,
-      msg: "Template id is required",
+  ipcMain.handle(EMAILFILTERDELETE, async (event, arg) => {
+    const qdata = JSON.parse(arg) as CommonIdrequest<string>;
+    if (!qdata.id) {
+      const resp: CommonMessage<number> = {
+        status: false,
+        msg: "Template id is required",
+      }
+      return resp
     }
-    return resp
-  }
-  const res = await emailmarketCon.deleteEmailFilter(Number(qdata.id))
-  if (res.status) {
-    const resp: CommonMessage<CommonIdrequest<number>> = {
-      status: true,
-      msg: "",
-      data: res.data
-    }
-    return resp
-  } else {
-    const resp: CommonMessage<CommonIdrequest<number>> = {
-      status: false,
-      msg: res.msg,
+    const res = await emailmarketCon.deleteEmailFilter(Number(qdata.id))
+    if (res.status) {
+      const resp: CommonMessage<CommonIdrequest<number>> = {
+        status: true,
+        msg: "",
+        data: res.data
+      }
+      return resp
+    } else {
+      const resp: CommonMessage<CommonIdrequest<number>> = {
+        status: false,
+        msg: res.msg,
 
+      }
+      return resp
     }
-    return resp
-  }
-});
+  });
 
   //email service
   //get email service list
@@ -314,9 +316,9 @@ export function registerEmailMarketingIpcHandlers() {
     }
   });
   //create or update email service
-   ipcMain.handle(EMAILSERVICEUPDATE, async (event, arg) => {
+  ipcMain.handle(EMAILSERVICEUPDATE, async (event, arg) => {
     const qdata = JSON.parse(arg) as EmailServiceEntitydata;
-    const res=await emailmarketCon.createuEmailService(qdata)
+    const res = await emailmarketCon.createuEmailService(qdata)
     console.log(res)
     if (res.status) {
       const resp: CommonMessage<CommonIdrequest<number>> = {
@@ -336,7 +338,7 @@ export function registerEmailMarketingIpcHandlers() {
   })
 
   //delete email service
-   ipcMain.handle(EMAILSERVICEDELETE, async (event, arg) => {
+  ipcMain.handle(EMAILSERVICEDELETE, async (event, arg) => {
     const qdata = JSON.parse(arg) as CommonIdrequest<string>;
     if (!qdata.id) {
       const resp: CommonMessage<number> = {
@@ -362,5 +364,66 @@ export function registerEmailMarketingIpcHandlers() {
       return resp
     }
   });
+
+  //SEND test email
+
+  ipcMain.on(SENDTESTEMAIL, async (event, arg) => {
+    const qdata = JSON.parse(arg) as EmailSendParam;
+
+
+    // try {
+    await emailmarketCon.sendEmail(qdata, (errorMessage: string) => {
+      console.log(errorMessage)
+      const resp: CommonDialogMsg = {
+        status: false,
+        code: 202411141455379,
+        data: {
+          action: "error",
+          title: "send_test_email_error",
+          content: errorMessage
+        }
+      }
+      event.sender.send(RECEIVESENDTESTEMAILMESSAGE, JSON.stringify(resp))
+      return
+    }, () => {
+      // console.log("email send success")
+      const resp: CommonDialogMsg = {
+        status: true,
+        code: 0,
+        data: {
+          action: "success",
+          title: "send_test_email_error",
+          content: ""
+        }
+      }
+      event.sender.send(RECEIVESENDTESTEMAILMESSAGE, JSON.stringify(resp))
+      return resp
+    }).catch((error) => {
+      console.log(error)
+      let errorMessage: string;
+
+      if (error instanceof Error) {
+        // If error is an instance of Error, access its message property
+        errorMessage = error.message;
+      } else {
+        // Otherwise, convert error to a string
+        errorMessage = String(error);
+      }
+
+      const resp: CommonDialogMsg = {
+        status: false,
+        code: 202411141458415,
+        data: {
+          action: "error",
+          title: "send_test_email_error",
+          content: ""
+        }
+      }
+      event.sender.send(RECEIVESENDTESTEMAILMESSAGE, JSON.stringify(resp))
+      return resp
+    })
+
+
+  })
 
 }

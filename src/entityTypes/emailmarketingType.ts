@@ -89,4 +89,14 @@ export type EmailSendResult={
     content:string
     info?:string
 }
+export type EmailSendParam={
+    Setting:EmailServiceEntitydata
+    EmailRequestData:EmailRequestData
+}
+export type EmailRequestData={
+    From:string
+    Receiver:string
+    Title:string
+    Content:string
+}
 

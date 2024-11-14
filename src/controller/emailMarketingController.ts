@@ -1,8 +1,9 @@
 import {EmailMarketingTemplateApi} from "@/api/emailMarketingTemplateApi";
 import { CommonApiresp,ListData,CommonResponse,CommonIdrequest } from "@/entityTypes/commonType"
-import { EmailTemplateRespdata,EmailTemplatedata,EmailFilterdata,EmailServiceListdata,EmailServiceEntitydata} from "@/entityTypes/emailmarketingType"
+import { EmailTemplateRespdata,EmailTemplatedata,EmailFilterdata,EmailServiceListdata,EmailServiceEntitydata,EmailSendParam} from "@/entityTypes/emailmarketingType"
 import {EmailMarketingFilterApi} from "@/api/emailMarketingFilterApi";
 import {EmailServiceApi} from "@/api/emailServiceApi";
+import {EmailService} from "@/modules/lib/emailService"
 export class EmailMarketingController {
     emailMarketingTemplateApi: EmailMarketingTemplateApi;
     emailMarketingFilterApi:EmailMarketingFilterApi
@@ -77,6 +78,22 @@ export class EmailMarketingController {
     //delete email service
     public async deleteEmailService(id: number): Promise<CommonApiresp<CommonIdrequest<number>>> {
         return this.emailServiceApi.deleteEmailService(id.toString());
+    }
+
+    //send email 
+    public async sendEmail(param: EmailSendParam,errorCall?:(errorMessage: string)=>void,successCallback?:()=>void ): Promise<any> {
+       
+        const emailService=new EmailService(param.Setting)
+        await emailService.sendEmail(param.EmailRequestData,function(errorString){
+            if(errorCall){
+            errorCall(errorString)
+            }
+        },function(){
+            if(successCallback){
+                successCallback()
+            }
+        })
+
     }
 
   
