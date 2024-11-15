@@ -27,7 +27,8 @@ export default {
         single_choose:"single choose",
         multiple_choice:"multiple choice",
         test:"test",
-        unkonw_error:"unkonw error"
+        unkonw_error:"unkonw error",
+        send:"send",
     },
     home:{
         search:"Search Extraction",

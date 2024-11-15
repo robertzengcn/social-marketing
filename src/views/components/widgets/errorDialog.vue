@@ -56,7 +56,7 @@ const props = defineProps({
     alertitle:{
         type:String,
         required: false,
-        default:t("common.error")
+        //default:t("common.error")
     }
     
   });

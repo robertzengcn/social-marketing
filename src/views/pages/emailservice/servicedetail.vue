@@ -54,17 +54,17 @@
       <div class="d-flex flex-column mt-4 mb-4">
         <v-row>
 
-          <v-col cols="4" md="5">
+          <v-col cols="4" md="4">
             <v-btn color="error" block @click="$router.go(-1)">
               {{ $t('common.return') }}
             </v-btn>
           </v-col>
-          <v-col cols="4" md="5">
+          <v-col cols="4" md="4">
             <v-btn color="blue" block @click="showtestdialog=true">
               {{ $t('common.test') }}
             </v-btn>
           </v-col>
-          <v-col cols="4" md="5">
+          <v-col cols="4" md="4">
             <v-btn color="success" type="submit" :loading="loading">
               {{ $t('common.submit') }}
             </v-btn>
@@ -118,7 +118,7 @@
 
         <v-btn
           color="primary"
-          text="Save"
+          :text="$t('common.send')"
           variant="tonal"
           @click="submitTestemail"
         ></v-btn>
@@ -218,7 +218,7 @@ const initialize = async () => {
       //set value
       if (res) {
 
-        from.value = res.name;
+        from.value = res.from;
         password.value = res.password;
         host.value = res.host;
         port.value = res.port;
@@ -338,6 +338,7 @@ const submitTestemail=async() =>{
 
 const receiveMsg = () => {
   receiveEmailsendevent( function (res) {
+    console.log(res)
     const obj = JSON.parse(res) as CommonDialogMsg
     if(obj.status){
 

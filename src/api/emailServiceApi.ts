@@ -15,7 +15,9 @@ export class EmailServiceApi {
     //create and update email service
     async createuEmailService(param: EmailServiceEntitydata): Promise<CommonApiresp<CommonIdrequest<number>>> {
         const data = new FormData();
+        let url='/api/emailservice/create'
         if(param.id){
+            url='/api/emailservice/update/'+param.id.toString()
             data.append("id", param.id.toString());
         }
         if(param.from){
@@ -36,7 +38,8 @@ export class EmailServiceApi {
         if(param.ssl){
             data.append("service_ssl", param.ssl.toString());
         }
-        return this._httpClient.post('/api/emailservice/create', data);
+        console.log(data)
+        return this._httpClient.post(url, data);
     }
     //get email list service
     async getEmailServiceList(page: number, size: number, search?: string,sortBy?:SortBy): Promise<CommonApiresp<ListData<EmailServiceListdata>>> {

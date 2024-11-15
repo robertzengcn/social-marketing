@@ -60,7 +60,7 @@
       <v-btn v-else color="success" @click="validstep(thisstep)">Done</v-btn>
     </div>
   </v-stepper>
-  <ErrorDialog :showDialog="showDialog" :alertext="alertext" @dialogclose="showDialog=false" />
+  <ErrorDialog :showDialog="showDialog" :alertext="alertext" :alertitle="t('common.error')" @dialogclose="showDialog=false" />
 </template>
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
