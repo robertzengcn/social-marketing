@@ -29,6 +29,7 @@ export default {
         test:"test",
         unkonw_error:"unkonw error",
         send:"send",
+        loading:"loading"
     },
     home:{
         search:"Search Extraction",
@@ -241,6 +242,9 @@ export default {
         test_email_service:"test email service",
         test_email_receiver:"test email receiver",
         test_email_receiver_hint:"input test email receiver",
+        send_test_email_success:"send test email success",
+        send_test_email_error:"send test email error",
+        email_send_success:"email send success",
     },
     buckemailsend:{
         email_source:"Email Source",

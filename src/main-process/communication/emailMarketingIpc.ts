@@ -379,7 +379,7 @@ export function registerEmailMarketingIpcHandlers() {
         code: 202411141455379,
         data: {
           action: "error",
-          title: "send_test_email_error",
+          title: "emailservice.send_test_email_error",
           content: errorMessage
         }
       }
@@ -392,7 +392,7 @@ export function registerEmailMarketingIpcHandlers() {
         code: 0,
         data: {
           action: "success",
-          title: "send_test_email_error",
+          title: "emailservice.send_test_email_success",
           content: ""
         }
       }
@@ -416,7 +416,7 @@ export function registerEmailMarketingIpcHandlers() {
         data: {
           action: "error",
           title: "send_test_email_error",
-          content: ""
+          content: errorMessage
         }
       }
       event.sender.send(RECEIVESENDTESTEMAILMESSAGE, JSON.stringify(resp))

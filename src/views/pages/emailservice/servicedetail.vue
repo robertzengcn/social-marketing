@@ -1,7 +1,7 @@
 <template>
   <v-sheet class="mx-auto" rounded>
 
-    <v-form ref="form" @submit.prevent="onSubmit" class="ml-2 mr-2">
+    <v-form ref="form" v-model="validForm" @submit.prevent="onSubmit" class="ml-2 mr-2">
       <v-alert v-model="alert" border="start" variant="tonal" closable close-label="Close Alert" title="Information"
         :color="alertcolor">
         {{ alertContent }}
@@ -60,7 +60,7 @@
             </v-btn>
           </v-col>
           <v-col cols="4" md="4">
-            <v-btn color="blue" block @click="showtestdialog=true">
+            <v-btn color="blue" block @click="showtestdialog = true">
               {{ $t('common.test') }}
             </v-btn>
           </v-col>
@@ -69,8 +69,8 @@
               {{ $t('common.submit') }}
             </v-btn>
           </v-col>
-          
-          
+
+
         </v-row>
       </div>
       <v-alert v-model="alert" border="start" variant="tonal" closable close-label="Close Alert" title="Information"
@@ -81,87 +81,97 @@
   </v-sheet>
   <!-- test service valid dialog -->
   <v-dialog v-model="showtestdialog" max-width="600" persistent>
-    <v-card prepend-icon="mdi-account" :title="CapitalizeFirstLetter(t('emailservice.test_email_service'))">
-      <v-card-text>
-        <v-container fluid>
-          <v-row>
-            <v-col cols="12" md="12">
-              <v-text-field v-model="testemailReceiver" :label="$t('emailservice.test_email_receiver')" type="input"
-                :hint="$t('emailservice.test_email_receiver_hint')" :readonly="loading" clearable required
-                :rules="[rules.required,rules.email]"></v-text-field>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="12" md="12">
-              <v-text-field v-model="testemailTitle" :label="$t('emailservice.test_email_title')" type="input"
-                :hint="$t('emailservice.test_email_title_hint')" :readonly="loading" clearable required
-                :rules="[rules.required]"></v-text-field>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-textarea :label="$t('emailservice.test_email_content_hint')" v-model="testemailContent" name="input-7-1" variant="filled" auto-grow></v-textarea>
-          </v-row>
-        </v-container>
+    <v-form ref="testform" @submit.prevent="submitTestemail" class="ml-2 mr-2" v-model="testvalidForm" lazy-validation>
+      <v-card prepend-icon="mdi-account" :title="CapitalizeFirstLetter(t('emailservice.test_email_service'))">
+        <v-card-text>
+          <v-container fluid>
+            <v-row>
+              <v-col cols="12" md="12">
+                <v-text-field v-model="testemailReceiver" :label="$t('emailservice.test_email_receiver')" type="input"
+                  :hint="$t('emailservice.test_email_receiver_hint')" :readonly="loading" clearable required
+                  :rules="[rules.required, rules.email]"></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" md="12">
+                <v-text-field v-model="testemailTitle" :label="$t('emailservice.test_email_title')" type="input"
+                  :hint="$t('emailservice.test_email_title_hint')" :readonly="loading" clearable required
+                  :rules="[rules.required]"></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-textarea :label="$t('emailservice.test_email_content_hint')" v-model="testemailContent"
+                name="input-7-1" variant="filled" auto-grow :rules="[rules.required]"></v-textarea>
+            </v-row>
+          </v-container>
 
-      </v-card-text>
+        </v-card-text>
 
-      <v-divider></v-divider>
+        <v-divider></v-divider>
 
-      <v-card-actions>
-        <v-spacer></v-spacer>
+        <v-card-actions>
+          <v-spacer></v-spacer>
 
-        <v-btn
-          text="Close"
-          variant="plain"
-          @click="showtestdialog = false"
-        ></v-btn>
+          <v-btn text="Close" variant="plain" @click="showtestdialog = false"></v-btn>
 
-        <v-btn
-          color="primary"
-          :text="$t('common.send')"
-          variant="tonal"
-          @click="submitTestemail"
-        ></v-btn>
-      </v-card-actions>
-    </v-card>
+          <v-btn color="primary" :text="$t('common.send')" variant="tonal" type="submit"></v-btn>
+        </v-card-actions>
 
+      </v-card>
+    </v-form>
   </v-dialog>
-  <ErrorDialog :showDialog="showDialog" :alertext="alertdiatext" :alertitle="alertdiatitle" @dialogclose="showDialog=false" />
+  <ErrorDialog :showDialog="showDialog" :alertext="alertdiatext" :alertitle="alertdiatitle"
+    @dialogclose="showDialog = false" />
+  <LoadingDialog :loadDialogshow="loadDialogshow" :loadingtitle="CapitalizeFirstLetter(t('common.loading'))" />
 </template>
 <script setup lang="ts">
 // import router from '@/views/router';
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
-import { getEmailServiceDetail, createupdateEmailService,sendTestemail,receiveEmailsendevent } from "@/views/api/emailservice";
-import { EmailServiceEntitydata,EmailSendParam,EmailRequestData } from "@/entityTypes/emailmarketingType"
+import { getEmailServiceDetail, createupdateEmailService, sendTestemail, receiveEmailsendevent } from "@/views/api/emailservice";
+import { EmailServiceEntitydata, EmailSendParam, EmailRequestData } from "@/entityTypes/emailmarketingType"
 // import { convertVariableInTemplate } from "@/views/utils/function"
 // import { VueEditor } from "vue2-editor";
 // import { CommonIdrequest } from "@/entityTypes/commonType"
 import router from "@/views/router";
 import { CapitalizeFirstLetter } from "@/views/utils/function"
-import {CommonDialogMsg } from "@/entityTypes/commonType"
+import { CommonDialogMsg } from "@/entityTypes/commonType"
 import ErrorDialog from "@/views/components/widgets/errorDialog.vue"
+import LoadingDialog from "@/views/components/widgets/loadingDialog.vue"
 const showDialog = ref<boolean>(false);
 const alertdiatext = ref<string>("")
-const alertdiatitle=ref<string>("")
+const alertdiatitle = ref<string>("")
 const { t } = useI18n({ inheritLocale: true });
 const Id = ref<number>(0);
 const showtestdialog = ref<boolean>(false);
-const emailRules = [
-  (v: string) => {
-    if (v) return true
-    return 'Email is required'
-  },
-  (v: string) => {
-    if (/.+@.+\..+/.test(v)) return true
+const validForm = ref<boolean>(true);
+const testvalidForm = ref<boolean>(true);
+const loadDialogshow = ref<boolean>(false);
+watch(loadDialogshow, (newValue) => {
+  if (!newValue) {
+    console.log("Loading dialog is now shown");
+    return;
+  }
+  setTimeout(() => (loadDialogshow.value = false), 10000)
+});
+// const emailRules = [
+//   (v: string) => {
+//     if (v) return true
+//     return 'Email is required'
+//   },
+//   (v: string) => {
+//     if (/.+@.+\..+/.test(v)) return true
 
-    return 'E-mail must be valid.'
-  },
-];
+//     return 'E-mail must be valid.'
+//   },
+// ];
 
 const rules = {
-  required: (value) => !!value || "Field is required",
+  required: (value) => {
+    if (!value) return "The field is required";
+    return true;
+  },
   email: (value) => {
     if (!value) return "E-mail is required";
     if (!/.+@.+\..+/.test(value)) return "E-mail must be valid.";
@@ -179,6 +189,7 @@ const FakeAPI = {
 };
 //defined the value in page
 const form = ref<HTMLFormElement>();
+const testform = ref<HTMLFormElement>();
 const from = ref<string>(""); //template title
 const password = ref<string>("");
 const host = ref<string>("");
@@ -193,7 +204,7 @@ const alertContent = ref("");
 const alertcolor = ref("");
 
 const isEdit = ref(false);
-const testemailReceiver=ref<string>("")
+const testemailReceiver = ref<string>("")
 const testemailTitle = ref<string>("")
 const testemailContent = ref<string>("")
 
@@ -242,9 +253,10 @@ async function onSubmit() {
   console.log("submit");
   if (!form.value) return;
   const { valid } = await form.value.validate();
-  // console.log(valid);
+  console.log(valid);
   loading.value = true;
   if (!valid) {
+
     console.log("form is not valid");
     alert.value = true;
     alertcolor.value = "error";
@@ -312,47 +324,67 @@ async function onSubmit() {
   loading.value = false;
 }
 //test email setting by send out test email 
-const submitTestemail=async() =>{
-  const emailSetting:EmailServiceEntitydata={
-    name:name.value,
-    from:from.value,
-    password:password.value,
-    host:host.value,
-    port:port.value,
-    ssl:ssl.value
+const submitTestemail = async () => {
+  if (!testform.value) return;
+  const { valid } = await testform.value.validate();
+  console.log(valid)
+  // console.log(valid);
+  //loading.value = true;
+  if (!valid) {
+
+    // console.log(testvalid)
+    console.log("test form is not valid");
+    return
+
   }
-  const emailRequestdata:EmailRequestData={
-    From:from.value,
-    Title:testemailTitle.value,
-    Content:testemailContent.value,
-    Receiver:testemailReceiver.value
+  const emailSetting: EmailServiceEntitydata = {
+    name: name.value,
+    from: from.value,
+    password: password.value,
+    host: host.value,
+    port: port.value,
+    ssl: ssl.value
   }
-  const emailsendParam:EmailSendParam={
-    Setting:emailSetting,
-    EmailRequestData:emailRequestdata
+  const emailRequestdata: EmailRequestData = {
+    From: from.value,
+    Title: testemailTitle.value,
+    Content: testemailContent.value,
+    Receiver: testemailReceiver.value
   }
-  
+  const emailsendParam: EmailSendParam = {
+    Setting: emailSetting,
+    EmailRequestData: emailRequestdata
+  }
+  loadDialogshow.value = true
   sendTestemail(emailsendParam)
-  
+
 }
 
 const receiveMsg = () => {
-  receiveEmailsendevent( function (res) {
+  receiveEmailsendevent(function (res) {
     console.log(res)
     const obj = JSON.parse(res) as CommonDialogMsg
-    if(obj.status){
-
-    }else{
-      showDialog.value=true
-      if(obj.data){
-        alertdiatext.value = t(obj.data?.content)
-        alertdiatitle.value=t(obj.data?.title)
-      }else{
-        alertdiatext.value = t("common.unkonw_error")
-        alertdiatitle.value=t("common.unkonw_error")
-      }
-     
+    loadDialogshow.value = false
+    if (!obj) {
+      return
     }
+    showtestdialog.value = false
+    // }else{
+    showDialog.value = true
+    if (obj.data) {
+      if (obj.status) {
+        alertdiatext.value = t("emailservice.email_send_success")
+      } else {
+        alertdiatext.value = obj.data?.content
+      }
+
+      alertdiatitle.value = t(obj.data?.title)
+    } else {
+      alertdiatext.value = t("common.unkonw_error")
+      alertdiatitle.value = t("common.unkonw_error")
+    }
+
+    // }
   })
 }
 
@@ -361,6 +393,7 @@ onMounted(() => {
   initialize();
   receiveMsg()
 });
+
 
 </script>
 <style scoped>
