@@ -2,6 +2,8 @@ import { Buckemailremotedata } from "@/entityTypes/emailmarketingType";
 import nodemailer from 'nodemailer';
 import { convertVariableInTemplate } from "@/views/utils/emailFun"
 import { EmailTemplatePreviewdata } from "@/entityTypes/emailmarketingType"
+import {EmailService} from "@/modules/lib/emailService"
+import {EmailServiceEntitydata,EmailRequestData} from "@/entityTypes/emailmarketingType";
 
 export class EmailSend {
 
@@ -74,37 +76,60 @@ export class EmailSend {
             const emailTpldata = convertVariableInTemplate(previewData);
             //send email
             // Create a transporter object
-            const transporter = nodemailer.createTransport({
-                host: randomEmailservice.host,
-                port: Number(randomEmailservice.port) || 0,
-                secure: randomEmailservice.ssl, // true for 465, false for other ports
-                auth: {
-                    user: randomEmailservice.from, // your SMTP username
-                    pass: randomEmailservice.password, // your SMTP password
-                }
-            } as nodemailer.TransportOptions);
-            // Configure the mailoptions object
-            const mailOptions = {
-                from: randomEmailservice.from,
-                to: item.address,
-                subject: emailTpldata.TplTitle,
-                text: emailTpldata.TplContent
-            };
-
-            // Send the email
-            transporter.sendMail(mailOptions, function (error, info) {
-                if (error) {
-                    console.error('Error:', error);
-                    if (errorCallback) {
-                        errorCallback(item.address, error.message, emailTpldata.TplTitle, emailTpldata.TplContent)
+            // const transporter = nodemailer.createTransport({
+            //     host: randomEmailservice.host,
+            //     port: Number(randomEmailservice.port) || 0,
+            //     secure: randomEmailservice.ssl, // true for 465, false for other ports
+            //     auth: {
+            //         user: randomEmailservice.from, // your SMTP username
+            //         pass: randomEmailservice.password, // your SMTP password
+            //     }
+            // } as nodemailer.TransportOptions);
+            // // Configure the mailoptions object
+            // const mailOptions = {
+            //     from: randomEmailservice.from,
+            //     to: item.address,
+            //     subject: emailTpldata.TplTitle,
+            //     text: emailTpldata.TplContent
+            // };
+            const emailserviceenditydata:EmailServiceEntitydata={
+                name:randomEmailservice.name,
+                from:randomEmailservice.from,
+                host:randomEmailservice.host,
+                port:randomEmailservice.port,
+                ssl:randomEmailservice.ssl,
+                password:randomEmailservice.password
+            }
+            const emailServie=new EmailService(emailserviceenditydata)
+            const emailRequestdata:EmailRequestData={
+                From:randomEmailservice.from,
+                Receiver:item.address,
+                Title:emailTpldata.TplTitle,
+                Content:emailTpldata.TplContent
+            }
+            emailServie.sendEmail(emailRequestdata,function (error){
+                             if (errorCallback) {
+                        errorCallback(item.address, error, emailTpldata.TplTitle, emailTpldata.TplContent)
                     }
-                } else {
-                    console.log('Email sent:', info.response);
-                    if (successCallback) {
+            },function(){
+                                    if (successCallback) {
                         successCallback(item.address, emailTpldata.TplTitle, emailTpldata.TplContent)
                     }
-                }
-            });
+            })
+            // // Send the email
+            // transporter.sendMail(mailOptions, function (error, info) {
+            //     if (error) {
+            //         console.error('Error:', error);
+            //         if (errorCallback) {
+            //             errorCallback(item.address, error.message, emailTpldata.TplTitle, emailTpldata.TplContent)
+            //         }
+            //     } else {
+            //         console.log('Email sent:', info.response);
+            //         if (successCallback) {
+            //             successCallback(item.address, emailTpldata.TplTitle, emailTpldata.TplContent)
+            //         }
+            //     }
+            // });
 
         })
     }

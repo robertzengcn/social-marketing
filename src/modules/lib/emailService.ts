@@ -17,18 +17,18 @@ export class EmailService {
         // this.transporter = transporter;
     }
 
-    public getService(param: EmailServiceEntitydata) {
-        const transporter = nodemailer.createTransport({
-            host: param.host,
-            port: Number(param.port) || 0,
-            secure: param.ssl, // true for 465, false for other ports
-            auth: {
-                user: param.from, // your SMTP username
-                pass: param.password, // your SMTP password
-            }
-        } as nodemailer.TransportOptions);
-        return transporter
-    }
+    // public getService(param: EmailServiceEntitydata) {
+    //     const transporter = nodemailer.createTransport({
+    //         host: param.host,
+    //         port: Number(param.port) || 0,
+    //         secure: param.ssl, // true for 465, false for other ports
+    //         auth: {
+    //             user: param.from, // your SMTP username
+    //             pass: param.password, // your SMTP password
+    //         }
+    //     } as nodemailer.TransportOptions);
+    //     return transporter
+    // }
     public async sendEmail(param: EmailRequestData,errorCallback?:(errorMessage: string)=>void,successCallback?:()=>void ): Promise<any> {
 
           // Configure the mailoptions object

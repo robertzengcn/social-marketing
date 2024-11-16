@@ -40,6 +40,7 @@ export const EMAILSERVICEDELETE='email:service:delete'
 //buck email send
 export const BUCKEMAILSEND='buck:email:send'
 export const BUCKEMAILSENDMESSAGE='buck:email:send:message'
+export const BUCKEMAILTASKLIST='buck:email:task:list'
 
 export const SENDTESTEMAIL='send:test:email'
 export const RECEIVESENDTESTEMAILMESSAGE='receive:send:test:email:message'

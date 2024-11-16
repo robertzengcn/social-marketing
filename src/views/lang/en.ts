@@ -266,6 +266,12 @@ export default {
         email_list_empty:"email list is empty",
         start_send_email:"start send email",
         receiver_email_list_empty:"receiver email list is empty",
+    },
+    buckemailtask:{
+        taskId:"Task ID",
+        status:"Task Status",
+        type:"Task Type",
+        
     }
 
 }
