@@ -388,11 +388,21 @@ export const constantRoutes: RouteRecordRaw[] = [
     component: Layout, 
     children: [
       {
+        path: 'buckemailtask/list/',
+        component: () => import(/* webpackChunkName: "staff-list" */ '@/views/pages/emailsendtask/list.vue'),
+        name: 'BUCK_Email_TASK_LIST',
+        meta: {
+          visible: true,
+          title: 'bulk email task list',
+          icon: 'list'
+        }
+      },
+      {
         path: 'form',
         component: () => import(/* webpackChunkName: "staff-list" */ '@/views/pages/emailmarketing/buckemailform.vue'),
         name: 'Email_BUCK_SEND',
         meta: {
-          visible: true,
+          visible: false,
           title: 'Sending bulk emails',
           icon: 'list'
         }

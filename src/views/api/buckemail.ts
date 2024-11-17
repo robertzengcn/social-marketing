@@ -5,7 +5,7 @@ import {EmailMarketingsubdata} from '@/entityTypes/emailmarketingType'
 import {BUCKEMAILSEND,BUCKEMAILTASKLIST} from '@/config/channellist'
 import {SearchResult} from '@/views/api/types'
 import {ItemSearchparam,CommonIdrequest} from "@/entityTypes/commonType"
-import {BuckEmailType} from "@/entityTypes/buckemailType"
+import {BuckEmailListType} from "@/entityTypes/buckemailType"
 
 export async function buckEmailsend(data: EmailMarketingsubdata) {
     
@@ -19,14 +19,14 @@ export function receiveBuckEmailevent(channel:string,cb:(data:any)=>void){
 }
 
 //get email service list
-export async function getBuckEmailSendtaskList(params: ItemSearchparam): Promise<SearchResult<BuckEmailType>> {
+export async function getBuckEmailSendtaskList(params: ItemSearchparam): Promise<SearchResult<BuckEmailListType>> {
     const resp= await windowInvoke(BUCKEMAILTASKLIST, params);
     
     if(!resp){
        throw new Error("unknow error")
     }
 
-    const resdata:SearchResult<BuckEmailType>={
+    const resdata:SearchResult<BuckEmailListType>={
             data:resp.records,
             total:resp.num,
     }

@@ -1,7 +1,9 @@
 import { Token } from "@/modules/token"
 import { USERSDBPATH } from '@/config/usersetting';
-import {BuckEmailTaskdb,BuckemailEntity} from "@/model/buckEmailTaskdb"
+import {BuckEmailTaskdb,BuckemailEntity,BuckEmailType} from "@/model/buckEmailTaskdb"
 import {TaskStatus} from "@/config/common"
+import { SortBy } from "@/entityTypes/commonType"
+
 export class BuckEmailTaskModule {
     private dbpath: string
     private buckemailtaskdb: BuckEmailTaskdb
@@ -40,4 +42,14 @@ export class BuckEmailTaskModule {
     updateTaskStatus(id: number, status: TaskStatus) {
         this.buckemailtaskdb.updateTaskStatus(id, status)
     }
+    //get buck eamil task for page query
+    getTaskList(page: number, limit: number, sort?: SortBy): {records:BuckemailEntity[],total:number} {
+        const records=this.buckemailtaskdb.listBuckEmailtask(page, limit, sort)
+        const total=this.buckemailtaskdb.countBuckEmailTask()
+        return {records,total}
+    }
+    public getBuckEmailTypeName(type: BuckEmailType): string {
+        return this.buckemailtaskdb.getBuckEmailTypeName(type)
+    }
+   
 }

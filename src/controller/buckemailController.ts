@@ -18,6 +18,9 @@ import { ProcessMessage } from "@/entityTypes/processMessage-type"
 import { EmailSendResult } from "@/entityTypes/emailmarketingType"
 import { EmailMarketingSendLogModule } from "@/modules/emailMarketingSendLogModule";
 import { EmailMarketingSendLogEntity,SendStatus } from "@/model/emailMarketingSendLogdb"
+import { SortBy } from "@/entityTypes/commonType"
+import { BuckEmailListType } from "@/entityTypes/buckemailType"
+import {getStatusName} from "@/modules/lib/function"
 
 export class BuckemailController {
     private emailtemAPI: EmailMarketingTemplateApi
@@ -216,6 +219,37 @@ export class BuckemailController {
         }
         return data
     }
+    //get buck email task list
+    public getBuckEmailTaskList(page: number, size: number, sort?: SortBy): {records:Array<BuckEmailListType>,total:number} {
+        const Taskentity=this.buckEmailTaskMoudule.getTaskList(page, size, sort)
+        const data: Array<BuckEmailListType> = []
+        Taskentity.records.forEach((element) => {
+            let status = "unkonw"
+            if(element.status){
+                status=getStatusName(element.status)
+            }
+            const btype=this.buckEmailTaskMoudule.getBuckEmailTypeName(element.type)
+            let id=0
+            if(element.id){
+                id = element.id
+            }
+            const item: BuckEmailListType = {
+                TaskId: id,
+                Status: status,
+                RecordTime: element.record_time,
+                Type:btype
+            }
+            
 
+            data.push(item)
+        })
+        const result = {
+            records: data,
+            total: Taskentity.total
+        }
+        return result
+        
+    }
+  
 
 }

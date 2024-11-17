@@ -31,13 +31,13 @@ import { getBuckEmailSendtaskList } from '@/views/api/buckemail'
 import { ref, computed,watch } from 'vue'
 import { SearchResult } from '@/views/api/types'
 import { CapitalizeFirstLetter } from "@/views/utils/function"
-import {BuckEmailType} from "@/entityTypes/buckemailType"
+import {BuckEmailListType} from "@/entityTypes/buckemailType"
 // import type { VDataTable } from 'vuetify/lib/components/index.mjs'
 import router from '@/views/router';
 import { Header } from "@/entityTypes/commonType"
 import DeleteDialog from '@/views/components/widgets/deleteDialog.vue';
 const { t } = useI18n({ inheritLocale: true });
-const selected = ref<Array<BuckEmailType>>([]);
+const selected = ref<Array<BuckEmailListType>>([]);
 const computedHeaders = computed(() => {
     if (props.isSelectedtable) {
         return headers.value.filter(value => value.key !== 'actions');
@@ -64,7 +64,7 @@ type Fetchparam = {
 }
 
 const FakeAPI = {
-    async fetch(fetchparam: Fetchparam): Promise<SearchResult<BuckEmailType>> {
+    async fetch(fetchparam: Fetchparam): Promise<SearchResult<BuckEmailListType>> {
         const fpage = (fetchparam.page - 1) * fetchparam.itemsPerPage
         return await getBuckEmailSendtaskList({ page: fpage, size: fetchparam.itemsPerPage, sortby: fetchparam.sortBy, search: fetchparam.search })
     }
@@ -100,7 +100,7 @@ headers.value = [
 
 ];
 const itemsPerPage = ref(10);
-const serverItems = ref<Array<BuckEmailType>>([]);
+const serverItems = ref<Array<BuckEmailListType>>([]);
 const loading = ref(false);
 const totalItems = ref(0);
 const search = ref('');
@@ -133,7 +133,7 @@ function loadItems({ page, itemsPerPage, sortBy }) {
 }
 // },
 // }
-const openItem = (item: BuckEmailType) => {
+const openItem = (item: BuckEmailListType) => {
 
     // else if(item.Types=="social task"){
 
@@ -151,7 +151,7 @@ function createService() {
 }
 
 const emit = defineEmits(['change'])
-watch(selected, (newValue:Array<BuckEmailType>|undefined, oldValue:Array<BuckEmailType>|undefined) => {
+watch(selected, (newValue:Array<BuckEmailListType>|undefined, oldValue:Array<BuckEmailListType>|undefined) => {
   console.log(`selected filter changed from ${oldValue} to ${newValue}`);
   console.log(newValue)
   emit('change', newValue);

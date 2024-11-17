@@ -3,7 +3,7 @@ import { BUCKEMAILSEND } from "@/config/channellist";
 import { ipcMain } from 'electron';
 import { EmailMarketingsubdata, EmailItem } from '@/entityTypes/emailmarketingType'
 import { CommonDialogMsg } from "@/entityTypes/commonType";
-import { BUCKEMAILSENDMESSAGE } from "@/config/channellist"
+import { BUCKEMAILSENDMESSAGE,BUCKEMAILTASKLIST } from "@/config/channellist"
 import { EmailSearchTaskModule } from "@/modules/emailSearchTaskModule"
 import { Buckemailstruct } from "@/entityTypes/emailmarketingType"
 import { BuckEmailType } from "@/model/buckEmailTaskdb"
@@ -69,5 +69,9 @@ export function registerBuckEmailIpcHandlers() {
             }
             break;
         }
+    })
+    //get buck email task list
+    ipcMain.handle(BUCKEMAILTASKLIST, async (event, data) => {
+
     })
 }

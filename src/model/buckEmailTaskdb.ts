@@ -3,6 +3,7 @@ import { Database } from 'better-sqlite3';
 import { Scraperdb } from "@/model/scraperdb";
 import { getRecorddatetime, getStatusName } from "@/modules/lib/function";
 import { TaskStatus } from "@/config/common"
+import { SortBy } from "@/entityTypes/commonType"
 export interface BuckemailEntity {
     id?: number;
     type: BuckEmailType;
@@ -94,4 +95,58 @@ export class BuckEmailTaskdb {
             status: status
         });
     }
+     //list task
+     public listBuckEmailtask(page: number, size: number,sort?: SortBy): Array<BuckemailEntity> {
+        let query = 'SELECT * FROM '+this.buckemailTaskTable
+
+       
+        if (sort&&sort.key&&sort.order) {
+            const lowsersortkey = sort.key.toLowerCase()
+            const lowsersortorder = sort.order.toLowerCase()
+            const allowsortkey = ['id', 'record_time', 'status']
+            const allowsortorder = ['asc', 'desc']
+
+      
+            // if (sort) {
+            if (!allowsortkey.includes(lowsersortkey)) {
+              //not allow such key, throw error
+              throw new Error("not allow sort key")
+            } else {
+              if (!allowsortorder.includes(lowsersortorder)) {
+                throw new Error("not allow sort order")
+              }
+              // sortstr = lowsersortkey + ' ' + lowsersortorder
+              query+=' ORDER BY '+lowsersortkey+' '+lowsersortorder
+            //   console.log(query)
+            }
+      
+            // }
+          }else{
+            query+=' ORDER BY id DESC'
+          }
+          query+=' LIMIT ? OFFSET ?'
+        const stmt = this.db.prepare(query);
+
+        return stmt.all(size, page) as BuckemailEntity[]; 
+
+    }
+    //count buck email task number
+    public countBuckEmailTask(): number {
+        const stmt = this.db.prepare(`
+            SELECT COUNT(*) as count FROM ${this.buckemailTaskTable}
+        `);
+       const totalobj=stmt.get() as { count: number };
+       return totalobj.count;
+
+    }
+    //get buck email type name, return string
+    public getBuckEmailTypeName(type: BuckEmailType): string {
+        switch (type) {
+            case BuckEmailType.EXTRACTEMAIL:
+                return "Extract Email"
+            default:
+                return "Unknown"
+        }
+    }
+
 }
