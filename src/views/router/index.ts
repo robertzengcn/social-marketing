@@ -391,9 +391,9 @@ export const constantRoutes: RouteRecordRaw[] = [
         path: 'buckemailtask/list/',
         component: () => import(/* webpackChunkName: "staff-list" */ '@/views/pages/emailsendtask/list.vue'),
         name: 'BUCK_Email_TASK_LIST',
-        meta: {
+        meta:   {
           visible: true,
-          title: 'bulk email task list',
+          title: 'Bulk email task list',
           icon: 'list'
         }
       },

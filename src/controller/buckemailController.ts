@@ -12,7 +12,7 @@ import { USERLOGPATH, USEREMAIL } from '@/config/usersetting';
 import { WriteLog, getApplogspath, getRandomValues } from "@/modules/lib/function"
 import { v4 as uuidv4 } from 'uuid';
 import { BuckEmailTaskModule } from "@/modules/buckEmailTaskModule"
-import { BuckemailEntity, BuckEmailType } from "@/model/buckEmailTaskdb"
+import { BuckemailEntity} from "@/model/buckEmailTaskdb"
 import { TaskStatus } from "@/config/common"
 import { ProcessMessage } from "@/entityTypes/processMessage-type"
 import { EmailSendResult } from "@/entityTypes/emailmarketingType"

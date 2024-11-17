@@ -7,6 +7,9 @@ import { BUCKEMAILSENDMESSAGE,BUCKEMAILTASKLIST } from "@/config/channellist"
 import { EmailSearchTaskModule } from "@/modules/emailSearchTaskModule"
 import { Buckemailstruct } from "@/entityTypes/emailmarketingType"
 import { BuckEmailType } from "@/model/buckEmailTaskdb"
+import {ItemSearchparam} from "@/entityTypes/commonType"
+import { CommonResponse } from "@/entityTypes/commonType"
+import { BuckEmailListType } from "@/entityTypes/buckemailType"
 /**
  * buck send email ipc
  */
@@ -70,8 +73,24 @@ export function registerBuckEmailIpcHandlers() {
             break;
         }
     })
-    //get buck email task list
+    //get buck email task lis´
     ipcMain.handle(BUCKEMAILTASKLIST, async (event, data) => {
-
+        const qdata = JSON.parse(data) as ItemSearchparam;  
+        if (!Object.prototype.hasOwnProperty.call(qdata, "page")) {
+            qdata.page = 0;
+          }
+          if (!Object.prototype.hasOwnProperty.call(qdata, "size")) {
+            qdata.size = 100;
+          }
+        const res=buckemailCon.getBuckEmailTaskList(qdata.page,qdata.size,qdata.sortby)
+        const resp: CommonResponse<BuckEmailListType> = {
+            status: true,
+            msg: "",
+            data: {
+                records: res.records,
+                num: res.total
+            }
+        }
+        return resp
     })
 }
