@@ -70,9 +70,10 @@ export class EmailextractionController {
         child.on("exit", (code) => {
             if (code !== 0) {
                 console.error(`Child process exited with code ${code}`);
-                
+                this.emailSeachTaskModule.updateTaskStatus(taskId,EmailsearchTaskStatus.Error)
             } else {
                 console.log('Child process exited successfully');
+                this.emailSeachTaskModule.updateTaskStatus(taskId,EmailsearchTaskStatus.Complete)
             }
         })
         child.on('message', (message) => {
@@ -83,7 +84,7 @@ export class EmailextractionController {
                 if(childdata.data){
                 //save result
                 this.emailSeachTaskModule.saveSearchResult(taskId,childdata.data)
-                this.emailSeachTaskModule.updateTaskStatus(taskId,EmailsearchTaskStatus.Complete)
+                
                 }
                 //child.kill()
             }
