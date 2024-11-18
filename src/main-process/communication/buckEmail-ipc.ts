@@ -3,13 +3,14 @@ import { BUCKEMAILSEND } from "@/config/channellist";
 import { ipcMain } from 'electron';
 import { EmailMarketingsubdata, EmailItem } from '@/entityTypes/emailmarketingType'
 import { CommonDialogMsg } from "@/entityTypes/commonType";
-import { BUCKEMAILSENDMESSAGE,BUCKEMAILTASKLIST } from "@/config/channellist"
+import { BUCKEMAILSENDMESSAGE, BUCKEMAILTASKLIST, BUCKEMAILTASKSENDLOG } from "@/config/channellist"
 import { EmailSearchTaskModule } from "@/modules/emailSearchTaskModule"
 import { Buckemailstruct } from "@/entityTypes/emailmarketingType"
 import { BuckEmailType } from "@/model/buckEmailTaskdb"
-import {ItemSearchparam} from "@/entityTypes/commonType"
+import { ItemSearchparam } from "@/entityTypes/commonType"
 import { CommonResponse } from "@/entityTypes/commonType"
-import { BuckEmailListType } from "@/entityTypes/buckemailType"
+import { BuckEmailListType,BuckEmailTasklogQueryType,EmailMarketingSendLogListDisplay } from "@/entityTypes/buckemailType"
+import { EmailMarketingSendLogEntity} from "@/model/emailMarketingSendLogdb"
 /**
  * buck send email ipc
  */
@@ -36,7 +37,7 @@ export function registerBuckEmailIpcHandlers() {
                 // const emailList:Array<EmailItem>=[]
                 const emailsearModuel = new EmailSearchTaskModule()
                 const emailList = emailsearModuel.getAllEmails(qdata.emailtaskentityId)
-                if(emailList.length==0){
+                if (emailList.length == 0) {
                     const comMsgs: CommonDialogMsg = {
                         status: false,
                         code: 20241108151239,
@@ -58,7 +59,7 @@ export function registerBuckEmailIpcHandlers() {
                     NotDuplicate: qdata.NotDuplicate
                 }
 
-                const taskid=await buckemailCon.buckEmailsend(bucketEmailData)
+                const taskid = await buckemailCon.buckEmailsend(bucketEmailData)
                 const comMsgs: CommonDialogMsg = {
                     status: true,
                     code: 20241108151239,
@@ -68,22 +69,49 @@ export function registerBuckEmailIpcHandlers() {
                         content: taskid.toString()
                     }
                 }
-                event.sender.send(BUCKEMAILSENDMESSAGE, JSON.stringify(comMsgs))    
+                event.sender.send(BUCKEMAILSENDMESSAGE, JSON.stringify(comMsgs))
             }
-            break;
+                break;
         }
     })
     //get buck email task lis´
     ipcMain.handle(BUCKEMAILTASKLIST, async (event, data) => {
-        const qdata = JSON.parse(data) as ItemSearchparam;  
+        const qdata = JSON.parse(data) as ItemSearchparam;
         if (!Object.prototype.hasOwnProperty.call(qdata, "page")) {
             qdata.page = 0;
-          }
-          if (!Object.prototype.hasOwnProperty.call(qdata, "size")) {
+        }
+        if (!Object.prototype.hasOwnProperty.call(qdata, "size")) {
             qdata.size = 100;
-          }
-        const res=buckemailCon.getBuckEmailTaskList(qdata.page,qdata.size,qdata.sortby)
+        }
+        const res = buckemailCon.getBuckEmailTaskList(qdata.page, qdata.size, qdata.sortby)
         const resp: CommonResponse<BuckEmailListType> = {
+            status: true,
+            msg: "",
+            data: {
+                records: res.records,
+                num: res.total
+            }
+        }
+        return resp
+    })
+    //get buck email task log
+    ipcMain.handle(BUCKEMAILTASKSENDLOG, async (event, data) => {
+        const qdata = JSON.parse(data) as BuckEmailTasklogQueryType;
+        if (!Object.prototype.hasOwnProperty.call(qdata, "TaskId")) {
+            const resp: CommonResponse<null> = {
+                status: false,
+                msg: "taskid is empty"
+            }
+            return resp
+        }
+        if (!Object.prototype.hasOwnProperty.call(qdata, "page")) {
+            qdata.page = 0;
+        }
+        if (!Object.prototype.hasOwnProperty.call(qdata, "size")) {
+            qdata.size = 100;
+        }
+        const res=buckemailCon.getBuckEmailSendLog(qdata.TaskId, qdata.page, qdata.size, qdata.where,qdata.sortby)
+        const resp: CommonResponse<EmailMarketingSendLogListDisplay> = {
             status: true,
             msg: "",
             data: {

@@ -44,3 +44,4 @@ export const BUCKEMAILTASKLIST='buck:email:task:list'
 
 export const SENDTESTEMAIL='send:test:email'
 export const RECEIVESENDTESTEMAILMESSAGE='receive:send:test:email:message'
+export const BUCKEMAILTASKSENDLOG='buck:email:task:sendlog'

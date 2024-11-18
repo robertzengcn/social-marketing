@@ -1,7 +1,7 @@
 import { Token } from "@/modules/token"
 import { USERSDBPATH } from '@/config/usersetting';
 import {EmailMarketingSendLogEntity,EmailMarketingSendLogdb} from "@/model/emailMarketingSendLogdb"
-
+import { SortBy } from "@/entityTypes/commonType"
 export class EmailMarketingSendLogModule {
     private dbpath: string
     private emailMarketingSendLogdb: EmailMarketingSendLogdb
@@ -29,6 +29,14 @@ export class EmailMarketingSendLogModule {
     //delete email send log by id
     deleteTask(id: string) {
         this.emailMarketingSendLogdb.delete(Number(id));
+    }
+    getSendlogList(taskId:number,page: number, limit: number,where?:string,sortby?: SortBy): {records:EmailMarketingSendLogEntity[],total:number} {
+        const records=this.emailMarketingSendLogdb.listEmailMarketingSendLog(taskId,page, limit,where,sortby)
+        const total=this.emailMarketingSendLogdb.countEmailMarketingSendLog(taskId,where)
+        return {records,total}
+    }
+    getStatusName(status: number): string {
+        return this.emailMarketingSendLogdb.getSendStatusName(status)
     }
   
 

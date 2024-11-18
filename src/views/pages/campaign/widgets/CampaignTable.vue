@@ -66,7 +66,7 @@ const {t} = useI18n({inheritLocale: true});
 type Fetchparam = {
     page: number,
     itemsPerPage: number,
-    sortBy: string,
+    sortBy?: { key: string, order: string },
     search: string
 }
 

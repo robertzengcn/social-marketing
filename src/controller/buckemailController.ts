@@ -19,7 +19,7 @@ import { EmailSendResult } from "@/entityTypes/emailmarketingType"
 import { EmailMarketingSendLogModule } from "@/modules/emailMarketingSendLogModule";
 import { EmailMarketingSendLogEntity,SendStatus } from "@/model/emailMarketingSendLogdb"
 import { SortBy } from "@/entityTypes/commonType"
-import { BuckEmailListType } from "@/entityTypes/buckemailType"
+import { BuckEmailListType,EmailMarketingSendLogListDisplay } from "@/entityTypes/buckemailType"
 import {getStatusName} from "@/modules/lib/function"
 
 export class BuckemailController {
@@ -250,6 +250,35 @@ export class BuckemailController {
         return result
         
     }
+    //get buck email send log by task id
+    public getBuckEmailSendLog(taskid: number, page: number, size: number, where?: string, sort?: SortBy): {records:Array<EmailMarketingSendLogListDisplay>,total:number} {
+        const res = this.emailMarketingSendlogModule.getSendlogList(taskid, page, size, where, sort)
+        const data: Array<EmailMarketingSendLogListDisplay> = []
+        res.records.forEach((element) => {
+            let status = "unkonw"
+            if(element.status){
+                status=this.emailMarketingSendlogModule.getStatusName(element.status)
+            }
+            let elementID=0
+            if(element.id){
+                elementID=element.id
+            }
+            const item: EmailMarketingSendLogListDisplay = {
+                id: elementID,
+                status: status,
+                receiver: element.receiver,
+                title: element.title,
+                record_time: element.record_time
+            }
+            data.push(item)
+        })
+        const result = {
+            records: data,
+            total: res.total
+        }
+        return result
+    }
+
   
 
 }

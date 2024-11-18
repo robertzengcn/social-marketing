@@ -1,7 +1,8 @@
 
 import { Database } from 'better-sqlite3';
 import { Scraperdb } from "@/model/scraperdb";
-import { getRecorddatetime, getStatusName } from "@/modules/lib/function";
+import { getRecorddatetime } from "@/modules/lib/function";
+import { SortBy } from "@/entityTypes/commonType"
 // import { TaskStatus } from "@/config/common"
 export enum SendStatus {
     Success = 1,
@@ -69,4 +70,78 @@ export class EmailMarketingSendLogdb {
         `);
         stmt.run(id);
     }
+    //get send log status name, return string
+    getSendStatusName(status: SendStatus): string {
+        switch (status) {
+            case SendStatus.Success:
+                return "Success";
+            case SendStatus.Failure:
+                return "Failure";
+            default:
+                return "Unknown";
+        }
+    }
+    //list email send log
+    listEmailMarketingSendLog(taskid:number,page: number, limit: number,where?:string,sort?: SortBy): EmailMarketingSendLogEntity[] {
+        let query='SELECT * FROM email_marketing_send_log WHERE task_id=?'
+        if(where){
+            query+=' AND (WHERE receiver LIKE ? OR title LIKE ? OR content LIKE ?)'
+        }
+        if (sort&&sort.key&&sort.order) {
+            const lowsersortkey = sort.key.toLowerCase()
+            const lowsersortorder = sort.order.toLowerCase()
+            const allowsortkey = ['id', 'record_time', 'status']
+            const allowsortorder = ['asc', 'desc']
+      
+            // if (sort) {
+            if (!allowsortkey.includes(lowsersortkey)) {
+              //not allow such key, throw error
+              throw new Error("not allow sort key")
+            } else {
+              if (!allowsortorder.includes(lowsersortorder)) {
+                throw new Error("not allow sort order")
+              }
+              // sortstr = lowsersortkey + ' ' + lowsersortorder
+              query+=' ORDER BY '+lowsersortkey+' '+lowsersortorder
+              console.log(query)
+            }
+      
+            // }
+          }else{
+            query+=' ORDER BY id DESC'
+          }
+          query+=' LIMIT ? OFFSET ?'
+        const stmt = this.db.prepare(query);
+        let param:String[]=[taskid.toString(),limit.toString(),page.toString()]  
+        if(where){
+            param=[taskid.toString(),where,where,where,limit.toString(),page.toString()]
+        }
+        const res = stmt.all(
+            param
+        );
+        return res as EmailMarketingSendLogEntity[];
+    }
+    //count email send log
+    countEmailMarketingSendLog(taskid:number,where?:string): number {
+    //     const stmt = this.db.prepare(`
+    //         SELECT COUNT(*) as count FROM email_marketing_send_log WHERE task_id=?
+    //     `);
+    //    const totalobj=stmt.get(taskid) as { count: number };
+    //    return totalobj.count;
+    let query='SELECT COUNT(*) as count FROM email_marketing_send_log WHERE task_id=?'
+    if(where){
+        query+=' AND (WHERE receiver LIKE ? OR title LIKE ? OR content LIKE ?)'
+
+    }
+    const stmt = this.db.prepare(query);
+    let param:String[]=[taskid.toString()]
+    if(where){
+        param=[taskid.toString(),where,where,where]
+    }
+    const res = stmt.get(
+        param
+    ) as { count: number };
+    return res.count;
+    }
+
 }

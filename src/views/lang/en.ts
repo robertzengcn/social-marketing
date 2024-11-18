@@ -272,6 +272,14 @@ export default {
         status:"Task Status",
         type:"Task Type",
         
+    },
+    emailtasksendlog:{
+        id:"id",
+        status:"status",
+        receiver:"receiver",
+        title:"title",
+        content:"content",
+        record_time:"record time",
     }
 
 }

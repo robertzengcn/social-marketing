@@ -398,6 +398,16 @@ export const constantRoutes: RouteRecordRaw[] = [
         }
       },
       {
+        path: 'buckemailtask/list/:id(\\d+)',
+        component: () => import(/* webpackChunkName: "staff-list" */ '@/views/pages/emailSendTaskLog/list.vue'),
+        name: 'BUCK_Email_TASK_LOG_LIST',
+        meta:   {
+          visible: false,
+          title: 'email send log',
+          icon: 'list'
+        }
+      },
+      {
         path: 'form',
         component: () => import(/* webpackChunkName: "staff-list" */ '@/views/pages/emailmarketing/buckemailform.vue'),
         name: 'Email_BUCK_SEND',
@@ -503,6 +513,7 @@ export const constantRoutes: RouteRecordRaw[] = [
         component: () => import(/* webpackChunkName: "staff-list" */ '@/views/pages/emailservice/servicedetail.vue'),
         
       },
+      
     ]
   },
   {

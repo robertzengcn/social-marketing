@@ -39,6 +39,7 @@ export type SortBy={
 export type ItemSearchparam={
     page:number
     size:number
+    where?:string
     sortby?:SortBy
     search?:string
 }

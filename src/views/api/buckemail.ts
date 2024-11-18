@@ -2,10 +2,11 @@
 
 import {windowSend,windowReceive,windowInvoke} from '@/views/utils/apirequest'
 import {EmailMarketingsubdata} from '@/entityTypes/emailmarketingType'
-import {BUCKEMAILSEND,BUCKEMAILTASKLIST} from '@/config/channellist'
+import {BUCKEMAILSEND,BUCKEMAILTASKLIST,BUCKEMAILTASKSENDLOG} from '@/config/channellist'
 import {SearchResult} from '@/views/api/types'
-import {ItemSearchparam,CommonIdrequest} from "@/entityTypes/commonType"
-import {BuckEmailListType} from "@/entityTypes/buckemailType"
+import {ItemSearchparam} from "@/entityTypes/commonType"
+import {BuckEmailListType,BuckEmailTasklogQueryType,EmailMarketingSendLogListDisplay} from "@/entityTypes/buckemailType"
+import { EmailMarketingSendLogEntity} from "@/model/emailMarketingSendLogdb"
 
 export async function buckEmailsend(data: EmailMarketingsubdata) {
     
@@ -27,6 +28,20 @@ export async function getBuckEmailSendtaskList(params: ItemSearchparam): Promise
     }
 
     const resdata:SearchResult<BuckEmailListType>={
+            data:resp.records,
+            total:resp.num,
+    }
+    return resdata;  
+}
+//get buck email send log
+export async function getBuckEmailSendLog(params: BuckEmailTasklogQueryType): Promise<SearchResult<EmailMarketingSendLogListDisplay>> {
+    const resp= await windowInvoke(BUCKEMAILTASKSENDLOG, params);
+    
+    if(!resp){
+       throw new Error("unknow error")
+    }
+
+    const resdata:SearchResult<EmailMarketingSendLogListDisplay>={
             data:resp.records,
             total:resp.num,
     }
