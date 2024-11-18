@@ -5,7 +5,9 @@
                 <v-text-field rounded class="elevation-0" density="compact" variant="solo" label="Search"
                     append-inner-icon="mdi-magnify" single-line hide-details v-model="search"></v-text-field>
             </div>
-
+            <v-btn class="btn" variant="flat" prepend-icon="mdi-plus" color="#5865f2" @click="createTask()">
+                {{CapitalizeFirstLetter($t('buckemailtask.create_task'))}}
+            </v-btn>
           
         </div>
 
@@ -16,7 +18,7 @@
         <template v-slot:[`item.actions`]="{ item }" v-if="isSelectedtable!=true">
 
             <v-icon size="small" class="me-2" @click="openItem(item)">
-                mdi-pencil
+                mdi-folder
             </v-icon>
             
         </template>
@@ -35,7 +37,7 @@ import {BuckEmailListType} from "@/entityTypes/buckemailType"
 // import type { VDataTable } from 'vuetify/lib/components/index.mjs'
 import router from '@/views/router';
 import { Header } from "@/entityTypes/commonType"
-import DeleteDialog from '@/views/components/widgets/deleteDialog.vue';
+//import DeleteDialog from '@/views/components/widgets/deleteDialog.vue';
 const { t } = useI18n({ inheritLocale: true });
 const selected = ref<Array<BuckEmailListType>>([]);
 const computedHeaders = computed(() => {
@@ -104,8 +106,8 @@ const serverItems = ref<Array<BuckEmailListType>>([]);
 const loading = ref(false);
 const totalItems = ref(0);
 const search = ref('');
-const showDeleteModal = ref(false);
-const deleteId = ref(0);
+//const showDeleteModal = ref(false);
+//const deleteId = ref(0);
 
 function loadItems({ page, itemsPerPage, sortBy }) {
     loading.value = true
@@ -139,14 +141,14 @@ const openItem = (item: BuckEmailListType) => {
 
     // }
     router.push({
-        name: "Email_Marketing_Service_Detail", params: { id: item.TaskId }
+        name: "BUCK_Email_TASK_LOG_LIST", params: { id: item.TaskId }
     });
 };
 
-function createService() {
+function createTask() {
     console.log("create email Service")
     router.push({
-        name: 'Email_Marketing_Service_Create'
+        name: 'Email_BUCK_SEND'
     });
 }
 

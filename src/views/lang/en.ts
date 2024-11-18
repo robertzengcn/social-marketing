@@ -271,7 +271,7 @@ export default {
         taskId:"Task ID",
         status:"Task Status",
         type:"Task Type",
-        
+        create_task:"create task",
     },
     emailtasksendlog:{
         id:"id",
