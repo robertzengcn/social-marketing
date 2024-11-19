@@ -21,13 +21,14 @@ export interface EmailMarketingSendLogEntity {
 
 export class EmailMarketingSendLogdb {
     db: Database;
+    emailSendlogTaskTable = "email_send_log";
     constructor(filepath: string) {
         const scraperModel = Scraperdb.getInstance(filepath);
         this.db = scraperModel.getdb();
     }
     create(task: EmailMarketingSendLogEntity): number {
         const stmt = this.db.prepare(`
-            INSERT INTO email_marketing_send_log (status,task_id, receiver, title, content, record_time,log)
+            INSERT INTO ${this.emailSendlogTaskTable} (status,task_id, receiver, title, content, record_time,log)
             VALUES (@status,@task_id, @receiver, @title, @content, @record_time,@log)
         `);
         const info = stmt.run({
@@ -43,13 +44,13 @@ export class EmailMarketingSendLogdb {
     }
     read(id: number): EmailMarketingSendLogEntity | undefined {
         const stmt = this.db.prepare(`
-            SELECT * FROM email_marketing_send_log WHERE id = ?
+            SELECT * FROM ${this.emailSendlogTaskTable} WHERE id = ?
         `);
         return stmt.get(id) as EmailMarketingSendLogEntity | undefined;
     }
     update(id: number, task: EmailMarketingSendLogEntity): void {
         const stmt = this.db.prepare(`
-            UPDATE email_marketing_send_log
+            UPDATE ${this.emailSendlogTaskTable}
             SET status=@status,task_id = @task_id, receiver = @receiver, title = @title, content = @content, record_time = @record_time,log=@log
             WHERE id = @id
         `);
@@ -66,7 +67,7 @@ export class EmailMarketingSendLogdb {
     }
     delete(id: number): void {
         const stmt = this.db.prepare(`
-            DELETE FROM email_marketing_send_log WHERE id = ?
+            DELETE FROM ${this.emailSendlogTaskTable} WHERE id = ?
         `);
         stmt.run(id);
     }
@@ -83,7 +84,7 @@ export class EmailMarketingSendLogdb {
     }
     //list email send log
     listEmailMarketingSendLog(taskid:number,page: number, limit: number,where?:string,sort?: SortBy): EmailMarketingSendLogEntity[] {
-        let query='SELECT * FROM email_marketing_send_log WHERE task_id=?'
+        let query='SELECT * FROM ' + this.emailSendlogTaskTable + ' WHERE task_id=?'
         if(where){
             query+=' AND (WHERE receiver LIKE ? OR title LIKE ? OR content LIKE ?)'
         }
@@ -128,7 +129,7 @@ export class EmailMarketingSendLogdb {
     //     `);
     //    const totalobj=stmt.get(taskid) as { count: number };
     //    return totalobj.count;
-    let query='SELECT COUNT(*) as count FROM email_marketing_send_log WHERE task_id=?'
+    let query='SELECT COUNT(*) as count FROM '+this.emailSendlogTaskTable+' WHERE task_id=?'
     if(where){
         query+=' AND (WHERE receiver LIKE ? OR title LIKE ? OR content LIKE ?)'
 

@@ -22,7 +22,7 @@ import { getBuckEmailSendLog } from '@/views/api/buckemail'
 import { ref, computed,watch,onMounted } from 'vue'
 import { SearchResult } from '@/views/api/types'
 import { CapitalizeFirstLetter } from "@/views/utils/function"
-import {BuckEmailListType,EmailMarketingSendLogListDisplay} from "@/entityTypes/buckemailType"
+import {EmailMarketingSendLogListDisplay} from "@/entityTypes/buckemailType"
 const $route = useRoute();
 const taskId = ref(0);
 // import type { VDataTable } from 'vuetify/lib/components/index.mjs'
@@ -74,7 +74,7 @@ headers.value = [
     },
  
     {
-        title: computed(_ => CapitalizeFirstLetter(t("emailtasksendlog.recevier"))),
+        title: computed(_ => CapitalizeFirstLetter(t("emailtasksendlog.receiver"))),
         align: 'start',
         sortable: false,
         key: 'receiver',

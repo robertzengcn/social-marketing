@@ -18,14 +18,20 @@
         </v-col>
         <v-col cols="12" md="3">
           <!-- Content for the 1/3 column -->
-          <v-btn @click="insertVariable('{$time}')" color="primary" class="mb-2 ml-2" rounded="lg" size="small">
+          <v-btn @click="insertVariable('{$send_time}')" color="primary" class="mb-2 ml-2" rounded="lg" size="small">
             Insert Time Variable
           </v-btn>
           <v-btn @click="insertVariable('{$sender}')" color="primary" class="mb-2 ml-2" rounded="lg" size="small">
             Insert Sender Variable
           </v-btn>
-          <v-btn @click="insertVariable('{$receiver}')" color="primary" class="mb-2 ml-2" rounded="lg" size="small">
+          <v-btn @click="insertVariable('{$receiver_email}')" color="primary" class="mb-2 ml-2" rounded="lg" size="small">
             Insert Receiver Variable
+          </v-btn>
+          <v-btn @click="insertVariable('{$url}')" color="primary" class="mb-2 ml-2" rounded="lg" size="small">
+            Insert the source
+          </v-btn>
+          <v-btn @click="insertVariable('{$description}')" color="primary" class="mb-2 ml-2" rounded="lg" size="small">
+            Insert the description
           </v-btn>
         </v-col>
       </v-row>
@@ -60,15 +66,26 @@
       title="Email Preview">
       <v-card-text>
         <v-row dense>
-          <v-col cols="12" md="4" sm="6">
+          <v-col cols="12" md="6" sm="6">
             <v-text-field v-model="Sendervar" label="Sender" required></v-text-field>
           </v-col>
-          <v-col cols="12" md="4" sm="6">
+          <v-col cols="12" md="6" sm="6">
             <v-text-field v-model="Receivervar" label="Receiver" required></v-text-field>
 
           </v-col>
 
         </v-row>
+        <v-row dense>
+          <v-col cols="12" md="12" sm="12">
+            <v-text-field v-model="Sourcevar" label="Source" required></v-text-field>
+          </v-col>
+        </v-row>
+        <v-row dense>
+          <v-col cols="12" md="12" sm="12">
+            <v-text-field v-model="DescriptionVar" label="Description" required></v-text-field>
+          </v-col>
+        </v-row>
+
         <v-row dense>
           <v-text-field v-model="EmailTitlepreview" :label="$t('emailmarketing.title')" type="input"
             readonly></v-text-field>
@@ -118,9 +135,11 @@ const isEdit = ref(false);
 const textarea = ref<HTMLTextAreaElement | null>(null);
 const inputs = ref<HTMLInputElement | null>(null);
 const Sendervar = ref<string>("");
+const DescriptionVar= ref<string>("");
 const Receivervar = ref<string>("");
 const EmailTitlepreview = ref<string>("");
 const EmailContentpreview = ref<string>("");
+const Sourcevar= ref<string>("");
 let lastFocusedElement: HTMLTextAreaElement | HTMLInputElement | null = null;
 import router from "@/views/router";
 // import { RefSymbol } from "@vue/reactivity";
@@ -167,6 +186,16 @@ watch(Receivervar, (newValue, oldValue) => {
   // Call your function here
   onEmailContentpreviewChange();
 });
+watch(DescriptionVar, (newValue, oldValue) => {
+  //console.log('EmailContentpreview changed from', oldValue, 'to', newValue);
+  // Call your function here
+  onEmailContentpreviewChange();
+});
+watch(Sourcevar, (newValue, oldValue) => {
+  //console.log('EmailContentpreview changed from', oldValue, 'to', newValue);
+  // Call your function here
+  onEmailContentpreviewChange();
+});
 function handleFocus(event: FocusEvent) {
   const target = event.target as HTMLTextAreaElement | HTMLInputElement;
   if (target && (target.tagName === 'TEXTAREA' || target.tagName === 'INPUT')) {
@@ -179,7 +208,9 @@ function onEmailContentpreviewChange() {
     Sender: Sendervar.value,
     Receiver: Receivervar.value,
     TplTitle: tplTitle.value,
-    TplContent: tplcontent.value
+    TplContent: tplcontent.value,
+    Url:Sourcevar.value,
+    Description:DescriptionVar.value
   }
   const tplres = convertVariableInTemplate(changeData)
   console.log(tplres)

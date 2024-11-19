@@ -1,14 +1,16 @@
 <template>
     <div class="search_bar mt-4 d-flex jsb">
         <div class="d-flex jsb search_tool">
-            <div class="search_wrap mr-4">
+            <!-- <div class="search_wrap mr-4">
                 <v-text-field rounded class="elevation-0" density="compact" variant="solo" label="Search"
                     append-inner-icon="mdi-magnify" single-line hide-details v-model="search"></v-text-field>
-            </div>
+            </div> -->
+           
+            <div class="ml-auto">
             <v-btn class="btn" variant="flat" prepend-icon="mdi-plus" color="#5865f2" @click="createTask()">
                 {{CapitalizeFirstLetter($t('buckemailtask.create_task'))}}
             </v-btn>
-          
+        </div>
         </div>
 
     </div>
@@ -76,27 +78,27 @@ const headers = ref<Array<Header>>([])
 headers.value = [
     {
         title: computed(_ => CapitalizeFirstLetter(t("buckemailtask.taskId"))),
-        align: 'start',
+        align: 'center',
         sortable: false,
-        key: 'id',
+        key: 'TaskId',
     },
     {
         title: computed(_ => CapitalizeFirstLetter(t("buckemailtask.type"))),
         align: 'start',
         sortable: false,
-        key: 'status',
+        key: 'Type',
     },
     {
         title: computed(_ => CapitalizeFirstLetter(t("buckemailtask.status"))),
         align: 'start',
         sortable: false,
-        key: 'status',
+        key: 'Status',
     },
     {
         title: computed(_ => CapitalizeFirstLetter(t("common.record_time"))),
         align: 'start',
         sortable: false,
-        key: 'create_time',
+        key: 'RecordTime',
     },
     { title: computed(_ => CapitalizeFirstLetter(t("common.actions"))), key: 'actions', sortable: false },
 
