@@ -25,7 +25,7 @@ jobs:
         run: |
             touch .env.test
             echo "NODE_ENV=test" >> .env.production     
-            echo VITE_REMOTEADD=${{ secrets.VITE_REMOTEADD }} >> .env
+            echo VITE_REMOTEADD=${{ secrets.VITE_REMOTEADD_TEST }} >> .env
             cat .env.test
             
       - name: Install dependencies
@@ -51,7 +51,13 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18.19.1
-
+      - name: Create .env.test file 
+        run: |
+            touch .env.test
+            echo "NODE_ENV=test" >> .env.production     
+            echo VITE_REMOTEADD=${{ secrets.VITE_REMOTEADD_TEST }} >> .env
+            cat .env.test
+              
       - name: Install dependencies
         run: yarn install
 
