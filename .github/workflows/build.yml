@@ -1,0 +1,65 @@
+name: Build Electron App
+
+on:
+  push:
+    branches:
+      - test
+  pull_request:
+    branches:
+      - test
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.19.1
+
+      - name: Create .env.production file 
+        run: |
+            touch .env.production
+            echo "NODE_ENV=production" >> .env.production     
+            echo VITE_REMOTEADD=${{ secrets.VITE_REMOTEADD }} >> .env
+            cat .env.production
+            
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Build application
+        run: yarn make-win
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: electron-app-windows
+          path: out/make
+
+  build-macos:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.19.1
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Build application
+        run: yarn make-mac
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: electron-app-macos
+          path: out/make

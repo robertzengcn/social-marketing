@@ -1,3 +1,9 @@
+const path = require('path');
+const dotenv = require('dotenv');
+// Determine the environment and load the corresponding .env file
+const env = process.env.NODE_ENV || 'development';
+const envFile = `.env.${env}`;
+dotenv.config({ path: path.resolve(__dirname, envFile) });
 module.exports = {
   packagerConfig: {
     asar: true,
@@ -7,7 +13,9 @@ module.exports = {
     {
       name: '@electron-forge/maker-squirrel',
       config: {
-        "name": "electron_quick_start"
+        name: process.env.APP_NAME || 'electron_quick_start',
+        certificateFile: './cert.pfx',
+        certificatePassword: process.env.CERTIFICATE_PASSWORD
       },
     },
     {
