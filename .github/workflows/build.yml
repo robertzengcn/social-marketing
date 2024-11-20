@@ -21,12 +21,12 @@ jobs:
         with:
           node-version: 18.19.1
 
-      - name: Create .env.production file 
+      - name: Create .env.test file 
         run: |
-            touch .env.production
-            echo "NODE_ENV=production" >> .env.production     
+            touch .env.test
+            echo "NODE_ENV=test" >> .env.production     
             echo VITE_REMOTEADD=${{ secrets.VITE_REMOTEADD }} >> .env
-            cat .env.production
+            cat .env.test
             
       - name: Install dependencies
         run: yarn install
