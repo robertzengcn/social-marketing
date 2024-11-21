@@ -17,8 +17,6 @@
     "login": "ts-node src/runcli.ts -a login -c",
     "make": "electron-forge make",
     "package": "electron-forge package",
-    "postinstall": "electron-builder install-app-deps",
-    "postuninstall": "electron-builder install-app-deps",
     "start": "electron-forge start",
     "publish": "electron-forge publish",
     "task": "ts-node src/runcli.ts -a task -t",
