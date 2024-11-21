@@ -20,6 +20,11 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18.19.1
+      - name: Install Python and setuptools
+        run: |
+            brew install python
+            python3 -m ensurepip
+            python3 -m pip install --upgrade pip setuptools
 
       - name: Create .env.test file 
         run: |
