@@ -61,7 +61,6 @@ jobs:
 
       - name: Install Python and setuptools
         run: |
-            python3 -m ensurepip 
             python3 -m pip install --upgrade pip setuptools            
               
       - name: Install dependencies
