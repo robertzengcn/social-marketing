@@ -86,6 +86,15 @@ module.exports = {
         'node_gyp_bins'
       );
       await fs.rm(gypPath, {recursive: true, force: true});
+      const utfPaht=path.join(
+        buildPath,
+        'node_modules',
+        'utf-8-validate',
+        'build',
+        'node_gyp_bins'
+      );
+      await fs.rm(gypPath, {recursive: true, force: true});
+
    }
   }
 };
