@@ -93,7 +93,7 @@ module.exports = {
         'build',
         'node_gyp_bins'
       );
-      await fs.rm(gypPath, {recursive: true, force: true});
+      await fs.rm(utfPaht, {recursive: true, force: true});
 
    }
   }
