@@ -59,9 +59,9 @@ jobs:
             echo VITE_REMOTEADD=${{ secrets.VITE_REMOTEADD_TEST }} >> .env
             cat .env.test
 
-      - name: Install Python and setuptools
+      - name: Install setuptools
         run: |
-            python3 -m pip install --upgrade pip setuptools            
+            brew install python-setuptools            
               
       - name: Install dependencies
         run: yarn install
