@@ -76,16 +76,16 @@ module.exports = {
       }
     }
   ],
-  // hooks: {
-  //   packageAfterPrune: async (_config, buildPath) => {
-  //     const gypPath = path.join(
-  //       buildPath,
-  //       'node_modules',
-  //       'moduleName',
-  //       'build',
-  //       'node_gyp_bins'
-  //     );
-  //     await fs.rm(gypPath, {recursive: true, force: true});
-  //  }
-  // }
+  hooks: {
+    packageAfterPrune: async (_config, buildPath) => {
+      const gypPath = path.join(
+        buildPath,
+        'node_modules',
+        'bufferutil',
+        'build',
+        'node_gyp_bins'
+      );
+      await fs.rm(gypPath, {recursive: true, force: true});
+   }
+  }
 };
