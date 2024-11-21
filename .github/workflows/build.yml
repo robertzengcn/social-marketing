@@ -20,11 +20,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18.19.1
-      - name: Install Python and setuptools
-        run: |
-            brew install python
-            python3 -m ensurepip
-            python3 -m pip install --upgrade pip setuptools
 
       - name: Create .env.test file 
         run: |
@@ -40,7 +35,7 @@ jobs:
         run: yarn make-win:test
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: electron-app-windows
           path: out/make
@@ -56,12 +51,19 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18.19.1
+          
       - name: Create .env.test file 
         run: |
             touch .env.test
             echo "NODE_ENV=test" >> .env.production     
             echo VITE_REMOTEADD=${{ secrets.VITE_REMOTEADD_TEST }} >> .env
             cat .env.test
+
+      - name: Install Python and setuptools
+        run: |
+            brew install python
+            python3 -m ensurepip
+            python3 -m pip install --upgrade pip setuptools            
               
       - name: Install dependencies
         run: yarn install
@@ -70,7 +72,7 @@ jobs:
         run: yarn make-mac:test
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: electron-app-macos
           path: out/make
