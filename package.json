@@ -117,8 +117,6 @@
     "vuex": "^4.1.0",
     "vuex-module-decorators": "^2.0.0",
     "webfontloader": "^1.0.0",
-    "webpack-manifest-plugin": "^5.0.0",
-    "webpack-merge": "^5.9.0",
     "whatwg-fetch": "^3.6.20",
     "winston": "^3.2.1",
     "youtube-videos-uploader": "^2.0.20"

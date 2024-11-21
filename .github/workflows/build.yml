@@ -61,7 +61,7 @@ jobs:
 
       - name: Install setuptools
         run: |
-            brew install python-setuptools            
+            brew install python-setuptools           
               
       - name: Install dependencies
         run: yarn install
