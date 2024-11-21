@@ -1,5 +1,6 @@
 const path = require('path');
 const dotenv = require('dotenv');
+const fs = require('node:fs/promises');
 // Determine the environment and load the corresponding .env file
 const env = process.env.NODE_ENV || 'development';
 const envFile = `.env.${env}`;
@@ -75,4 +76,25 @@ module.exports = {
       }
     }
   ],
+  hooks: {
+    packageAfterPrune: async (_config, buildPath) => {
+      const gypPath = path.join(
+        buildPath,
+        'node_modules',
+        'bufferutil',
+        'build',
+        'node_gyp_bins'
+      );
+      await fs.rm(gypPath, {recursive: true, force: true});
+      const utfPaht=path.join(
+        buildPath,
+        'node_modules',
+        'utf-8-validate',
+        'build',
+        'node_gyp_bins'
+      );
+      await fs.rm(utfPaht, {recursive: true, force: true});
+
+   }
+  }
 };
