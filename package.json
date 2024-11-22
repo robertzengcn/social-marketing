@@ -54,7 +54,6 @@
     "apexcharts": "^3.44.0",
     "app-root-path": "^3.1.0",
     "argparse": "^2.0.1",
-    "axios": "^1.6.7",
     "better-sqlite3": "^9.4.3",
     "bufferutil": "^4.0.8",
     "cheerio": "^1.0.0-rc.3",

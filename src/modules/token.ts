@@ -3,9 +3,9 @@ export { };
 // const keytar = require('keytar')
 // const os = require('os');
 // import Store from 'electron-store';
-import { safeStorage } from 'electron';
+//import { safeStorage } from 'electron';
 import { CryptoSource } from '@/modules/cryptosource';
-import {StoreService} from "@/modules/storeservice"
+//import {StoreService} from "@/modules/storeservice"
 import {USERSERVICE} from '@/config/usersetting';
 import {ElectronStoreService} from "@/modules/electronstoreservice"
 
