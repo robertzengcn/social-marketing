@@ -117,8 +117,7 @@
     "vuex-module-decorators": "^2.0.0",
     "webfontloader": "^1.0.0",
     "whatwg-fetch": "^3.6.20",
-    "winston": "^3.2.1",
-    "youtube-videos-uploader": "^2.0.20"
+    "winston": "^3.2.1"
   },
   "devDependencies": {
     "@babel/core": "^7.23.2",
