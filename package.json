@@ -71,8 +71,6 @@
     "fetch-socks": "^1.3.0",
     "filenamify": "^4.3.0",
     "global": "^4.4.0",
-    "google-auth-library": "^9.0.0",
-    "googleapis": "^124.0.0",
     "got": "^9.6.0",
     "http-proxy-agent": "^7.0.2",
     "https-proxy-agent": "^7.0.4",
@@ -117,8 +115,7 @@
     "vuex-module-decorators": "^2.0.0",
     "webfontloader": "^1.0.0",
     "whatwg-fetch": "^3.6.20",
-    "winston": "^3.2.1",
-    "youtube-videos-uploader": "^2.0.20"
+    "winston": "^3.2.1"
   },
   "devDependencies": {
     "@babel/core": "^7.23.2",
