@@ -1,15 +1,19 @@
 import { extramodules } from "@/config/extrapipmodule"
-import { ExtraPipModule } from "@/entityTypes/extramodule-type"
-import { checkPipPackage } from "@/modules/lib/function"
+import { ExtraModule } from "@/entityTypes/extramodule-type"
+import {checkFolderAndGetFiles,downloadFile } from "@/modules/lib/function"
 import { ListData } from "@/entityTypes/commonType"
-import { installPipPackage, uninstallPipPackage } from "@/modules/lib/function"
+// import { uninstallPipPackage } from "@/modules/lib/function"
 import log from 'electron-log/node';
+import { app } from 'electron';
+import * as path from 'path';
 export class ExtraModuleController {
+    private extraModulePth:string;
     constructor() {
+        this.extraModulePth=path.join(app.getPath('exe'),'extramodule')
         // log.transports.file.resolvePathFn = () => path.join(APP_DATA, 'logs/main.log');
     }
-    public getExtraModuleList(offerset: number, length: number): ListData<ExtraPipModule> {
-        const piplist = checkPipPackage()
+    public async getExtraModuleList(offerset: number, length: number): Promise<ListData<ExtraModule>> {
+        const piplist = await this.getExtramoduleinfolder()
         //loop extra modules check if modules installed
         extramodules.forEach((module) => {
             module.installed = piplist.includes(module.packagename)
@@ -26,30 +30,32 @@ export class ExtraModuleController {
         if (!valid) {
             throw new Error("package name not valid:" + packagename)
         }
+        const saveName=path.join(this.extraModulePth,valid.packagename)
+        downloadFile(valid.link,saveName)
         // const filePath = ""
         //install package
-        installPipPackage(
-            valid.packagename,
-            valid.version,
-            (error) => {
-                throw new Error(error.message)
-            },
-            (message) => {
-                const formattedMessage = `${new Date().toISOString()}: ${message}\n`;
+        // installPipPackage(
+        //     valid.packagename,
+        //     valid.version,
+        //     (error) => {
+        //         throw new Error(error.message)
+        //     },
+        //     (message) => {
+        //         const formattedMessage = `${new Date().toISOString()}: ${message}\n`;
         
-                log.info(formattedMessage)
-                if (strout) {
-                    strout(message)
-                }
-            },
-            (message) => {
-                const formattedMessage = `${new Date().toISOString()}: ${message}\n`;
-                log.error(formattedMessage)
-                if (strerr) {
-                    strerr(message)
-                }
-            },
-        )
+        //         log.info(formattedMessage)
+        //         if (strout) {
+        //             strout(message)
+        //         }
+        //     },
+        //     (message) => {
+        //         const formattedMessage = `${new Date().toISOString()}: ${message}\n`;
+        //         log.error(formattedMessage)
+        //         if (strerr) {
+        //             strerr(message)
+        //         }
+        //     },
+        // )
     }
     //remove modules
     public removeExtraModule(packagename: string, strout?: (message: string) => void, strerr?: (message: string) => void) {
@@ -59,28 +65,36 @@ export class ExtraModuleController {
             throw new Error("package name not valid:" + packagename)
         }
         //uninstall package
-        uninstallPipPackage(valid.packagename, (error) => {
-            log.error(error)
-            throw new Error(error.message)
-        },
-            (message) => {
-                const formattedMessage = `${new Date().toISOString()}: ${message}\n`;
+        // uninstallPipPackage(valid.packagename, (error) => {
+        //     log.error(error)
+        //     throw new Error(error.message)
+        // },
+        //     (message) => {
+        //         const formattedMessage = `${new Date().toISOString()}: ${message}\n`;
 
-                log.info(formattedMessage)
-                if (strout) {
-                    strout(message)
-                }
-            },
-            (message) => {
-                const formattedMessage = `${new Date().toISOString()}: ${message}\n`;
-                log.error(formattedMessage)
-                if (strerr) {
-                    strerr(message)
-                }
-            },
-        )
+        //         log.info(formattedMessage)
+        //         if (strout) {
+        //             strout(message)
+        //         }
+        //     },
+        //     (message) => {
+        //         const formattedMessage = `${new Date().toISOString()}: ${message}\n`;
+        //         log.error(formattedMessage)
+        //         if (strerr) {
+        //             strerr(message)
+        //         }
+        //     },
+        // )
 
     }
+    //check extramodule exist
+    private async getExtramoduleinfolder(){
+       
+        const moduleList=await checkFolderAndGetFiles(this.extraModulePth)
+        return moduleList
+
+    }
+
 
 
 }

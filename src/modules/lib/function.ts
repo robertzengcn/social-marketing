@@ -9,6 +9,7 @@ import os from "os";
 import * as crypto from 'crypto';
 import {ProxyParseItem,ProxyServer} from "@/entityTypes/proxyType"
 import {TaskStatus} from "@/config/common";
+import fetch from 'node-fetch';
 // import { contextIsolated } from "process";
 //import { utilityProcess, MessageChannelMain} from "electron";
 export type queryParams = {
@@ -481,6 +482,82 @@ export function getStatusName(taskStatus: TaskStatus): string {
 // Function to remove duplicates from an array
 export function removeDuplicates(array: any[]): any[] {
   return array.filter((item, index) => array.indexOf(item) === index);
+}
+
+/**
+   * Check if a folder exists and return the list of files in the folder.
+   * @param folderPath - The path to the folder.
+   * @returns A promise that resolves to an array of file names if the folder exists, or an empty array if it doesn't.
+   */
+export async function checkFolderAndGetFiles(folderPath: string): Promise<string[]> {
+  try {
+    // Check if the folder exists
+    const folderExists = await fs.promises.stat(folderPath).then(stat => stat.isDirectory()).catch(() => false);
+
+    if (!folderExists) {
+      console.log(`Folder does not exist: ${folderPath}`);
+      return [];
+    }
+
+    // Read the contents of the folder
+    const files = await fs.promises.readdir(folderPath);
+    return files;
+  } catch (error) {
+
+    // console.error(`Error checking folder or reading files: ${error.message}`);
+    return [];
+  }
+}
+/**
+ * Download a file from a remote URL and save it to a specified path.
+ * @param url - The URL of the file to download.
+ * @param savePath - The path where the file should be saved.
+ * @returns A promise that resolves when the file has been downloaded and saved.
+ */
+export async function downloadFile(url: string, savePath: string,onSuccess?: () => void,
+onFailure?: (error: Error) => void): Promise<void> {
+  try {
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error(`Failed to download file: ${response.statusText}`);
+  }
+
+  const fileStream = fs.createWriteStream(savePath);
+
+  return new Promise((resolve, reject) => {
+    if (response.body) {
+      response.body.pipe(fileStream);
+      response.body.on('error', (error) => {
+       
+        reject(error);
+        if(onFailure){
+        onFailure(error as Error);
+      }
+      });
+    } else {
+      if(onFailure){
+        onFailure(new Error('Response body is null'))
+      }
+     
+      reject(new Error('Response body is null'));
+    }
+    fileStream.on('finish', () => {
+      if(onSuccess){
+        onSuccess();
+      }
+      
+      resolve();
+    });
+  });
+} catch (error) {
+  if(onFailure){
+
+    onFailure(error as Error);
+  }
+  
+  throw error;
+}
 }
 
 

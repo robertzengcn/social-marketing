@@ -40,7 +40,7 @@ import { getExtramodulelist,installExtramodule,receiveInExtramoduleLog,removeExt
 import { ref,computed,onMounted } from 'vue'
 import { SearchResult } from '@/views/api/types'
 // import router from '@/views/router';
-import {ExtraPipModule,ExtraPipModuleItem} from "@/entityTypes/extramodule-type"
+import {ExtraModule,ExtraModuleItem} from "@/entityTypes/extramodule-type"
 const {t} = useI18n({inheritLocale: true});
 import {CapitalizeFirstLetter} from '@/views/utils/function'
 
@@ -52,18 +52,18 @@ type Fetchparam = {
 }
 
 const FakeAPI = {
-    async fetch(fetchparam: Fetchparam): Promise<SearchResult<ExtraPipModule>> {
+    async fetch(fetchparam: Fetchparam): Promise<SearchResult<ExtraModule>> {
         const fpage=(fetchparam.page-1)*fetchparam.itemsPerPage
         return await getExtramodulelist({ page: fpage, size: fetchparam.itemsPerPage, sortby: fetchparam.sortBy})
     }
 }
 const itemsPerPage = ref(10);
-const serverItems = ref<Array<ExtraPipModuleItem>>([]);
+const serverItems = ref<Array<ExtraModuleItem>>([]);
 const loading = ref(false);
 const totalItems = ref(0);
 // const search = ref('');
 const dialog= ref(false);
-const currentItem=ref<ExtraPipModuleItem>();
+const currentItem=ref<ExtraModuleItem>();
 const dialogtext=ref("");
 const headers=ref<Array<any>>([])
 const dialogAction=ref('')
@@ -104,14 +104,14 @@ function loadItems({ page, itemsPerPage, sortBy }) {
         ({ data, total }) => {
             // console.log(data)
             // console.log(total)
-            const epi:Array<ExtraPipModuleItem>=[]
+            const epi:Array<ExtraModuleItem>=[]
             //loop data
             for(let i=0; i<data.length; i++){
                 const tranvarname="modules."+data[i].name+".name"
                 const tranvardesc="modules."+data[i].name+".describe"
                 
                 console.log(t(tranvarname))
-                let item:ExtraPipModuleItem={
+                let item:ExtraModuleItem={
                     name:data[i].name,
                     packagename:data[i].packagename,
                     packagenameTr:t(tranvarname),
@@ -161,13 +161,13 @@ const confirmAction=()=>{
 //       installItem(currentItem.value);
 //       }
 // }
-const installItem=(item:ExtraPipModuleItem)=>{
+const installItem=(item:ExtraModuleItem)=>{
     item.loading=true
     installExtramodule(item.packagename)
    
 }
 
-const uninstallItem=(item:ExtraPipModuleItem)=>{
+const uninstallItem=(item:ExtraModuleItem)=>{
     item.loading=true 
     removeExtramodule(item.packagename)
     //reload table

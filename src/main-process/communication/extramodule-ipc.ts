@@ -2,7 +2,7 @@ import { ipcMain } from 'electron';
 import { EXTRAMODULECHANNE_LIST, EXTRAMODULECHANNE_INSTALL, EXTRAMODULECHANNE_UNINSTALL, EXTRAMODULECHANNE_MESSAGE } from "@/config/channellist";
 import { ExtraModuleController } from "@/controller/extramodule-controller";
 import { CommonResponse } from "@/entityTypes/commonType"
-import { ExtraPipModule } from "@/entityTypes/extramodule-type"
+import { ExtraModule } from "@/entityTypes/extramodule-type"
 export function registerExtraModulesIpcHandlers() {
   console.log("extramodules list register")
   ipcMain.handle(EXTRAMODULECHANNE_LIST, async (event, arg) => {
@@ -15,9 +15,9 @@ export function registerExtraModulesIpcHandlers() {
     }
     const extraModules = new ExtraModuleController
     // Handle IPC call
-    const extra = extraModules.getExtraModuleList(qdata.page, qdata.size);
+    const extra = await extraModules.getExtraModuleList(qdata.page, qdata.size);
 
-    const res: CommonResponse<ExtraPipModule> = {
+    const res: CommonResponse<ExtraModule> = {
       status: true,
       msg: "",
       data: extra

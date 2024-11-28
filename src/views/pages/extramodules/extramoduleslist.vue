@@ -14,9 +14,9 @@ const dialog = ref(false);
     
 // });
 
-const loadItems =({ page, itemsPerPage, sortBy }) =>{
-    console.log(page, itemsPerPage, sortBy)
-}
+// const loadItems =({ page, itemsPerPage, sortBy }) =>{
+//     console.log(page, itemsPerPage, sortBy)
+// }
 </script>
 <style lang="scss">
 .tables_page {

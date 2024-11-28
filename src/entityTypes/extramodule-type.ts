@@ -1,4 +1,4 @@
-export type ExtraPipModuleItem={
+export type ExtraModuleItem={
     name:string,
     packagename:string,
     packagenameTr?:string,//translate
@@ -7,10 +7,11 @@ export type ExtraPipModuleItem={
     loading?:boolean
     description:string
 }
-export type ExtraPipModule={
+export type ExtraModule={
     name:string,
     // description:string,
     packagename:string,
     version:string,
-    installed?:boolean
+    installed?:boolean,
+    link:string
 }
