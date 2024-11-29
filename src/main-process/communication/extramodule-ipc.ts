@@ -66,13 +66,13 @@ export function registerExtraModulesIpcHandlers() {
     }
     const extraCtrl = new ExtraModuleController()
     try {
-      extraCtrl.removeExtraModule(qdata.name, function (message) {
+      extraCtrl.removeExtraModule(qdata.name, function () {
         event.sender.send(EXTRAMODULECHANNE_MESSAGE, JSON.stringify({
           status: true,
           msg: "success",
           data: {
             name: qdata.name,
-            message: message
+            message: ""
           }
         }))
       }, function (message) {

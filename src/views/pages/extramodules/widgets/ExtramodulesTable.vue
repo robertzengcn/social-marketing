@@ -19,7 +19,7 @@
           
         </template>
         <template v-slot:item.installed="{ item }">
-      <span>{{ item.status ? CapitalizeFirstLetter(t('extramodule.installed')) : CapitalizeFirstLetter(t('extramodule.notInstalled')) }}</span>
+      <span>{{ item.installed ? CapitalizeFirstLetter(t('extramodule.installed')) : CapitalizeFirstLetter(t('extramodule.notInstalled')) }}</span>
     </template>
     </v-data-table-server>
 
@@ -105,7 +105,8 @@ function loadItems({ page, itemsPerPage, sortBy }) {
     }
     FakeAPI.fetch(fetchitem).then(
         ({ data, total }) => {
-            // console.log(data)
+
+            console.log(data)
             // console.log(total)
             const epi:Array<ExtraModuleItem>=[]
             //loop data
@@ -113,7 +114,7 @@ function loadItems({ page, itemsPerPage, sortBy }) {
                 const tranvarname="modules."+data[i].name+".name"
                 const tranvardesc="modules."+data[i].name+".describe"
                 
-                console.log(t(tranvarname))
+               
                 let item:ExtraModuleItem={
                     name:data[i].name,
                     packagename:data[i].packagename,

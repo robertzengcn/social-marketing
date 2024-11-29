@@ -495,7 +495,7 @@ export async function checkFolderAndGetFiles(folderPath: string): Promise<string
     const folderExists = await fs.promises.stat(folderPath).then(stat => stat.isDirectory()).catch(() => false);
 
     if (!folderExists) {
-      console.log(`Folder does not exist: ${folderPath}`);
+      // console.log(`Folder does not exist: ${folderPath}`);
       return [];
     }
 

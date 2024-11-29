@@ -10,7 +10,14 @@ import * as fs from 'fs';
 export class ExtraModuleController {
     private extraModulePth:string;
     constructor() {
-        this.extraModulePth=path.join(app.getPath('exe'),'extramodule')
+        this.extraModulePth=path.join(app.getAppPath(),'extramodule');
+        // const env=process.env.NODE_ENV || 'development';
+        // if(env==='production'){
+        //     this.extraModulePth=path.join(app.getAppPath(),'extramodule');
+        // }else{    
+        // this.extraModulePth=path.join(path.dirname(app.getPath('exe')),'extramodule');
+        // }
+        //const parentPath = path.dirname(this.extraModulePth);
         // log.transports.file.resolvePathFn = () => path.join(APP_DATA, 'logs/main.log');
     }
     public async getExtraModuleList(offerset: number, length: number): Promise<ListData<ExtraModule>> {
@@ -35,13 +42,34 @@ export class ExtraModuleController {
             }
             return
         }
-        //create folder if not exist
-        if (!fs.existsSync(this.extraModulePth)) {
-            fs.mkdirSync(this.extraModulePth, { recursive: true });
-        }
         const saveName=path.join(this.extraModulePth,valid.packagename)
+        console.log(this.extraModulePth)
+        //create folder if not exist
+        fs.access(this.extraModulePth,fs.constants.W_OK,(e)  =>{
+            if (e) {
+                console.log(e)
+                fs.promises.mkdir(this.extraModulePth,{ recursive: true },).then(() => {
+                    
+                    downloadFile(valid.link,saveName,success,strerr)
+                //    this.downloadSavefile(valid.link,success,strerr)
+                }).catch((error) => {
+                    console.log(error)
+                    if(strerr){
+                        strerr(error)
+                    }
+                })
+            } else {
+                //error not exist,access good
+                downloadFile(valid.link,saveName,success,strerr)
+            }
+        })
+    // )) 
+       // {
+            // fs.mkdirSync(this.extraModulePth, { recursive: true });
+      //  }
+        // const saveName=path.join(this.extraModulePth,valid.packagename)
 
-        downloadFile(valid.link,saveName,success,strerr)
+        // downloadFile(valid.link,saveName,success,strerr)
         // const filePath = ""
         //install package
         // installPipPackage(
@@ -67,13 +95,32 @@ export class ExtraModuleController {
         //     },
         // )
     }
+    public downloadSavefile(filename:string,success:()=>void,strerr:(message:Error)=>void){
+        const saveName=path.join(this.extraModulePth,filename)
+        downloadFile(filename,saveName,success,strerr)
+
+    }
     //remove modules
-    public removeExtraModule(packagename: string, strout?: (message: string) => void, strerr?: (message: string) => void) {
+    public removeExtraModule(packagename: string, success?: () => void, strerr?: (message: string) => void) {
         //valid package name
         const valid = extramodules.find((module) => module.packagename === packagename)
         if (!valid) {
             throw new Error("package name not valid:" + packagename)
         }
+        const modulePath = path.join(this.extraModulePth, valid.packagename);
+        if (fs.existsSync(modulePath)) {
+            fs.rm(modulePath, { recursive: true }, (error) => {
+                if(error){
+                    if (strerr) {
+                        strerr(`Module path does not exist: ${modulePath}`);
+                        }
+                }else{
+                    if (success) {
+                        success();
+                    }
+                }
+            })
+        } 
         //uninstall package
         // uninstallPipPackage(valid.packagename, (error) => {
         //     log.error(error)
