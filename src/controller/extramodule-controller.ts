@@ -3,9 +3,10 @@ import { ExtraModule } from "@/entityTypes/extramodule-type"
 import {checkFolderAndGetFiles,downloadFile } from "@/modules/lib/function"
 import { ListData } from "@/entityTypes/commonType"
 // import { uninstallPipPackage } from "@/modules/lib/function"
-import log from 'electron-log/node';
+//import log from 'electron-log/node';
 import { app } from 'electron';
 import * as path from 'path';
+import * as fs from 'fs';
 export class ExtraModuleController {
     private extraModulePth:string;
     constructor() {
@@ -24,14 +25,23 @@ export class ExtraModuleController {
         }
     }
     //install extra module
-    public installExtraModule(packagename: string, strout?: (message: string) => void, strerr?: (message: string) => void) {
+    public installExtraModule(packagename: string, success?: () => void, strerr?: (message: Error) => void) {
         //valid package name
         const valid = extramodules.find((module) => module.packagename === packagename)
         if (!valid) {
-            throw new Error("package name not valid:" + packagename)
+            //throw new Error("package name not valid:" + packagename)
+            if(strerr){
+            strerr(new Error("package name not valid:" + packagename))
+            }
+            return
+        }
+        //create folder if not exist
+        if (!fs.existsSync(this.extraModulePth)) {
+            fs.mkdirSync(this.extraModulePth, { recursive: true });
         }
         const saveName=path.join(this.extraModulePth,valid.packagename)
-        downloadFile(valid.link,saveName)
+
+        downloadFile(valid.link,saveName,success,strerr)
         // const filePath = ""
         //install package
         // installPipPackage(

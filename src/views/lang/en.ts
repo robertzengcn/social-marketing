@@ -1,5 +1,6 @@
 import { proxy } from "jquery";
 import No from "../feedback/no.vue";
+import { not } from "cheerio/lib/api/traversing";
 
 export default {
     common:{
@@ -80,7 +81,9 @@ export default {
         extramoduleTypes:"Extra Module Types",
         installConfirm:"Are you sure you want to install {package}?",
         uninstallConfirm:"Are you sure you want to uninstall {package}?",
-
+        installed:"Installed",
+        notInstalled:"Not Installed",
+        actions:"action",
     },
     modules:{
         f2:{

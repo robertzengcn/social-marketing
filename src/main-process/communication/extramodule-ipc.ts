@@ -32,20 +32,20 @@ export function registerExtraModulesIpcHandlers() {
     }
     const extraCtrl = new ExtraModuleController()
     try {
-      extraCtrl.installExtraModule(qdata.name, function (message) {
+      extraCtrl.installExtraModule(qdata.name, function () {
         event.sender.send(EXTRAMODULECHANNE_MESSAGE, JSON.stringify({
           status: true,
           msg: "success",
           data: {
             name: qdata.name,
-            message: message
+            message: ""
           }
         }))
-      }, function (message) {
-        if (message.length > 0) {
+      }, function (error) {
+        if (error.message.length > 0) {
           event.sender.send(EXTRAMODULECHANNE_MESSAGE, JSON.stringify({
             status: false,
-            msg: "failed"
+            msg: error.message
           }))
         }
       })

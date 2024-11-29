@@ -18,6 +18,9 @@
           </v-icon> -->
           
         </template>
+        <template v-slot:item.installed="{ item }">
+      <span>{{ item.status ? CapitalizeFirstLetter(t('extramodule.installed')) : CapitalizeFirstLetter(t('extramodule.notInstalled')) }}</span>
+    </template>
     </v-data-table-server>
 
     <v-dialog v-model="dialog" persistent max-width="290">
@@ -69,25 +72,25 @@ const headers=ref<Array<any>>([])
 const dialogAction=ref('')
 headers.value = [
     {
-        title: computed(_ => t("extramodule.extramoduleName")),
+        title: computed(_ => CapitalizeFirstLetter(t("extramodule.extramoduleName"))),
         align: 'start',
         sortable: false,
         key: 'packagenameTr',
     },
     {
-        title: computed(_ => t("extramodule.extramoduleDescription")),
+        title: computed(_ => CapitalizeFirstLetter(t("extramodule.extramoduleDescription"))),
         align: 'start',
         sortable: false,
         key: 'description',
     },
     {
-        title: computed(_ => t("extramodule.extramoduleStatus")),
+        title: computed(_ => CapitalizeFirstLetter(t("extramodule.extramoduleStatus"))),
         align: 'start',
         sortable: false,
         key: 'installed',
     },
 
-    { title: computed(_ => t("common.actions")), key: 'actions', sortable: false },
+    { title: computed(_ => CapitalizeFirstLetter(t("extramodule.actions"))), key: 'actions', sortable: false },
 
 ];
 
