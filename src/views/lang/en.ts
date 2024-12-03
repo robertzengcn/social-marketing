@@ -1,5 +1,6 @@
-import { proxy } from "jquery";
-import No from "../feedback/no.vue";
+// import { proxy } from "jquery";
+// import No from "../feedback/no.vue";
+// import { not } from "cheerio/lib/api/traversing";
 
 export default {
     common:{
@@ -80,7 +81,9 @@ export default {
         extramoduleTypes:"Extra Module Types",
         installConfirm:"Are you sure you want to install {package}?",
         uninstallConfirm:"Are you sure you want to uninstall {package}?",
-
+        installed:"Installed",
+        notInstalled:"Not Installed",
+        actions:"action",
     },
     modules:{
         f2:{
@@ -112,7 +115,8 @@ export default {
         savePath_not_found:"savePath not found",
         start_download_video:"start download video",
         new_video_download:"new video download",
-
+        downloadtype:"download type"
+        
     },
     account:{
         accountId:"Account ID",
@@ -121,6 +125,7 @@ export default {
         useproxy:"Use Proxy",
         cookies_exist:"Cookies Exist",
         select_account_hint:"Select account by click the change account button, please select account with cookies exist",
+        change_account:"change account",
     },
     search:{
         google:"Google.com",

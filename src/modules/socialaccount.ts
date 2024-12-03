@@ -12,6 +12,7 @@ import { URLSearchParams } from "url";
 import { AccountCookiesdb } from "@/model/account_cookiesdb";
 import { Token } from "@/modules/token"
 import {USERSDBPATH} from '@/config/usersetting';
+import { debug } from "console";
 
 // import FormData from "form-data";
 export class SocialAccount {
@@ -30,7 +31,8 @@ export class SocialAccount {
   public async getSocialaccountlist(
     page: number,
     size: number,
-    search: string
+    search: string,
+    platform?:number,
   ): Promise<SocialAccountResponse> {
     const searchParams: Record<string, any> = new URLSearchParams();
     searchParams.append("page", page);
@@ -39,11 +41,14 @@ export class SocialAccount {
     if (search.length > 0) {
       searchParams.append("search", search);
     }
+    if(platform){
+      searchParams.append("platform", platform);  
+    }
     // const params = new URLSearchParams({page: page, pagesize: "100"}).toString();
     const paramstring = searchParams.toString();
     // const finalurl='/api/campaign?'+paramstring;
     const finalurl = "/api/socialaccount/list?" + paramstring;
-
+    console.log(finalurl)
     const sociallistres = await this._httpClient.get(finalurl) as SocialAccountResponse;
     if (!sociallistres) {
       throw new Error("remote return empty");
@@ -137,5 +142,21 @@ export class SocialAccount {
     }
     return socialdetailres;
 
+  }
+  public convertPlatform(name:string):number{
+    //convert name to lower case
+    const lowerCaseName = name.toLowerCase();
+    switch (lowerCaseName) {
+      case "facebook":
+        return 1;
+      case "youtube":
+        return 4;
+      case "google.com":
+        return 4;
+      case "bilibili":
+        return 3;  
+      default:
+        throw new Error(`Unknown platform name: ${name}`);
+    }
   }
 }

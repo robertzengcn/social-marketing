@@ -30,6 +30,12 @@ jobs:
             
       - name: Install dependencies
         run: yarn install
+      - name: Install WiX Toolset
+        run: |
+          Invoke-WebRequest -Uri https://github.com/wixtoolset/wix3/releases/download/wix3112rtm/wix311-binaries.zip -OutFile wix.zip
+          Expand-Archive -Path wix.zip -DestinationPath "$env:ProgramFiles\WiX Toolset"
+          Remove-Item -Force wix.zip
+        shell: pwsh
 
       - name: Build application
         run: yarn make-win:test

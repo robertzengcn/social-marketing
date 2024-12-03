@@ -12,7 +12,7 @@ examples/data/*
 
 examples/results/
 examples/results/*
-
+extramodule/*
 
 # Logs
 logs

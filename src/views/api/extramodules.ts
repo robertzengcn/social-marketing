@@ -1,11 +1,11 @@
 import {windowInvoke,windowSend,windowReceive} from '@/views/utils/apirequest'
 import {EXTRAMODULECHANNE_LIST,EXTRAMODULECHANNE_INSTALL,EXTRAMODULECHANNE_UNINSTALL,EXTRAMODULECHANNE_MESSAGE} from "@/config/channellist";
-import {ExtraPipModule} from "@/entityTypes/extramodule-type"
+import {ExtraModule} from "@/entityTypes/extramodule-type"
 import {ListData} from "@/entityTypes/commonType"
 import { SearchResult } from '@/views/api/types'
-export async function getExtramodulelist(data: any):Promise<SearchResult<ExtraPipModule>>{
+export async function getExtramodulelist(data: any):Promise<SearchResult<ExtraModule>>{
      
-        const resp=await windowInvoke(EXTRAMODULECHANNE_LIST,data) as ListData<ExtraPipModule>;
+        const resp=await windowInvoke(EXTRAMODULECHANNE_LIST,data) as ListData<ExtraModule>;
         
         // console.log(resp)
         if(!resp){

@@ -2,7 +2,7 @@ import { ipcMain } from 'electron';
 import { EXTRAMODULECHANNE_LIST, EXTRAMODULECHANNE_INSTALL, EXTRAMODULECHANNE_UNINSTALL, EXTRAMODULECHANNE_MESSAGE } from "@/config/channellist";
 import { ExtraModuleController } from "@/controller/extramodule-controller";
 import { CommonResponse } from "@/entityTypes/commonType"
-import { ExtraPipModule } from "@/entityTypes/extramodule-type"
+import { ExtraModule } from "@/entityTypes/extramodule-type"
 export function registerExtraModulesIpcHandlers() {
   console.log("extramodules list register")
   ipcMain.handle(EXTRAMODULECHANNE_LIST, async (event, arg) => {
@@ -15,9 +15,9 @@ export function registerExtraModulesIpcHandlers() {
     }
     const extraModules = new ExtraModuleController
     // Handle IPC call
-    const extra = extraModules.getExtraModuleList(qdata.page, qdata.size);
+    const extra = await extraModules.getExtraModuleList(qdata.page, qdata.size);
 
-    const res: CommonResponse<ExtraPipModule> = {
+    const res: CommonResponse<ExtraModule> = {
       status: true,
       msg: "",
       data: extra
@@ -32,20 +32,20 @@ export function registerExtraModulesIpcHandlers() {
     }
     const extraCtrl = new ExtraModuleController()
     try {
-      extraCtrl.installExtraModule(qdata.name, function (message) {
+      extraCtrl.installExtraModule(qdata.name, function () {
         event.sender.send(EXTRAMODULECHANNE_MESSAGE, JSON.stringify({
           status: true,
           msg: "success",
           data: {
             name: qdata.name,
-            message: message
+            message: ""
           }
         }))
-      }, function (message) {
-        if (message.length > 0) {
+      }, function (error) {
+        if (error.message.length > 0) {
           event.sender.send(EXTRAMODULECHANNE_MESSAGE, JSON.stringify({
             status: false,
-            msg: "failed"
+            msg: error.message
           }))
         }
       })
@@ -66,13 +66,13 @@ export function registerExtraModulesIpcHandlers() {
     }
     const extraCtrl = new ExtraModuleController()
     try {
-      extraCtrl.removeExtraModule(qdata.name, function (message) {
+      extraCtrl.removeExtraModule(qdata.name, function () {
         event.sender.send(EXTRAMODULECHANNE_MESSAGE, JSON.stringify({
           status: true,
           msg: "success",
           data: {
             name: qdata.name,
-            message: message
+            message: ""
           }
         }))
       }, function (message) {
