@@ -28,14 +28,25 @@ import { ref,watch,computed} from 'vue'
 import { SearchResult } from '@/views/api/types'
 import {SocialAccountListData} from '@/entityTypes/socialaccount-type'
 import {useI18n} from "vue-i18n";
+import {ItemSearchparam} from "@/entityTypes/commonType"
 const {t} = useI18n({inheritLocale: true});
 
+// Define props
+const props = defineProps({
+  accountSource: {
+    type: String,
+    required: false,
+    default:""
+  }
+  
+});
 
 type Fetchparam = {
     // id:number
     page: number,
     itemsPerPage: number,
-    sortBy: string,
+    sortBy: { key: string, order: string },
+    where?:string,
     search: string
 }
 
@@ -43,7 +54,17 @@ const FakeAPI = {
     async fetch(fetchparam: Fetchparam): Promise<SearchResult<SocialAccountListData>> {
         // console.log(fetchparam.search)
         const fpage=(fetchparam.page-1)*fetchparam.itemsPerPage
-        const res=await getSocialAccountlist({ page: fpage, size: fetchparam.itemsPerPage, sortby: fetchparam.sortBy, search: fetchparam.search })
+        const searchParam:ItemSearchparam={ page: fpage, 
+            size: fetchparam.itemsPerPage, 
+            sortby: fetchparam.sortBy, 
+            search: fetchparam.search,
+
+        }
+        if(fetchparam.where){
+            searchParam.where= fetchparam.where
+        }
+        console.log(searchParam)
+        const res=await getSocialAccountlist(searchParam)
         console.log(res)
         return res
     }
@@ -97,13 +118,17 @@ function loadItems({ page, itemsPerPage, sortBy }) {
         page: page,
         itemsPerPage: itemsPerPage,
         sortBy: sortBy,
-        search: search.value
+        search: search.value,
+        where:props.accountSource
     }
     FakeAPI.fetch(fetchitem).then(
         ({ data, total }) => {
             
             // console.log(data)
             // console.log(total)
+            if(!data){
+                data=[]
+            }
             serverItems.value = data
             totalItems.value = total
             loading.value = false

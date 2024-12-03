@@ -3,11 +3,14 @@
     <v-form ref="form" @submit.prevent="onSubmit">
       <v-select v-model="type" :items="typeitems" :label="$t('video.platform')" required :readonly="loading"
         :rules="[rules.required]"></v-select>
+        <v-select v-model="chooseType" :items="downloadType" :label="$t('video.downloadtype')" required :readonly="loading"
+        :rules="[rules.required]"></v-select>
       <v-combobox v-model="accounts" multiple :items="accounts" :label="$t('account.select_account_hint')"
         item-title="user" return-object chips clearable @click="changeAccount"></v-combobox>
-      <v-btn color="primary" @click="showAccounttable">Change Account</v-btn>
+        
+      <v-btn color="primary" @click="showAccounttable">{{$t('account.change_account')}}</v-btn>
       <div v-if="accounttableShow">
-        <AccountSelectedTable @change="handleSelectedChanged" />
+        <AccountSelectedTable @change="handleSelectedChanged" accountSource="youtube" />
       </div>
       <v-textarea :label="$t('video.video_url')" :hint="$t('video.input_video_url_hint')" variant="outlined" required
         v-model="linkstr" class="mt-5"></v-textarea>
@@ -51,7 +54,7 @@
 </template>
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { videoDownloadlist } from "@/config/videosetting";
+import { videoDownloadlist,videodownlodType } from "@/config/videosetting";
 import { opendialog, downloadVideo } from "@/views/api/video";
 import { useI18n } from "vue-i18n";
 import { downloadVideoparam} from "@/entityTypes/videoType";
@@ -60,10 +63,12 @@ import AccountSelectedTable from "@/views/pages/socialaccount/widgets/AccountSel
 import { SocialAccountListData } from '@/entityTypes/socialaccount-type'
 import { CommonDialogMsg } from "@/entityTypes/commonType";
 import router from '@/views/router';
-const type = ref();
+const type = ref("");
 const showlog = ref(false);
 const logs = ref("");
 const typeitems = ref<Array<string>>();
+const chooseType = ref("");
+const downloadType= ref<Array<string>>(); 
 const loading = ref(false);
 const { t } = useI18n({ inheritLocale: true });
 const savePath = ref("");
@@ -81,6 +86,7 @@ const rules = {
 const accounts = ref<Array<SocialAccountListData>>([])
 const initialize = () => {
   typeitems.value = videoDownloadlist;
+  downloadType.value=videodownlodType;
 };
 const selectPath = async () => {
   const res = await opendialog();
