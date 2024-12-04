@@ -1,6 +1,7 @@
 import { SocialAccount } from "@/modules/socialaccount";
 import { BrowserWindow, session } from 'electron'
-import { AccountCookiesdb, AccountCookiesEntity } from "@/model/account_cookiesdb";
+import { AccountCookiesEntity } from "@/model/accountCookiesdb";
+import {AccountCookiesModule} from "@/modules/accountCookiesModule"
 //import { ProxyController } from "./proxy-controller";
 import { ProxyParseItem } from "@/entityTypes/proxyType";
 // import {showNotification} from "@/modules/lib/function"
@@ -10,25 +11,30 @@ import {CustomError} from '@/modules/customError'
 import {proxyEntityToUrl} from "@/modules/lib/function"
 
 export class SocialAccountController {
+    private accountCookiesModule:AccountCookiesModule
+    private socialaccountModel:SocialAccount
+    constructor() {
+        this.accountCookiesModule=new AccountCookiesModule()
+    }
     //open open and login social account
     public async loginSocialaccount(id: number): Promise<void> {
 
-        const socialaccountModel = new SocialAccount();
-        const accinfo = await socialaccountModel.getAccountdetail(id)
+        // const socialaccountModel = new SocialAccount();
+        const accinfo = await this.socialaccountModel.getAccountdetail(id)
         if (!accinfo || !accinfo.data.id) {
             throw new Error("get account info failed")
         }
         if (!accinfo.status) {
             throw new Error(accinfo.msg)
         }
-        const tokenService=new Token()
-        const dbpath=await tokenService.getValue(USERSDBPATH)
-        if(!dbpath){
-            throw new CustomError("user path not exist",20240719112326)
-        }
+        // const tokenService=new Token()
+        // const dbpath=await tokenService.getValue(USERSDBPATH)
+        // if(!dbpath){
+        //     throw new CustomError("user path not exist",20240719112326)
+        // }
         //get account cookies
-        const accoutndb = new AccountCookiesdb(dbpath)
-        const cookies = accoutndb.getAccountCookies(accinfo.data.id)
+        // const accoutndb = new AccountCookiesdb(dbpath)
+        const cookies = this.accountCookiesModule.getAccountCookies(accinfo.data.id)
         let partition_path = "persist:path/" + Date.now() + '-' + Math.random().toString(36).slice(2, 9)
         if (cookies) {
             if (cookies.partition_path) {
@@ -89,7 +95,7 @@ export class SocialAccountController {
         })
         const winsession = win.webContents.session
         // winsession.cookies.remove()
-        win.on('close', async function () { //   <---- Catch close event
+        win.on('close', async () =>{ //   <---- Catch close event
             const cookiescontent = await winsession.cookies.get({})
             console.log("get cookies:")
             console.log(cookiescontent)
@@ -105,8 +111,8 @@ export class SocialAccountController {
                 if(!dbpath){
                     throw new CustomError("user path not exist",202407171402105)
                 }
-                const acdb = new AccountCookiesdb(dbpath)
-                acdb.saveAccountCookies(ace)
+                // const acdb = new AccountCookiesdb(dbpath)
+                this.accountCookiesModule.saveAccountCookies(ace)
             }
         });
 

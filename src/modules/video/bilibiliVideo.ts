@@ -7,9 +7,8 @@ import {videoScraper} from "@/entityTypes/videoType"
 import { default as sanitize } from "filenamify";
 
 export class bilibiliVideo implements Video {
-  constructor(videoScraper:videoScraper){
-    //prepare to load cookies use accountId
-      
+  constructor(){
+         
  }
     public checkRequirement():boolean{
       // console.log("check requirement")
@@ -17,7 +16,7 @@ export class bilibiliVideo implements Video {
 
     }
 
-    public async download(link:string,videopath:string) {
+    public async download(link:string,videopath:string,cookies:string) {
         if (!link) {
             throw new Error("link is empty")
           }

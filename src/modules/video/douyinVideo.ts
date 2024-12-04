@@ -15,33 +15,33 @@ export class douyinVideo implements Video {
     private appfile:string
     private proxy:string
     private cookies:string
-    constructor(videoScraper:videoScraper){
-    const filename=randomFileName("douyin","yaml")
-    const yamlFile=path.join(path.dirname(app.getPath('userData')), filename)    
-    console.log(yamlFile)
-    //generate yaml file
-    const yamlobj:douyinAppYaml={
-        douyin:{
-            // cookie:videoScraper.cookies,
-            naming:'{create}_{desc}',
-            timeout: 10
-        }         
-    }
-    //write to yaml file
-    writeYamlFile(yamlFile,yamlobj)
-    this.appfile=yamlFile
-    this.cookies=videoScraper.cookies
-    if(videoScraper.proxy&&videoScraper.proxy.host&&videoScraper.proxy.port){
-       // const proxyCon=new ProxyController()
-        const proxyitem: ProxyParseItem = {
-            host: videoScraper.proxy.host,
-            port: videoScraper.proxy.port,
-            user: videoScraper.proxy.username,
-            pass: videoScraper.proxy.password,
-        }
-        this.proxy=proxyEntityToUrl(proxyitem)
-        //this.proxy=videoScraper.proxy.ip+":"+videoScraper.proxy.port
-    }
+    constructor(){
+    // const filename=randomFileName("douyin","yaml")
+    // const yamlFile=path.join(path.dirname(app.getPath('userData')), filename)    
+    // console.log(yamlFile)
+    // //generate yaml file
+    // const yamlobj:douyinAppYaml={
+    //     douyin:{
+    //         // cookie:videoScraper.cookies,
+    //         naming:'{create}_{desc}',
+    //         timeout: 10
+    //     }         
+    // }
+    // //write to yaml file
+    // writeYamlFile(yamlFile,yamlobj)
+    // this.appfile=yamlFile
+    // this.cookies=videoScraper.cookies
+    // if(videoScraper.proxy&&videoScraper.proxy.host&&videoScraper.proxy.port){
+    //    // const proxyCon=new ProxyController()
+    //     const proxyitem: ProxyParseItem = {
+    //         host: videoScraper.proxy.host,
+    //         port: videoScraper.proxy.port,
+    //         user: videoScraper.proxy.username,
+    //         pass: videoScraper.proxy.password,
+    //     }
+    //     this.proxy=proxyEntityToUrl(proxyitem)
+    //     //this.proxy=videoScraper.proxy.ip+":"+videoScraper.proxy.port
+    // }
 
 }
     
@@ -52,7 +52,7 @@ export class douyinVideo implements Video {
         return true
     }
     //download video
-    public download(link:string,videopath:string,errorcall?: (errorMessage: string) => void,stdoutCall?:(stdout: string) => void,stderrCall?:(stderr: string) => void,finishCall?:()=> void) {
+    public download(link:string,videopath:string,cookies:string,errorcall?: (errorMessage: string) => void,stdoutCall?:(stdout: string) => void,stderrCall?:(stderr: string) => void,finishCall?:()=> void) {
         let command="f2 dy -M one -u " + link + " -p " + videopath+" -c "+this.appfile+" -k"+this.cookies
         if(this.proxy){
             command+=" -P "+this.proxy
@@ -82,13 +82,14 @@ export class douyinVideo implements Video {
     }
     
     public checkPackageInstall(): boolean {
-        const piplist = checkPipPackage()
-        const res = piplist.includes(this.packagename)
+        return false
+    //     const piplist = checkPipPackage()
+    //     const res = piplist.includes(this.packagename)
 
-        if (res) {
-            return true
-        } else {
-            return false
-        }
+    //     if (res) {
+    //         return true
+    //     } else {
+    //         return false
+    //     }
     }
 }

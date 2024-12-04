@@ -48,3 +48,12 @@ export type videoDownloadListResp={
     msg: string,
     data: videoDownloadList
 }
+export type videoIdLink={
+    id:number,
+    link:string
+}
+export type videoDownloadParam={
+    platform:string,
+    link:Array<string>,
+    cookies?:Array<string>
+}

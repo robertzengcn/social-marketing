@@ -9,23 +9,27 @@ import {
 // import url from "url"
 // import {PageSearch} from "@/entityTypes/common-type"
 import { URLSearchParams } from "url";
-import { AccountCookiesdb } from "@/model/account_cookiesdb";
+// import { AccountCookiesdb } from "@/model/accountCookiesdb";
+import {AccountCookiesModule} from "@/modules/accountCookiesModule"
 import { Token } from "@/modules/token"
 import {USERSDBPATH} from '@/config/usersetting';
-import { debug } from "console";
+// import { debug } from "console";
 
 // import FormData from "form-data";
 export class SocialAccount {
   private _httpClient: HttpClient;
-  private dbpath:string
+  // private dbpath:string
+  private accountCookiesModule
   constructor() {
     this._httpClient = new HttpClient();
-    const tokenService=new Token()
-    const dbpath=tokenService.getValue(USERSDBPATH)
-    if(!dbpath){
-        throw new Error("user path not exist")
-    }
-    this.dbpath=dbpath;
+    // const tokenService=new Token()
+    // const dbpath=tokenService.getValue(USERSDBPATH)
+    // if(!dbpath){
+    //     throw new Error("user path not exist")
+    // }
+    // this.dbpath=dbpath;
+
+    this.accountCookiesModule=new AccountCookiesModule()
   }
   //get social account list from remote
   public async getSocialaccountlist(
@@ -66,12 +70,12 @@ export class SocialAccount {
       // if(!dbpath){
       //     throw new Error("user path not exist")
       // }
-      const accDb = new AccountCookiesdb(this.dbpath)
+      // const accDb = new AccountCookiesdb(this.dbpath)
 
       //loop social list data, add cookies
       for (const social of sociallistres.data.records) {
         social.cookies = false
-        const cookisEntity = accDb.getAccountCookies(social.id)
+        const cookisEntity = this.accountCookiesModule.getAccountCookies(social.id)
         if (cookisEntity && cookisEntity.cookies) {
           const cEntity = JSON.parse(cookisEntity.cookies)
           if (cEntity && cEntity.length > 0) {

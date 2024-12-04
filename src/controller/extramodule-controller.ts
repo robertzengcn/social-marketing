@@ -151,6 +151,11 @@ export class ExtraModuleController {
         return moduleList
 
     }
+    //check module exist in folder
+    public checkModule(packageName:string):boolean{
+        const modulePath = path.join(this.extraModulePth, packageName);
+        return fs.existsSync(modulePath);
+    }
 
 
 
