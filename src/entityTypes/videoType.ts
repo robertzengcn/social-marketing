@@ -54,6 +54,7 @@ export type videoIdLink={
     link:string
 }
 export type processVideoDownloadParam={
+    exePath:string,
     platform:string,
     link:Array<string>,
     cookies?:Array<string>,

@@ -1,5 +1,5 @@
 import { videoFactory } from "@/modules/video/videoFactory";
-import { downloadVideoparam,videoDownloadTaskEntity,videoDownloadEntity,videoDownloadList,videoIdLink,processVideoDownloadParam } from "@/entityTypes/videoType";
+import { downloadVideoparam,videoDownloadTaskEntity,videoDownloadList,processVideoDownloadParam } from "@/entityTypes/videoType";
 import { VideoDownloadTaskdb } from "@/model/videoDownloadTaskdb";
 import {VideoDownloaddb,DownloadStatus} from "@/model/videoDownloaddb"
 import { Token } from "@/modules/token"
@@ -34,7 +34,8 @@ export class videoController {
             throw new CustomError("video tool not found",20241205111934)
         }
         videoTool.checkRequirement()
-        
+        const execFilepath=videoTool.getPackagepath()
+
         //save log to download task table
         // const videoTaskdb=new VideoDownloadTaskdb(dbpath)
         const videoEntity:videoDownloadTaskEntity={
@@ -86,6 +87,7 @@ export class videoController {
         const runLogfile=path.join(logpath,'downloadVideo',taskId.toString()+'_'+uuid+'.runtime.log')
 
         const paramData:processVideoDownloadParam={
+            exePath:execFilepath,
             platform:param.platform,
             link:param.link,
             isplaylist:param.isplaylist

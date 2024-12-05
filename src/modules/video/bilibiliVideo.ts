@@ -16,6 +16,10 @@ export class bilibiliVideo implements Video {
 
     }
 
+    public getPackagepath():string{
+      return ""
+    }
+
     public async download(link:string,videopath:string,cookies:string) {
         if (!link) {
             throw new Error("link is empty")

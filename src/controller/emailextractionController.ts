@@ -41,8 +41,8 @@ export class EmailextractionController {
         }
         // console.log(logpath)
         const uuid=uuidv4({random: getRandomValues(new Uint8Array(16))})
-        const errorLogfile=path.join(logpath,'emailsearch_'+taskId.toString()+'_'+uuid+'.error.log')
-        const runLogfile=path.join(logpath,'emailsearch_'+taskId.toString()+'_'+uuid+'.runtime.log')
+        const errorLogfile=path.join(logpath,'emailsearch',taskId.toString()+'_'+uuid+'.error.log')
+        const runLogfile=path.join(logpath,'emailsearch',taskId.toString()+'_'+uuid+'.runtime.log')
 
         child.on("spawn", () => {
             console.log("child process satart, pid is"+child.pid)

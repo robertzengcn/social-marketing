@@ -20,6 +20,10 @@ export class ExtraModuleController {
         //const parentPath = path.dirname(this.extraModulePth);
         // log.transports.file.resolvePathFn = () => path.join(APP_DATA, 'logs/main.log');
     }
+
+    public getModulePath():string{
+        return this.extraModulePth
+    }
     public async getExtraModuleList(offerset: number, length: number): Promise<ListData<ExtraModule>> {
         const piplist = await this.getExtramoduleinfolder()
         //loop extra modules check if modules installed

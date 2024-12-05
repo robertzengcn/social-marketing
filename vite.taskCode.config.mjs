@@ -2,7 +2,7 @@ import { defineConfig, loadEnv } from 'vite';
 import alias from "@rollup/plugin-alias";
 import * as path from 'path';
 
-import ClosePlugin from './vite-plugin-close.ts'
+import ClosePlugin from './vite-plugin-close.js'
 
 import checker from 'vite-plugin-checker'
 
