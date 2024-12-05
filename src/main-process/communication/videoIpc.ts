@@ -3,13 +3,14 @@ import { VIDEODOWNLOAD, VIDEODOWNLOAD_MESSAGE, SYSTEM_MESSAGE,VIDEODOWNLOAD_LIST
 import { videoController } from '@/controller/videoController';
 import { downloadVideoparam, videoDownloadListResp } from "@/entityTypes/videoType";
 import { CommonDialogMsg } from "@/entityTypes/commonType";
+import { CustomError } from '@/modules/customError';
 
 
 export function registerVideoIpcHandlers() {
     console.log("video download register")
     ipcMain.on(VIDEODOWNLOAD, async (event, arg) => {
         console.log("get video download message")
-        const qdata = JSON.parse(arg);
+        const qdata = JSON.parse(arg) as downloadVideoparam;
         if (!("accountId" in qdata)) {
             // throw new Error("accountId not found");
             const comMsgs: CommonDialogMsg = {
@@ -62,14 +63,18 @@ export function registerVideoIpcHandlers() {
             event.sender.send(VIDEODOWNLOAD_MESSAGE, comMsgs)
             return
         }
+        // if (!("isplaylist" in qdata)) {
+
+        // }
 
         const videoCtrl = new videoController()
-        const dvp: downloadVideoparam = {
-            accountId: qdata.accountId,
-            platform: qdata.platform,
-            link: qdata.link,
-            savePath: qdata.savePath
-        }
+        // const dvp: downloadVideoparam = {
+        //     accountId: qdata.accountId,
+        //     platform: qdata.platform,
+        //     link: qdata.link,
+        //     savePath: qdata.savePath,
+        //     isplaylist:qdata.isplaylist
+        // }
         const videoMsgs: CommonDialogMsg = {
             status: true,
             code: 200,
@@ -79,8 +84,20 @@ export function registerVideoIpcHandlers() {
             }
         }
         event.sender.send(VIDEODOWNLOAD_MESSAGE, videoMsgs)
-        await videoCtrl.downloadVideo(dvp).catch(function (error) {
-            if (error instanceof Error) {
+        await videoCtrl.downloadVideo(qdata).catch(function (error) {
+            if(error instanceof CustomError){
+                const comMsgs: CommonDialogMsg = {
+                    status: false,
+                    code: error.code,
+                    data: {
+                        title: "video.download_failed",
+                        content: error.message
+                    }
+                }
+                event.sender.send(SYSTEM_MESSAGE, comMsgs)
+                return
+
+            }else if (error instanceof Error) {
                 const comMsgs: CommonDialogMsg = {
                     status: false,
                     code: 20240513142039,

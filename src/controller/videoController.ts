@@ -1,5 +1,5 @@
 import { videoFactory } from "@/modules/video/videoFactory";
-import { downloadVideoparam,videoDownloadTaskEntity,videoDownloadEntity,videoDownloadList,videoIdLink,videoDownloadParam } from "@/entityTypes/videoType";
+import { downloadVideoparam,videoDownloadTaskEntity,videoDownloadEntity,videoDownloadList,videoIdLink,processVideoDownloadParam } from "@/entityTypes/videoType";
 import { VideoDownloadTaskdb } from "@/model/videoDownloadTaskdb";
 import {VideoDownloaddb,DownloadStatus} from "@/model/videoDownloaddb"
 import { Token } from "@/modules/token"
@@ -10,6 +10,7 @@ import { utilityProcess, MessageChannelMain} from "electron";
 import {USERLOGPATH,USEREMAIL} from '@/config/usersetting';
 import {WriteLog,getApplogspath,getRandomValues} from "@/modules/lib/function"
 import { v4 as uuidv4 } from 'uuid';
+import {CustomError} from '@/modules/customError'
 export class videoController {
     private videoTaskdb:VideoDownloadTaskdb 
     private videoDownloaddb:VideoDownloaddb
@@ -30,7 +31,7 @@ export class videoController {
         console.log("video tool:"+videoTool)
         if(!videoTool){
             
-            throw new Error("video tool not found")
+            throw new CustomError("video tool not found",20241205111934)
         }
         videoTool.checkRequirement()
         
@@ -81,17 +82,18 @@ export class videoController {
         }
         // console.log(logpath)
         const uuid=uuidv4({random: getRandomValues(new Uint8Array(16))})
-        const errorLogfile=path.join(logpath,'emailsearch_'+taskId.toString()+'_'+uuid+'.error.log')
-        const runLogfile=path.join(logpath,'emailsearch_'+taskId.toString()+'_'+uuid+'.runtime.log')
+        const errorLogfile=path.join(logpath,'downloadVideo',taskId.toString()+'_'+uuid+'.error.log')
+        const runLogfile=path.join(logpath,'downloadVideo',taskId.toString()+'_'+uuid+'.runtime.log')
 
-        const paramData:videoDownloadParam={
+        const paramData:processVideoDownloadParam={
             platform:param.platform,
-            link:param.link
+            link:param.link,
+            isplaylist:param.isplaylist
         }
         
         child.on("spawn", () => {
             console.log("child process satart, pid is"+child.pid)
-            child.postMessage(JSON.stringify({action:"searchEmail",data:paramData}),[port1])
+            child.postMessage(JSON.stringify({action:"downloadVideo",data:paramData}),[port1])
            
         })
         
@@ -100,23 +102,7 @@ export class videoController {
             WriteLog(runLogfile,data)
            // child.kill()
         })
-            // videoTool.download(link,param.savePath,"",function(msg){
-            //     console.log(msg)
-            //     this.videoDownloaddb.saveVideoDownloadLog(msg,Number(downId))
-            //     this.videoDownloaddb.updateVideoDownloadStatus(DownloadStatus.Error,Number(downId))
-            // },function(msg){
-            //     console.log("std out:"+msg)       
-            // },function(msg){
-            //     console.log("std err:"+msg)       
-            // },function(){
-            //     //update status to finish
-            //     console.log("done") 
-            //     this.videoDownloaddb.updateVideoDownloadStatus(DownloadStatus.Finish,Number(downId))
-            // })
-        
-        // }else{
-        //     throw new Error("requirement not met")
-        // }
+           
 
     }
     //get video download list

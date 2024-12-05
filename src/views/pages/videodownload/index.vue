@@ -205,11 +205,13 @@ async function onSubmit() {
     accounts.value.forEach((element) => {
       accountIds.push(element.id);
     });
+    const isPlaylist=chooseType.value=="playlist"?true:false
     const data: downloadVideoparam = {
       accountId: accountIds,
       platform: type.value,
       link: validUrls,
       savePath: savePath.value,
+      isplaylist:isPlaylist
     };
     if (validUrls.length === 0) {
       setAlert("Please input valid url", "Error", "error");

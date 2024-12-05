@@ -33,7 +33,7 @@ type Fetchparam = {
     // id:number
     page: number,
     itemsPerPage: number,
-    sortBy: string,
+    sortBy: { key: string, order: string },
     search: string
 }
 

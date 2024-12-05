@@ -7,7 +7,8 @@ export type downloadVideoparam={
     accountId:Array<number>,
     platform:string,
     link:Array<string>,
-    savePath:string
+    savePath:string,
+    isplaylist:boolean
 }
 export type videoDownloadMsg={
     status:boolean,
@@ -52,7 +53,14 @@ export type videoIdLink={
     id:number,
     link:string
 }
-export type videoDownloadParam={
+export type processVideoDownloadParam={
+    platform:string,
+    link:Array<string>,
+    cookies?:Array<string>,
+    isplaylist:boolean
+
+}
+export type VideoDownloadParam={
     platform:string,
     link:Array<string>,
     cookies?:Array<string>
