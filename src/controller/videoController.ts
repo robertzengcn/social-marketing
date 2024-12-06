@@ -1,5 +1,5 @@
 import { videoFactory } from "@/modules/video/videoFactory";
-import { downloadVideoparam,videoDownloadTaskEntity,videoDownloadList,processVideoDownloadParam } from "@/entityTypes/videoType";
+import { downloadVideoparam,videoDownloadTaskEntity,videoDownloadList,processVideoDownloadParam,CookiesProxy } from "@/entityTypes/videoType";
 import { VideoDownloadTaskdb } from "@/model/videoDownloadTaskdb";
 import {VideoDownloaddb,DownloadStatus} from "@/model/videoDownloaddb"
 import { Token } from "@/modules/token"
@@ -11,9 +11,12 @@ import {USERLOGPATH,USEREMAIL} from '@/config/usersetting';
 import {WriteLog,getApplogspath,getRandomValues} from "@/modules/lib/function"
 import { v4 as uuidv4 } from 'uuid';
 import {CustomError} from '@/modules/customError'
+import {AccountCookiesModule} from "@/modules/accountCookiesModule"
+//import {} from "@/entityTypes/proxyType"
 export class videoController {
     private videoTaskdb:VideoDownloadTaskdb 
     private videoDownloaddb:VideoDownloaddb
+    private accountCookiesModule:AccountCookiesModule
     constructor() {
         const tokenService=new Token()
         const dbpath=tokenService.getValue(USERSDBPATH)
@@ -22,6 +25,7 @@ export class videoController {
         }
         this.videoTaskdb=new VideoDownloadTaskdb(dbpath)
         this.videoDownloaddb=new VideoDownloaddb(dbpath)
+        this.accountCookiesModule=new AccountCookiesModule()
     }
     public async downloadVideo(param:downloadVideoparam){
         const videoFactoryInstance=new videoFactory()
@@ -85,7 +89,26 @@ export class videoController {
         const uuid=uuidv4({random: getRandomValues(new Uint8Array(16))})
         const errorLogfile=path.join(logpath,'downloadVideo',taskId.toString()+'_'+uuid+'.error.log')
         const runLogfile=path.join(logpath,'downloadVideo',taskId.toString()+'_'+uuid+'.runtime.log')
+        const cookiesProxies:CookiesProxy[]=[]
 
+        // const cookies:Array<string>=[]
+        //loop account id to get cookies
+        for (const accountid of param.accountId) {
+            const accountEntity=this.accountCookiesModule.getAccountCookies(accountid)
+            if(accountEntity&&accountEntity.cookies){
+                // cookies.push(accountEntity.cookies)
+                const cookiesproxy:CookiesProxy={
+                    cookies:accountEntity.cookies,                  
+                }
+                //get proxy
+                
+
+            }
+            // const cookie=tokenService.getValue(accountid)
+            // if(cookie){
+            //     cookies.push(cookie)
+            // }
+        }
         const paramData:processVideoDownloadParam={
             exePath:execFilepath,
             platform:param.platform,

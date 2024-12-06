@@ -66,3 +66,7 @@ export type VideoDownloadParam={
     link:Array<string>,
     cookies?:Array<string>
 }
+export type CookiesProxy={
+    cookies:string,
+    proxy?:Proxy
+}

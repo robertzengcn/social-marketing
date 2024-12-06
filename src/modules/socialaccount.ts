@@ -6,29 +6,20 @@ import {
   SocialAccountDetailData,
   SavesocialaccountResp,
 } from "@/entityTypes/socialaccount-type";
+import {SocialAccountApi} from "@/api/socialAccountApi"
 // import url from "url"
 // import {PageSearch} from "@/entityTypes/common-type"
 import { URLSearchParams } from "url";
 // import { AccountCookiesdb } from "@/model/accountCookiesdb";
 import {AccountCookiesModule} from "@/modules/accountCookiesModule"
-import { Token } from "@/modules/token"
-import {USERSDBPATH} from '@/config/usersetting';
-// import { debug } from "console";
 
-// import FormData from "form-data";
 export class SocialAccount {
-  private _httpClient: HttpClient;
+  // private _httpClient: HttpClient;
   // private dbpath:string
+  private socialAccountApi: SocialAccountApi
   private accountCookiesModule
   constructor() {
-    this._httpClient = new HttpClient();
-    // const tokenService=new Token()
-    // const dbpath=tokenService.getValue(USERSDBPATH)
-    // if(!dbpath){
-    //     throw new Error("user path not exist")
-    // }
-    // this.dbpath=dbpath;
-
+    this.socialAccountApi = new SocialAccountApi();
     this.accountCookiesModule=new AccountCookiesModule()
   }
   //get social account list from remote
@@ -38,25 +29,26 @@ export class SocialAccount {
     search: string,
     platform?:number,
   ): Promise<SocialAccountResponse> {
-    const searchParams: Record<string, any> = new URLSearchParams();
-    searchParams.append("page", page);
-    searchParams.append("size", size);
+    // const searchParams: Record<string, any> = new URLSearchParams();
+    // searchParams.append("page", page);
+    // searchParams.append("size", size);
 
-    if (search.length > 0) {
-      searchParams.append("search", search);
-    }
-    if(platform){
-      searchParams.append("platform", platform);  
-    }
-    // const params = new URLSearchParams({page: page, pagesize: "100"}).toString();
-    const paramstring = searchParams.toString();
-    // const finalurl='/api/campaign?'+paramstring;
-    const finalurl = "/api/socialaccount/list?" + paramstring;
-    console.log(finalurl)
-    const sociallistres = await this._httpClient.get(finalurl) as SocialAccountResponse;
-    if (!sociallistres) {
-      throw new Error("remote return empty");
-    }
+    // if (search.length > 0) {
+    //   searchParams.append("search", search);
+    // }
+    // if(platform){
+    //   searchParams.append("platform", platform);  
+    // }
+    // // const params = new URLSearchParams({page: page, pagesize: "100"}).toString();
+    // const paramstring = searchParams.toString();
+    // // const finalurl='/api/campaign?'+paramstring;
+    // const finalurl = "/api/socialaccount/list?" + paramstring;
+    // console.log(finalurl)
+    // const sociallistres = await this._httpClient.get(finalurl) as SocialAccountResponse;
+    // if (!sociallistres) {
+    //   throw new Error("remote return empty");
+    // }
+    const sociallistres =await this.socialAccountApi.getSocialaccountlist(page,size,search,platform)
 
     // const resp: SocialAccountResponse = {
     //   status: sociallistres.status,
@@ -90,14 +82,8 @@ export class SocialAccount {
   public async getAccountdetail(
     id: number
   ): Promise<SocialAccountDetailResponse> {
-    const searchParams: Record<string, any> = new URLSearchParams();
-    searchParams.append("id", id);
-    const paramstring = searchParams.toString();
-    const finalurl = "/api/socialaccount?" + paramstring;
-    const socialdetailres = await this._httpClient.get(finalurl);
-    if (!socialdetailres) {
-      throw new Error("remote return empty");
-    }
+    // 
+    const socialdetailres=await this.socialAccountApi.getAccountdetail(id)
 
     return socialdetailres as SocialAccountDetailResponse;
   }
