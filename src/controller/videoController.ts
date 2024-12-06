@@ -12,22 +12,26 @@ import {WriteLog,getApplogspath,getRandomValues} from "@/modules/lib/function"
 import { v4 as uuidv4 } from 'uuid';
 import {CustomError} from '@/modules/customError'
 import {AccountCookiesModule} from "@/modules/accountCookiesModule"
+import {SocialAccountApi} from "@/api/socialAccountApi"
 //import {} from "@/entityTypes/proxyType"
 export class videoController {
     private videoTaskdb:VideoDownloadTaskdb 
     private videoDownloaddb:VideoDownloaddb
     private accountCookiesModule:AccountCookiesModule
+    private socialAccountApi:SocialAccountApi
     constructor() {
         const tokenService=new Token()
         const dbpath=tokenService.getValue(USERSDBPATH)
+
         if(!dbpath){
             throw new Error("user db path not exist")
         }
         this.videoTaskdb=new VideoDownloadTaskdb(dbpath)
         this.videoDownloaddb=new VideoDownloaddb(dbpath)
         this.accountCookiesModule=new AccountCookiesModule()
+        this.socialAccountApi=new SocialAccountApi()
     }
-    public async downloadVideo(param:downloadVideoparam){
+    public async downloadVideo(param:downloadVideoparam,startCall?:(taskId:number) => void){
         const videoFactoryInstance=new videoFactory()
         //get random one from array of param.accountId
         // const randomItem = param.accountId[Math.floor(Math.random() * param.accountId.length)]
@@ -48,9 +52,14 @@ export class videoController {
             savepath:param.savePath
         }
         const taskId=this.videoTaskdb.saveVideoDownloadTask(videoEntity)
+        if(!taskId){
+            throw new CustomError("video.create_download_task_failuer",20241206153256)
+        }
         // console.log("task id:"+taskId)
         // const res=videoTool.checkRequirement()
-        
+        if(startCall){
+            startCall(Number(taskId))
+        }
 
         // const videoDownloaddb=new VideoDownloaddb(dbpath)
         // if(res){
@@ -101,8 +110,13 @@ export class videoController {
                     cookies:accountEntity.cookies,                  
                 }
                 //get proxy
-                
-
+                const accResp=await this.socialAccountApi.getAccountdetail(accountid)
+                if(accResp){
+                    if(accResp.data&&accResp.data.proxy){
+                    cookiesproxy.proxy=accResp.data.proxy
+                    }
+                }
+                cookiesProxies.push(cookiesproxy)
             }
             // const cookie=tokenService.getValue(accountid)
             // if(cookie){
@@ -113,7 +127,8 @@ export class videoController {
             exePath:execFilepath,
             platform:param.platform,
             link:param.link,
-            isplaylist:param.isplaylist
+            isplaylist:param.isplaylist,
+            cookiesProxy:cookiesProxies
         }
         
         child.on("spawn", () => {

@@ -30,7 +30,9 @@ export default {
         test:"test",
         unkonw_error:"unkonw error",
         send:"send",
-        loading:"loading"
+        loading:"loading",
+        change_proxy:"change proxy",
+        select_proxy:"select proxy",
     },
     home:{
         search:"Search Extraction",
@@ -115,8 +117,8 @@ export default {
         savePath_not_found:"savePath not found",
         start_download_video:"start download video",
         new_video_download:"new video download",
-        downloadtype:"download type"
-        
+        downloadtype:"download type",
+        create_download_task_failuer:"create video download task failure"
     },
     account:{
         accountId:"Account ID",

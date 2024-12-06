@@ -75,16 +75,21 @@ export function registerVideoIpcHandlers() {
         //     savePath: qdata.savePath,
         //     isplaylist:qdata.isplaylist
         // }
-        const videoMsgs: CommonDialogMsg = {
-            status: true,
-            code: 200,
-            data: {
-            title: "video.download_start",
-            content: "video.revice_download_command"
+        
+        await videoCtrl.downloadVideo(qdata,(taskId)=>{
+            if(taskId){
+                const videoMsgs: CommonDialogMsg = {
+                    status: true,
+                    code: 200,
+                    data: {
+                    title: "video.download_start",
+                    content: "video.revice_download_command"
+                    }
+                }
+                event.sender.send(VIDEODOWNLOAD_MESSAGE, videoMsgs)
             }
-        }
-        event.sender.send(VIDEODOWNLOAD_MESSAGE, videoMsgs)
-        await videoCtrl.downloadVideo(qdata).catch(function (error) {
+            
+        }).catch(function (error) {
             if(error instanceof CustomError){
                 const comMsgs: CommonDialogMsg = {
                     status: false,

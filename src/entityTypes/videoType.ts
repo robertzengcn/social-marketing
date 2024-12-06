@@ -8,7 +8,8 @@ export type downloadVideoparam={
     platform:string,
     link:Array<string>,
     savePath:string,
-    isplaylist:boolean
+    isplaylist:boolean,
+    proxy: Array<Proxy>
 }
 export type videoDownloadMsg={
     status:boolean,
@@ -57,7 +58,7 @@ export type processVideoDownloadParam={
     exePath:string,
     platform:string,
     link:Array<string>,
-    cookies?:Array<string>,
+    cookiesProxy?:Array<CookiesProxy>,
     isplaylist:boolean
 
 }
@@ -68,5 +69,5 @@ export type VideoDownloadParam={
 }
 export type CookiesProxy={
     cookies:string,
-    proxy?:Proxy
+    proxy?:Proxy[]
 }

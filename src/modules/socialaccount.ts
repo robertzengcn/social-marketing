@@ -9,7 +9,7 @@ import {
 import {SocialAccountApi} from "@/api/socialAccountApi"
 // import url from "url"
 // import {PageSearch} from "@/entityTypes/common-type"
-import { URLSearchParams } from "url";
+// import { URLSearchParams } from "url";
 // import { AccountCookiesdb } from "@/model/accountCookiesdb";
 import {AccountCookiesModule} from "@/modules/accountCookiesModule"
 
@@ -92,41 +92,43 @@ export class SocialAccount {
     soc: SocialAccountDetailData
   ): Promise<SavesocialaccountResp> {
     // const FormData = require('form-data');
-    let data = new FormData();
-    if (soc.id) {
-      data.append("id", soc.id.toString());
-    }
-    if (soc.social_type_id) {
-      data.append("social_type_id", soc.social_type_id.toString());
-    }
-    data.append("user", soc.user);
-    if (soc.pass) {
-      data.append("pass", soc.pass);
-    }
-    data.append("status", soc.status.toString());
-    data.append("name", soc.name);
-    data.append("phone", soc.phone);
-    data.append("email", soc.email);
-    if (soc.proxy) {
-      for (const proxy of soc.proxy) {
-        if (proxy.id) {
-          data.append("proxy[]", proxy.id.toString());
-          console.log("proxy id is " + proxy.id.toString())
-        }
-      }
-    }
+    // let data = new FormData();
+    // if (soc.id) {
+    //   data.append("id", soc.id.toString());
+    // }
+    // if (soc.social_type_id) {
+    //   data.append("social_type_id", soc.social_type_id.toString());
+    // }
+    // data.append("user", soc.user);
+    // if (soc.pass) {
+    //   data.append("pass", soc.pass);
+    // }
+    // data.append("status", soc.status.toString());
+    // data.append("name", soc.name);
+    // data.append("phone", soc.phone);
+    // data.append("email", soc.email);
+    // if (soc.proxy) {
+    //   for (const proxy of soc.proxy) {
+    //     if (proxy.id) {
+    //       data.append("proxy[]", proxy.id.toString());
+    //       console.log("proxy id is " + proxy.id.toString())
+    //     }
+    //   }
+    // }
 
-    const resp = await this._httpClient.post("/api/socialaccount", data);
+    // const resp = await this._httpClient.post("/api/socialaccount", data);
+    const resp=await this.socialAccountApi.saveSocialAccount(soc)
     return resp as SavesocialaccountResp;
   }
 
   //delete social account
   public async deleteAccount(id) {
-    const searchParams: Record<string, any> = new URLSearchParams();
-    searchParams.append("id", id);
-    const paramstring = searchParams.toString();
-    const finalurl = "/api/socialaccount?" + paramstring;
-    const socialdetailres = await this._httpClient.delete(finalurl);
+    // const searchParams: Record<string, any> = new URLSearchParams();
+    // searchParams.append("id", id);
+    // const paramstring = searchParams.toString();
+    // const finalurl = "/api/socialaccount?" + paramstring;
+    // const socialdetailres = await this._httpClient.delete(finalurl);
+    const socialdetailres =await this.socialAccountApi.deleteAccount(id)
     if (!socialdetailres) {
       throw new Error("remote return empty");
     }
