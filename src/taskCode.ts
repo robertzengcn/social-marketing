@@ -19,7 +19,7 @@ process.parentPort.on('message', async (e) => {
             const userEmaildata=pme.data as EmailsControldata;
 
                 if(!userEmaildata){
-                    console.log("data is empty")
+                    console.error("data is empty")
                     return
                 }
            const emailSearchModel=new EmailSearch()   
@@ -36,7 +36,16 @@ process.parentPort.on('message', async (e) => {
         case 'downloadVideo':{
             // const pme=JSON.parse(e.data) as ProcessMessage<processVideoDownloadParam> 
             const param=pme.data as processVideoDownloadParam
-            
+            if(!param.platform){
+                console.error("platform is empty")
+                return
+            }
+            switch(param.platform){
+                case 'youtube':{
+                    
+                }
+            }
+
         }
     }
 })

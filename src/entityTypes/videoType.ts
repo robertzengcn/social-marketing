@@ -59,8 +59,8 @@ export type processVideoDownloadParam={
     platform:string,
     link:Array<string>,
     cookiesProxy?:Array<CookiesProxy>,
-    isplaylist:boolean
-
+    isplaylist:boolean,
+    proxy?:Array<Proxy>
 }
 export type VideoDownloadParam={
     platform:string,

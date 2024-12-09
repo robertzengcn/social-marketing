@@ -560,4 +560,26 @@ onFailure?: (error: Error) => void): Promise<void> {
 }
 }
 
+export function convertCookiesToNetscapeFile(cookies: any, filePath: string): void {
+  const lines: string[] = [
+    "# Netscape HTTP Cookie File",
+    "# This is a generated file! Do not edit.",
+    ""
+  ];
+
+  for (const [domain, cookieList] of Object.entries(cookies)) {
+    for (const cookie of cookieList as any[]) {
+      const { name, value, path, expires, secure } = cookie;
+      const flag = domain.startsWith('.') ? 'TRUE' : 'FALSE';
+      const secureFlag = secure ? 'TRUE' : 'FALSE';
+      const expiration = expires || 0;
+      lines.push(`${domain}\t${flag}\t${path}\t${secureFlag}\t${expiration}\t${name}\t${value}`);
+    }
+  }
+
+  fs.writeFileSync(filePath, lines.join('\n'));
+}
+export function generateRandomUniqueString(length: number): string {
+  return crypto.randomBytes(length).toString('hex');
+}
 
