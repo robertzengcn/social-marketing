@@ -3,12 +3,7 @@ import { Scraperdb } from "@/model/scraperdb";
 import {videoDownloadEntity} from "@/entityTypes/videoType"
 import { getRecorddatetime } from "@/modules/lib/function";
 
-export enum DownloadStatus {
-  Notstart = 0,
-  Start = 1,
-  Finish = 2,
-  Error=3
-}
+
 
 export class VideoDownloaddb {
     db: Database;
@@ -19,11 +14,13 @@ export class VideoDownloaddb {
       }
       public saveVideoDownload(videoDownloadTask:videoDownloadEntity){
         const recordtime = getRecorddatetime(); 
-        const stmt = this.db.prepare(`INSERT INTO ${this.videoDownloadTable} (url,savepath,record_time,status) VALUES (?,?,?,?)`);
+        const stmt = this.db.prepare(`INSERT INTO ${this.videoDownloadTable} (url,savepath,record_time,task_id,error_log,status) VALUES (?,?,?,?,?)`);
           const info = stmt.run(
             videoDownloadTask.url,
             videoDownloadTask.savepath,
             recordtime,
+            videoDownloadTask.task_id,
+            videoDownloadTask.error_log,
             videoDownloadTask.status
         );
         return info.lastInsertRowid;
@@ -31,7 +28,7 @@ export class VideoDownloaddb {
       //save log for video download
       public saveVideoDownloadLog(log:string,downloadId:number){
        //update log by downloadId
-        const stmt = this.db.prepare(`UPDATE ${this.videoDownloadTable} SET log = ? WHERE id = ?`);
+        const stmt = this.db.prepare(`UPDATE ${this.videoDownloadTable} SET error_log = ? WHERE id = ?`);
         const info = stmt.run(log,downloadId);
         return info.changes;
       } 

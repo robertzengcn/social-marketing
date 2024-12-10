@@ -27,19 +27,26 @@ export type douyinEntity={
 }
 export type videoDownloadTaskEntity={
     platform:string,
-    url:string,
+    // url:string,
     savepath:string,
     // record_time:string,
 }
+
+export enum VideoDownloadStatus {
+    Notstart = 0,
+    Start = 1,
+    Finish = 2,
+    Error=3
+  }
 export type videoDownloadEntity={
     id?:number,
     url:string,
     savepath:string,
     record_time?:string,
     task_id:number,
-    strout?:string,
+    // strout?:string,
     error_log?:string,
-    status:number,
+    status:VideoDownloadStatus,
 }
 export type videoDownloadList={
     total: number,
@@ -56,11 +63,12 @@ export type videoIdLink={
 }
 export type processVideoDownloadParam={
     exePath:string,
+    savePath:string,
     platform:string,
     link:Array<string>,
     cookiesProxy?:Array<CookiesProxy>,
     isplaylist:boolean,
-    proxy?:Array<Proxy>
+    proxy?:Array<Proxy>,
 }
 export type VideoDownloadParam={
     platform:string,
@@ -70,4 +78,9 @@ export type VideoDownloadParam={
 export type CookiesProxy={
     cookies:string,
     proxy?:Proxy[]
+}
+export type VideodownloadMsg={
+    link:string,
+    status:boolean,
+    log?:string
 }

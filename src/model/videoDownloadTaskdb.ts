@@ -12,10 +12,10 @@ export class VideoDownloadTaskdb {
       }
     public saveVideoDownloadTask(videoDownloadTask:videoDownloadTaskEntity){
       const recordtime = getRecorddatetime(); 
-      const stmt = this.db.prepare(`INSERT INTO ${this.videoDownloadTaskTable} (platform,url,savepath,record_time) VALUES (?,?,?,?)`);
+      const stmt = this.db.prepare(`INSERT INTO ${this.videoDownloadTaskTable} (platform,savepath,record_time) VALUES (?,?,?)`);
         const info = stmt.run(
           videoDownloadTask.platform,
-          videoDownloadTask.url,
+          // videoDownloadTask.url,
           videoDownloadTask.savepath,
           recordtime
       );
