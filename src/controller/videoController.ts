@@ -1,7 +1,9 @@
 import { videoFactory } from "@/modules/video/videoFactory";
 import { downloadVideoparam, videoDownloadTaskEntity, videoDownloadList, processVideoDownloadParam, CookiesProxy } from "@/entityTypes/videoType";
-import { VideoDownloadTaskdb } from "@/model/videoDownloadTaskdb";
-import { VideoDownloaddb} from "@/model/videoDownloaddb"
+// import { VideoDownloadTaskdb } from "@/model/videoDownloadTaskdb";
+// import { VideoDownloaddb} from "@/model/videoDownloaddb"
+import {VideoDownloadModule} from "@/modules/VideoDownloadModule"
+import {VideoDownloadTaskModule} from "@/modules/VideoDownloadTaskModule"
 import { Token } from "@/modules/token"
 import { USERSDBPATH } from '@/config/usersetting';
 import * as path from 'path';
@@ -13,21 +15,23 @@ import { v4 as uuidv4 } from 'uuid';
 import { CustomError } from '@/modules/customError'
 import { AccountCookiesModule } from "@/modules/accountCookiesModule"
 import { SocialAccountApi } from "@/api/socialAccountApi"
+import {ProcessMessage} from "@/entityTypes/processMessage-type"
+import {VideodownloadMsg} from "@/entityTypes/videoType";
 //import {} from "@/entityTypes/proxyType"
 export class videoController {
-    private videoTaskdb: VideoDownloadTaskdb
-    private videoDownloaddb: VideoDownloaddb
+    private videoDownloadModule: VideoDownloadModule
+    private videoDownloadTaskModule: VideoDownloadTaskModule
     private accountCookiesModule: AccountCookiesModule
     private socialAccountApi: SocialAccountApi
     constructor() {
-        const tokenService = new Token()
-        const dbpath = tokenService.getValue(USERSDBPATH)
+        // const tokenService = new Token()
+        // const dbpath = tokenService.getValue(USERSDBPATH)
 
-        if (!dbpath) {
-            throw new Error("user db path not exist")
-        }
-        this.videoTaskdb = new VideoDownloadTaskdb(dbpath)
-        this.videoDownloaddb = new VideoDownloaddb(dbpath)
+        // if (!dbpath) {
+        //     throw new Error("user db path not exist")
+        // }
+        this.videoDownloadModule = new VideoDownloadModule()
+        this.videoDownloadTaskModule = new VideoDownloadTaskModule()
         this.accountCookiesModule = new AccountCookiesModule()
         this.socialAccountApi = new SocialAccountApi()
     }
@@ -51,7 +55,7 @@ export class videoController {
             // url: JSON.stringify(param.link),
             savepath: param.savePath
         }
-        const taskId = this.videoTaskdb.saveVideoDownloadTask(videoEntity)
+        const taskId = this.videoDownloadTaskModule.saveVideoDownloadTask(videoEntity)
         if (!taskId) {
             throw new CustomError("video.create_download_task_failuer", 20241206153256)
         }
@@ -98,6 +102,9 @@ export class videoController {
         const uuid = uuidv4({ random: getRandomValues(new Uint8Array(16)) })
         const errorLogfile = path.join(logpath, 'downloadVideo', taskId.toString() + '_' + uuid + '.error.log')
         const runLogfile = path.join(logpath, 'downloadVideo', taskId.toString() + '_' + uuid + '.runtime.log')
+        
+        this.videoDownloadTaskModule.updateTasklog(taskId,runLogfile)
+        this.videoDownloadTaskModule.updateTaskErrorlog(taskId,errorLogfile)
         const cookiesProxies: CookiesProxy[] = []
 
         // const cookies:Array<string>=[]
@@ -167,30 +174,30 @@ export class videoController {
         child.on('message', (message) => {
             console.log("get message from child")
             console.log('Message from child:', JSON.parse(message));
-            // const childdata=JSON.parse(message) as ProcessMessage<EmailResult>
-            // if(childdata.action=="saveres"){
-            //     if(childdata.data){
-            //     //save result
-            //     this.emailSeachTaskModule.saveSearchResult(taskId,childdata.data)
+            const childdata=JSON.parse(message) as ProcessMessage<VideodownloadMsg>
+            if(childdata.action=="saveres"){
+                if(childdata.data){
+                //save result
+                // this.emailSeachTaskModule.saveSearchResult(taskId,childdata.data)
                 
-            //     }
-            //     //child.kill()
-            // }
+                }
+                //child.kill()
+            }
         });
 
 
     }
     //get video download list
-    public async videoDownloadlist(page: number, size: number): Promise<videoDownloadList> {
+    public async videoDownloadlist(page: number, size: number) {
         // const tokenService=new Token()
         // const dbpath=await tokenService.getValue(USERSDBPATH)
         // if(!dbpath){
         //     throw new Error("user db path not exist")
         // }
         // const videoDownloaddb=new VideoDownloaddb(dbpath)
-        const list = this.videoDownloaddb.getVideoDownloadList(page, size)
-        const count = this.videoDownloaddb.countVideoDownloadList()
-        return { records: list, total: count } as videoDownloadList
+        const list = this.videoDownloadTaskModule.getVideoDownloadTaskList(page, size)
+        const count = this.videoDownloadTaskModule.countVideoDownloadTaskList()
+        
     }
 
 }

@@ -29,6 +29,8 @@ export type videoDownloadTaskEntity={
     platform:string,
     // url:string,
     savepath:string,
+    runtimeLog?:string,
+    errorLog?:string,
     // record_time:string,
 }
 

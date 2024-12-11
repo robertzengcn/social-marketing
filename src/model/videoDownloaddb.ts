@@ -12,18 +12,18 @@ export class VideoDownloaddb {
         const scraperModel = Scraperdb.getInstance(filepath);
         this.db = scraperModel.getdb();
       }
-      public saveVideoDownload(videoDownloadTask:videoDownloadEntity){
+      public saveVideoDownload(videoDownload:videoDownloadEntity):number{
         const recordtime = getRecorddatetime(); 
         const stmt = this.db.prepare(`INSERT INTO ${this.videoDownloadTable} (url,savepath,record_time,task_id,error_log,status) VALUES (?,?,?,?,?)`);
           const info = stmt.run(
-            videoDownloadTask.url,
-            videoDownloadTask.savepath,
+            videoDownload.url,
+            videoDownload.savepath,
             recordtime,
-            videoDownloadTask.task_id,
-            videoDownloadTask.error_log,
-            videoDownloadTask.status
+            videoDownload.task_id,
+            videoDownload.error_log,
+            videoDownload.status
         );
-        return info.lastInsertRowid;
+        return Number(info.lastInsertRowid);
       } 
       //save log for video download
       public saveVideoDownloadLog(log:string,downloadId:number){
@@ -34,22 +34,24 @@ export class VideoDownloaddb {
       } 
 
       //update download status
-      public updateVideoDownloadStatus(status:number,downloadId:number){
+      public updateVideoDownloadStatus(status:number,downloadId:number):number{
         //update status by downloadId
         const stmt = this.db.prepare(`UPDATE ${this.videoDownloadTable} SET status = ? WHERE id = ?`);
         const info = stmt.run(status,downloadId);
         return info.changes;
       }
       //get video download list
-      public getVideoDownloadList(page:number,size:number):Array<videoDownloadEntity>{
-        const stmt = this.db.prepare(`SELECT * FROM ${this.videoDownloadTable} ORDER BY id desc LIMIT ?,? `);
-        const rows = stmt.all(page,size) as Array<videoDownloadEntity>;
+      public getVideoDownloadList(taskId:number,page:number,size:number):Array<videoDownloadEntity>{
+        const stmt = this.db.prepare(`SELECT * FROM ${this.videoDownloadTable} WHERE task_id=? ORDER BY id desc LIMIT ?,? `);
+        const rows = stmt.all(taskId,page,size) as Array<videoDownloadEntity>;
         return rows;
       }
       //count video download list
-      public countVideoDownloadList():number{
-        const stmt = this.db.prepare(`SELECT count(*) as total FROM ${this.videoDownloadTable}`);
-        const row = stmt.get() as { total: number };
+      public countVideoDownloadList(taskId:number):number{
+        const stmt = this.db.prepare(`SELECT count(*) as total FROM ${this.videoDownloadTable} WHERE task_id=?`);
+        const row = stmt.get(taskId) as { total: number };
         return row.total;
       }
+
+   
 }

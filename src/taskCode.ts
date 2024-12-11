@@ -5,9 +5,11 @@ import {EmailSearch} from "@/childprocess/emailSearch"
 //import {EmailSearchData} from "@/entityTypes/emailextraction-type"
 import { EmailsControldata,EmailResult } from '@/entityTypes/emailextraction-type'
 import {processVideoDownloadParam,VideodownloadMsg } from "@/entityTypes/videoType";
-import {YoutubeDownload} from "@/modules/videodownload/youtubeDownload"
+// import {YoutubeDownload} from "@/modules/videodownload/youtubeDownload"
 import {CookiesProxy} from "@/entityTypes/videoType"
 import {Proxy} from "@/entityTypes/proxyType"
+import {VideoDownloadFactory} from "@/modules/videodownload/VideoDownloadFactory"
+
 process.parentPort.on('message', async (e) => {
     // const [port] = e.ports
     // console.log("get parent message")
@@ -41,10 +43,10 @@ process.parentPort.on('message', async (e) => {
                 console.error("platform is empty")
                 return
             }
-            
-            switch(param.platform){
-                case 'youtube':{
-                    const youtubeDownload=new YoutubeDownload()
+            // const videoDownloadFactory=new VideoDownloadFactory()
+            const DownloadTool=VideoDownloadFactory.getDownloader(param.platform)
+                    
+                    // const youtubeDownload=new YoutubeDownload()
                     if(!param.isplaylist){//sigle video
                         param.link.forEach((element, index)=>{
                             let randCookiesproxy:CookiesProxy | null = null;
@@ -55,7 +57,7 @@ process.parentPort.on('message', async (e) => {
                             if(param.proxy){
                                 itemProxy=param.proxy[Math.floor(Math.random() * param.proxy.length)]
                             }
-                            youtubeDownload.downloadVideo(element,param.savePath,randCookiesproxy,itemProxy,param.exePath,(errorstring)=>{
+                            DownloadTool.downloadVideo(element,param.savePath,randCookiesproxy,itemProxy,param.exePath,(errorstring)=>{
                                 const message:ProcessMessage<VideodownloadMsg>={
                                     action:"videodownloadErrorMsg",
                                     data:{
@@ -82,9 +84,9 @@ process.parentPort.on('message', async (e) => {
                     }else{//player list
 
                     }
-                }
+               
             }
 
         }
-    }
+    
 })

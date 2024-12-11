@@ -4,5 +4,7 @@ CREATE TABLE IF NOT EXISTS video_download_task (
     platform TEXT NULL,
     -- url TEXT NULL,
     savepath TEXT NULL,
-    record_time TEXT NULL
+    record_time TEXT NULL,
+    runtime_log TEXT NULL,
+    error_log TEXT NULL
 )
