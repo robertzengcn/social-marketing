@@ -13,5 +13,7 @@ export type ExtraModule={
     packagename:string,
     version:string,
     installed?:boolean,
-    link:string
+    link:string,
+    requirePy:boolean
+
 }

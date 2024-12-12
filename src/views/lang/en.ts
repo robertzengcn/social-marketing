@@ -118,7 +118,8 @@ export default {
         start_download_video:"start download video",
         new_video_download:"new video download",
         downloadtype:"download type",
-        create_download_task_failuer:"create video download task failure"
+        create_download_task_failuer:"create video download task failure",
+        use_proxy_override:"use choose proxy instead account's blind proxy",
     },
     account:{
         accountId:"Account ID",

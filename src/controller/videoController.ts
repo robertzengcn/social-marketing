@@ -1,11 +1,10 @@
 import { videoFactory } from "@/modules/video/videoFactory";
-import { downloadVideoparam, videoDownloadTaskEntity, videoDownloadList, processVideoDownloadParam, CookiesProxy } from "@/entityTypes/videoType";
+import { downloadVideoparam, videoDownloadTaskEntity, processVideoDownloadParam, CookiesProxy } from "@/entityTypes/videoType";
 // import { VideoDownloadTaskdb } from "@/model/videoDownloadTaskdb";
 // import { VideoDownloaddb} from "@/model/videoDownloaddb"
 import {VideoDownloadModule} from "@/modules/VideoDownloadModule"
 import {VideoDownloadTaskModule} from "@/modules/VideoDownloadTaskModule"
 import { Token } from "@/modules/token"
-import { USERSDBPATH } from '@/config/usersetting';
 import * as path from 'path';
 import * as fs from 'fs';
 import { utilityProcess, MessageChannelMain } from "electron";
@@ -17,6 +16,8 @@ import { AccountCookiesModule } from "@/modules/accountCookiesModule"
 import { SocialAccountApi } from "@/api/socialAccountApi"
 import {ProcessMessage} from "@/entityTypes/processMessage-type"
 import {VideodownloadMsg} from "@/entityTypes/videoType";
+import {ListData} from "@/entityTypes/commonType"
+
 //import {} from "@/entityTypes/proxyType"
 export class videoController {
     private videoDownloadModule: VideoDownloadModule
@@ -188,7 +189,7 @@ export class videoController {
 
     }
     //get video download list
-    public async videoDownloadlist(page: number, size: number) {
+    public videoDownloadtasklist(page: number, size: number):ListData<videoDownloadTaskEntity> {
         // const tokenService=new Token()
         // const dbpath=await tokenService.getValue(USERSDBPATH)
         // if(!dbpath){
@@ -197,7 +198,9 @@ export class videoController {
         // const videoDownloaddb=new VideoDownloaddb(dbpath)
         const list = this.videoDownloadTaskModule.getVideoDownloadTaskList(page, size)
         const count = this.videoDownloadTaskModule.countVideoDownloadTaskList()
+        return {records:list,num:count} as ListData<videoDownloadTaskEntity>
         
     }
+   
 
 }

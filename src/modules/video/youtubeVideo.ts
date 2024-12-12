@@ -2,14 +2,31 @@ import { Video } from '@/modules/video';
 import {ExtraModuleController} from '@/controller/extramodule-controller'
 import {CustomError} from '@/modules/customError'
 export class youtubeVideo implements Video {
-    private moduleName="youtube-dl.exe"
+    private moduleName="youtube-dl"
     private extraModule:ExtraModuleController
     constructor() {
         this.extraModule=new ExtraModuleController()
     }
+    /**
+     * @throws {CustomError} if chek failed
+     * @returns boolean
+     */
     public checkRequirement():boolean{
+
+        const dPackage=this.extraModule.getPackageByName(this.moduleName)
+        if(!dPackage){
+            throw new CustomError("download youtube video package not defined",20241212141914)
+        }
+        if(dPackage.requirePy){
+            //check python installed or not
+            const res=this.extraModule.checkPython()
+            if(!res){
+                throw new CustomError("download youtube video must install python",2024120511189)
+            }
+        }
         // const extraModule=new ExtraModuleController()
-        const res=this.extraModule.checkModule(this.moduleName)
+        const res=this.extraModule.checkModule(dPackage.packagename)
+
         if(!res){
             throw new CustomError("download youtube video must install youtube-dl plugin",2024120511189)
         }
@@ -18,7 +35,5 @@ export class youtubeVideo implements Video {
     public getPackagepath():string{
         return this.extraModule.getModulePath()
       }
-    public download(link:string,videopath:string,cookies:string,errorcall?: (errorMessage: string) => void,stdoutCall?:(stdout: string) => void,stderrCall?:(stderr: string) => void,finishCall?:()=> void):void{
-        
-    }
+  
 }

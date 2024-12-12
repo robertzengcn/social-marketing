@@ -582,4 +582,7 @@ export function convertCookiesToNetscapeFile(cookies: any, filePath: string): vo
 export function generateRandomUniqueString(length: number): string {
   return crypto.randomBytes(length).toString('hex');
 }
+export function getUserPlatform(): string {
+  return process.platform;
+}
 

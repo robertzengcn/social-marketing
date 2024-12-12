@@ -54,6 +54,7 @@ export type videoDownloadList={
     total: number,
     records?:Array<videoDownloadEntity>
 }
+
 export type videoDownloadListResp={
     status: boolean,
     msg: string,

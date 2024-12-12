@@ -58,8 +58,14 @@
     </v-col>
   </v-row> 
   <v-row>
-    <v-col cols="12" md="12">  
+    <v-col cols="6" md="6">  
       <v-btn color="primary" @click="showProxytable">{{$t('change_proxy')}}</v-btn>
+    </v-col>
+    <v-col cols="6" md="6"> 
+      <v-checkbox
+        v-model="useProxyOverride"
+        :label="$t('video.use_proxy_override')"
+      ></v-checkbox>
     </v-col>
   </v-row> 
   <v-row v-if="proxytableshow">
@@ -126,6 +132,7 @@ const proxyValueshow = ref<Array<string>>([]);
 const proxytableshow = ref(false);
 const type = ref("");
 const showlog = ref(false);
+const useProxyOverride = ref(false);
 const logs = ref("");
 const typeitems = ref<Array<string>>();
 const chooseType = ref("");

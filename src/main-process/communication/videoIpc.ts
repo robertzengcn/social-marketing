@@ -1,10 +1,10 @@
 import { ipcMain } from 'electron';
-import { VIDEODOWNLOAD, VIDEODOWNLOAD_MESSAGE, SYSTEM_MESSAGE,VIDEODOWNLOAD_LIST } from '@/config/channellist'
+import { VIDEODOWNLOAD, VIDEODOWNLOAD_MESSAGE, SYSTEM_MESSAGE,VIDEODOWNLOAD_TASK_LIST } from '@/config/channellist'
 import { videoController } from '@/controller/videoController';
 import { downloadVideoparam, videoDownloadListResp } from "@/entityTypes/videoType";
-import { CommonDialogMsg } from "@/entityTypes/commonType";
+import { CommonDialogMsg,CommonResponse } from "@/entityTypes/commonType";
 import { CustomError } from '@/modules/customError';
-
+import {videoDownloadTaskEntity} from "@/entityTypes/videoType";
 
 export function registerVideoIpcHandlers() {
     console.log("video download register")
@@ -127,7 +127,7 @@ export function registerVideoIpcHandlers() {
         return
     })
     //get video download list
-    ipcMain.handle(VIDEODOWNLOAD_LIST, async (event, data) => {
+    ipcMain.handle(VIDEODOWNLOAD_TASK_LIST, async (event, data) => {
         const qdata = JSON.parse(data);
         if (!("page" in qdata)) {
             qdata.page=0
@@ -137,8 +137,8 @@ export function registerVideoIpcHandlers() {
         }
         //return video download list
         const videoCtrl = new videoController()
-        const res = await videoCtrl.videoDownloadlist(qdata.page, qdata.size)
-        const resp:videoDownloadListResp={
+        const res = await videoCtrl.videoDownloadtasklist(qdata.page, qdata.size)
+        const resp:CommonResponse<videoDownloadTaskEntity>={
             status:true,
             msg:"video.download_list",
             data:res
