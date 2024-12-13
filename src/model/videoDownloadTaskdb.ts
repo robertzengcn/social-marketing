@@ -18,8 +18,8 @@ export class VideoDownloadTaskdb {
           // videoDownloadTask.url,
           videoDownloadTask.savepath,
           recordtime,
-          videoDownloadTask.runtimeLog,
-          videoDownloadTask.errorLog
+          videoDownloadTask.runtime_log,
+          videoDownloadTask.error_log
       );
       return Number(info.lastInsertRowid);
     }

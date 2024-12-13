@@ -117,6 +117,7 @@ export class videoController {
                 const cookiesproxy: CookiesProxy = {
                     cookies: accountEntity.cookies,
                 }
+                if(!param.ProxyOverride){//not use account proxy
                 //get proxy
                 const accResp = await this.socialAccountApi.getAccountdetail(accountid)
                 if (accResp) {
@@ -124,6 +125,7 @@ export class videoController {
                         cookiesproxy.proxy = accResp.data.proxy
                     }
                 }
+            }
                 cookiesProxies.push(cookiesproxy)
             }
             // const cookie=tokenService.getValue(accountid)
@@ -137,7 +139,8 @@ export class videoController {
             link: param.link,
             isplaylist: param.isplaylist,
             cookiesProxy: cookiesProxies,
-            savePath: param.savePath
+            savePath: param.savePath,
+            proxy: param.proxy
         }
 
         child.on("spawn", () => {

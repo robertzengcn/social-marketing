@@ -128,7 +128,7 @@ headers.value = [
     
   },
   {
-    title: 'Actions',
+    title: computed(_ => CapitalizeFirstLetter(t("common.actions"))),
     align: 'start',
     key: 'actions',
     sortable: false,
