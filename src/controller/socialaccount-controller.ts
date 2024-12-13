@@ -1,5 +1,5 @@
 import { SocialAccount } from "@/modules/socialaccount";
-import { BrowserWindow, session } from 'electron'
+import { BrowserWindow, session,dialog,MessageBoxOptions } from 'electron'
 import { AccountCookiesEntity } from "@/model/accountCookiesdb";
 import {AccountCookiesModule} from "@/modules/accountCookiesModule"
 //import { ProxyController } from "./proxy-controller";
@@ -9,12 +9,14 @@ import { Token } from "@/modules/token"
 import {USERSDBPATH} from '@/config/usersetting';
 import {CustomError} from '@/modules/customError'
 import {proxyEntityToUrl} from "@/modules/lib/function"
+import { is } from "cheerio/lib/api/traversing";
 
 export class SocialAccountController {
     private accountCookiesModule:AccountCookiesModule
     private socialaccountModel:SocialAccount
     constructor() {
         this.accountCookiesModule=new AccountCookiesModule()
+        this.socialaccountModel=new SocialAccount()
     }
     //open open and login social account
     public async loginSocialaccount(id: number): Promise<void> {
@@ -42,6 +44,29 @@ export class SocialAccountController {
             }
         }
         const ses = session.fromPartition(partition_path)
+        console.log(accinfo.data.social_type)
+        if(accinfo.data.social_type&&accinfo.data.social_type=="google.com"){
+            // console.log(accinfo.data)
+            // console.log(cookies)
+            if(!cookies||!cookies.cookies){//open a new window to ask user choose file
+                const options:MessageBoxOptions = {
+                    type: 'info',
+                    buttons: ['OK'],
+                    defaultId: 0,
+                    title: 'Information',
+                    message: 'Please choose cookies file',
+                    detail: 'Please choose cookies file',
+                  };
+                  try {
+                  await dialog.showMessageBox(options) 
+                } catch (error) {
+                    if(error instanceof Error){
+                    console.error(`Failed to show message box: ${error.message}`);
+                    }
+                  }
+                return
+            }
+        }   
         //set title for window
         let winTitle=""
         if(accinfo.data.social_type){
@@ -89,8 +114,17 @@ export class SocialAccountController {
             })
             // win.loadURL('https://ident.me/ip')
         }
-        win.once('ready-to-show', () => {
+        win.once('ready-to-show', async () => {
             win.show()
+            // const options:MessageBoxOptions = {
+            //     type: 'info',
+            //     buttons: ['OK'],
+            //     defaultId: 0,
+            //     title: 'Information',
+            //     message: 'This is an information message box',
+            //     detail: 'Additional details can be shown here.',
+            //   };
+            //   await dialog.showMessageBox(win,options) 
             // win.webContents.executeJavaScript('alert("Hello, world!")');
         })
         const winsession = win.webContents.session
@@ -106,11 +140,11 @@ export class SocialAccountController {
                     cookies: cookiesstr,
                     partition_path: partition_path
                 }
-                const tokenService=new Token()
-                const dbpath=await tokenService.getValue(USERSDBPATH)
-                if(!dbpath){
-                    throw new CustomError("user path not exist",202407171402105)
-                }
+                // const tokenService=new Token()
+                // const dbpath=await tokenService.getValue(USERSDBPATH)
+                // if(!dbpath){
+                //     throw new CustomError("user path not exist",202407171402105)
+                // }
                 // const acdb = new AccountCookiesdb(dbpath)
                 this.accountCookiesModule.saveAccountCookies(ace)
             }

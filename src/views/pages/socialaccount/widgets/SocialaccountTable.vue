@@ -7,7 +7,7 @@
             </div>
             <!-- <v-btn class="btn" variant="flat" prepend-icon="mdi-filter-variant"><span> More</span></v-btn> -->
             <v-btn class="btn" variant="flat" prepend-icon="mdi-plus" color="#5865f2" @click="createAccount()">
-                Create Account
+                {{t('socialAccount.create_account')}}
             </v-btn>
         </div>
         <div>       
@@ -55,7 +55,7 @@
         </template>
 
         <template v-slot:item.cookies="{ item }">
-            <span>{{ item.cookies ? CapitalizeFirstLetter(t('extramodule.installed')) : CapitalizeFirstLetter(t('extramodule.notInstalled')) }}</span>
+            <span>{{ item.cookies ? CapitalizeFirstLetter(t('common.configured')) : CapitalizeFirstLetter(t('common.not_configured')) }}</span>
           </template>
     </v-data-table-server>
 
@@ -113,6 +113,9 @@ import { SearchResult } from '@/views/api/types'
 import {SocialAccountListData} from '@/entityTypes/socialaccount-type'
 // import { useRoute } from "vue-router";
 import router from '@/views/router';
+import {useI18n} from "vue-i18n";
+const {t} = useI18n({inheritLocale: true});
+import {CapitalizeFirstLetter} from "@/views/utils/function"
 
 const alert = ref(false);
 const alerttitle = ref("");

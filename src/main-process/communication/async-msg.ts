@@ -1,6 +1,7 @@
 import { ipcMain } from 'electron';
 import { SocialTask } from '@/modules/socialtask';
 import { SocialAccountController } from '@/controller/socialaccount-controller';
+import {SOCIAL_ACCOUNT_LOGIN} from "@/config/channellist"
 // import { ProxyController } from '@/controller/proxy-controller';
 
 type dataResponse = {
@@ -54,7 +55,7 @@ export default function AsyncMsg() {
         }
     })
     //login social account
-    ipcMain.on('socialaccount:login', async (event, data) => {
+    ipcMain.on(SOCIAL_ACCOUNT_LOGIN, async (event, data) => {
         const qdata = JSON.parse(data);
         if (!("id" in qdata)) {
             throw new Error("id not found");

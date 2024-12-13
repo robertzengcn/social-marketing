@@ -17,7 +17,7 @@ export class SocialAccount {
   // private _httpClient: HttpClient;
   // private dbpath:string
   private socialAccountApi: SocialAccountApi
-  private accountCookiesModule
+  private accountCookiesModule:AccountCookiesModule
   constructor() {
     this.socialAccountApi = new SocialAccountApi();
     this.accountCookiesModule=new AccountCookiesModule()

@@ -35,6 +35,9 @@ export default {
         select_proxy:"select proxy",
         id:"id",
         status:"status",
+        configured:"configured",
+        not_configured:"not configured",
+        
     },
     home:{
         search:"Search Extraction",
@@ -290,6 +293,9 @@ export default {
         title:"title",
         content:"content",
         record_time:"record time",
+    },
+    socialAccount:{
+        create_account:"create account",
     }
 
 }
