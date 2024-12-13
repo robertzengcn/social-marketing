@@ -53,6 +53,10 @@
           </v-icon>
           
         </template>
+
+        <template v-slot:item.cookies="{ item }">
+            <span>{{ item.cookies ? CapitalizeFirstLetter(t('extramodule.installed')) : CapitalizeFirstLetter(t('extramodule.notInstalled')) }}</span>
+          </template>
     </v-data-table-server>
 
     
@@ -119,7 +123,7 @@ type Fetchparam = {
     // id:number
     page: number,
     itemsPerPage: number,
-    sortBy: string,
+    sortBy: { key: string, order: string },
     search: string
 }
 
@@ -153,12 +157,7 @@ const headers: Array<any> = [
         sortable: false,
         key: 'user',
     },
-    {
-        title: 'Pass',
-        align: 'start',
-        sortable: false,
-        key: 'pass',
-    },
+    { title: 'Cookies', key: 'cookies', sortable: false },
     { title: 'Status', key: 'status', sortable: false },
     { title: 'Actions', key: 'actions', sortable: false },
 
