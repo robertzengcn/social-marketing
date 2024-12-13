@@ -57,13 +57,13 @@ export class SocialAccountController {
                     message: 'Please choose cookies file',
                     detail: 'Please choose cookies file',
                   };
-                  try {
+                //   try {
                   await dialog.showMessageBox(options) 
-                } catch (error) {
-                    if(error instanceof Error){
-                    console.error(`Failed to show message box: ${error.message}`);
-                    }
-                  }
+                // } catch (error) {
+                //     if(error instanceof Error){
+                //     console.error(`Failed to show message box: ${error.message}`);
+                //     }
+                //   }
                 return
             }
         }   
