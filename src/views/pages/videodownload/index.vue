@@ -131,9 +131,9 @@ const proxyValue = ref<Array<Proxy>>([]);
 const proxyValueshow = ref<Array<string>>([]);
 const proxytableshow = ref(false);
 const type = ref("");
-const showlog = ref(false);
+//const showlog = ref(false);
 const useProxyOverride = ref(false);
-const logs = ref("");
+//const logs = ref("");
 const typeitems = ref<Array<string>>();
 const chooseType = ref("");
 const downloadType= ref<Array<string>>(); 
@@ -333,6 +333,7 @@ async function onSubmit() {
       savePath: savePath.value,
       isplaylist:isPlaylist,
       proxy:proxyValue.value,
+      ProxyOverride:useProxyOverride.value
     };
     if (validUrls.length === 0) {
       setAlert("Please input valid url", "Error", "error");

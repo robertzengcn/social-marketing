@@ -33,6 +33,8 @@ export default {
         loading:"loading",
         change_proxy:"change proxy",
         select_proxy:"select proxy",
+        id:"id",
+        status:"status",
     },
     home:{
         search:"Search Extraction",

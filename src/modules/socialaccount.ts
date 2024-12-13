@@ -1,5 +1,5 @@
 "use strict";
-import { HttpClient } from "@/modules/lib/httpclient";
+//import { HttpClient } from "@/modules/lib/httpclient";
 import {
   SocialAccountResponse,
   SocialAccountDetailResponse,

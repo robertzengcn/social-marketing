@@ -23,12 +23,14 @@
 
 <script setup lang="ts">
 import {useI18n} from "vue-i18n";
-import { ref } from 'vue'
+import { ref,computed } from 'vue'
 import { SearchResult } from '@/views/api/types'
-import {getVideolist} from "@/views/api/video";
-import {videoDownloadEntity} from "@/entityTypes/videoType";
+import {getVideoTasklist} from "@/views/api/video";
+import {videoDownloadTaskEntity} from "@/entityTypes/videoType";
 import router from '@/views/router';
 const {t} = useI18n({inheritLocale: true});
+import {CapitalizeFirstLetter} from "@/views/utils/function"
+
 type Fetchparam = {
     // id:number
     page: number,
@@ -38,10 +40,10 @@ type Fetchparam = {
 }
 
 const FakeAPI = {
-    async fetch(fetchparam: Fetchparam): Promise<SearchResult<videoDownloadEntity>> {
+    async fetch(fetchparam: Fetchparam): Promise<SearchResult<videoDownloadTaskEntity>> {
         // console.log(fetchparam.search)
         const fpage=(fetchparam.page-1)*fetchparam.itemsPerPage
-        const res=await getVideolist({ page: fpage, size: fetchparam.itemsPerPage, sortby: fetchparam.sortBy, search: fetchparam.search })
+        const res=await getVideoTasklist({ page: fpage, size: fetchparam.itemsPerPage, sortby: fetchparam.sortBy, search: fetchparam.search })
         console.log(res)
         return res
     }
@@ -50,40 +52,40 @@ const FakeAPI = {
 
 const headers: Array<any> = [
     {
-        title: 'Id',
+        title: computed(_ => CapitalizeFirstLetter(t("common.id"))),
         align: 'start',
         sortable: false,
         key: 'id',
     },
     {
-        title: 'Url',
+        title: computed(_ => CapitalizeFirstLetter(t("common.record_time"))),
         align: 'start',
         sortable: false,
-        key: 'url',
+        key: 'record_time',
     },
     {
-        title: 'Save Path',
+        title: computed(_ => CapitalizeFirstLetter(t("video.saved_path"))),
         align: 'start',
         sortable: false,
         key: 'savepath',
     },
     {
-        title: 'Status',
+        title: computed(_ => CapitalizeFirstLetter(t("common.status"))),
         align: 'start',
         sortable: false,
         key: 'status',
     },
     {
-        title: 'Log',
-        align: 'start',
-        sortable: false,
-        key: 'log',
-    },
+    title: computed(_ => CapitalizeFirstLetter(t("common.actions"))),
+    align: 'start',
+    key: 'actions',
+    sortable: false, 
+  },
    
 
 ];
 const itemsPerPage = ref(10);
-const serverItems = ref<Array<videoDownloadEntity>>([]);
+const serverItems = ref<Array<videoDownloadTaskEntity>>([]);
 const loading = ref(false);
 const totalItems = ref(0);
 const search = ref('');

@@ -9,7 +9,8 @@ export type downloadVideoparam={
     link:Array<string>,
     savePath:string,
     isplaylist:boolean,
-    proxy: Array<Proxy>
+    proxy: Array<Proxy>,
+    ProxyOverride:boolean,
 }
 export type videoDownloadMsg={
     status:boolean,
@@ -29,8 +30,9 @@ export type videoDownloadTaskEntity={
     platform:string,
     // url:string,
     savepath:string,
-    runtimeLog?:string,
-    errorLog?:string,
+    runtime_log?:string,
+    error_log?:string,
+    record_time?:string,
     // record_time:string,
 }
 
