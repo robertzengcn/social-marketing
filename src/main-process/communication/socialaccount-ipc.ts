@@ -1,11 +1,16 @@
 import { ipcMain } from 'electron'
-import {SOCIALPLATFORM_LIST, SOCIALACCOUNTlIST,SOCIALACCOUNTDETAIL } from "@/config/channellist"
+import {SOCIALPLATFORM_LIST, SOCIALACCOUNTlIST,SOCIALACCOUNTDETAIL,SOCIAL_ACCOUNT_LOGIN,SOCIALACCOUNTSAVE,SOCIAL_ACCOUNT_LOGIN_MESSSAGE } from "@/config/channellist"
 import { SocialAccount } from '@/modules/socialaccount'
 import { SocialPlatform } from "@/modules/social_platform"
+import { SocialAccountController } from '@/controller/socialaccount-controller'
+import { CommonDialogMsg } from "@/entityTypes/commonType";
+
+//import {} from "@/config/channellist"
 // import { ItemSearchparam } from "@/entityTypes/commonType"
 export function registerSocialAccountIpcHandlers() {
     const socialaccount = new SocialAccount()
     const socialPlatform = new SocialPlatform()
+    const sac = new SocialAccountController()
 ipcMain.handle(SOCIALACCOUNTlIST, async (event, data) => {
     const qdata = JSON.parse(data);
 
@@ -115,7 +120,45 @@ ipcMain.handle(SOCIALACCOUNTlIST, async (event, data) => {
     // console.log(res)
     return res
   })
-  ipcMain.handle("socialaccount:save", async (event, data) => {
+  //login social account
+  ipcMain.on(SOCIAL_ACCOUNT_LOGIN, async (event, data) => {
+    const qdata = JSON.parse(data);
+    if (!("id" in qdata)) {
+        throw new Error("id not found");
+    }
+    //const sac = new SocialAccountController()
+    try {
+        // event.sender.send('socialaccount:login:msg', JSON.stringify({ msg: "test", status: false }))
+        await sac.loginSocialaccount(qdata.id,()=>{
+          const comMsgs: CommonDialogMsg = {
+            status: false,
+            code: 20240705103811,
+            data: {
+                action: "uploadfileMsg",
+                title: "socialaccount.uploadfileMsg_title",
+                content: "socialaccount.uploadfileMsg_content"
+            }
+        }
+        event.sender.send(SOCIAL_ACCOUNT_LOGIN_MESSSAGE, JSON.stringify(comMsgs))
+        })
+        
+    } catch (error) {
+        if (error instanceof Error) {
+            //console.log(error.message)
+            const comMsgs: CommonDialogMsg = {
+              status: false,
+              code: 202412141226150,
+              data: {
+                  action: "error",
+                  title: "",
+                  content: error.message
+              }
+          }
+            event.sender.send(SOCIAL_ACCOUNT_LOGIN_MESSSAGE, JSON.stringify(comMsgs))
+        }
+    }
+})
+  ipcMain.handle(SOCIALACCOUNTSAVE, async (event, data) => {
     //save social account
     const qdata = JSON.parse(data);
     // const socialaccount = new SocialAccount()

@@ -1,12 +1,13 @@
-export type CookiesType={
+export interface CookiesType{
+    domain:string;
+    flag: boolean;
+    path?:string;
+    secure:boolean;
+    expirationDate:number,
+    hostOnly?:boolean,
+    httpOnly?:boolean,
+    session?:boolean,  
+    sameSite?:string,
     name:string,
     value:string,
-    domain?:string,
-    hostOnly?:boolean,
-    path?:string,
-    secure?:boolean,
-    httpOnly?:boolean,
-    session?:boolean,
-    expirationDate?:number,
-    sameSite?:string
 }

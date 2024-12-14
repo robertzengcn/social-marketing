@@ -1,7 +1,7 @@
 import { ipcMain } from 'electron';
 import { SocialTask } from '@/modules/socialtask';
-import { SocialAccountController } from '@/controller/socialaccount-controller';
-import {SOCIAL_ACCOUNT_LOGIN} from "@/config/channellist"
+//import { SocialAccountController } from '@/controller/socialaccount-controller';
+
 // import { ProxyController } from '@/controller/proxy-controller';
 
 type dataResponse = {
@@ -54,22 +54,5 @@ export default function AsyncMsg() {
             })
         }
     })
-    //login social account
-    ipcMain.on(SOCIAL_ACCOUNT_LOGIN, async (event, data) => {
-        const qdata = JSON.parse(data);
-        if (!("id" in qdata)) {
-            throw new Error("id not found");
-        }
-        const sac = new SocialAccountController()
-        try {
-            // event.sender.send('socialaccount:login:msg', JSON.stringify({ msg: "test", status: false }))
-            await sac.loginSocialaccount(qdata.id)
-            
-        } catch (error) {
-            if (error instanceof Error) {
-                console.log(error.message)
-                event.sender.send('socialaccount:login:msg', JSON.stringify({ msg: error.message, status: false }))
-            }
-        }
-    })
+    
 }

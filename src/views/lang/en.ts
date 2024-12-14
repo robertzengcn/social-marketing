@@ -37,7 +37,7 @@ export default {
         status:"status",
         configured:"configured",
         not_configured:"not configured",
-        
+        ok:"ok"
     },
     home:{
         search:"Search Extraction",
@@ -296,6 +296,8 @@ export default {
     },
     socialAccount:{
         create_account:"create account",
+        uploadfileMsg_title:"Manual upload cookies file",
+        uploadfileMsg_content:"Please export cookies from your browser and upload cookies file manually",
     }
 
 }

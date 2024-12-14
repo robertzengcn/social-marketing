@@ -10,6 +10,7 @@ import * as crypto from 'crypto';
 import {ProxyParseItem,ProxyServer} from "@/entityTypes/proxyType"
 import {TaskStatus} from "@/config/common";
 import fetch from 'node-fetch';
+import {CookiesType} from "@/entityTypes/cookiesType"
 // import { contextIsolated } from "process";
 //import { utilityProcess, MessageChannelMain} from "electron";
 export type queryParams = {
@@ -585,4 +586,33 @@ export function generateRandomUniqueString(length: number): string {
 export function getUserPlatform(): string {
   return process.platform;
 }
+// Function to convert a Netscape cookie file to a JSON object
+export function convertNetscapeCookiesToJson (filePath: string): CookiesType[] {
+  const fileContents = fs.readFileSync(filePath, 'utf-8');
+  const lines = fileContents.split('\n');
+  const cookies: CookiesType[] = [];
+
+  lines.forEach(line => {
+    if (line.startsWith('#') || line.trim() === '') {
+      // Skip comments and empty lines
+      return;
+    }
+
+    const parts = line.split('\t');
+    if (parts.length === 7) {
+      const cookie: CookiesType = {
+        domain: parts[0],
+        flag: parts[1] === 'TRUE',
+        path: parts[2],
+        secure: parts[3] === 'TRUE',
+        expirationDate: parseInt(parts[4], 10),
+        name: parts[5],
+        value: parts[6]
+      };
+      cookies.push(cookie);
+    }
+  });
+
+  return cookies;
+};
 

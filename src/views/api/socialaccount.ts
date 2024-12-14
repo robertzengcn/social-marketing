@@ -2,7 +2,7 @@ import {SearchResult} from './types'
 import {ItemSearchparam} from "@/entityTypes/commonType"
 import {windowInvoke,windowSend,windowReceive} from '@/views/utils/apirequest'
 import {SocialAccountDetailData,SoASuccessEntity,SoADeleteResp,SocialLoginParam,SocialAccountListData} from "@/entityTypes/socialaccount-type"
-import {SOCIALACCOUNTlIST,SOCIAL_ACCOUNT_LOGIN} from "@/config/channellist"
+import {SOCIALACCOUNTlIST,SOCIAL_ACCOUNT_LOGIN,SOCIALACCOUNTSAVE} from "@/config/channellist"
 
 
 export async function getSocialAccountlist(data: ItemSearchparam):Promise<SearchResult<SocialAccountListData>>{
@@ -30,7 +30,7 @@ export async function getSocialaccountinfo(id: number):Promise<SocialAccountDeta
 }
 //save social account
 export async function saveSocialAccount(soc:SocialAccountDetailData):Promise<SoASuccessEntity>{
-        const resp=await windowInvoke('socialaccount:save',soc);
+        const resp=await windowInvoke(SOCIALACCOUNTSAVE,soc);
         return resp;
 }
 //delete social account

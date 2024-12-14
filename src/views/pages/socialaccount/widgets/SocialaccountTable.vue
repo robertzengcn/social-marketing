@@ -53,7 +53,9 @@
           </v-icon>
           
         </template>
-
+        <template v-slot:item.proxy="{ item }">
+            <span>{{ item.proxy ? CapitalizeFirstLetter(t('common.configured')) : CapitalizeFirstLetter(t('common.not_configured')) }}</span>
+          </template>
         <template v-slot:item.cookies="{ item }">
             <span>{{ item.cookies ? CapitalizeFirstLetter(t('common.configured')) : CapitalizeFirstLetter(t('common.not_configured')) }}</span>
           </template>
@@ -103,7 +105,7 @@
    </v-alert>
         </v-dialog>
     </div>
-
+    <confirmDialog :showDialog="confirmDialogctl" :noticeText="confirmContent" :noticeTitle="confirmTitle" :dialogclose="closeConfirmdialog" okCallback:="openUploaddialog" />
 </template>
 
 <script setup lang="ts">
@@ -114,13 +116,19 @@ import {SocialAccountListData} from '@/entityTypes/socialaccount-type'
 // import { useRoute } from "vue-router";
 import router from '@/views/router';
 import {useI18n} from "vue-i18n";
-const {t} = useI18n({inheritLocale: true});
+import { CommonDialogMsg } from "@/entityTypes/commonType";
 import {CapitalizeFirstLetter} from "@/views/utils/function"
+import {SOCIAL_ACCOUNT_LOGIN_MESSSAGE} from "@/config/channellist"
+import confirmDialog from '@/views/components/widgets/confirmDialog.vue';
+const {t} = useI18n({inheritLocale: true});
 
 const alert = ref(false);
 const alerttitle = ref("");
 const alerttext= ref("");
-const alertcolor = ref("");
+
+const confirmTitle=ref("")
+const confirmContent=ref("")
+//const alertcolor = ref("");
 const alerttype = ref<"success" | "error" | "warning" | "info" | undefined>("success");
 type Fetchparam = {
     // id:number
@@ -161,6 +169,7 @@ const headers: Array<any> = [
         key: 'user',
     },
     { title: 'Cookies', key: 'cookies', sortable: false },
+    { title: 'Proxy', key: 'proxy', sortable: false },
     { title: 'Status', key: 'status', sortable: false },
     { title: 'Actions', key: 'actions', sortable: false },
 
@@ -174,6 +183,7 @@ const search = ref('');
 const showDeleteModal = ref(false);
 const deleteAccountid=ref(0);
 const showDialog= ref(false);
+const confirmDialogctl= ref(false);
 const alertext=ref("");
 
 function loadItems({ page, itemsPerPage, sortBy }) {
@@ -248,17 +258,32 @@ const loginAccount=(item)=>{
 const receiveLoginMsg=(channel:string)=>{
     receiveAccountLoginevent(channel,function (value) {
         console.log(value)
-        const json_value=JSON.parse(value)
+        const json_value=JSON.parse(value) as CommonDialogMsg
         if(!json_value.status){
-            console.log(json_value.msg)
-            setAlert(json_value.msg, "Login Account", "error")
+            
+            if(json_value.data){
+                if(json_value.data.action=="error"){
+            console.log(json_value.data.content)
+            setAlert(json_value.data.content, "Login Account", "error")
+        }else if(json_value.data.action=="uploadfileMsg"){
+            confirmDialogctl.value=true
+            confirmContent.value=json_value.data.content
+            confirmTitle.value=json_value.data.title
         } 
+    }
+    }
     }
     ) 
 }
+const closeConfirmdialog=()=>{
+    confirmDialogctl.value=false
+}
+const openUploaddialog=()=>{
+
+}
 onMounted(() => {
     // socialaccount:login:msg
-     receiveLoginMsg("socialaccount:login:msg")
+     receiveLoginMsg(SOCIAL_ACCOUNT_LOGIN_MESSSAGE)
 });
 const setAlert=(text: string, title: string, type: "success" | "error" | "warning" | "info" | undefined) =>{
   alerttext.value = text;

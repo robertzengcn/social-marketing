@@ -19,7 +19,7 @@ export class SocialAccountController {
         this.socialaccountModel=new SocialAccount()
     }
     //open open and login social account
-    public async loginSocialaccount(id: number): Promise<void> {
+    public async loginSocialaccount(id: number,msgCallback:()=>void): Promise<void> {
 
         // const socialaccountModel = new SocialAccount();
         const accinfo = await this.socialaccountModel.getAccountdetail(id)
@@ -44,21 +44,22 @@ export class SocialAccountController {
             }
         }
         const ses = session.fromPartition(partition_path)
-        console.log(accinfo.data.social_type)
-        if(accinfo.data.social_type&&accinfo.data.social_type=="google.com"){
+        //console.log(accinfo.data.social_type)
+        if(accinfo.data.social_type&&(accinfo.data.social_type=="google.com"||accinfo.data.social_type=="youtube.com")){
             // console.log(accinfo.data)
             // console.log(cookies)
             if(!cookies||!cookies.cookies){//open a new window to ask user choose file
-                const options:MessageBoxOptions = {
-                    type: 'info',
-                    buttons: ['OK'],
-                    defaultId: 0,
-                    title: 'Information',
-                    message: 'Please choose cookies file',
-                    detail: 'Please choose cookies file',
-                  };
-                //   try {
-                  await dialog.showMessageBox(options) 
+                // const options:MessageBoxOptions = {
+                //     type: 'info',
+                //     buttons: ['OK'],
+                //     defaultId: 0,
+                //     title: 'Information',
+                //     message: 'Please choose cookies file',
+                //     detail: 'Please choose cookies file',
+                //   };
+                // //   try {
+                //   await dialog.showMessageBox(options) 
+                msgCallback()
                 // } catch (error) {
                 //     if(error instanceof Error){
                 //     console.error(`Failed to show message box: ${error.message}`);
