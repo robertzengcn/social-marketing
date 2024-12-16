@@ -63,5 +63,6 @@ export class AccountCookiesdb {
         const accountcookies = stmt.get(accountid) as AccountCookiesEntity;
         return accountcookies;
     }
+    
 
 }

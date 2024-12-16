@@ -22,6 +22,7 @@ export default {
         error:"error",
         yes:"yes",
         no:"no",
+        ok:"ok",
         save_success:"save success",
         delete_confirm_tip:"Are you sure to delete",
         comfirm_delete:"Confirm delete",
@@ -37,7 +38,7 @@ export default {
         status:"status",
         configured:"configured",
         not_configured:"not configured",
-        ok:"ok"
+       
     },
     home:{
         search:"Search Extraction",
@@ -294,10 +295,10 @@ export default {
         content:"content",
         record_time:"record time",
     },
-    socialAccount:{
+    socialaccount:{
         create_account:"create account",
-        uploadfileMsg_title:"Manual upload cookies file",
-        uploadfileMsg_content:"Please export cookies from your browser and upload cookies file manually",
+        uploadfilemsg_title:"Manual upload cookies file",
+        uploadfilemsg_content:"Please export cookies from your browser and upload cookies file manually",
     }
 
 }

@@ -11,3 +11,6 @@ export interface CookiesType{
     name:string,
     value:string,
 }
+export type RequireCookiesParam={
+ id:number
+}

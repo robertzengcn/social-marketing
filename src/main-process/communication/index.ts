@@ -20,7 +20,7 @@ export function registerCommunicationIpcHandlers(win: BrowserWindow) {
     registerEmailextractionIpcHandlers()
     registerEmailMarketingIpcHandlers()
     registerBuckEmailIpcHandlers()
-    registerSocialAccountIpcHandlers()
+    registerSocialAccountIpcHandlers(win)
     AsyncMsg()
     // Register extra modules IPC handlers
     

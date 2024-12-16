@@ -25,5 +25,9 @@ export class AccountCookiesModule {
     ):number|bigint {
         return this.accountCookiesdb.saveAccountCookies(accountcookies)
     }
+    //generate partition_path for cookies
+    public genPartitionPath():string{
+        return "persist:path/" + Date.now() + '-' + Math.random().toString(36).slice(2, 9)
+    }
 
 }

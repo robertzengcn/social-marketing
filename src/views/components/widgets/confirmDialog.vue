@@ -20,7 +20,7 @@
             </v-btn>
   
             <v-btn @click="okCallback">
-              {{ CapitalizeFirstLetter(t('comon.ok')) }}
+              {{ CapitalizeFirstLetter(t('common.ok')) }}
             </v-btn>
           </template>
         </v-card>
@@ -51,6 +51,7 @@ const props = defineProps({
   const emit = defineEmits(['dialogclose','okCallback']);
 
   const closeDialog = () => {
+    console.log("closeDialog"+54)
   // props.dialog = false;
   emit('dialogclose');
 };

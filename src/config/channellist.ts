@@ -51,4 +51,6 @@ export const SOCIALACCOUNTDETAIL="socialaccount:detail"
 export const SOCIALACCOUNTSAVE="socialaccount:save"
 export const SOCIAL_ACCOUNT_LOGIN="socialaccount:login"
 export const SOCIAL_ACCOUNT_LOGIN_MESSSAGE="socialaccount:login:msg"
+export const SOCIAL_ACCOUNT_LOGIN_UPLOADCOOKIES="socialaccount:upload:cookies"
+
 

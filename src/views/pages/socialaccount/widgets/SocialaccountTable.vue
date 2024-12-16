@@ -105,11 +105,11 @@
    </v-alert>
         </v-dialog>
     </div>
-    <confirmDialog :showDialog="confirmDialogctl" :noticeText="confirmContent" :noticeTitle="confirmTitle" :dialogclose="closeConfirmdialog" okCallback:="openUploaddialog" />
+    <confirmDialog :showDialog="confirmDialogctl" :noticeText="confirmContent" :noticeTitle="confirmTitle" @dialogclose="confirmDialogctl=false" @okCallback="openUploaddialog" />
 </template>
 
 <script setup lang="ts">
-import { getSocialAccountlist,deleteSocialAccount, socialaccountLogin,receiveAccountLoginevent } from '@/views/api/socialaccount'
+import { getSocialAccountlist,deleteSocialAccount, socialaccountLogin,receiveAccountLoginevent,requireCookiesselecttab } from '@/views/api/socialaccount'
 import { ref,onMounted } from 'vue'
 import { SearchResult } from '@/views/api/types'
 import {SocialAccountListData} from '@/entityTypes/socialaccount-type'
@@ -120,6 +120,7 @@ import { CommonDialogMsg } from "@/entityTypes/commonType";
 import {CapitalizeFirstLetter} from "@/views/utils/function"
 import {SOCIAL_ACCOUNT_LOGIN_MESSSAGE} from "@/config/channellist"
 import confirmDialog from '@/views/components/widgets/confirmDialog.vue';
+
 const {t} = useI18n({inheritLocale: true});
 
 const alert = ref(false);
@@ -185,7 +186,7 @@ const deleteAccountid=ref(0);
 const showDialog= ref(false);
 const confirmDialogctl= ref(false);
 const alertext=ref("");
-
+const tmpId=ref(0);
 function loadItems({ page, itemsPerPage, sortBy }) {
     loading.value = true
     const fetchitem: Fetchparam = {
@@ -266,20 +267,27 @@ const receiveLoginMsg=(channel:string)=>{
             console.log(json_value.data.content)
             setAlert(json_value.data.content, "Login Account", "error")
         }else if(json_value.data.action=="uploadfileMsg"){
+            if(json_value.code){
+            tmpId.value=json_value.code
+            }
+            
             confirmDialogctl.value=true
-            confirmContent.value=json_value.data.content
-            confirmTitle.value=json_value.data.title
+            confirmContent.value=t(json_value.data.content)
+            confirmTitle.value=t(json_value.data.title)
         } 
     }
     }
     }
     ) 
 }
-const closeConfirmdialog=()=>{
-    confirmDialogctl.value=false
-}
-const openUploaddialog=()=>{
 
+const openUploaddialog=()=>{
+if(tmpId.value>0){
+    const requireParam={
+        id:tmpId.value
+    }
+    requireCookiesselecttab(requireParam)
+}
 }
 onMounted(() => {
     // socialaccount:login:msg

@@ -5,11 +5,12 @@ import {AccountCookiesModule} from "@/modules/accountCookiesModule"
 //import { ProxyController } from "./proxy-controller";
 import { ProxyParseItem } from "@/entityTypes/proxyType";
 // import {showNotification} from "@/modules/lib/function"
-import { Token } from "@/modules/token"
-import {USERSDBPATH} from '@/config/usersetting';
-import {CustomError} from '@/modules/customError'
+//import { Token } from "@/modules/token"
+//import {USERSDBPATH} from '@/config/usersetting';
+//import {CustomError} from '@/modules/customError'
 import {proxyEntityToUrl} from "@/modules/lib/function"
-import { is } from "cheerio/lib/api/traversing";
+//import { is } from "cheerio/lib/api/traversing";
+import {convertNetscapeCookiesToJson} from "@/modules/lib/function"
 
 export class SocialAccountController {
     private accountCookiesModule:AccountCookiesModule
@@ -37,7 +38,9 @@ export class SocialAccountController {
         //get account cookies
         // const accoutndb = new AccountCookiesdb(dbpath)
         const cookies = this.accountCookiesModule.getAccountCookies(accinfo.data.id)
-        let partition_path = "persist:path/" + Date.now() + '-' + Math.random().toString(36).slice(2, 9)
+        //let partition_path = "persist:path/" + Date.now() + '-' + Math.random().toString(36).slice(2, 9)
+        let partition_path =this.accountCookiesModule.genPartitionPath()
+        
         if (cookies) {
             if (cookies.partition_path) {
                 partition_path = cookies.partition_path
@@ -151,6 +154,17 @@ export class SocialAccountController {
             }
         });
 
+    }
+    public handleCookiesfile(filePath:string,accountId:number){
+        const cookiesArr=convertNetscapeCookiesToJson(filePath)
+        const partition_path=this.accountCookiesModule.genPartitionPath()
+        const cookiesstr = JSON.stringify(cookiesArr)
+        const accountCookiesEntity:AccountCookiesEntity={
+            account_id: accountId,
+            cookies: cookiesstr,
+            partition_path: partition_path,
+        }
+        this.accountCookiesModule.saveAccountCookies(accountCookiesEntity)
     }
 
 }

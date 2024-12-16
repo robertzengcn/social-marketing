@@ -1,13 +1,14 @@
-import { ipcMain } from 'electron'
-import {SOCIALPLATFORM_LIST, SOCIALACCOUNTlIST,SOCIALACCOUNTDETAIL,SOCIAL_ACCOUNT_LOGIN,SOCIALACCOUNTSAVE,SOCIAL_ACCOUNT_LOGIN_MESSSAGE } from "@/config/channellist"
+import { ipcMain,dialog,BrowserWindow } from 'electron'
+import {SOCIALPLATFORM_LIST, SOCIALACCOUNTlIST,SOCIALACCOUNTDETAIL,SOCIAL_ACCOUNT_LOGIN,SOCIALACCOUNTSAVE,SOCIAL_ACCOUNT_LOGIN_MESSSAGE,SOCIAL_ACCOUNT_LOGIN_UPLOADCOOKIES } from "@/config/channellist"
 import { SocialAccount } from '@/modules/socialaccount'
 import { SocialPlatform } from "@/modules/social_platform"
 import { SocialAccountController } from '@/controller/socialaccount-controller'
 import { CommonDialogMsg } from "@/entityTypes/commonType";
-
+import {RequireCookiesParam} from "@/entityTypes/cookiesType"
+import fs from "fs";
 //import {} from "@/config/channellist"
 // import { ItemSearchparam } from "@/entityTypes/commonType"
-export function registerSocialAccountIpcHandlers() {
+export function registerSocialAccountIpcHandlers(mainWindow: BrowserWindow) {
     const socialaccount = new SocialAccount()
     const socialPlatform = new SocialPlatform()
     const sac = new SocialAccountController()
@@ -122,7 +123,7 @@ ipcMain.handle(SOCIALACCOUNTlIST, async (event, data) => {
   })
   //login social account
   ipcMain.on(SOCIAL_ACCOUNT_LOGIN, async (event, data) => {
-    const qdata = JSON.parse(data);
+    const qdata = JSON.parse(data) as RequireCookiesParam;
     if (!("id" in qdata)) {
         throw new Error("id not found");
     }
@@ -132,11 +133,11 @@ ipcMain.handle(SOCIALACCOUNTlIST, async (event, data) => {
         await sac.loginSocialaccount(qdata.id,()=>{
           const comMsgs: CommonDialogMsg = {
             status: false,
-            code: 20240705103811,
+            code: qdata.id,
             data: {
                 action: "uploadfileMsg",
-                title: "socialaccount.uploadfileMsg_title",
-                content: "socialaccount.uploadfileMsg_content"
+                title: "socialaccount.uploadfilemsg_title",
+                content: "socialaccount.uploadfilemsg_content"
             }
         }
         event.sender.send(SOCIAL_ACCOUNT_LOGIN_MESSSAGE, JSON.stringify(comMsgs))
@@ -207,5 +208,38 @@ ipcMain.handle(SOCIALACCOUNTlIST, async (event, data) => {
     })
 
     return res
+  })
+  ipcMain.on(SOCIAL_ACCOUNT_LOGIN_UPLOADCOOKIES, async (event, data) => {
+    const qdata = JSON.parse(data) as RequireCookiesParam
+    if (!("id" in qdata)) {
+      //throw new Error("id not found");
+      return {
+        status: false,
+        msg: "id not found",
+      };
+    }
+    const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
+      properties: ['openFile'],
+      filters:[{name: 'Netscape Cookies', extensions: ['txt']}]
+    })
+    if (canceled) {
+      return { status: false, msg: "canceled" }
+    } else {
+      if(filePaths){
+        console.log(filePaths[0])
+        fs.access(filePaths[0],fs.constants.W_OK,(e)  =>{
+          if(e){
+            if(e instanceof Error){
+              return { status: false, msg: e.message }
+            }
+          }else{
+            sac.handleCookiesfile(filePaths[0],qdata.id)
+          }
+        })
+        
+        
+      }
+      //return { status: true, data: filePaths[0] }
+    }
   })
 }
