@@ -7,20 +7,20 @@
             </div>
             <!-- <v-btn class="btn" variant="flat" prepend-icon="mdi-filter-variant"><span> More</span></v-btn> -->
             <v-btn class="btn" variant="flat" prepend-icon="mdi-plus" color="#5865f2" @click="createAccount()">
-                {{t('socialAccount.create_account')}}
+                {{t('socialaccount.create_account')}}
             </v-btn>
         </div>
         <div>       
         </div>
     </div>
-    <div class="mt-4 jsb">
+    <!-- <div class="mt-4 jsb">
         <v-alert
       v-model="alert"
       :text="alerttext"
       :title="alerttitle"
       :type="alerttype"
     ></v-alert>
-      </div>
+      </div> -->
     <v-data-table-server v-model:items-per-page="itemsPerPage" :search="search" :headers="headers"
         :items-length="totalItems" :items="serverItems" :loading="loading" item-value="name" @update:options="loadItems">
         <template v-slot:[`item.status`]="{ item }">
@@ -50,6 +50,12 @@
             @click="loginAccount(item)"
           >
             mdi-login
+          </v-icon>
+          <v-icon
+            size="small" 
+            @click="clearCookies(item)"
+          >
+            mdi-close
           </v-icon>
           
         </template>
@@ -93,7 +99,7 @@
     <div>
      
         <!-- Define the alert dialog component -->
-        <v-dialog v-model="showDialog" max-width="500px">
+        <!-- <v-dialog v-model="showDialog" max-width="500px">
             <v-alert
             color="pink"
             dark
@@ -103,14 +109,15 @@
             >
             {{alertext}}
    </v-alert>
-        </v-dialog>
+        </v-dialog> -->
+        <ErrorDialog :showDialog="showDialog" :alertext="alertContent" :alertitle="alertTitle"/>
     </div>
     <confirmDialog :showDialog="confirmDialogctl" :noticeText="confirmContent" :noticeTitle="confirmTitle" @dialogclose="confirmDialogctl=false" @okCallback="openUploaddialog" />
 </template>
 
 <script setup lang="ts">
-import { getSocialAccountlist,deleteSocialAccount, socialaccountLogin,receiveAccountLoginevent,requireCookiesselecttab } from '@/views/api/socialaccount'
-import { ref,onMounted } from 'vue'
+import { getSocialAccountlist,deleteSocialAccount, socialaccountLogin,receiveAccountLoginevent,requireCookiesselecttab,cleanCookies } from '@/views/api/socialaccount'
+import { ref,onMounted,reactive } from 'vue'
 import { SearchResult } from '@/views/api/types'
 import {SocialAccountListData} from '@/entityTypes/socialaccount-type'
 // import { useRoute } from "vue-router";
@@ -120,15 +127,19 @@ import { CommonDialogMsg } from "@/entityTypes/commonType";
 import {CapitalizeFirstLetter} from "@/views/utils/function"
 import {SOCIAL_ACCOUNT_LOGIN_MESSSAGE} from "@/config/channellist"
 import confirmDialog from '@/views/components/widgets/confirmDialog.vue';
-
+import ErrorDialog from '@/views/components/widgets/errorDialog.vue';
 const {t} = useI18n({inheritLocale: true});
 
 const alert = ref(false);
-const alerttitle = ref("");
-const alerttext= ref("");
-
+const alertTitle = ref("");
+// const alerttext= ref("");
+const alertContent=ref("");
 const confirmTitle=ref("")
 const confirmContent=ref("")
+const options = reactive({
+  page: 1, // Initial page
+  itemsPerPage: 10, // Items per page
+});
 //const alertcolor = ref("");
 const alerttype = ref<"success" | "error" | "warning" | "info" | undefined>("success");
 type Fetchparam = {
@@ -185,7 +196,8 @@ const showDeleteModal = ref(false);
 const deleteAccountid=ref(0);
 const showDialog= ref(false);
 const confirmDialogctl= ref(false);
-const alertext=ref("");
+
+
 const tmpId=ref(0);
 function loadItems({ page, itemsPerPage, sortBy }) {
     loading.value = true
@@ -230,9 +242,9 @@ const deleteAccount=(item)=>{
     showDeleteModal.value = true;
     deleteAccountid.value=item.id;
 }
-const cancelDelete=()=> {
-      showDeleteModal.value = false;
-}
+// const cancelDelete=()=> {
+//       showDeleteModal.value = false;
+// }
 //confirm delete account
 const confirmrmAccount=()=>{
     console.log("delete account")
@@ -243,7 +255,9 @@ const confirmrmAccount=()=>{
             loadItems({ page: 1, itemsPerPage: itemsPerPage.value, sortBy: '' })
         }).catch(function (error) {
             console.error(error);
-            alertext.value=error.message;
+            // alertTitle.value=t('socialaccount.delete_account_errror')
+            // alertContent.value=error.message;
+            setAlert(t('socialaccount.delete_account_errror'),error.message, "error")
         })
 }
 const createAccount=()=>{
@@ -255,6 +269,9 @@ const createAccount=()=>{
 const loginAccount=(item)=>{
     socialaccountLogin({id:item.id})
 }
+const clearCookies=(item)=>{
+    cleanCookies({id:item.id})
+}
 
 const receiveLoginMsg=(channel:string)=>{
     receiveAccountLoginevent(channel,function (value) {
@@ -265,7 +282,7 @@ const receiveLoginMsg=(channel:string)=>{
             if(json_value.data){
                 if(json_value.data.action=="error"){
             console.log(json_value.data.content)
-            setAlert(json_value.data.content, "Login Account", "error")
+            setAlert(t("socialaccount.login_account_error"),json_value.data.content, "error")
         }else if(json_value.data.action=="uploadfileMsg"){
             if(json_value.code){
             tmpId.value=json_value.code
@@ -274,14 +291,19 @@ const receiveLoginMsg=(channel:string)=>{
             confirmDialogctl.value=true
             confirmContent.value=t(json_value.data.content)
             confirmTitle.value=t(json_value.data.title)
+        }else if(json_value.data.action=="handleCookiesfile"){
+            setAlert(t(json_value.data.title),t(json_value.data.content), "error")
         } 
     }
+    }else{//success
+        loadItems({ page: options.page, itemsPerPage: itemsPerPage.value, sortBy: "" });
     }
     }
     ) 
 }
-
+//open upload file dialog
 const openUploaddialog=()=>{
+    confirmDialogctl.value=false
 if(tmpId.value>0){
     const requireParam={
         id:tmpId.value
@@ -293,9 +315,9 @@ onMounted(() => {
     // socialaccount:login:msg
      receiveLoginMsg(SOCIAL_ACCOUNT_LOGIN_MESSSAGE)
 });
-const setAlert=(text: string, title: string, type: "success" | "error" | "warning" | "info" | undefined) =>{
-  alerttext.value = text;
-  alerttitle.value = title;
+const setAlert=( title: string, text: string,type: "success" | "error" | "warning" | "info" | undefined) =>{
+  alertContent.value = text;
+  alertTitle.value = title;
   alerttype.value = type;
   alert.value = true;
   setTimeout(() => {

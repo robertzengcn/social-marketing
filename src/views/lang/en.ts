@@ -299,6 +299,11 @@ export default {
         create_account:"create account",
         uploadfilemsg_title:"Manual upload cookies file",
         uploadfilemsg_content:"Please export cookies from your browser and upload cookies file manually",
+        handleCookiesfileSuccess:"handle cookies file success",
+        handleCookiesfileFailure:"handle cookies file failure",
+        insertCookiesFailure:"insert cookies failure",
+        delete_account_errror:"delete account error",
+        login_account_error:"login account error",
     }
 
 }

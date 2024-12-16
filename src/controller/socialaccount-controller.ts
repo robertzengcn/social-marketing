@@ -1,5 +1,5 @@
 import { SocialAccount } from "@/modules/socialaccount";
-import { BrowserWindow, session,dialog,MessageBoxOptions } from 'electron'
+import { BrowserWindow, session } from 'electron'
 import { AccountCookiesEntity } from "@/model/accountCookiesdb";
 import {AccountCookiesModule} from "@/modules/accountCookiesModule"
 //import { ProxyController } from "./proxy-controller";
@@ -11,6 +11,7 @@ import { ProxyParseItem } from "@/entityTypes/proxyType";
 import {proxyEntityToUrl} from "@/modules/lib/function"
 //import { is } from "cheerio/lib/api/traversing";
 import {convertNetscapeCookiesToJson} from "@/modules/lib/function"
+import {CookiesType,CookiesParse} from "@/entityTypes/cookiesType"
 
 export class SocialAccountController {
     private accountCookiesModule:AccountCookiesModule
@@ -47,8 +48,9 @@ export class SocialAccountController {
             }
         }
         const ses = session.fromPartition(partition_path)
+        console.log(accinfo.data.social_type)
         //console.log(accinfo.data.social_type)
-        if(accinfo.data.social_type&&(accinfo.data.social_type=="google.com"||accinfo.data.social_type=="youtube.com")){
+        if(accinfo.data.social_type&&(accinfo.data.social_type=="google.com"||accinfo.data.social_type=="youtube")){
             // console.log(accinfo.data)
             // console.log(cookies)
             if(!cookies||!cookies.cookies){//open a new window to ask user choose file
@@ -69,6 +71,8 @@ export class SocialAccountController {
                 //     }
                 //   }
                 return
+            }else{
+                
             }
         }   
         //set title for window
@@ -99,7 +103,48 @@ export class SocialAccountController {
                 })
             }
         }
-       
+       //handle cookies
+        if(cookies&&cookies.cookies){
+       // console.log("handle cookies file")
+                // console.log(cookies)
+                const cookiesArr:CookiesType[]=JSON.parse(cookies.cookies)
+                if(cookiesArr.length>0){
+                    for (const cookie of cookiesArr) {
+                        // console.log(cookie)
+                        //remove first dot in domain
+                        let url=cookie.domain
+                        if (cookie.domain&&cookie.domain.charAt(0) === '.') {
+                            url = cookie.domain.slice(1);
+                        }
+                        let cookieDetails:CookiesParse = {
+                            url: `http${cookie.secure ? 's' : ''}://${url}${cookie.path}`,
+                            name: cookie.name,
+                            value: cookie.value,
+                            domain: cookie.domain,
+                            path: cookie.path,
+                            secure: cookie.secure,
+                            httpOnly: cookie.httpOnly || false,
+                            expirationDate: cookie.expirationDate,
+                            sameSite: cookie.sameSite,
+                            hostOnly: cookie.hostOnly
+                          };
+                         //check whether cookies value start with __Host-
+                        if(cookie.name.startsWith("__Host-")){
+                           //remove cookie detail domain
+                           if (cookieDetails.domain) {
+                               delete cookieDetails.domain;
+                           }
+                        }    
+                          try {
+                          await ses.cookies.set(cookieDetails)
+                        } catch (error) {
+                            console.error(`Failed to set cookie: ${cookie.name}`, error);
+                            console.log(cookieDetails)
+                          throw error
+                        }
+                    }
+                }
+            }
         
         const win = new BrowserWindow({
             autoHideMenuBar: true, webPreferences: {
@@ -155,7 +200,7 @@ export class SocialAccountController {
         });
 
     }
-    public handleCookiesfile(filePath:string,accountId:number){
+    public handleCookiesfile(filePath:string,accountId:number):number{
         const cookiesArr=convertNetscapeCookiesToJson(filePath)
         const partition_path=this.accountCookiesModule.genPartitionPath()
         const cookiesstr = JSON.stringify(cookiesArr)
@@ -164,7 +209,12 @@ export class SocialAccountController {
             cookies: cookiesstr,
             partition_path: partition_path,
         }
-        this.accountCookiesModule.saveAccountCookies(accountCookiesEntity)
+        return this.accountCookiesModule.saveAccountCookies(accountCookiesEntity)
+    }
+
+    public cleanCookies(accountId:number):void{
+        
+        this.accountCookiesModule.deleteCookies(accountId)
     }
 
 }

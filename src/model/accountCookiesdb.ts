@@ -63,6 +63,13 @@ export class AccountCookiesdb {
         const accountcookies = stmt.get(accountid) as AccountCookiesEntity;
         return accountcookies;
     }
+
+    public deleteAccountCookies(accountid:number):void{
+        const stmt = this.db.prepare(
+            `DELETE FROM ` + "account_cookies" + ` WHERE account_id = ?`
+        );
+        stmt.run(accountid);
+    }
     
 
 }

@@ -22,12 +22,16 @@ export class AccountCookiesModule {
 
     public saveAccountCookies(
         accountcookies: AccountCookiesEntity
-    ):number|bigint {
-        return this.accountCookiesdb.saveAccountCookies(accountcookies)
+    ):number {
+        return Number(this.accountCookiesdb.saveAccountCookies(accountcookies))
     }
     //generate partition_path for cookies
     public genPartitionPath():string{
         return "persist:path/" + Date.now() + '-' + Math.random().toString(36).slice(2, 9)
+    }
+
+    public deleteCookies(accountid:number):void{
+        this.accountCookiesdb.deleteAccountCookies(accountid)
     }
 
 }

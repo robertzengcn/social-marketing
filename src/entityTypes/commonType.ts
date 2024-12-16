@@ -16,6 +16,7 @@ export interface ListData <Type>{
 export type CommonDialogMsg={
     status:boolean,
     code:number,
+    msg?:string,
     data?:{
         action?:string,  
         title:string,
