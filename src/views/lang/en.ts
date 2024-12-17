@@ -305,7 +305,7 @@ export default {
         delete_account_errror:"delete account error",
         login_account_error:"login account error",
         manuallogin_title:"Manual login notice",
-        manuallogin_content:"Please login to the social media platform manually, after you have logged in, please close the pop up window, the system will automatically save account's cookies",
+        manuallogin_content:"We will open a pop window, please login to the social media platform manually, after you have logged in, please close the pop up window, the system will automatically save account's cookies",
     }
 
 }

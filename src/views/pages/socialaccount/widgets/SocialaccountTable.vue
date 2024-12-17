@@ -87,7 +87,7 @@
             {{alertext}}
    </v-alert>
         </v-dialog> -->
-        <ErrorDialog :showDialog="showDialog" :alertext="alertContent" :alertitle="alertTitle" />
+        <ErrorDialog :showDialog="alert" :alertext="alertContent" :alertitle="alertTitle" @dialogclose="closeAlert" />
     </div>
     <confirmDialog :showDialog="confirmDialogctl" :noticeText="confirmContent" :noticeTitle="confirmTitle"
         @dialogclose="confirmDialogctl = false" @okCallback="openNextstepdialog" />
@@ -248,7 +248,7 @@ const createAccount = () => {
 }
 //login social account
 const loginAccount = (item: SocialAccountListData) => {
-    socialaccountLogin({ id: item.id })
+    socialaccountLogin({ id: item.id,platform:item.social_type })
     tmpId.value = item.id
     tmpPlatform.value = item.social_type
 }
@@ -261,6 +261,9 @@ const receiveLoginMsg = (channel: string) => {
         console.log(value)
         const json_value = JSON.parse(value) as CommonDialogMsg
         if (!json_value.status) {
+            if(json_value.msg){
+                setAlert(t("socialaccount.login_account_error"), json_value.msg, "error")
+            }
 
             if (json_value.data) {
                 if (json_value.data.action == "error") {
@@ -281,6 +284,7 @@ const receiveLoginMsg = (channel: string) => {
                     confirmDialogctl.value = true
                     confirmContent.value = t(json_value.data.content)
                     confirmTitle.value = t(json_value.data.title)
+
                 }
             }
         } else {//success
@@ -288,6 +292,9 @@ const receiveLoginMsg = (channel: string) => {
         }
     }
     )
+}
+const closeAlert=()=>{
+    alert.value=false
 }
 //open upload file dialog
 const openNextstepdialog = () => {

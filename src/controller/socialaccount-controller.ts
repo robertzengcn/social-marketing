@@ -68,7 +68,7 @@ export class SocialAccountController {
                 }
             }
         } else {
-            this.showSocialmediaWin(id,cookies)
+            await this.showSocialmediaWin(id,cookies)
         }
 
     }
@@ -154,6 +154,11 @@ export class SocialAccountController {
                             delete cookieDetails.domain;
                         }
                     }
+                    if(cookie.name.startsWith("__Secure-")){
+                        cookieDetails.httpOnly=true
+                        delete cookieDetails.domain;
+                        
+                    }
                     try {
                         await ses.cookies.set(cookieDetails)
                     } catch (error) {
@@ -197,7 +202,7 @@ export class SocialAccountController {
         const winsession = win.webContents.session
         // winsession.cookies.remove()
         win.on('close', async () => { //   <---- Catch close event
-            const cookiescontent = await winsession.cookies.get({})
+            const cookiescontent = await winsession.cookies.get({url: accinfo.data.social_type_url})
             console.log("get cookies:")
             console.log(cookiescontent)
             const cookiesstr = JSON.stringify(cookiescontent)

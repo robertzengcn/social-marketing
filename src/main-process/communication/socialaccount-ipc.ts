@@ -155,6 +155,17 @@ export function registerSocialAccountIpcHandlers(mainWindow: BrowserWindow) {
           }
         }
         event.sender.send(SOCIAL_ACCOUNT_LOGIN_MESSSAGE, JSON.stringify(comMsgs))
+      }).catch(function (err) {
+        if (err instanceof Error) {
+          //console.log(error.message)
+          const comMsgs: CommonDialogMsg = {
+            status: false,
+            code: 202412171245163,
+            msg: err.message,
+           
+          }
+          event.sender.send(SOCIAL_ACCOUNT_LOGIN_MESSSAGE, JSON.stringify(comMsgs))
+        }
       })
 
     } catch (error) {
@@ -163,11 +174,8 @@ export function registerSocialAccountIpcHandlers(mainWindow: BrowserWindow) {
         const comMsgs: CommonDialogMsg = {
           status: false,
           code: 202412141226150,
-          data: {
-            action: "error",
-            title: "",
-            content: error.message
-          }
+          msg: error.message,
+       
         }
         event.sender.send(SOCIAL_ACCOUNT_LOGIN_MESSSAGE, JSON.stringify(comMsgs))
       }

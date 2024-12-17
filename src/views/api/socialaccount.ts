@@ -39,13 +39,13 @@ export async function deleteSocialAccount(id:number):Promise<SoADeleteResp>{
         const resp=await windowInvoke('socialaccount:delete',{id:id});
         return resp;
 }
-export function socialaccountLogin(data:SocialLoginParam){
+export function socialaccountLogin(data:RequireCookiesMsgbox){
         windowSend(SOCIAL_ACCOUNT_LOGIN,data);    
 }
 export function receiveAccountLoginevent(channel:string,cb:(data:any)=>void){
         windowReceive(channel,cb)
  }
- export async function requireCookiesselecttab(data:RequireCookiesMsgbox){
+ export async function requireCookiesselecttab(data:RequireCookiesParam){
         await windowSend(SOCIAL_ACCOUNT_LOGIN_UPLOADCOOKIES,data)   
  }
  export async function cleanCookies(data:RequireCookiesParam){
