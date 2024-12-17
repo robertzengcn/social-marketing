@@ -1,59 +1,47 @@
 import { SocialAccount } from "@/modules/socialaccount";
 import { BrowserWindow, session } from 'electron'
 import { AccountCookiesEntity } from "@/model/accountCookiesdb";
-import {AccountCookiesModule} from "@/modules/accountCookiesModule"
+import { AccountCookiesModule } from "@/modules/accountCookiesModule"
 //import { ProxyController } from "./proxy-controller";
 import { ProxyParseItem } from "@/entityTypes/proxyType";
 // import {showNotification} from "@/modules/lib/function"
 //import { Token } from "@/modules/token"
 //import {USERSDBPATH} from '@/config/usersetting';
 //import {CustomError} from '@/modules/customError'
-import {proxyEntityToUrl} from "@/modules/lib/function"
+import { proxyEntityToUrl } from "@/modules/lib/function"
 //import { is } from "cheerio/lib/api/traversing";
-import {convertNetscapeCookiesToJson} from "@/modules/lib/function"
-import {CookiesType,CookiesParse} from "@/entityTypes/cookiesType"
+import { convertNetscapeCookiesToJson } from "@/modules/lib/function"
+import { CookiesType, CookiesParse } from "@/entityTypes/cookiesType"
+import { SocialAccountDetailData } from "@/entityTypes/socialaccount-type"
 
 export class SocialAccountController {
-    private accountCookiesModule:AccountCookiesModule
-    private socialaccountModel:SocialAccount
+    private accountCookiesModule: AccountCookiesModule
+    private socialaccountModel: SocialAccount
     constructor() {
-        this.accountCookiesModule=new AccountCookiesModule()
-        this.socialaccountModel=new SocialAccount()
+        this.accountCookiesModule = new AccountCookiesModule()
+        this.socialaccountModel = new SocialAccount()
     }
     //open open and login social account
-    public async loginSocialaccount(id: number,msgCallback:()=>void): Promise<void> {
-
-        // const socialaccountModel = new SocialAccount();
-        const accinfo = await this.socialaccountModel.getAccountdetail(id)
-        if (!accinfo || !accinfo.data.id) {
-            throw new Error("get account info failed")
-        }
-        if (!accinfo.status) {
-            throw new Error(accinfo.msg)
-        }
-        // const tokenService=new Token()
-        // const dbpath=await tokenService.getValue(USERSDBPATH)
-        // if(!dbpath){
-        //     throw new CustomError("user path not exist",20240719112326)
-        // }
+    public async showSocialaccountMsg(id: number, platform: string, gmsgCallback?: () => void, omsgCallback?: () => void): Promise<void> {
         //get account cookies
         // const accoutndb = new AccountCookiesdb(dbpath)
-        const cookies = this.accountCookiesModule.getAccountCookies(accinfo.data.id)
+        const cookies = this.accountCookiesModule.getAccountCookies(id)
         //let partition_path = "persist:path/" + Date.now() + '-' + Math.random().toString(36).slice(2, 9)
-        let partition_path =this.accountCookiesModule.genPartitionPath()
-        
-        if (cookies) {
-            if (cookies.partition_path) {
-                partition_path = cookies.partition_path
-            }
-        }
-        const ses = session.fromPartition(partition_path)
-        console.log(accinfo.data.social_type)
+        // let partition_path =this.accountCookiesModule.genPartitionPath()
+
+        // if (cookies) {
+        //     if (cookies.partition_path) {
+        //         partition_path = cookies.partition_path
+        //     }
+        // }
+        // const ses = session.fromPartition(partition_path)
+        // console.log(accinfo.data.social_type)
         //console.log(accinfo.data.social_type)
-        if(accinfo.data.social_type&&(accinfo.data.social_type=="google.com"||accinfo.data.social_type=="youtube")){
-            // console.log(accinfo.data)
-            // console.log(cookies)
-            if(!cookies||!cookies.cookies){//open a new window to ask user choose file
+        if (!cookies || !cookies.cookies) {
+            if ((platform == "google.com" || platform == "youtube")) {
+                // console.log(accinfo.data)
+                // console.log(cookies)
+                // if(!cookies||!cookies.cookies){//open a new window to ask user choose file
                 // const options:MessageBoxOptions = {
                 //     type: 'info',
                 //     buttons: ['OK'],
@@ -64,27 +52,58 @@ export class SocialAccountController {
                 //   };
                 // //   try {
                 //   await dialog.showMessageBox(options) 
-                msgCallback()
+                if (gmsgCallback) {
+                    gmsgCallback()
+                }
                 // } catch (error) {
                 //     if(error instanceof Error){
                 //     console.error(`Failed to show message box: ${error.message}`);
                 //     }
                 //   }
                 return
-            }else{
-                
+                // }
+            } else {//other platform, but no cookies exists
+                if (omsgCallback) {
+                    omsgCallback()
+                }
             }
-        }   
+        } else {
+            this.showSocialmediaWin(id,cookies)
+        }
+
+    }
+    //open a pop window to show social media, allow user to login
+    public async showSocialmediaWin(id: number,cookies?:AccountCookiesEntity) {
+        //get account information
+        const accinfo = await this.socialaccountModel.getAccountdetail(id)
+        if (!accinfo || !accinfo.data.id) {
+            throw new Error("get account info failed")
+        }
+        if (!accinfo.status) {
+            throw new Error(accinfo.msg)
+        }
+        // const cookies = this.accountCookiesModule.getAccountCookies(accinfo.data.id)
+        //let partition_path = "persist:path/" + Date.now() + '-' + Math.random().toString(36).slice(2, 9)
+        let partition_path = this.accountCookiesModule.genPartitionPath()
+
+        if (cookies) {
+            if (cookies.partition_path) {
+                partition_path = cookies.partition_path
+            }
+        }else{
+            cookies = this.accountCookiesModule.getAccountCookies(id)
+        }
+        const ses = session.fromPartition(partition_path)
         //set title for window
-        let winTitle=""
-        if(accinfo.data.social_type){
-        winTitle=accinfo.data.social_type
+        let winTitle = ""
+        if (accinfo.data.social_type) {
+            winTitle = accinfo.data.social_type
         }
         if (accinfo.data.proxy) {
             const randomProxy = accinfo.data.proxy[Math.floor(Math.random() * accinfo.data.proxy.length)];
 
             if (randomProxy.host && randomProxy.port) {
-                winTitle+=" Use proxy host:"+randomProxy.host+" port:"+randomProxy.port
+                winTitle += " Use proxy host:" + randomProxy.host + " port:" + randomProxy.port
                 // const proxyCon = new ProxyController()
                 const proxyitem: ProxyParseItem = {
                     host: randomProxy.host,
@@ -103,49 +122,48 @@ export class SocialAccountController {
                 })
             }
         }
-       //handle cookies
-        if(cookies&&cookies.cookies){
-       // console.log("handle cookies file")
-                // console.log(cookies)
-                const cookiesArr:CookiesType[]=JSON.parse(cookies.cookies)
-                if(cookiesArr.length>0){
-                    for (const cookie of cookiesArr) {
-                        // console.log(cookie)
-                        //remove first dot in domain
-                        let url=cookie.domain
-                        if (cookie.domain&&cookie.domain.charAt(0) === '.') {
-                            url = cookie.domain.slice(1);
+        //handle cookies
+        if (cookies && cookies.cookies) {
+            // console.log("handle cookies file")
+            // console.log(cookies)
+            const cookiesArr: CookiesType[] = JSON.parse(cookies.cookies)
+            if (cookiesArr.length > 0) {
+                for (const cookie of cookiesArr) {
+                    // console.log(cookie)
+                    //remove first dot in domain
+                    let url = cookie.domain
+                    if (cookie.domain && cookie.domain.charAt(0) === '.') {
+                        url = cookie.domain.slice(1);
+                    }
+                    let cookieDetails: CookiesParse = {
+                        url: `http${cookie.secure ? 's' : ''}://${url}${cookie.path}`,
+                        name: cookie.name,
+                        value: cookie.value,
+                        domain: cookie.domain,
+                        path: cookie.path,
+                        secure: cookie.secure,
+                        httpOnly: cookie.httpOnly || false,
+                        expirationDate: cookie.expirationDate,
+                        sameSite: cookie.sameSite,
+                        hostOnly: cookie.hostOnly
+                    };
+                    //check whether cookies value start with __Host-
+                    if (cookie.name.startsWith("__Host-")) {
+                        //remove cookie detail domain
+                        if (cookieDetails.domain) {
+                            delete cookieDetails.domain;
                         }
-                        let cookieDetails:CookiesParse = {
-                            url: `http${cookie.secure ? 's' : ''}://${url}${cookie.path}`,
-                            name: cookie.name,
-                            value: cookie.value,
-                            domain: cookie.domain,
-                            path: cookie.path,
-                            secure: cookie.secure,
-                            httpOnly: cookie.httpOnly || false,
-                            expirationDate: cookie.expirationDate,
-                            sameSite: cookie.sameSite,
-                            hostOnly: cookie.hostOnly
-                          };
-                         //check whether cookies value start with __Host-
-                        if(cookie.name.startsWith("__Host-")){
-                           //remove cookie detail domain
-                           if (cookieDetails.domain) {
-                               delete cookieDetails.domain;
-                           }
-                        }    
-                          try {
-                          await ses.cookies.set(cookieDetails)
-                        } catch (error) {
-                            console.error(`Failed to set cookie: ${cookie.name}`, error);
-                            console.log(cookieDetails)
-                          throw error
-                        }
+                    }
+                    try {
+                        await ses.cookies.set(cookieDetails)
+                    } catch (error) {
+                        console.error(`Failed to set cookie: ${cookie.name}`, error);
+                        console.log(cookieDetails)
+                        throw error
                     }
                 }
             }
-        
+        }
         const win = new BrowserWindow({
             autoHideMenuBar: true, webPreferences: {
                 session: ses
@@ -178,7 +196,7 @@ export class SocialAccountController {
         })
         const winsession = win.webContents.session
         // winsession.cookies.remove()
-        win.on('close', async () =>{ //   <---- Catch close event
+        win.on('close', async () => { //   <---- Catch close event
             const cookiescontent = await winsession.cookies.get({})
             console.log("get cookies:")
             console.log(cookiescontent)
@@ -198,13 +216,12 @@ export class SocialAccountController {
                 this.accountCookiesModule.saveAccountCookies(ace)
             }
         });
-
     }
-    public handleCookiesfile(filePath:string,accountId:number):number{
-        const cookiesArr=convertNetscapeCookiesToJson(filePath)
-        const partition_path=this.accountCookiesModule.genPartitionPath()
+    public handleCookiesfile(filePath: string, accountId: number): number {
+        const cookiesArr = convertNetscapeCookiesToJson(filePath)
+        const partition_path = this.accountCookiesModule.genPartitionPath()
         const cookiesstr = JSON.stringify(cookiesArr)
-        const accountCookiesEntity:AccountCookiesEntity={
+        const accountCookiesEntity: AccountCookiesEntity = {
             account_id: accountId,
             cookies: cookiesstr,
             partition_path: partition_path,
@@ -212,8 +229,8 @@ export class SocialAccountController {
         return this.accountCookiesModule.saveAccountCookies(accountCookiesEntity)
     }
 
-    public cleanCookies(accountId:number):void{
-        
+    public cleanCookies(accountId: number): void {
+
         this.accountCookiesModule.deleteCookies(accountId)
     }
 

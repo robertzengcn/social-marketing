@@ -1,10 +1,10 @@
 import { ipcMain, dialog, BrowserWindow } from 'electron'
-import { SOCIALPLATFORM_LIST, SOCIALACCOUNTlIST, SOCIALACCOUNTDETAIL, SOCIAL_ACCOUNT_LOGIN, SOCIALACCOUNTSAVE, SOCIAL_ACCOUNT_LOGIN_MESSSAGE, SOCIAL_ACCOUNT_LOGIN_UPLOADCOOKIES,SOCIAL_ACCOUNT_CLEAN_COOKIES } from "@/config/channellist"
+import { SOCIALPLATFORM_LIST, SOCIALACCOUNTlIST, SOCIALACCOUNTDETAIL, SOCIAL_ACCOUNT_LOGIN, SOCIALACCOUNTSAVE, SOCIAL_ACCOUNT_LOGIN_MESSSAGE, SOCIAL_ACCOUNT_LOGIN_UPLOADCOOKIES,SOCIAL_ACCOUNT_CLEAN_COOKIES,SOCIAL_ACCOUNT_SHOW_PLATFORMPAGE } from "@/config/channellist"
 import { SocialAccount } from '@/modules/socialaccount'
 import { SocialPlatform } from "@/modules/social_platform"
 import { SocialAccountController } from '@/controller/socialaccount-controller'
 import { CommonDialogMsg } from "@/entityTypes/commonType";
-import { RequireCookiesParam } from "@/entityTypes/cookiesType"
+import { RequireCookiesParam,RequireCookiesMsgbox } from "@/entityTypes/cookiesType"
 import fs from "fs";
 //import {} from "@/config/channellist"
 // import { ItemSearchparam } from "@/entityTypes/commonType"
@@ -123,14 +123,17 @@ export function registerSocialAccountIpcHandlers(mainWindow: BrowserWindow) {
   })
   //login social account
   ipcMain.on(SOCIAL_ACCOUNT_LOGIN, async (event, data) => {
-    const qdata = JSON.parse(data) as RequireCookiesParam;
+    const qdata = JSON.parse(data) as RequireCookiesMsgbox;
     if (!("id" in qdata)) {
       throw new Error("id not found");
+    }
+    if (!("platform" in qdata)) {
+      throw new Error("platform not found");
     }
     //const sac = new SocialAccountController()
     try {
       // event.sender.send('socialaccount:login:msg', JSON.stringify({ msg: "test", status: false }))
-      await sac.loginSocialaccount(qdata.id, () => {
+      await sac.showSocialaccountMsg(qdata.id, qdata.platform,() => {
         const comMsgs: CommonDialogMsg = {
           status: false,
           code: qdata.id,
@@ -138,6 +141,17 @@ export function registerSocialAccountIpcHandlers(mainWindow: BrowserWindow) {
             action: "uploadfileMsg",
             title: "socialaccount.uploadfilemsg_title",
             content: "socialaccount.uploadfilemsg_content"
+          }
+        }
+        event.sender.send(SOCIAL_ACCOUNT_LOGIN_MESSSAGE, JSON.stringify(comMsgs))
+      },()=>{//ask user to manual login
+        const comMsgs: CommonDialogMsg = {
+          status: false,
+          code: qdata.id,
+          data: {
+            action: "manualLoginMsg",
+            title: "socialaccount.manuallogin_title",
+            content: "socialaccount.manuallogin_content"
           }
         }
         event.sender.send(SOCIAL_ACCOUNT_LOGIN_MESSSAGE, JSON.stringify(comMsgs))
@@ -158,6 +172,30 @@ export function registerSocialAccountIpcHandlers(mainWindow: BrowserWindow) {
         event.sender.send(SOCIAL_ACCOUNT_LOGIN_MESSSAGE, JSON.stringify(comMsgs))
       }
     }
+  })
+  ipcMain.on(SOCIAL_ACCOUNT_SHOW_PLATFORMPAGE, async (event, data) => {
+    const qdata = JSON.parse(data) as RequireCookiesParam;
+    if (!("id" in qdata)) {
+      throw new Error("id not found");
+    }
+    try {
+      await sac.showSocialmediaWin(qdata.id)
+    } catch (error) {
+      if (error instanceof Error) {
+        //console.log(error.message)
+        const comMsgs: CommonDialogMsg = {
+          status: false,
+          code: 202412171122188,
+          data: {
+            action: "error",
+            title: "",
+            content: error.message
+          }
+        }
+        event.sender.send(SOCIAL_ACCOUNT_LOGIN_MESSSAGE, JSON.stringify(comMsgs))
+      }
+    }
+
   })
   ipcMain.handle(SOCIALACCOUNTSAVE, async (event, data) => {
     //save social account
