@@ -86,11 +86,11 @@ export class SocialAccountController {
         //let partition_path = "persist:path/" + Date.now() + '-' + Math.random().toString(36).slice(2, 9)
         let partition_path = this.accountCookiesModule.genPartitionPath()
 
-        if (cookies) {
-            if (cookies.partition_path) {
-                partition_path = cookies.partition_path
-            }
-        }else{
+        if (!cookies) {
+        //     if (cookies.partition_path) {
+        //         partition_path = cookies.partition_path
+        //     }
+        // }else{
             cookies = this.accountCookiesModule.getAccountCookies(id)
         }
         const ses = session.fromPartition(partition_path)
