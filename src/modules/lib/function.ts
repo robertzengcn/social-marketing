@@ -8,7 +8,7 @@ import { Page } from 'puppeteer';
 import os from "os";
 import * as crypto from 'crypto';
 import {ProxyParseItem,ProxyServer} from "@/entityTypes/proxyType"
-import {TaskStatus} from "@/config/common";
+import {TaskStatus} from "@/entityTypes/commonType";
 import fetch from 'node-fetch';
 import {CookiesType} from "@/entityTypes/cookiesType"
 // import { contextIsolated } from "process";

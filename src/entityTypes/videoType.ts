@@ -1,4 +1,5 @@
 import {Proxy} from "@/entityTypes/proxyType"
+import {TaskStatus} from "@/entityTypes/commonType"
 export type videoScraper={
     cookies: string,
     proxy?:Proxy
@@ -33,6 +34,7 @@ export type videoDownloadTaskEntity={
     runtime_log?:string,
     error_log?:string,
     record_time?:string,
+    status?:TaskStatus,
     // record_time:string,
 }
 

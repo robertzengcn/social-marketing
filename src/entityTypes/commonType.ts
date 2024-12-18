@@ -67,3 +67,8 @@ export type VslotHeader = {
     rules?:	any;
      valid: boolean
 }
+export enum TaskStatus {
+    Processing = 1,
+    Complete = 2,
+    Error = 3
+  }

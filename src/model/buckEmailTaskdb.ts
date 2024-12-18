@@ -2,7 +2,7 @@
 import { Database } from 'better-sqlite3';
 import { Scraperdb } from "@/model/scraperdb";
 import { getRecorddatetime, getStatusName } from "@/modules/lib/function";
-import { TaskStatus } from "@/config/common"
+import { TaskStatus } from "@/entityTypes/commonType"
 import { SortBy } from "@/entityTypes/commonType"
 export interface BuckemailEntity {
     id?: number;

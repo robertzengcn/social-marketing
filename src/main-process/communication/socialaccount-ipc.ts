@@ -155,8 +155,21 @@ export function registerSocialAccountIpcHandlers(mainWindow: BrowserWindow) {
           }
         }
         event.sender.send(SOCIAL_ACCOUNT_LOGIN_MESSSAGE, JSON.stringify(comMsgs))
+      },()=>{
+        const comMsgs: CommonDialogMsg = {
+          status: true,
+          code: 0,
+          data: {
+            action: "saveCookiesSuccess",
+            title: "socialaccount.update_cookies_success",
+            content: ""
+          }
+        }
+        event.sender.send(SOCIAL_ACCOUNT_LOGIN_MESSSAGE, JSON.stringify(comMsgs))
       }).catch(function (err) {
         if (err instanceof Error) {
+          //console log error line
+          console.error(err.stack)
           //console.log(error.message)
           const comMsgs: CommonDialogMsg = {
             status: false,
@@ -187,7 +200,18 @@ export function registerSocialAccountIpcHandlers(mainWindow: BrowserWindow) {
       throw new Error("id not found");
     }
     try {
-      await sac.showSocialmediaWin(qdata.id)
+      await sac.showSocialmediaWin(qdata.id,undefined,()=>{
+        const comMsgs: CommonDialogMsg = {
+          status: true,
+          code: 0,
+          data: {
+            action: "saveCookiesSuccess",
+            title: "socialaccount.update_cookies_success",
+            content: ""
+          }
+        }
+        event.sender.send(SOCIAL_ACCOUNT_LOGIN_MESSSAGE, JSON.stringify(comMsgs))
+      })
     } catch (error) {
       if (error instanceof Error) {
         //console.log(error.message)

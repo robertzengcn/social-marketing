@@ -22,7 +22,7 @@ export class SocialAccountController {
         this.socialaccountModel = new SocialAccount()
     }
     //open open and login social account
-    public async showSocialaccountMsg(id: number, platform: string, gmsgCallback?: () => void, omsgCallback?: () => void): Promise<void> {
+    public async showSocialaccountMsg(id: number, platform: string, gmsgCallback?: () => void, omsgCallback?: () => void,closeFun?:()=>void): Promise<void> {
         //get account cookies
         // const accoutndb = new AccountCookiesdb(dbpath)
         const cookies = this.accountCookiesModule.getAccountCookies(id)
@@ -68,12 +68,12 @@ export class SocialAccountController {
                 }
             }
         } else {
-            await this.showSocialmediaWin(id,cookies)
+            await this.showSocialmediaWin(id,cookies,closeFun)
         }
 
     }
     //open a pop window to show social media, allow user to login
-    public async showSocialmediaWin(id: number,cookies?:AccountCookiesEntity) {
+    public async showSocialmediaWin(id: number,cookies?:AccountCookiesEntity,closeFun?:()=>void) {
         //get account information
         const accinfo = await this.socialaccountModel.getAccountdetail(id)
         if (!accinfo || !accinfo.data.id) {
@@ -156,8 +156,8 @@ export class SocialAccountController {
                     }
                     if(cookie.name.startsWith("__Secure-")){
                         cookieDetails.httpOnly=true
-                        delete cookieDetails.domain;
-                        
+                        // delete cookieDetails.domain;
+         
                     }
                     try {
                         await ses.cookies.set(cookieDetails)
@@ -177,14 +177,24 @@ export class SocialAccountController {
         win.setTitle(winTitle)
         win.setMenu(null)
         // showNotification("test title","test message")
+        console.log(accinfo.data.social_type_url)
         if (accinfo.data.social_type_url) {
             await win.loadURL(accinfo.data.social_type_url).catch((error) => {
+                const ignoreMsg=["Message 0 rejected by interface blink.mojom.WidgetHost","ERR_FAILED (-2)"]
+                
+                if (!ignoreMsg.some(msg => error.message.includes(msg))) {
                 console.log('load url failed, error:' + error.message)
+                console.error(error)
                 // showNotification("error","load url failed, error:" + error.message)
                 win.close()
                 throw new Error('load url failed, error:' + error.message)
+                }else{
+                    console.log('Ignored error:', error.message)
+                }
             })
             // win.loadURL('https://ident.me/ip')
+        }else{
+            throw new Error("social type url not exist")
         }
         win.once('ready-to-show', async () => {
             win.show()
@@ -199,9 +209,11 @@ export class SocialAccountController {
             //   await dialog.showMessageBox(win,options) 
             // win.webContents.executeJavaScript('alert("Hello, world!")');
         })
-        const winsession = win.webContents.session
+        
         // winsession.cookies.remove()
         win.on('close', async () => { //   <---- Catch close event
+            if(win&&win.webContents&&win.webContents.session){
+            const winsession = win.webContents.session
             const cookiescontent = await winsession.cookies.get({url: accinfo.data.social_type_url})
             console.log("get cookies:")
             console.log(cookiescontent)
@@ -219,8 +231,14 @@ export class SocialAccountController {
                 // }
                 // const acdb = new AccountCookiesdb(dbpath)
                 this.accountCookiesModule.saveAccountCookies(ace)
+                if(closeFun){
+                closeFun()
+                }
             }
+        }
         });
+
+     
     }
     public handleCookiesfile(filePath: string, accountId: number): number {
         const cookiesArr = convertNetscapeCookiesToJson(filePath)

@@ -306,6 +306,7 @@ export default {
         login_account_error:"login account error",
         manuallogin_title:"Manual login notice",
         manuallogin_content:"We will open a pop window, please login to the social media platform manually, after you have logged in, please close the pop up window, the system will automatically save account's cookies",
+        saveCookiesSuccess:"save cookies success",
     }
 
 }

@@ -3,6 +3,7 @@ import { Scraperdb } from "@/model/scraperdb";
 import {videoDownloadTaskEntity} from "@/entityTypes/videoType"
 import { getRecorddatetime } from "@/modules/lib/function";
 
+
 export class VideoDownloadTaskdb {
     db: Database;
     private videoDownloadTaskTable = "video_download_task";

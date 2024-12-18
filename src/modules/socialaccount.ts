@@ -142,7 +142,7 @@ export class SocialAccount {
       case "facebook":
         return 1;
       case "youtube":
-        return 4;
+        return 2;
       case "google.com":
         return 4;
       case "bilibili":
