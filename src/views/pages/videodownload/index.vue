@@ -269,9 +269,9 @@ onMounted(() => {
       // }
       if (res.code == 200) {
         // route to new page
-        router.push({
-          path: '/video/dowloadlist'
-        });
+        // router.push({
+        //   path: '/video/dowloadlist'
+        // });
       }
     } else {
       if(res.data){

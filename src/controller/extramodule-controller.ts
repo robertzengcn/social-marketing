@@ -175,7 +175,7 @@ export class ExtraModuleController {
     }
     //get packagename by name
     public getPackageByName(name:string):ExtraModule|undefined{
-        return this.extramodules.find((module)=>module.packagename===name)
+        return this.extramodules.find((module)=>module.name===name)
     }
 
  //check whether python installed

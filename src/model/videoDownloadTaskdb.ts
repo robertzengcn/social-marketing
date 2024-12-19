@@ -13,14 +13,15 @@ export class VideoDownloadTaskdb {
       }
     public saveVideoDownloadTask(videoDownloadTask:videoDownloadTaskEntity):number{
       const recordtime = getRecorddatetime(); 
-      const stmt = this.db.prepare(`INSERT INTO ${this.videoDownloadTaskTable} (platform,savepath,record_time,runtime_log,error_log) VALUES (?,?,?)`);
+      const stmt = this.db.prepare(`INSERT INTO ${this.videoDownloadTaskTable} (platform,savepath,record_time,runtime_log,error_log,status) VALUES (?,?,?,?,?,?)`);
         const info = stmt.run(
           videoDownloadTask.platform,
           // videoDownloadTask.url,
           videoDownloadTask.savepath,
           recordtime,
-          videoDownloadTask.runtime_log,
-          videoDownloadTask.error_log
+          videoDownloadTask.runtime_log?videoDownloadTask.runtime_log:null,
+          videoDownloadTask.error_log?videoDownloadTask.error_log:null,
+          videoDownloadTask.status?videoDownloadTask.status:0
       );
       return Number(info.lastInsertRowid);
     }
@@ -45,7 +46,7 @@ export class VideoDownloadTaskdb {
     }
       //get video download task list
       public getVideoDownloadTaskList(page:number,size:number):Array<videoDownloadTaskEntity>{
-        const stmt = this.db.prepare(`SELECT * FROM ${this.videoDownloadTaskTable} ORDER BY id desc LIMIT ?,? `);
+        const stmt = this.db.prepare(`SELECT platform,savepath,record_time,status FROM ${this.videoDownloadTaskTable} ORDER BY id desc LIMIT ?,? `);
         const rows = stmt.all(page,size) as Array<videoDownloadTaskEntity>;
         return rows;
       }

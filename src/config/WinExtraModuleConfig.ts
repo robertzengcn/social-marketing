@@ -2,7 +2,7 @@ import { ExtraModule } from "@/entityTypes/extramodule-type";
 export const WinExtraModuleConfig:ExtraModule[]=[
 
     {
-        name:"youtube_dl",
+        name:"youtube-dl",
         // description:"video download is a module that can download video from tiktok, Instagram and other platforms",
         packagename:"yt-dlp.exe",
         version:"2024.12.06",

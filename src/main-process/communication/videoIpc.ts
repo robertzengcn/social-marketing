@@ -90,6 +90,7 @@ export function registerVideoIpcHandlers() {
             }
             
         }).catch(function (error) {
+            console.log("error:" + error)
             if(error instanceof CustomError){
                 const comMsgs: CommonDialogMsg = {
                     status: false,
@@ -99,7 +100,7 @@ export function registerVideoIpcHandlers() {
                         content: error.message
                     }
                 }
-                event.sender.send(SYSTEM_MESSAGE, comMsgs)
+                event.sender.send(VIDEODOWNLOAD_MESSAGE, comMsgs)
                 return
 
             }else if (error instanceof Error) {
@@ -111,7 +112,7 @@ export function registerVideoIpcHandlers() {
                         content: error.message
                     }
                 }
-                event.sender.send(SYSTEM_MESSAGE, comMsgs)
+                event.sender.send(VIDEODOWNLOAD_MESSAGE, comMsgs)
                 return
             }
         })

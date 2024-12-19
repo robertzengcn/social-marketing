@@ -23,7 +23,7 @@ export async function getVideoTasklist(param: ItemSearchparam): Promise<SearchRe
     const resp = await windowInvoke(VIDEODOWNLOAD_TASK_LIST, param);
     const resdata: SearchResult<videoDownloadTaskEntity> = {
         data: resp.records,
-        total: resp.total,
+        total: resp.num,
     }
     return resdata;
 }

@@ -2,7 +2,7 @@ import { ExtraModule } from "@/entityTypes/extramodule-type";
 export const LinuxExtraModuleConfig:ExtraModule[]=[
 
     {
-        name:"youtube_dl",
+        name:"youtube-dl",
         // description:"video download is a module that can download video from tiktok, Instagram and other platforms",
         packagename:"yt-dlp",
         version:"2024.08.07",

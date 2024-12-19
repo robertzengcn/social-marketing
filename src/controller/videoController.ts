@@ -16,7 +16,8 @@ import { AccountCookiesModule } from "@/modules/accountCookiesModule"
 import { SocialAccountApi } from "@/api/socialAccountApi"
 import {ProcessMessage} from "@/entityTypes/processMessage-type"
 import {VideodownloadMsg} from "@/entityTypes/videoType";
-import {ListData} from "@/entityTypes/commonType"
+import {ListData,TaskStatus} from "@/entityTypes/commonType"
+
 
 //import {} from "@/entityTypes/proxyType"
 export class videoController {
@@ -54,7 +55,8 @@ export class videoController {
         const videoEntity: videoDownloadTaskEntity = {
             platform: param.platform,
             // url: JSON.stringify(param.link),
-            savepath: param.savePath
+            savepath: param.savePath,
+            status: TaskStatus.Processing
         }
         const taskId = this.videoDownloadTaskModule.saveVideoDownloadTask(videoEntity)
         if (!taskId) {
