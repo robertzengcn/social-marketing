@@ -47,7 +47,10 @@ export class videoController {
 
             throw new CustomError("video tool not found", 20241205111934)
         }
-        videoTool.checkRequirement()
+        const toolres=videoTool.checkRequirement()
+        if(!toolres){
+            throw new CustomError("video tool check requirement failed", 20241205111934)
+        }
         const execFilepath = videoTool.getPackagepath()
 
         //save log to download task table

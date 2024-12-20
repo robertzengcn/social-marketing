@@ -116,15 +116,7 @@ export function registerVideoIpcHandlers() {
                 return
             }
         })
-        const comMsgs: CommonDialogMsg = {
-            status: true,
-            code: 200,
-            data: {
-                title: "video.download_start",
-                content: "video.start_download_video"
-            }
-        }
-        event.sender.send(VIDEODOWNLOAD_MESSAGE, comMsgs)
+        
         return
     })
     //get video download list
