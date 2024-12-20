@@ -27,20 +27,20 @@ export default ({ mode }) => {
         // ),
         nodeResolve(),
         //typescript(),
-        commonjs({
-            //strictRequires:true,
-            //dynamicRequireTargets: ['node_modules/@puppeteer/browsers/node_modules/yargs/build/*.cjs'],
-             include: ['node_modules/@puppeteer/browsers/node_modules/yargs/build/*.cjs',
-             ],
-            //include: 'node_modules/**',
-            // exclude: ['node_modules/@colors/colors/lib/colors.js','node_modules/winston/dist/winston/config/index.js'],
-        }),
+        // commonjs({
+        //     //strictRequires:true,
+        //     //dynamicRequireTargets: ['node_modules/@puppeteer/browsers/node_modules/yargs/build/*.cjs'],
+        //      include: ['node_modules/@puppeteer/browsers/node_modules/yargs/build/*.cjs',
+        //      ],
+        //     //include: 'node_modules/**',
+        //     // exclude: ['node_modules/@colors/colors/lib/colors.js','node_modules/winston/dist/winston/config/index.js'],
+        // }),
         //requireTransform({fileRegex:/.ts$|.tsx$|.js$|.cjs$/}),
-        copy({
-            targets: [
-                { src: 'node_modules/@puppeteer/browsers/node_modules/yargs/build', dest: '.vite/build/' }   
-            ]  
-        }),
+        // copy({
+        //     targets: [
+        //         { src: 'node_modules/@puppeteer/browsers/node_modules/yargs/build', dest: '.vite/build/' }   
+        //     ]  
+        // }),
         sourcemaps(),
         ClosePlugin(),
         checker({

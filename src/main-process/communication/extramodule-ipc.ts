@@ -33,6 +33,7 @@ export function registerExtraModulesIpcHandlers() {
     const extraCtrl = new ExtraModuleController()
     try {
       extraCtrl.installExtraModule(qdata.name, function () {
+        
         event.sender.send(EXTRAMODULECHANNE_MESSAGE, JSON.stringify({
           status: true,
           msg: "success",

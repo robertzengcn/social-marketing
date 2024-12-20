@@ -12,7 +12,7 @@ import { proxyEntityToUrl } from "@/modules/lib/function"
 //import { is } from "cheerio/lib/api/traversing";
 import { convertNetscapeCookiesToJson } from "@/modules/lib/function"
 import { CookiesType, CookiesParse } from "@/entityTypes/cookiesType"
-import { SocialAccountDetailData } from "@/entityTypes/socialaccount-type"
+//import { SocialAccountDetailData } from "@/entityTypes/socialaccount-type"
 
 export class SocialAccountController {
     private accountCookiesModule: AccountCookiesModule

@@ -5,6 +5,7 @@ import { promisify } from "util";
 import { CookiesProxy } from "@/entityTypes/videoType"
 import { Proxy, ProxyParseItem } from "@/entityTypes/proxyType"
 import { convertCookiesToNetscapeFile, generateRandomUniqueString, proxyEntityToUrl } from "@/modules/lib/function"
+import { CookiesType} from "@/entityTypes/cookiesType"
 
 // import * as fs from 'fs';
 import * as path from 'path';
@@ -19,11 +20,12 @@ export class YoutubeDownload implements videoDownloadImpl {
         if (cookiesProxy) {
             //handle cookies
             if (cookiesProxy.cookies) {
-                const cookiesObj = JSON.parse(cookiesProxy.cookies);
-
+                const cookiesObj = JSON.parse(cookiesProxy.cookies) as CookiesType[]; 
+                console.log(cookiesObj)
                 const randomName = generateRandomUniqueString(10)
                 cookiesFilePath = path.join(__dirname, 'cookies-' + randomName + '.txt');
                 convertCookiesToNetscapeFile(cookiesObj, cookiesFilePath);
+                console.log(cookiesFilePath)
                 command += ' --cookies' + ' ' + cookiesFilePath
 
             }

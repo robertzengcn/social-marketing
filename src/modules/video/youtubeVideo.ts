@@ -1,6 +1,7 @@
 import { Video } from '@/modules/video';
 import {ExtraModuleController} from '@/controller/extramodule-controller'
 import {CustomError} from '@/modules/customError'
+import * as path from 'path';
 export class youtubeVideo implements Video {
     private moduleName="youtube-dl"
     private extraModule:ExtraModuleController
@@ -33,7 +34,11 @@ export class youtubeVideo implements Video {
         return true
     }
     public getPackagepath():string{
-        return this.extraModule.getModulePath()
+        const exPackage=this.extraModule.getPackageByName(this.moduleName)
+        if(!exPackage){
+            throw new CustomError("download youtube video package not defined",20241220152939)
+        }
+        return path.join(this.extraModule.getModulePath(),exPackage.packagename)
       }
   
 }

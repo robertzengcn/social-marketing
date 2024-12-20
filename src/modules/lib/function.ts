@@ -396,6 +396,11 @@ export function getEnumValueByNumber(enumObj: any, value: number): string | unde
 }
 export function WriteLog(logPath:string,data: string): void {
   const logEntry = `${new Date().toISOString()} - ${data}\n`;
+  //get file folder, create if not exist
+  const folder = path.dirname(logPath);
+  if (!fs.existsSync(folder)) {
+    fs.mkdirSync(folder, { recursive: true });
+  }
   fs.appendFile(logPath, logEntry, (err) => {
     if (err) {
       console.error('Failed to write to log file:', err);
@@ -561,22 +566,24 @@ onFailure?: (error: Error) => void): Promise<void> {
 }
 }
 
-export function convertCookiesToNetscapeFile(cookies: any, filePath: string): void {
+export function convertCookiesToNetscapeFile(cookies: CookiesType[], filePath: string): void {
   const lines: string[] = [
     "# Netscape HTTP Cookie File",
     "# This is a generated file! Do not edit.",
     ""
   ];
-
-  for (const [domain, cookieList] of Object.entries(cookies)) {
-    for (const cookie of cookieList as any[]) {
-      const { name, value, path, expires, secure } = cookie;
+// console.log(cookies)
+  // for (const [domain, cookieList] of Object.entries(cookies)) {
+    // console.log(domain)
+    // console.log(cookieList)
+    for (const cookie of cookies) {
+      const { domain,name, value, path, expirationDate, secure } = cookie;
       const flag = domain.startsWith('.') ? 'TRUE' : 'FALSE';
       const secureFlag = secure ? 'TRUE' : 'FALSE';
-      const expiration = expires || 0;
+      const expiration = expirationDate || 0;
       lines.push(`${domain}\t${flag}\t${path}\t${secureFlag}\t${expiration}\t${name}\t${value}`);
     }
-  }
+  //}
 
   fs.writeFileSync(filePath, lines.join('\n'));
 }

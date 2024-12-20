@@ -48,8 +48,10 @@ export class ExtraModuleController {
                 throw new Error("platform not support")       
         }
     }
+    //get platform packagename by name
+
     //install extra module
-    public installExtraModule(packagename: string, success?: () => void, strerr?: (message: Error) => void) {
+    public async installExtraModule(packagename: string, success?: () => void, strerr?: (message: Error) => void) {
         //valid package name
         const valid = this.extramodules.find((module) => module.packagename === packagename)
         if (!valid) {
@@ -65,9 +67,18 @@ export class ExtraModuleController {
         fs.access(this.extraModulePth,fs.constants.W_OK,(e)  =>{
             if (e) {
                 console.log(e)
-                fs.promises.mkdir(this.extraModulePth,{ recursive: true },).then(() => {
+                fs.promises.mkdir(this.extraModulePth,{ recursive: true },).then(async () => {
                     
-                    downloadFile(valid.link,saveName,success,strerr)
+                    await downloadFile(valid.link,saveName,undefined,strerr)
+
+                    fs.chmodSync(saveName, '755');
+
+                    if(success){
+                        success()
+                    }
+                    //add exec permission to file if file download success
+                    
+                    // fs.promises.chmod(saveName,0o755).then(()=>{     
                 //    this.downloadSavefile(valid.link,success,strerr)
                 }).catch((error) => {
                     console.log(error)
@@ -77,7 +88,11 @@ export class ExtraModuleController {
                 })
             } else {
                 //error not exist,access good
-                downloadFile(valid.link,saveName,success,strerr)
+                downloadFile(valid.link,saveName,undefined,strerr)
+                fs.chmodSync(saveName, '755');
+                if(success){
+                    success()
+                }
             }
         })
     // )) 
@@ -175,6 +190,7 @@ export class ExtraModuleController {
     }
     //get packagename by name
     public getPackageByName(name:string):ExtraModule|undefined{
+
         return this.extramodules.find((module)=>module.name===name)
     }
 

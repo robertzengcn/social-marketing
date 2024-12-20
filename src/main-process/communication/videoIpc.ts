@@ -9,7 +9,7 @@ import {videoDownloadTaskEntity} from "@/entityTypes/videoType";
 export function registerVideoIpcHandlers() {
     console.log("video download register")
     ipcMain.on(VIDEODOWNLOAD, async (event, arg) => {
-        console.log("get video download message")
+        // console.log("get video download message")
         const qdata = JSON.parse(arg) as downloadVideoparam;
         if (!("accountId" in qdata)) {
             // throw new Error("accountId not found");

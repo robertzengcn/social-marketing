@@ -96,7 +96,7 @@ export class videoController {
         const { port1, port2 } = new MessageChannelMain()
         const tokenService = new Token()
 
-        const child = utilityProcess.fork(childPath, [], { stdio: "pipe" })
+        
         // console.log(path.join(__dirname, 'utilityCode.js'))
         let logpath = tokenService.getValue(USERLOGPATH)
         if (!logpath) {
@@ -147,7 +147,8 @@ export class videoController {
             savePath: param.savePath,
             proxy: param.proxy
         }
-
+        console.log(childPath)
+        const child = utilityProcess.fork(childPath, [], { stdio: "pipe" })
         child.on("spawn", () => {
             console.log("child process satart, pid is" + child.pid)
             child.postMessage(JSON.stringify({ action: "downloadVideo", data: paramData }), [port1])
