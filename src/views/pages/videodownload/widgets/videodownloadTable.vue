@@ -16,6 +16,12 @@
     </div>
     <v-data-table-server v-model:items-per-page="itemsPerPage" :search="search" :headers="headers"
         :items-length="totalItems" :items="serverItems" :loading="loading" item-value="name" @update:options="loadItems">
+        <template v-slot:item.status="{ item }">
+            <v-chip color="grey" v-if="item.status=='0'">{{CapitalizeFirstLetter(t('common.not_start'))}}</v-chip>
+            <v-chip color="blue" v-if="item.status=='1'">{{CapitalizeFirstLetter(t('common.processing'))}}</v-chip>
+            <v-chip color="green" v-if="item.status=='2'">{{CapitalizeFirstLetter(t('common.complete'))}}</v-chip>
+            <v-chip color="red" v-if="item.status=='3'">{{CapitalizeFirstLetter(t('common.error'))}}</v-chip>
+        </template>
     </v-data-table-server>
 
 

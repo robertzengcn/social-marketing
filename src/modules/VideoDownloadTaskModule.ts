@@ -2,6 +2,7 @@ import { Token } from "@/modules/token"
 import { USERSDBPATH } from '@/config/usersetting';
 import { VideoDownloadTaskdb } from "@/model/videoDownloadTaskdb"
 import { videoDownloadTaskEntity } from "@/entityTypes/videoType"
+import {TaskStatus} from "@/entityTypes/commonType"
 export class VideoDownloadTaskModule {
     private dbpath: string
     private videoDownloadTaskdb: VideoDownloadTaskdb
@@ -33,5 +34,9 @@ export class VideoDownloadTaskModule {
       //count video download task list
       public countVideoDownloadTaskList():number{
         return this.videoDownloadTaskdb.countVideoDownloadTaskList()
+      }
+      //update video download task status
+      public updateVideoDownloadTaskStatus(taskId: number,status:TaskStatus):boolean{
+        return this.videoDownloadTaskdb.updateVideoDownloadTaskStatus(taskId,status);
       }
 }

@@ -2,8 +2,7 @@ import { Database } from 'better-sqlite3';
 import { Scraperdb } from "@/model/scraperdb";
 import {videoDownloadTaskEntity} from "@/entityTypes/videoType"
 import { getRecorddatetime } from "@/modules/lib/function";
-
-
+import {TaskStatus} from "@/entityTypes/commonType";
 export class VideoDownloadTaskdb {
     db: Database;
     private videoDownloadTaskTable = "video_download_task";
@@ -55,5 +54,15 @@ export class VideoDownloadTaskdb {
         const stmt = this.db.prepare(`SELECT count(*) as total FROM ${this.videoDownloadTaskTable}`);
         const row = stmt.get() as { total: number };
         return row.total;
+      }
+      //update video download task status
+      public updateVideoDownloadTaskStatus(taskId: number,status:TaskStatus):boolean{
+        const stmt = this.db.prepare(
+          `UPDATE ` +
+          this.videoDownloadTaskTable +
+          ` SET status=? WHERE id=?`
+        );
+        const result=stmt.run(status, taskId)
+       return result.changes > 0;
       }
 }

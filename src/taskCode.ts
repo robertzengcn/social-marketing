@@ -48,7 +48,7 @@ process.parentPort.on('message', async (e) => {
                     
                     // const youtubeDownload=new YoutubeDownload()
                     if(!param.isplaylist){//sigle video
-                        param.link.forEach((element, index)=>{
+                        param.link.forEach(async (element, index)=>{
                             let randCookiesproxy:CookiesProxy | null = null;
                             if(param.cookiesProxy){
                                randCookiesproxy =param.cookiesProxy[Math.floor(Math.random() * param.cookiesProxy.length)]
@@ -57,9 +57,9 @@ process.parentPort.on('message', async (e) => {
                             if(param.proxy){
                                 itemProxy=param.proxy[Math.floor(Math.random() * param.proxy.length)]
                             }
-                            DownloadTool.downloadVideo(element,param.savePath,randCookiesproxy,itemProxy,param.exePath,(errorstring)=>{
+                            await DownloadTool.downloadVideo(element,param.savePath,randCookiesproxy,itemProxy,param.exePath,(errorstring)=>{
                                 const message:ProcessMessage<VideodownloadMsg>={
-                                    action:"videodownloadErrorMsg",
+                                    action:"singlevideodownloadMsg",
                                     data:{
                                         link:element,
                                         status:false,
@@ -68,16 +68,21 @@ process.parentPort.on('message', async (e) => {
                                 }
                                
                                 process.parentPort.postMessage(JSON.stringify(message))
+                                process.exit(1);
                             },(msg)=>{
+                                
+                            }),()=>{
                                 const message:ProcessMessage<VideodownloadMsg>={
-                                    action:"videodownloadErrorMsg",
+                                    action:"singlevideodownloadMsg",
                                     data:{
                                         link:element,
-                                        status:true
+                                        status:true,
+                                        savepath:param.savePath
                                     }
                                 }
                                 process.parentPort.postMessage(JSON.stringify(message))
-                            })
+                                process.exit(0);
+                            }
                         })
                        
                         
@@ -88,5 +93,6 @@ process.parentPort.on('message', async (e) => {
             }
 
         }
+    
     
 })

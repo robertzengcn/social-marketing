@@ -68,14 +68,16 @@ export class ExtraModuleController {
             if (e) {
                 console.log(e)
                 fs.promises.mkdir(this.extraModulePth,{ recursive: true },).then(async () => {
+                    console.log(valid.link)
+                    await downloadFile(valid.link,saveName,()=>{
+                        fs.chmodSync(saveName, '755');
+
+                        if(success){
+                            success()
+                        }
+                    },strerr)
+
                     
-                    await downloadFile(valid.link,saveName,undefined,strerr)
-
-                    fs.chmodSync(saveName, '755');
-
-                    if(success){
-                        success()
-                    }
                     //add exec permission to file if file download success
                     
                     // fs.promises.chmod(saveName,0o755).then(()=>{     
@@ -88,11 +90,17 @@ export class ExtraModuleController {
                 })
             } else {
                 //error not exist,access good
-                downloadFile(valid.link,saveName,undefined,strerr)
-                fs.chmodSync(saveName, '755');
-                if(success){
-                    success()
-                }
+                downloadFile(valid.link,saveName,()=>{
+                    fs.chmodSync(saveName, '755');
+
+                    if(success){
+                        success()
+                    }
+                },strerr)
+                // fs.chmodSync(saveName, '755');
+                // if(success){
+                //     success()
+                // }
             }
         })
     // )) 

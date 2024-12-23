@@ -44,7 +44,7 @@ export enum VideoDownloadStatus {
     Finish = 2,
     Error=3
   }
-export type videoDownloadEntity={
+export type VideoDownloadEntity={
     id?:number,
     url:string,
     savepath:string,
@@ -56,7 +56,7 @@ export type videoDownloadEntity={
 }
 export type videoDownloadList={
     total: number,
-    records?:Array<videoDownloadEntity>
+    records?:Array<VideoDownloadEntity>
 }
 
 export type videoDownloadListResp={
@@ -89,5 +89,6 @@ export type CookiesProxy={
 export type VideodownloadMsg={
     link:string,
     status:boolean,
+    savepath?:string,
     log?:string
 }

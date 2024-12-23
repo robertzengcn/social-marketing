@@ -1,6 +1,6 @@
 import { Database } from 'better-sqlite3';
 import { Scraperdb } from "@/model/scraperdb";
-import {videoDownloadEntity} from "@/entityTypes/videoType"
+import {VideoDownloadEntity} from "@/entityTypes/videoType"
 import { getRecorddatetime } from "@/modules/lib/function";
 
 
@@ -12,7 +12,7 @@ export class VideoDownloaddb {
         const scraperModel = Scraperdb.getInstance(filepath);
         this.db = scraperModel.getdb();
       }
-      public saveVideoDownload(videoDownload:videoDownloadEntity):number{
+      public saveVideoDownload(videoDownload:VideoDownloadEntity):number{
         const recordtime = getRecorddatetime(); 
         const stmt = this.db.prepare(`INSERT INTO ${this.videoDownloadTable} (url,savepath,record_time,task_id,error_log,status) VALUES (?,?,?,?,?)`);
           const info = stmt.run(
@@ -41,9 +41,9 @@ export class VideoDownloaddb {
         return info.changes;
       }
       //get video download list
-      public getVideoDownloadList(taskId:number,page:number,size:number):Array<videoDownloadEntity>{
+      public getVideoDownloadList(taskId:number,page:number,size:number):Array<VideoDownloadEntity>{
         const stmt = this.db.prepare(`SELECT * FROM ${this.videoDownloadTable} WHERE task_id=? ORDER BY id desc LIMIT ?,? `);
-        const rows = stmt.all(taskId,page,size) as Array<videoDownloadEntity>;
+        const rows = stmt.all(taskId,page,size) as Array<VideoDownloadEntity>;
         return rows;
       }
       //count video download list

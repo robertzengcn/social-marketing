@@ -15,7 +15,7 @@ export class YoutubeDownload implements videoDownloadImpl {
         if (!execPath) {
             throw new CustomError("youtube video package not found")
         }
-        let command = `${execPath} -o ${savePath} ${url}`;
+        let command = `${execPath} -o ${savePath}`;
         let cookiesFilePath = '';
         if (cookiesProxy) {
             //handle cookies
@@ -26,7 +26,7 @@ export class YoutubeDownload implements videoDownloadImpl {
                 cookiesFilePath = path.join(__dirname, 'cookies-' + randomName + '.txt');
                 convertCookiesToNetscapeFile(cookiesObj, cookiesFilePath);
                 console.log(cookiesFilePath)
-                command += ' --cookies' + ' ' + cookiesFilePath
+                command += ' --cookies' + ' "' + cookiesFilePath+'"'
 
             }
             //handle cookies proxy
@@ -62,7 +62,8 @@ export class YoutubeDownload implements videoDownloadImpl {
                 }
             }
         }
-
+        command=command+' '+url
+        console.log(command)
         const { stdout, stderr } = await execAsync(command);
         if (stroutCall) {
             stroutCall(stdout)

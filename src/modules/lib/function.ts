@@ -549,11 +549,12 @@ onFailure?: (error: Error) => void): Promise<void> {
       reject(new Error('Response body is null'));
     }
     fileStream.on('finish', () => {
+      
+      
+      resolve();
       if(onSuccess){
         onSuccess();
       }
-      
-      resolve();
     });
   });
 } catch (error) {
@@ -580,7 +581,7 @@ export function convertCookiesToNetscapeFile(cookies: CookiesType[], filePath: s
       const { domain,name, value, path, expirationDate, secure } = cookie;
       const flag = domain.startsWith('.') ? 'TRUE' : 'FALSE';
       const secureFlag = secure ? 'TRUE' : 'FALSE';
-      const expiration = expirationDate || 0;
+      const expiration = Math.floor(expirationDate) || 0;
       lines.push(`${domain}\t${flag}\t${path}\t${secureFlag}\t${expiration}\t${name}\t${value}`);
     }
   //}

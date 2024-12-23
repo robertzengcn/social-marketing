@@ -17,7 +17,7 @@ import { SocialAccountApi } from "@/api/socialAccountApi"
 import {ProcessMessage} from "@/entityTypes/processMessage-type"
 import {VideodownloadMsg} from "@/entityTypes/videoType";
 import {ListData,TaskStatus} from "@/entityTypes/commonType"
-
+import {VideoDownloadEntity,VideoDownloadStatus} from "@/entityTypes/videoType"
 
 //import {} from "@/entityTypes/proxyType"
 export class videoController {
@@ -168,6 +168,7 @@ export class videoController {
                 // seModel.saveTaskerrorlog(taskId,data)
                 console.log(`Received error chunk ${data}`)
                 WriteLog(errorLogfile, data)
+
             }
 
         })
@@ -175,9 +176,11 @@ export class videoController {
         child.on("exit", (code) => {
             if (code !== 0) {
                 console.error(`Child process exited with code ${code}`);
+                this.videoDownloadTaskModule.updateVideoDownloadTaskStatus(taskId, TaskStatus.Error)
                 // this.emailSeachTaskModule.updateTaskStatus(taskId,EmailsearchTaskStatus.Error)
             } else {
                 console.log('Child process exited successfully');
+                this.videoDownloadTaskModule.updateVideoDownloadTaskStatus(taskId, TaskStatus.Complete)
                 // this.emailSeachTaskModule.updateTaskStatus(taskId,EmailsearchTaskStatus.Complete)
             }
         })
@@ -185,11 +188,32 @@ export class videoController {
             console.log("get message from child")
             console.log('Message from child:', JSON.parse(message));
             const childdata=JSON.parse(message) as ProcessMessage<VideodownloadMsg>
-            if(childdata.action=="saveres"){
-                if(childdata.data){
+            if(childdata.action=="singlevideodownloadMsg"){//download single video result
+                if(childdata.data?.status){
+
                 //save result
+                let savepath=''
+                if(childdata.data.savepath){
+                    savepath=childdata.data.savepath
+                }
+                const videoDownloadEntity:VideoDownloadEntity={
+                    url:childdata.data.link,
+                    savepath:savepath,
+                    task_id:Number(taskId),
+                    status:VideoDownloadStatus.Finish,
+                    
+                }
                 // this.emailSeachTaskModule.saveSearchResult(taskId,childdata.data)
-                
+                this.videoDownloadModule.saveVideoDownload(videoDownloadEntity)
+                }else if(childdata.data&&(!childdata.data?.status)){//failure
+                    const videoDownloadEntity:VideoDownloadEntity={
+                        url:childdata.data.link,
+                        savepath:'',
+                        task_id:Number(taskId),
+                        status:VideoDownloadStatus.Error,
+                        error_log:childdata.data.log
+                    }
+                    this.videoDownloadModule.saveVideoDownload(videoDownloadEntity)
                 }
                 //child.kill()
             }

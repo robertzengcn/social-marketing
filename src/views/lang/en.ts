@@ -38,7 +38,9 @@ export default {
         status:"status",
         configured:"configured",
         not_configured:"not configured",
-       
+        not_start:"not start",
+        processing:"processing",
+        complete:"complete",
     },
     home:{
         search:"Search Extraction",
@@ -98,7 +100,7 @@ export default {
             name:"f2 video download",
             describe:"f2 is a module for video download"
         },
-        youtube_dl:{
+        "youtube-dl":{
             name:"youtube-dl",
             describe:"youtube-dl is a moudule for youtube video download" 
         },
@@ -307,6 +309,9 @@ export default {
         manuallogin_title:"Manual login notice",
         manuallogin_content:"We will open a pop window, please login to the social media platform manually, after you have logged in, please close the pop up window, the system will automatically save account's cookies",
         saveCookiesSuccess:"save cookies success",
+    },
+    video_download_list:{
+
     }
 
 }

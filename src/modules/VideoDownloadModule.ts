@@ -1,7 +1,7 @@
 import { Token } from "@/modules/token"
 import { USERSDBPATH } from '@/config/usersetting';
 import {VideoDownloaddb} from "@/model/videoDownloaddb"
-import {videoDownloadEntity} from "@/entityTypes/videoType"
+import {VideoDownloadEntity} from "@/entityTypes/videoType"
 
 export class VideoDownloadModule {
     private dbpath: string
@@ -16,7 +16,7 @@ export class VideoDownloadModule {
         this.videoDownloaddb=new VideoDownloaddb(dbpath)
     }
 
-    public saveVideoDownload(videoDownload:videoDownloadEntity):number{
+    public saveVideoDownload(videoDownload:VideoDownloadEntity):number{
         return this.videoDownloaddb.saveVideoDownload(videoDownload)
       } 
       //save log for video download
@@ -29,7 +29,7 @@ export class VideoDownloadModule {
        return this.videoDownloaddb.updateVideoDownloadStatus(status,downloadId)
       }
       //get video download list
-      public getVideoDownloadList(taskId:number,page:number,size:number):Array<videoDownloadEntity>{
+      public getVideoDownloadList(taskId:number,page:number,size:number):Array<VideoDownloadEntity>{
         return this.videoDownloaddb.getVideoDownloadList(taskId,page,size)
       }
       //count video download list
