@@ -11,12 +11,15 @@ import { CookiesType} from "@/entityTypes/cookiesType"
 import * as path from 'path';
 const execAsync = promisify(exec);
 export class YoutubeDownload implements videoDownloadImpl {
-    async downloadVideo(url: string, savePath: string, cookiesProxy?: CookiesProxy | null, proxy?: Proxy | null, execPath?: string, errorCall?: (errorMsg: string) => void, stroutCall?: (message: string) => void, successCall?: () => void) {
+    async downloadVideo(url: string, savePath: string, isSingleVideo:boolean=false,useBrowserCookies?:string,cookiesProxy?: CookiesProxy | null, proxy?: Proxy | null, execPath?: string, errorCall?: (errorMsg: string) => void, stroutCall?: (message: string) => void, successCall?: () => void) {
         if (!execPath) {
             throw new CustomError("youtube video package not found")
         }
-        let command = `${execPath} -o ${savePath}`;
+        let command = `${execPath} -P ${savePath}`;
         let cookiesFilePath = '';
+        if(useBrowserCookies){
+            command+=' --cookies-from-browser'+useBrowserCookies
+        }
         if (cookiesProxy) {
             //handle cookies
             if (cookiesProxy.cookies) {
@@ -26,7 +29,7 @@ export class YoutubeDownload implements videoDownloadImpl {
                 cookiesFilePath = path.join(__dirname, 'cookies-' + randomName + '.txt');
                 convertCookiesToNetscapeFile(cookiesObj, cookiesFilePath);
                 console.log(cookiesFilePath)
-                command += ' --cookies' + ' "' + cookiesFilePath+'"'
+                command += ' --cookies' + ' ' + cookiesFilePath+''
 
             }
             //handle cookies proxy
@@ -62,7 +65,12 @@ export class YoutubeDownload implements videoDownloadImpl {
                 }
             }
         }
-        command=command+' '+url
+        if(isSingleVideo){
+            command+=' --no-playlist'
+        }
+        command+='--audio-quality 0 --dump-single-json'
+        // command+=' --print after_move:filepath'
+        command=command+' "'+url+'"'
         console.log(command)
         const { stdout, stderr } = await execAsync(command);
         if (stroutCall) {
@@ -74,6 +82,7 @@ export class YoutubeDownload implements videoDownloadImpl {
             }
         } else {
             if (successCall) {
+
                 successCall()
             }
 

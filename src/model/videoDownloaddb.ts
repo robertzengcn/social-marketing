@@ -14,7 +14,7 @@ export class VideoDownloaddb {
       }
       public saveVideoDownload(videoDownload:VideoDownloadEntity):number{
         const recordtime = getRecorddatetime(); 
-        const stmt = this.db.prepare(`INSERT INTO ${this.videoDownloadTable} (url,savepath,record_time,task_id,error_log,status) VALUES (?,?,?,?,?)`);
+        const stmt = this.db.prepare(`INSERT INTO ${this.videoDownloadTable} (url,savepath,record_time,task_id,error_log,status) VALUES (?,?,?,?,?,?)`);
           const info = stmt.run(
             videoDownload.url,
             videoDownload.savepath,
