@@ -128,6 +128,7 @@ export default {
         downloadtype:"download type",
         create_download_task_failuer:"create video download task failure",
         use_proxy_override:"use choose proxy instead account's blind proxy",
+        cookies_type:"cookies type",
     },
     account:{
         accountId:"Account ID",

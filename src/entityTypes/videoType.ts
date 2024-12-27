@@ -92,3 +92,18 @@ export type VideodownloadMsg={
     savepath?:string,
     log?:string
 }
+export type YoutubedlStrout={
+    id:string,
+    title:string,
+    description:string,
+    tags:Array<string>,
+    categories:Array<string>,
+}
+export type VideodoanloadSuccessCall={
+ savepath:string,
+ link:string,
+ title:string,
+ description:string,
+ tags:Array<string>,
+    categories:Array<string>,
+}

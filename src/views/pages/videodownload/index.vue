@@ -15,6 +15,21 @@
     </v-row>
     <v-row>
       <v-col cols="12" md="12">
+    <v-select v-model="cookiesType" :items="cookieslistTypes" :label="$t('video.cookies_type')" required :readonly="loading"
+    :rules="[rules.required]"></v-select>
+  </v-col>
+</v-row>
+    <v-container v-if="cookiesType=='0'">
+      <v-row>
+        <v-col cols="12" md="12">
+      <v-select v-model="browserType" :items="browserlist" :label="$t('video.cookies_type')" required :readonly="loading"
+      :rules="[rules.required]"></v-select>
+    </v-col>
+  </v-row>
+    </v-container>
+<v-container v-if="cookiesType=='1'">
+    <v-row>
+      <v-col cols="12" md="12">
       <v-combobox v-model="accounts" multiple :items="accounts" :label="$t('account.select_account_hint')"
         item-title="user" return-object chips clearable @click="changeAccount"></v-combobox>
       </v-col>
@@ -31,6 +46,7 @@
       </div>
     </v-col>
   </v-row>
+</v-container>
   <v-row>
     <v-col cols="12" md="12">
       <v-textarea :label="$t('video.video_url')" :hint="$t('video.input_video_url_hint')" variant="outlined" required
@@ -116,7 +132,7 @@
 </template>
 <script setup lang="ts">
 import { ref, onMounted,watch } from "vue";
-import { videoDownloadlist,videodownlodType } from "@/config/videosetting";
+import { VideoDownloadlist,VideodownlodType,CookiesSelectType,BrowerList } from "@/config/videosetting";
 import { opendialog, downloadVideo } from "@/views/api/video";
 import { useI18n } from "vue-i18n";
 import { downloadVideoparam} from "@/entityTypes/videoType";
@@ -131,12 +147,16 @@ const proxyValue = ref<Array<Proxy>>([]);
 const proxyValueshow = ref<Array<string>>([]);
 const proxytableshow = ref(false);
 const type = ref("");
+const cookiesType=ref("");
+const browserType=ref("");
 //const showlog = ref(false);
 const useProxyOverride = ref(false);
 //const logs = ref("");
 const typeitems = ref<Array<string>>();
 const chooseType = ref("");
 const downloadType= ref<Array<string>>(); 
+const cookieslistTypes= ref<Array<string>>(CookiesSelectType); 
+const browserlist= ref<Array<string>>(BrowerList);  
 const loading = ref(false);
 const { t } = useI18n({ inheritLocale: true });
 const savePath = ref("");
@@ -153,8 +173,9 @@ const rules = {
 };
 const accounts = ref<Array<SocialAccountListData>>([])
 const initialize = () => {
-  typeitems.value = videoDownloadlist;
-  downloadType.value=videodownlodType;
+  typeitems.value = VideoDownloadlist;
+  downloadType.value=VideodownlodType;
+  // cookieslistTypes.value=CookiesSelectType;
 };
 const selectPath = async () => {
   const res = await opendialog();
