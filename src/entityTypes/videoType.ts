@@ -12,6 +12,8 @@ export type downloadVideoparam={
     isplaylist:boolean,
     proxy: Array<Proxy>,
     ProxyOverride:boolean,
+    cookies_type:string,
+    browserName?:string,
 }
 export type videoDownloadMsg={
     status:boolean,
@@ -76,6 +78,7 @@ export type processVideoDownloadParam={
     cookiesProxy?:Array<CookiesProxy>,
     isplaylist:boolean,
     proxy?:Array<Proxy>,
+    BrowserName?:string
 }
 export type VideoDownloadParam={
     platform:string,

@@ -145,7 +145,8 @@ export class videoController {
             isplaylist: param.isplaylist,
             cookiesProxy: cookiesProxies,
             savePath: param.savePath,
-            proxy: param.proxy
+            proxy: param.proxy,
+            BrowserName: param.browserName,
         }
         console.log(childPath)
         const child = utilityProcess.fork(childPath, [], { stdio: "pipe" })

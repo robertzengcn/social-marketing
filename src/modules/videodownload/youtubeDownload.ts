@@ -20,11 +20,11 @@ export class YoutubeDownload implements videoDownloadImpl {
         let command = `${execPath} -P ${savePath}`;
         let cookiesFilePath = '';
         if(useBrowserCookies){
-            command+=' --cookies-from-browser'+useBrowserCookies
+            command+=' --cookies-from-browser '+useBrowserCookies
         }
         if (cookiesProxy) {
             //handle cookies
-            if (cookiesProxy.cookies) {
+            if (cookiesProxy.cookies&&(!useBrowserCookies)) {
                 const cookiesObj = JSON.parse(cookiesProxy.cookies) as CookiesType[]; 
                 console.log(cookiesObj)
                 const randomName = generateRandomUniqueString(10)
@@ -35,7 +35,7 @@ export class YoutubeDownload implements videoDownloadImpl {
 
             }
             //handle cookies proxy
-            if (cookiesProxy.proxy) {
+            if (cookiesProxy.proxy&&(!useBrowserCookies)) {
                 // const proxies = JSON.parse(cookiesProxy.proxy) as ProxyParseItem[];
                 const randomProxy = cookiesProxy.proxy[Math.floor(Math.random() * cookiesProxy.proxy.length)];
                 if (randomProxy.host && randomProxy.port) {

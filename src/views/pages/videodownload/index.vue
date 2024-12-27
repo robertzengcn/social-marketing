@@ -19,15 +19,16 @@
     :rules="[rules.required]"></v-select>
   </v-col>
 </v-row>
-    <v-container v-if="cookiesType=='0'">
+<!-- show browser choose  -->
+    <v-container v-if="cookiesType=='browser cookies'">
       <v-row>
         <v-col cols="12" md="12">
-      <v-select v-model="browserType" :items="browserlist" :label="$t('video.cookies_type')" required :readonly="loading"
+      <v-select v-model="browserType" :items="browserlist" :label="$t('video.choose_browser')" required :readonly="loading"
       :rules="[rules.required]"></v-select>
     </v-col>
   </v-row>
     </v-container>
-<v-container v-if="cookiesType=='1'">
+<v-container v-if="cookiesType=='account cookies'">
     <v-row>
       <v-col cols="12" md="12">
       <v-combobox v-model="accounts" multiple :items="accounts" :label="$t('account.select_account_hint')"
@@ -354,7 +355,9 @@ async function onSubmit() {
       savePath: savePath.value,
       isplaylist:isPlaylist,
       proxy:proxyValue.value,
-      ProxyOverride:useProxyOverride.value
+      ProxyOverride:useProxyOverride.value,
+      cookies_type:cookiesType.value,
+      browserName:browserType.value
     };
     if (validUrls.length === 0) {
       setAlert("Please input valid url", "Error", "error");
