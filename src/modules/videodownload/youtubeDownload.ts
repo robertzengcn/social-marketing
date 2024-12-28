@@ -75,7 +75,7 @@ export class YoutubeDownload implements videoDownloadImpl {
         // command+=' --print after_move:filepath'
         execcommand=execcommand+' "'+url+'"'
         console.log(execcommand)
-        const { stdout, stderr } = await execAsync(command);
+        const { stdout, stderr } = await execAsync(execcommand);
         if (stroutCall) {
             stroutCall(stdout)
         }
@@ -91,7 +91,7 @@ export class YoutubeDownload implements videoDownloadImpl {
                     downloadedFilePath = stdout.trim().replace(/"/g, ''); // Remove any quotation marks
                     if (fs.existsSync(downloadedFilePath)) {
                         //download success, start to get video title and description
-                        await this.getVideodesc(execcommand).then((data)=>{
+                        await this.getVideodesc(command).then((data)=>{
                            
                         const sendParam:VideodoanloadSuccessCall={
                             link:url,
