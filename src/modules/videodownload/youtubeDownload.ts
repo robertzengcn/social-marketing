@@ -71,20 +71,24 @@ export class YoutubeDownload implements videoDownloadImpl {
             command+=' --no-playlist'
         }
         command+=' -o "%(title)s-%(id)s.%(ext)s" --restrict-filenames'
-        execcommand=command+' --audio-quality 0 --no-simulate --print after_move:filepath'
+        execcommand=command+' --no-simulate --print after_move:filepath'
         // command+=' --print after_move:filepath'
         execcommand=execcommand+' "'+url+'"'
         console.log(execcommand)
         const { stdout, stderr } = await execAsync(execcommand);
         if (stroutCall) {
+            console.log("start strout call")
+            console.log(stdout)
             stroutCall(stdout)
         }
         if (stderr) {
+            console.error("download error "+stderr)
             if (errorCall) {
                 errorCall(stderr)
             }
         } else {
             if (successCall) {
+                console.log("start success call")
                 let downloadedFilePath = '';
                 if(stdout){
                     //stdout is the file path, check file path is exist
@@ -105,6 +109,7 @@ export class YoutubeDownload implements videoDownloadImpl {
 
                     })
                     }else{
+                        console.log("error of file not found in path")
                         if (errorCall) {
                             errorCall("file not found in path")
                         }
@@ -113,6 +118,8 @@ export class YoutubeDownload implements videoDownloadImpl {
                      
                 }
                 
+            }else{
+                console.log("no success call")
             }
 
         }

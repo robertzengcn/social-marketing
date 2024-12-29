@@ -1,12 +1,12 @@
 import { Scraperdb } from "./scraperdb";
 import { Database } from 'better-sqlite3';
-import { VideoInfo } from "@/modules/socialScraper";
+import { VideoDescriptionEntity } from "@/entityTypes/videoType";
 import { getRecorddatetime } from "@/modules/lib/function";
 
-export class Videodb {
+export class VideoDescriptiondb {
   
   db: Database;
-  videoTable = "video";
+  //videoTable = "video";
   videoDescriptionTable = "video_description";
 
   language: Array<{ id: number; name: string }> = [
@@ -22,7 +22,7 @@ export class Videodb {
    * save video
    * @param url string
    */
-  saveVideo(videoinfo: VideoInfo) {
+  saveVideoDescription(videoinfo: VideoDescriptionEntity):number {
     // saveVideo(url: string, localpath:string,title: string, description: string, language: string) {
     let languageid = 0;
     for (let i = 0; i < this.language.length; i++) {
@@ -46,25 +46,14 @@ export class Videodb {
     //   this.pad2(date.getSeconds());
     const stmt =
       this.db.prepare(`INSERT INTO ` +
-        this.videoTable +
-        ` (url,localpath,record_time) VALUES (?,?,?)`);
+        this.videoDescriptionTable +
+        ` (video_id,language_id,title,description,record_time) VALUES (?,?,?,?,?)`);
 
     // const component = this;
-    const res = stmt.run(videoinfo.url, videoinfo.localpath, recordtime)
+    const res = stmt.run(videoinfo.videoId, videoinfo.language,videoinfo.title,videoinfo.description, recordtime)
 
 
-    if (res.changes) {
-      const videodesc =
-        this.db.prepare(`INSERT INTO ` +
-          this.videoDescriptionTable +
-          ` (video_id,language_id,title,description) VALUES (?,?,?,?)`);
-      videodesc.run(
-        res.lastInsertRowid, languageid, videoinfo.title, videoinfo.description)
-
-      // if (callback) {
-      //   callback(this.lastID)
-      // }
-    }
+    return Number(res.lastInsertRowid);
   }
   // );
 
@@ -73,20 +62,20 @@ export class Videodb {
   /**
    * update the video path which watermark has been remove
    */
-  updateVideofilter(videoId: number, filterpath: string) {
-    const stmt = this.db.prepare(
-      `UPDATE ` + this.videoTable + ` SET filterwatermark = ? WHERE id = ?`);
-    stmt.run(filterpath, videoId)
-    // if (err) {
-    //   throw new Error(err.message);
-    // }
-    // });
-  }
+  // updateVideofilter(videoId: number, filterpath: string) {
+  //   const stmt = this.db.prepare(
+  //     `UPDATE ` + this.videoTable + ` SET filterwatermark = ? WHERE id = ?`);
+  //   stmt.run(filterpath, videoId)
+  //   // if (err) {
+  //   //   throw new Error(err.message);
+  //   // }
+  //   // });
+  // }
   truncatedb() {
-    const sql = `DELETE FROM ` + this.videoTable;
+    const sql = `DELETE FROM ` + this.videoDescriptionTable;
     this.db.exec(sql)
 
-    const videoscsql = `DELETE FROM ` + this.videoDescriptionTable;
-    this.db.exec(videoscsql)
+    // const videoscsql = `DELETE FROM ` + this.videoDescriptionTable;
+    // this.db.exec(videoscsql)
   }
 }

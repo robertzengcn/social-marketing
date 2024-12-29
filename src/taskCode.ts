@@ -9,6 +9,7 @@ import {processVideoDownloadParam,VideodownloadMsg } from "@/entityTypes/videoTy
 import {CookiesProxy} from "@/entityTypes/videoType"
 import {Proxy} from "@/entityTypes/proxyType"
 import {VideoDownloadFactory} from "@/modules/videodownload/VideoDownloadFactory"
+import {VideodoanloadSuccessCall} from "@/entityTypes/videoType"
 
 process.parentPort.on('message', async (e) => {
     // const [port] = e.ports
@@ -58,6 +59,7 @@ process.parentPort.on('message', async (e) => {
                                 itemProxy=param.proxy[Math.floor(Math.random() * param.proxy.length)]
                             }
                             await DownloadTool.downloadVideo(element,param.savePath,true,param.BrowserName,randCookiesproxy,itemProxy,param.exePath,(errorstring)=>{
+                                //error call
                                 const message:ProcessMessage<VideodownloadMsg>={
                                     action:"singlevideodownloadMsg",
                                     data:{
@@ -70,19 +72,25 @@ process.parentPort.on('message', async (e) => {
                                 process.parentPort.postMessage(JSON.stringify(message))
                                 process.exit(1);
                             },(msg)=>{
-                                
-                            }),()=>{
+                                //stdout call
+                            },(param:VideodoanloadSuccessCall)=>{
+                                //success call
+                                console.log("success call")
                                 const message:ProcessMessage<VideodownloadMsg>={
                                     action:"singlevideodownloadMsg",
                                     data:{
                                         link:element,
                                         status:true,
-                                        savepath:param.savePath
+                                        savepath:param.savepath,
+                                        title:param.title,
+                                        description:param.description,
+                                        tags:param.tags,
+                                        categories:param.categories
                                     }
                                 }
                                 process.parentPort.postMessage(JSON.stringify(message))
                                 process.exit(0);
-                            }
+                            })
                         })
                        
                         
