@@ -18,13 +18,14 @@ import {ProcessMessage} from "@/entityTypes/processMessage-type"
 import {VideodownloadMsg} from "@/entityTypes/videoType";
 import {ListData,TaskStatus} from "@/entityTypes/commonType"
 import {VideoDownloadEntity,VideoDownloadStatus} from "@/entityTypes/videoType"
-
+import {VideoDescriptionModule} from "@/modules/videoDescriptionModule"
 //import {} from "@/entityTypes/proxyType"
 export class videoController {
     private videoDownloadModule: VideoDownloadModule
     private videoDownloadTaskModule: VideoDownloadTaskModule
     private accountCookiesModule: AccountCookiesModule
     private socialAccountApi: SocialAccountApi
+    private videoDescriptionModule:VideoDescriptionModule
     constructor() {
         // const tokenService = new Token()
         // const dbpath = tokenService.getValue(USERSDBPATH)
@@ -36,6 +37,7 @@ export class videoController {
         this.videoDownloadTaskModule = new VideoDownloadTaskModule()
         this.accountCookiesModule = new AccountCookiesModule()
         this.socialAccountApi = new SocialAccountApi()
+        this.videoDescriptionModule=new VideoDescriptionModule()
     }
     public async downloadVideo(param: downloadVideoparam, startCall?: (taskId: number) => void) {
         const videoFactoryInstance = new videoFactory()
@@ -204,6 +206,8 @@ export class videoController {
                     status:VideoDownloadStatus.Finish,
                     
                 }
+                //save video Video Description
+
                 // this.emailSeachTaskModule.saveSearchResult(taskId,childdata.data)
                 this.videoDownloadModule.saveVideoDownload(videoDownloadEntity)
                 }else if(childdata.data&&(!childdata.data?.status)){//failure
