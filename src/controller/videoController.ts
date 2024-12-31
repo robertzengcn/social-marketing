@@ -19,6 +19,7 @@ import {VideodownloadMsg} from "@/entityTypes/videoType";
 import {ListData,TaskStatus} from "@/entityTypes/commonType"
 import {VideoDownloadEntity,VideoDownloadStatus} from "@/entityTypes/videoType"
 import {VideoDescriptionModule} from "@/modules/videoDescriptionModule"
+import { VideoDescriptionEntity } from "@/entityTypes/videoType";
 //import {} from "@/entityTypes/proxyType"
 export class videoController {
     private videoDownloadModule: VideoDownloadModule
@@ -149,6 +150,7 @@ export class videoController {
             savePath: param.savePath,
             proxy: param.proxy,
             BrowserName: param.browserName,
+            videoQuality:param.videoQuality
         }
         console.log(childPath)
         const child = utilityProcess.fork(childPath, [], { stdio: "pipe" })
@@ -206,10 +208,18 @@ export class videoController {
                     status:VideoDownloadStatus.Finish,
                     
                 }
-                //save video Video Description
-
+                
                 // this.emailSeachTaskModule.saveSearchResult(taskId,childdata.data)
-                this.videoDownloadModule.saveVideoDownload(videoDownloadEntity)
+                const videoNum=this.videoDownloadModule.saveVideoDownload(videoDownloadEntity)
+
+                const videoDescriptionEntity:VideoDescriptionEntity={
+                    videoId:videoNum,
+                    title:childdata.data.title?childdata.data.title:'',
+                    description:childdata.data.description?childdata.data.description:'',
+                    language:"en-us"
+                }
+                //save video Video Description
+                this.videoDescriptionModule.saveVideoDescription(videoDescriptionEntity)
                 }else if(childdata.data&&(!childdata.data?.status)){//failure
                     const videoDownloadEntity:VideoDownloadEntity={
                         url:childdata.data.link,

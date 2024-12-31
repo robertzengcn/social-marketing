@@ -12,7 +12,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 const execAsync = promisify(exec);
 export class YoutubeDownload implements videoDownloadImpl {
-    async downloadVideo(url: string, savePath: string, isSingleVideo:boolean=false,useBrowserCookies?:string,cookiesProxy?: CookiesProxy | null, proxy?: Proxy | null, execPath?: string, errorCall?: (errorMsg: string) => void, stroutCall?: (message: string) => void, successCall?: (param:VideodoanloadSuccessCall) => void) {
+    async downloadVideo(url: string, savePath: string, useBrowserCookies?:string,cookiesProxy?: CookiesProxy | null, proxy?: Proxy | null, execPath?: string, videoQuality?:number,errorCall?: (errorMsg: string) => void, stroutCall?: (message: string) => void, successCall?: (param:VideodoanloadSuccessCall) => void) {
         if (!execPath) {
             throw new CustomError("youtube video package not found")
         }
@@ -67,8 +67,11 @@ export class YoutubeDownload implements videoDownloadImpl {
                 }
             }
         }
-        if(isSingleVideo){
+        // if(isSingleVideo){
             command+=' --no-playlist'
+        // }
+        if(videoQuality){
+            command+=' --audio-quality '+Math.round(videoQuality)
         }
         command+=' -o "%(title)s-%(id)s.%(ext)s" --restrict-filenames'
         execcommand=command+' --no-simulate --print after_move:filepath'
@@ -92,10 +95,11 @@ export class YoutubeDownload implements videoDownloadImpl {
                 let downloadedFilePath = '';
                 if(stdout){
                     //stdout is the file path, check file path is exist
-                    downloadedFilePath = stdout.trim().replace(/"/g, ''); // Remove any quotation marks
+                    // downloadedFilePath = stdout.trim().replace(/"/g, ''); // Remove any quotation marks
                     if (fs.existsSync(downloadedFilePath)) {
+                        // const jscommand=command+" "+url
                         //download success, start to get video title and description
-                        await this.getVideodesc(command).then((data)=>{
+                        await this.getVideodesc(command,url).then((data)=>{
                            
                         const sendParam:VideodoanloadSuccessCall={
                             link:url,
@@ -126,13 +130,13 @@ export class YoutubeDownload implements videoDownloadImpl {
 
     }
 
-    async downloadPlaylist(url: string, savePath: string, cookiesProxy?: CookiesProxy | null, proxy?: Proxy | null, execPath?: string, errorCall?: (errorMsg: string) => void, stroutCall?: (message: string) => void) {
+    async downloadPlaylist(url: string, savePath: string, useBrowserCookies?:string,cookiesProxy?: CookiesProxy | null, proxy?: Proxy | null, execPath?: string, videoQuality?:number,errorCall?: (errorMsg: string) => void, stroutCall?: (message: string) => void, successCall?: (param:VideodoanloadSuccessCall) => void) {
 
     }
     //get video title and description
-    async getVideodesc(command:string):Promise<YoutubedlStrout|undefined>{
-        const finalcommand=command+" --dump-single-json"
-        const { stdout, stderr } = await execAsync(command);
+    async getVideodesc(command:string,url:string):Promise<YoutubedlStrout|undefined>{
+        const finalcommand=command+' "'+url+'"'
+        const { stdout, stderr } = await execAsync(finalcommand);
         if (stderr) {
             throw new CustomError(stderr)
         }

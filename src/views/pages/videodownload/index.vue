@@ -92,6 +92,14 @@
     
     </v-col>
   </v-row> 
+  <v-row>
+ 
+
+ 
+  <v-slider v-model="videoQuality" thumb-label="always" thumb-size="20" ticks="always" tick-size="2" tick-labels
+    min="0" max="10" step="1" class=""  label="video quality, the less, the best"></v-slider>
+
+</v-row> 
   <div class="d-flex flex-column">
   <v-row class="mt-5">
         <v-btn-group class="mt-2">
@@ -168,6 +176,7 @@ const alerttitle = ref("");
 const alerttype = ref<"success" | "error" | "warning" | "info" | undefined>(
   "success"
 );
+const videoQuality = ref(0);
 const linkstr = ref("");
 const rules = {
   required: (value) => !!value || "Field is required",
@@ -357,7 +366,8 @@ async function onSubmit() {
       proxy:proxyValue.value,
       ProxyOverride:useProxyOverride.value,
       cookies_type:cookiesType.value,
-      browserName:browserType.value
+      browserName:browserType.value,
+      videoQuality:videoQuality.value
     };
     if (validUrls.length === 0) {
       setAlert("Please input valid url", "Error", "error");

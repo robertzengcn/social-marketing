@@ -58,7 +58,7 @@ process.parentPort.on('message', async (e) => {
                             if(param.proxy){
                                 itemProxy=param.proxy[Math.floor(Math.random() * param.proxy.length)]
                             }
-                            await DownloadTool.downloadVideo(element,param.savePath,true,param.BrowserName,randCookiesproxy,itemProxy,param.exePath,(errorstring)=>{
+                            await DownloadTool.downloadVideo(element,param.savePath,true,param.BrowserName,randCookiesproxy,itemProxy,param.exePath,param.videoQuality,(errorstring)=>{
                                 //error call
                                 const message:ProcessMessage<VideodownloadMsg>={
                                     action:"singlevideodownloadMsg",
