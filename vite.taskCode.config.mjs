@@ -51,9 +51,9 @@ export default ({ mode }) => {
         resolve: {
             alias: {
                 "@": path.resolve(__dirname, "./src"),
-                "ws": './node_modules/ws/index.js',
-                "bufferutil": path.resolve(__dirname, "./node_modules/bufferutil"),
-                "utf-8-validate": path.resolve(__dirname, "./node_modules/utf-8-validate"),
+                // "ws": './node_modules/ws/index.js',
+                // "bufferutil": path.resolve(__dirname, "./node_modules/bufferutil"),
+                // "utf-8-validate": path.resolve(__dirname, "./node_modules/utf-8-validate"),
             },
         },
         optimizeDeps: {    
@@ -89,7 +89,7 @@ export default ({ mode }) => {
 
         },
         test: {
-            include: ['test/vitest/utilitycode/*.test.ts'],
+            include: ['test/vitest/taskCode/*.test.ts'],
         }
       
     })

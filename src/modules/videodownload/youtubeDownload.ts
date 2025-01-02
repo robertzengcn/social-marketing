@@ -7,11 +7,15 @@ import { Proxy, ProxyParseItem } from "@/entityTypes/proxyType"
 import { convertCookiesToNetscapeFile, generateRandomUniqueString, proxyEntityToUrl } from "@/modules/lib/function"
 import { CookiesType} from "@/entityTypes/cookiesType"
 import * as fs from 'fs';
+import puppeteer from 'puppeteer';
+import { Page, Browser} from 'puppeteer';
 
 // import * as fs from 'fs';
 import * as path from 'path';
 const execAsync = promisify(exec);
 export class YoutubeDownload implements videoDownloadImpl {
+    private playerlisttype="/playlist?"
+    private signalplaytype="/watch?"
     async downloadVideo(url: string, savePath: string, useBrowserCookies?:string,cookiesProxy?: CookiesProxy | null, proxy?: Proxy | null, execPath?: string, videoQuality?:number,errorCall?: (errorMsg: string) => void, stroutCall?: (message: string) => void, successCall?: (param:VideodoanloadSuccessCall) => void) {
         if (!execPath) {
             throw new CustomError("youtube video package not found")
@@ -141,5 +145,42 @@ export class YoutubeDownload implements videoDownloadImpl {
             throw new CustomError(stderr)
         }
         return JSON.parse(stdout) as YoutubedlStrout
+    }
+    //get playlist video link
+    async getPlaylist(url:string):Promise<Array<string>|null>{
+        const browser = await puppeteer.launch();
+        const page = await browser.newPage();
+        await page.goto(url);
+        await page.setViewport({width: 1080, height: 1024});
+        const resultUrls:Array<string>=[];
+        if(url.includes(this.playerlisttype)){
+            const targetElement = await page.$('#continuations')
+            if (targetElement) {
+                await targetElement.scrollIntoView();  
+            }
+            const videoUrls = await page.$$eval('a#video-title', elements =>
+                elements.map(el => el.href)
+            );
+            //resultUrls.push(...videoUrls)
+            if(videoUrls){
+                for(const videoUrl of videoUrls){
+                    if(videoUrl){
+                        resultUrls.push('https://www.youtube.com'+videoUrl)
+                    }
+                }
+            }
+        }else{//get video link in single player
+            const videoUrls = await page.$$eval('#items ytd-playlist-panel-video-renderer', elements =>
+                elements.map(el => el.querySelector('#video-title')?.getAttribute('href'))
+            );
+            if(videoUrls){
+                for(const videoUrl of videoUrls){
+                    if(videoUrl){
+                        resultUrls.push('https://www.youtube.com'+videoUrl)
+                    }
+                }
+            }
+        }
+        return resultUrls
     }
 }

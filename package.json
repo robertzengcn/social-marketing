@@ -44,6 +44,7 @@
     "vitest-puppeteer": "vitest --config vite.utilityCode.config.mjs",
     "vitest-bibiliscraper": "vitest --config vite.utilityCode.config.mjs -t bibili-scraper",
     "vitest-googlescraper": "vitest --config vite.utilityCode.config.mjs -t google-scraper",
+    "vitest-getyoutubeurl": "vitest --config vite.utilityCode.config.mjs -t get-youtube-url",
     "tsc": "tsc --noEmit --watch"
   },
   "dependencies": {

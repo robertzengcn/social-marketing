@@ -45,10 +45,10 @@ process.parentPort.on('message', async (e) => {
                 return
             }
             // const videoDownloadFactory=new VideoDownloadFactory()
-            const DownloadTool=VideoDownloadFactory.getDownloader(param.platform)
+            const downloadTool=VideoDownloadFactory.getDownloader(param.platform)
                     
                     // const youtubeDownload=new YoutubeDownload()
-                    if(!param.isplaylist){//sigle video
+                    // if(!param.isplaylist){//sigle video
                         param.link.forEach(async (element, index)=>{
                             let randCookiesproxy:CookiesProxy | null = null;
                             if(param.cookiesProxy){
@@ -58,7 +58,8 @@ process.parentPort.on('message', async (e) => {
                             if(param.proxy){
                                 itemProxy=param.proxy[Math.floor(Math.random() * param.proxy.length)]
                             }
-                            await DownloadTool.downloadVideo(element,param.savePath,param.BrowserName,randCookiesproxy,itemProxy,param.exePath,param.videoQuality,(errorstring)=>{
+                            if(!param.isplaylist){//sigle video
+                            await downloadTool.downloadVideo(element,param.savePath,param.BrowserName,randCookiesproxy,itemProxy,param.exePath,param.videoQuality,(errorstring)=>{
                                 //error call
                                 const message:ProcessMessage<VideodownloadMsg>={
                                     action:"singlevideodownloadMsg",
@@ -91,12 +92,18 @@ process.parentPort.on('message', async (e) => {
                                 process.parentPort.postMessage(JSON.stringify(message))
                                 process.exit(0);
                             })
+                            //signal download end
+                        }else{//download playlist
+                            // await downloadTool.downloadPlaylist(element)
+
+                        }
+
                         })
                        
                         
-                    }else{//player list
-
-                    }
+                    // }else{//player list
+                    //     await downloadTool.downloadPlaylist(element,param.savePath,)
+                    // }
                
             }
 
