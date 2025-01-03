@@ -170,9 +170,15 @@ export class YoutubeDownload implements videoDownloadImpl {
                 }
             }
         }else{//get video link in single player
-            const videoUrls = await page.$$eval('#items ytd-playlist-panel-video-renderer', elements =>
-                elements.map(el => el.querySelector('#video-title')?.getAttribute('href'))
-            );
+            console.log("signal video")
+            const videoUrls = await page.$$eval('#items ytd-playlist-panel-video-renderer', elements => {
+                //console.log("get element")
+                return elements.map(el => {
+                    //console.log(el)
+                    return el.querySelector('#wc-endpoint')?.getAttribute('href')
+                });
+            });
+            console.log(videoUrls)
             if(videoUrls){
                 for(const videoUrl of videoUrls){
                     if(videoUrl){
