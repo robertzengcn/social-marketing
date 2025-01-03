@@ -2,10 +2,11 @@ import { Scraperdb } from "./scraperdb";
 import { Database } from 'better-sqlite3';
 import { VideoDescriptionEntity } from "@/entityTypes/videoType";
 import { getRecorddatetime } from "@/modules/lib/function";
+import { BaseDb } from "@/model/Basedb";
 
-export class VideoDescriptiondb {
+export class VideoDescriptiondb extends BaseDb{
   
-  db: Database;
+  // db: Database;
   //videoTable = "video";
   videoDescriptionTable = "video_description";
 
@@ -14,8 +15,9 @@ export class VideoDescriptiondb {
     { id: 2, name: "zh-cn" },
   ];
   constructor(filepath:string) {
-    const scraperModel = Scraperdb.getInstance(filepath);
-    this.db = scraperModel.getdb();
+    super(filepath)
+    // const scraperModel = Scraperdb.getInstance(filepath);
+    // this.db = scraperModel.getdb();
   }
 
   /**
@@ -77,5 +79,11 @@ export class VideoDescriptiondb {
 
     // const videoscsql = `DELETE FROM ` + this.videoDescriptionTable;
     // this.db.exec(videoscsql)
+  }
+  getVideoDescription(videoId: number): VideoDescriptionEntity {
+    const stmt = this.db.prepare(
+      `SELECT * FROM ` + this.videoDescriptionTable + ` WHERE video_id = ?`);
+    const res = stmt.get(videoId) as VideoDescriptionEntity;
+    return res;
   }
 }

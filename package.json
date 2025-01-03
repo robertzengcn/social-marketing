@@ -45,6 +45,7 @@
     "vitest-bibiliscraper": "vitest --config vite.utilityCode.config.mjs -t bibili-scraper",
     "vitest-googlescraper": "vitest --config vite.utilityCode.config.mjs -t google-scraper",
     "vitest-getyoutubeurl": "vitest --config vite.taskCode.config.mjs -t get-youtube-url",
+    "vitest-getyoutubeplaylisturl": "vitest --config vite.taskCode.config.mjs -t get-youtube-url-playerlist",
     "tsc": "tsc --noEmit --watch"
   },
   "dependencies": {

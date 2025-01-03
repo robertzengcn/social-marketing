@@ -15,7 +15,7 @@ import * as path from 'path';
 const execAsync = promisify(exec);
 export class YoutubeDownload implements videoDownloadImpl {
     private playerlisttype="/playlist?"
-    private signalplaytype="/watch?"
+    // private signalplaytype="/watch?"
     async downloadVideo(url: string, savePath: string, useBrowserCookies?:string,cookiesProxy?: CookiesProxy | null, proxy?: Proxy | null, execPath?: string, videoQuality?:number,errorCall?: (errorMsg: string) => void, stroutCall?: (message: string) => void, successCall?: (param:VideodoanloadSuccessCall) => void) {
         if (!execPath) {
             throw new CustomError("youtube video package not found")
@@ -133,9 +133,23 @@ export class YoutubeDownload implements videoDownloadImpl {
         }
 
     }
-
-    async downloadPlaylist(url: string, savePath: string, useBrowserCookies?:string,cookiesProxy?: CookiesProxy | null, proxy?: Proxy | null, execPath?: string, videoQuality?:number,errorCall?: (errorMsg: string) => void, stroutCall?: (message: string) => void, successCall?: (param:VideodoanloadSuccessCall) => void) {
-
+    //download playlist
+    async downloadPlaylist(url: string, savePath: string, useBrowserCookies?:string,cookiesProxy?: CookiesProxy | null, proxy?: Proxy | null, execPath?: string, videoQuality?:number,errorCall?: (errorMsg: string) => void, stroutCall?: (message: string) => void, successCall?: (param:VideodoanloadSuccessCall) => void,endCall?:(error:string)=>void) {
+        const urls=await this.getPlaylist(url)
+        let error=""
+        if(urls){
+            for(const url of urls){
+                //random stop for some time
+                const randomStop=Math.floor(Math.random() * 10000);
+                await new Promise(resolve => setTimeout(resolve, randomStop));
+                await this.downloadVideo(url,savePath,useBrowserCookies,cookiesProxy,proxy,execPath,videoQuality,errorCall,stroutCall,successCall)
+            }
+        }else{
+            error="playlist not found"
+        }
+        if(endCall){
+            endCall(error)
+        }
     }
     //get video title and description
     async getVideodesc(command:string,url:string):Promise<YoutubedlStrout|undefined>{
@@ -161,6 +175,7 @@ export class YoutubeDownload implements videoDownloadImpl {
             const videoUrls = await page.$$eval('a#video-title', elements =>
                 elements.map(el => el.href)
             );
+            //console.log(videoUrls)
             //resultUrls.push(...videoUrls)
             if(videoUrls){
                 for(const videoUrl of videoUrls){
@@ -170,7 +185,7 @@ export class YoutubeDownload implements videoDownloadImpl {
                 }
             }
         }else{//get video link in single player
-            console.log("signal video")
+            //console.log("signal video")
             const videoUrls = await page.$$eval('#items ytd-playlist-panel-video-renderer', elements => {
                 //console.log("get element")
                 return elements.map(el => {
@@ -178,7 +193,7 @@ export class YoutubeDownload implements videoDownloadImpl {
                     return el.querySelector('#wc-endpoint')?.getAttribute('href')
                 });
             });
-            console.log(videoUrls)
+            //console.log(videoUrls)
             if(videoUrls){
                 for(const videoUrl of videoUrls){
                     if(videoUrl){

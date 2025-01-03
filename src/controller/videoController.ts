@@ -15,11 +15,11 @@ import { CustomError } from '@/modules/customError'
 import { AccountCookiesModule } from "@/modules/accountCookiesModule"
 import { SocialAccountApi } from "@/api/socialAccountApi"
 import {ProcessMessage} from "@/entityTypes/processMessage-type"
-import {VideodownloadMsg} from "@/entityTypes/videoType";
+// import {VideodownloadMsg} from "@/entityTypes/videoType";
 import {ListData,TaskStatus} from "@/entityTypes/commonType"
-import {VideoDownloadEntity,VideoDownloadStatus} from "@/entityTypes/videoType"
+import {VideoDownloadEntity,VideoDownloadStatus,VideoDescriptionEntity,VideodownloadTaskMsg,VideoDownloadListDisplay,VideodownloadMsg} from "@/entityTypes/videoType"
 import {VideoDescriptionModule} from "@/modules/videoDescriptionModule"
-import { VideoDescriptionEntity } from "@/entityTypes/videoType";
+
 //import {} from "@/entityTypes/proxyType"
 export class videoController {
     private videoDownloadModule: VideoDownloadModule
@@ -192,17 +192,18 @@ export class videoController {
         child.on('message', (message) => {
             console.log("get message from child")
             console.log('Message from child:', JSON.parse(message));
-            const childdata=JSON.parse(message) as ProcessMessage<VideodownloadMsg>
+            const childdata=JSON.parse(message) as ProcessMessage<any>
             if(childdata.action=="singlevideodownloadMsg"){//download single video result
-                if(childdata.data?.status){
+                const getData=childdata.data as VideodownloadMsg
+                if(getData?.status){
 
                 //save result
                 let savepath=''
-                if(childdata.data.savepath){
-                    savepath=childdata.data.savepath
+                if(getData.savepath){
+                    savepath=getData.savepath
                 }
                 const videoDownloadEntity:VideoDownloadEntity={
-                    url:childdata.data.link,
+                    url:getData.link,
                     savepath:savepath,
                     task_id:Number(taskId),
                     status:VideoDownloadStatus.Finish,
@@ -214,23 +215,26 @@ export class videoController {
 
                 const videoDescriptionEntity:VideoDescriptionEntity={
                     videoId:videoNum,
-                    title:childdata.data.title?childdata.data.title:'',
-                    description:childdata.data.description?childdata.data.description:'',
+                    title:getData.title?getData.title:'',
+                    description:getData.description?getData.description:'',
                     language:"en-us"
                 }
                 //save video Video Description
                 this.videoDescriptionModule.saveVideoDescription(videoDescriptionEntity)
-                }else if(childdata.data&&(!childdata.data?.status)){//failure
+                }else if(getData&&(!getData?.status)){//failure
                     const videoDownloadEntity:VideoDownloadEntity={
-                        url:childdata.data.link,
+                        url:getData.link,
                         savepath:'',
                         task_id:Number(taskId),
                         status:VideoDownloadStatus.Error,
-                        error_log:childdata.data.log
+                        error_log:getData.log
                     }
                     this.videoDownloadModule.saveVideoDownload(videoDownloadEntity)
                 }
                 //child.kill()
+            }else if(childdata.action=="videodownloadTaskMsg"){
+                const res=childdata.data as VideodownloadTaskMsg
+                WriteLog(errorLogfile, res.msg)
             }
         });
 
@@ -248,6 +252,41 @@ export class videoController {
         const count = this.videoDownloadTaskModule.countVideoDownloadTaskList()
         return {records:list,num:count} as ListData<videoDownloadTaskEntity>
         
+    }
+
+    //get video download list by task id
+    public videoDownloadlist(taskId: number,page:number,size:number):ListData<VideoDownloadListDisplay> {
+        // const tokenService=new Token()
+        // const dbpath=await tokenService.getValue(USERSDBPATH)
+        // if(!dbpath){
+        //     throw new Error("user db path not exist")
+        // }
+        // const videoDownloaddb=new VideoDownloaddb(dbpath)
+        const res:Array<VideoDownloadListDisplay>=[]
+        const list = this.videoDownloadModule.getVideoDownloadList(taskId,page,size)
+        list.forEach((element)=>{
+            let vdld:VideoDownloadListDisplay={
+                id:element.id,
+                url:element.url,
+                savepath:element.savepath,
+                record_time:element.record_time,
+                task_id:element.task_id,
+                status:element.status,
+                title:'',
+                description:''
+            }
+            if(element.id&&element.status==VideoDownloadStatus.Finish){
+                
+                const videoDescription=this.videoDescriptionModule.getVideoDescription(element.id)
+                if(videoDescription){
+                    vdld.title=videoDescription.title
+                    vdld.description=videoDescription.description
+                }
+            }
+            res.push(vdld)
+        })
+        const count = this.videoDownloadModule.countVideoDownloadList(taskId)
+        return {records:res,num:count} as ListData<VideoDownloadListDisplay>
     }
    
 

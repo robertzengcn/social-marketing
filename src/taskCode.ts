@@ -4,7 +4,7 @@ import {ProcessMessage} from "@/entityTypes/processMessage-type"
 import {EmailSearch} from "@/childprocess/emailSearch"
 //import {EmailSearchData} from "@/entityTypes/emailextraction-type"
 import { EmailsControldata,EmailResult } from '@/entityTypes/emailextraction-type'
-import {processVideoDownloadParam,VideodownloadMsg } from "@/entityTypes/videoType";
+import {processVideoDownloadParam,VideodownloadMsg,VideodownloadTaskMsg } from "@/entityTypes/videoType";
 // import {YoutubeDownload} from "@/modules/videodownload/youtubeDownload"
 import {CookiesProxy} from "@/entityTypes/videoType"
 import {Proxy} from "@/entityTypes/proxyType"
@@ -95,6 +95,54 @@ process.parentPort.on('message', async (e) => {
                             //signal download end
                         }else{//download playlist
                             // await downloadTool.downloadPlaylist(element)
+                            await downloadTool.downloadPlaylist(element,param.savePath,param.BrowserName,randCookiesproxy,itemProxy,param.exePath,param.videoQuality,(errorstring)=>{
+                                const message:ProcessMessage<VideodownloadMsg>={
+                                    action:"singlevideodownloadMsg",
+                                    data:{
+                                        link:element,
+                                        status:false,
+                                        log:errorstring
+                                    }
+                                }
+                               
+                                process.parentPort.postMessage(JSON.stringify(message))
+                            },(msg)=>{
+                                //stdout call
+                            },(param:VideodoanloadSuccessCall)=>{
+                                //success call
+                                console.log("success call")
+                                const message:ProcessMessage<VideodownloadMsg>={
+                                    action:"singlevideodownloadMsg",
+                                    data:{
+                                        link:element,
+                                        status:true,
+                                        savepath:param.savepath,
+                                        title:param.title,
+                                        description:param.description,
+                                        tags:param.tags,
+                                        categories:param.categories
+                                    }
+                                }
+                                process.parentPort.postMessage(JSON.stringify(message))
+                                
+                            },(error)=>{
+                                //end call
+                                if(error.length>0){
+                                    
+                                    const message:ProcessMessage<VideodownloadTaskMsg>={
+                                        action:"videodownloadTaskMsg",
+                                        data:{
+                                            msg:error
+                                        }
+                                    }
+                                    process.parentPort.postMessage(JSON.stringify(message))
+                                    
+                                    process.exit(1);
+                                }else{
+                                    process.exit(0);
+                                }
+                               
+                            })
 
                         }
 

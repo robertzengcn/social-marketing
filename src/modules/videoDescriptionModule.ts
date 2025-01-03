@@ -20,5 +20,8 @@ export class VideoDescriptionModule extends BaseModule{
     saveVideoDescription(videoinfo: VideoDescriptionEntity):number {
         return this.videoDownloaddb.saveVideoDescription(videoinfo)
     }
+    getVideoDescription(videoId: number): VideoDescriptionEntity {
+        return this.videoDownloaddb.getVideoDescription(videoId)
+    }
 
 }

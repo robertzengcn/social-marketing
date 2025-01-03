@@ -1,5 +1,6 @@
 import {Proxy} from "@/entityTypes/proxyType"
-import {TaskStatus} from "@/entityTypes/commonType"
+import {TaskStatus,ItemSearchparam} from "@/entityTypes/commonType"
+
 export type videoScraper={
     cookies: string,
     proxy?:Proxy
@@ -124,4 +125,15 @@ export type VideoDescriptionEntity={
     language:string,
     // tags:Array<string>,
     // categories:Array<string>,
+}
+export type VideodownloadTaskMsg={
+    msg:string,
+}
+export interface VideoDownloadQuery extends ItemSearchparam {
+    taskId: number,
+}
+
+export interface VideoDownloadListDisplay extends VideoDownloadEntity {
+    title?:string
+    description?:string
 }

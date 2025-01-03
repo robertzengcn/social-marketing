@@ -1,13 +1,13 @@
 import { ipcMain } from 'electron';
-import { VIDEODOWNLOAD, VIDEODOWNLOAD_MESSAGE, SYSTEM_MESSAGE,VIDEODOWNLOAD_TASK_LIST } from '@/config/channellist'
+import { VIDEODOWNLOAD, VIDEODOWNLOAD_MESSAGE, VIDEODOWNLOAD_TASK_LIST,VIDEODOWNLOAD_LIST } from '@/config/channellist'
 import { videoController } from '@/controller/videoController';
-import { downloadVideoparam, videoDownloadListResp } from "@/entityTypes/videoType";
 import { CommonDialogMsg,CommonResponse } from "@/entityTypes/commonType";
 import { CustomError } from '@/modules/customError';
-import {videoDownloadTaskEntity} from "@/entityTypes/videoType";
+import {videoDownloadTaskEntity,VideoDownloadQuery,VideoDownloadListDisplay,downloadVideoparam} from "@/entityTypes/videoType";
 
 export function registerVideoIpcHandlers() {
     console.log("video download register")
+    const videoCtrl = new videoController()
     ipcMain.on(VIDEODOWNLOAD, async (event, arg) => {
         // console.log("get video download message")
         const qdata = JSON.parse(arg) as downloadVideoparam;
@@ -67,7 +67,7 @@ export function registerVideoIpcHandlers() {
 
         // }
 
-        const videoCtrl = new videoController()
+        
         // const dvp: downloadVideoparam = {
         //     accountId: qdata.accountId,
         //     platform: qdata.platform,
@@ -132,6 +132,21 @@ export function registerVideoIpcHandlers() {
         const videoCtrl = new videoController()
         const res = await videoCtrl.videoDownloadtasklist(qdata.page, qdata.size)
         const resp:CommonResponse<videoDownloadTaskEntity>={
+            status:true,
+            msg:"video.download_list",
+            data:res
+        }
+        return resp
+    })
+    //get video download list by task id
+    ipcMain.handle(VIDEODOWNLOAD_LIST, async (event, data) => {
+        const qdata = JSON.parse(data) as VideoDownloadQuery;
+        if (!("taskId" in qdata)) {
+            throw new Error("taskId not found");
+        }
+       
+        const res = await videoCtrl.videoDownloadlist(qdata.taskId,qdata.page,qdata.size)
+        const resp:CommonResponse<VideoDownloadListDisplay>={
             status:true,
             msg:"video.download_list",
             data:res
