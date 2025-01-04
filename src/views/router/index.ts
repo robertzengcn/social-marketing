@@ -282,12 +282,22 @@ export const constantRoutes: RouteRecordRaw[] = [
         }
       },
       {
-        path: 'dowloadlist',
+        path: 'dowloadtasklist',
         component: () => import(/* webpackChunkName: "staff-list" */ '@/views/pages/videodownload/list.vue'),
-        name: 'Videodownloadlist',
+        name: 'VideodownloadTasklist',
         meta: {
           visible: true,
-          title: 'Download List',
+          title: 'Video Download Task List',
+          icon: 'list'
+        }
+      },
+      {
+        path: 'videolist/:taskid(\\d+)',
+        component: () => import(/* webpackChunkName: "staff-list" */ '@/views/pages/videodownload/videoList.vue'),
+        name: 'VideoList',
+        meta: {
+          visible: false,
+          title: 'Video List',
           icon: 'list'
         }
       }

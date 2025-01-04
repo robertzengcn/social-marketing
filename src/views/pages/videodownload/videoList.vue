@@ -1,13 +1,13 @@
 <template>
     <div class="tables_page">
        
-<VideodownloadTable />
+<VideodownloadListTable />
     </div>
 </template>
 <script setup lang="ts">
 
 import { ref } from 'vue';
-import VideodownloadTable from '@/views/pages/videodownload/widgets/videodownloadTable.vue'
+import VideodownloadListTable from '@/views/pages/videodownload/widgets/videodownloadlistTable.vue'
 // const dialog = ref(false);
 
 

@@ -3,6 +3,11 @@
     <v-form ref="form" @submit.prevent="onSubmit">
       <v-row>
         <v-col cols="12" md="12">
+          <v-text-field v-model="taskName" :label="$t('video.task_name')" required :readonly="loading" :rules="[rules.required]"></v-text-field>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12" md="12">
       <v-select v-model="type" :items="typeitems" :label="$t('video.platform')" required :readonly="loading"
         :rules="[rules.required]"></v-select>
         </v-col>
@@ -173,6 +178,7 @@ const form = ref<HTMLFormElement>();
 const alert = ref(false);
 const alerttext = ref("");
 const alerttitle = ref("");
+const taskName=ref("")
 const alerttype = ref<"success" | "error" | "warning" | "info" | undefined>(
   "success"
 );
@@ -300,9 +306,9 @@ onMounted(() => {
       // }
       if (res.code == 200) {
         // route to new page
-        // router.push({
-        //   path: '/video/dowloadlist'
-        // });
+        router.push({
+          path: '/video/dowloadtasklist'
+        });
       }
     } else {
       if(res.data){
@@ -358,6 +364,7 @@ async function onSubmit() {
     });
     const isPlaylist=chooseType.value=="playlist"?true:false
     const data: downloadVideoparam = {
+      taskName: taskName.value,
       accountId: accountIds,
       platform: type.value,
       link: validUrls,

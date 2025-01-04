@@ -3,7 +3,7 @@ import { VIDEODOWNLOAD, VIDEODOWNLOAD_MESSAGE, VIDEODOWNLOAD_TASK_LIST,VIDEODOWN
 import { videoController } from '@/controller/videoController';
 import { CommonDialogMsg,CommonResponse } from "@/entityTypes/commonType";
 import { CustomError } from '@/modules/customError';
-import {videoDownloadTaskEntity,VideoDownloadQuery,VideoDownloadListDisplay,downloadVideoparam} from "@/entityTypes/videoType";
+import {VideoDownloadTaskEntity,VideoDownloadQuery,VideoDownloadListDisplay,downloadVideoparam} from "@/entityTypes/videoType";
 
 export function registerVideoIpcHandlers() {
     console.log("video download register")
@@ -131,7 +131,7 @@ export function registerVideoIpcHandlers() {
         //return video download list
         const videoCtrl = new videoController()
         const res = await videoCtrl.videoDownloadtasklist(qdata.page, qdata.size)
-        const resp:CommonResponse<videoDownloadTaskEntity>={
+        const resp:CommonResponse<VideoDownloadTaskEntity>={
             status:true,
             msg:"video.download_list",
             data:res

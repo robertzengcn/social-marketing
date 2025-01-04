@@ -6,6 +6,7 @@ export type videoScraper={
     proxy?:Proxy
 }
 export type downloadVideoparam={
+    taskName:string,
     accountId:Array<number>,
     platform:string,
     link:Array<string>,
@@ -31,8 +32,10 @@ export type douyinEntity={
     naming:string,
     timeout: number,
 }
-export type videoDownloadTaskEntity={
+export type VideoDownloadTaskEntity={
+    id?:number,
     platform:string,
+    taskName:string,
     // url:string,
     savepath:string,
     runtime_log?:string,

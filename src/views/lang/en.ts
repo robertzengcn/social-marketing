@@ -130,6 +130,10 @@ export default {
         use_proxy_override:"use choose proxy instead account's blind proxy",
         cookies_type:"cookies type",
         choose_browser:"choose browser",
+        task_name:"task name",
+        url:"url",
+        title:"title",
+        description:"description",
     },
     account:{
         accountId:"Account ID",

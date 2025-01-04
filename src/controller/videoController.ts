@@ -1,5 +1,5 @@
 import { videoFactory } from "@/modules/video/videoFactory";
-import { downloadVideoparam, videoDownloadTaskEntity, processVideoDownloadParam, CookiesProxy } from "@/entityTypes/videoType";
+import { downloadVideoparam, VideoDownloadTaskEntity, processVideoDownloadParam, CookiesProxy } from "@/entityTypes/videoType";
 // import { VideoDownloadTaskdb } from "@/model/videoDownloadTaskdb";
 // import { VideoDownloaddb} from "@/model/videoDownloaddb"
 import {VideoDownloadModule} from "@/modules/VideoDownloadModule"
@@ -58,7 +58,8 @@ export class videoController {
 
         //save log to download task table
         // const videoTaskdb=new VideoDownloadTaskdb(dbpath)
-        const videoEntity: videoDownloadTaskEntity = {
+        const videoEntity: VideoDownloadTaskEntity = {
+            taskName: param.taskName,
             platform: param.platform,
             // url: JSON.stringify(param.link),
             savepath: param.savePath,
@@ -241,7 +242,7 @@ export class videoController {
 
     }
     //get video download list
-    public videoDownloadtasklist(page: number, size: number):ListData<videoDownloadTaskEntity> {
+    public videoDownloadtasklist(page: number, size: number):ListData<VideoDownloadTaskEntity> {
         // const tokenService=new Token()
         // const dbpath=await tokenService.getValue(USERSDBPATH)
         // if(!dbpath){
@@ -250,7 +251,7 @@ export class videoController {
         // const videoDownloaddb=new VideoDownloaddb(dbpath)
         const list = this.videoDownloadTaskModule.getVideoDownloadTaskList(page, size)
         const count = this.videoDownloadTaskModule.countVideoDownloadTaskList()
-        return {records:list,num:count} as ListData<videoDownloadTaskEntity>
+        return {records:list,num:count} as ListData<VideoDownloadTaskEntity>
         
     }
 

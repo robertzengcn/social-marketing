@@ -1,7 +1,7 @@
 import { Token } from "@/modules/token"
 import { USERSDBPATH } from '@/config/usersetting';
 import { VideoDownloadTaskdb } from "@/model/videoDownloadTaskdb"
-import { videoDownloadTaskEntity } from "@/entityTypes/videoType"
+import { VideoDownloadTaskEntity } from "@/entityTypes/videoType"
 import {TaskStatus} from "@/entityTypes/commonType"
 export class VideoDownloadTaskModule {
     private dbpath: string
@@ -16,7 +16,7 @@ export class VideoDownloadTaskModule {
         this.videoDownloadTaskdb = new VideoDownloadTaskdb(dbpath)
     }
 
-    public saveVideoDownloadTask(videoDownloadTask: videoDownloadTaskEntity) {
+    public saveVideoDownloadTask(videoDownloadTask: VideoDownloadTaskEntity) {
         return this.videoDownloadTaskdb.saveVideoDownloadTask(videoDownloadTask)
     }
 
@@ -28,7 +28,7 @@ export class VideoDownloadTaskModule {
         return this.videoDownloadTaskdb.updateTaskErrorlog(taskId, log);
     }
 
-    public getVideoDownloadTaskList(page:number,size:number):Array<videoDownloadTaskEntity>{
+    public getVideoDownloadTaskList(page:number,size:number):Array<VideoDownloadTaskEntity>{
        return this.videoDownloadTaskdb.getVideoDownloadTaskList(page,size)
       }
       //count video download task list

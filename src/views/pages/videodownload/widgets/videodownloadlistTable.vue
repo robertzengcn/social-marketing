@@ -1,14 +1,12 @@
 <template>
+   
     <div class="search_bar mt-4 d-flex jsb mb-5">
         <div class="d-flex jsb search_tool">
             <div class="search_wrap mr-4">
                 <v-text-field rounded class="elevation-0" density="compact" variant="solo" label="Search"
                     append-inner-icon="mdi-magnify" single-line hide-details v-model="search"></v-text-field>
             </div>
-            <!-- <v-btn class="btn" variant="flat" prepend-icon="mdi-filter-variant"><span> More</span></v-btn> -->
-            <v-btn class="btn ml-3" variant="flat" prepend-icon="mdi-plus" color="#5865f2" @click="createDownload()">
-                {{$t('video.new_video_download')}}
-            </v-btn>
+           
             
         </div>
         <div>       
@@ -29,16 +27,19 @@
 
 <script setup lang="ts">
 import {useI18n} from "vue-i18n";
-import { ref,computed } from 'vue'
+import { ref,computed,onMounted } from 'vue'
 import { SearchResult } from '@/views/api/types'
-import {getVideoTasklist} from "@/views/api/video";
-import {videoDownloadTaskEntity} from "@/entityTypes/videoType";
+import { useRoute } from "vue-router";
+import {getVideolistbyTaskId} from "@/views/api/video";
+import {VideoDownloadListDisplay} from "@/entityTypes/videoType";
 import router from '@/views/router';
-const {t} = useI18n({inheritLocale: true});
 import {CapitalizeFirstLetter} from "@/views/utils/function"
 
+const $route = useRoute();
+const {t} = useI18n({inheritLocale: true});
 type Fetchparam = {
     // id:number
+    
     page: number,
     itemsPerPage: number,
     sortBy: { key: string, order: string },
@@ -46,11 +47,12 @@ type Fetchparam = {
 }
 
 const FakeAPI = {
-    async fetch(fetchparam: Fetchparam): Promise<SearchResult<videoDownloadTaskEntity>> {
+    async fetch(fetchparam: Fetchparam): Promise<SearchResult<VideoDownloadListDisplay>> {
         // console.log(fetchparam.search)
         const fpage=(fetchparam.page-1)*fetchparam.itemsPerPage
-        const res=await getVideoTasklist({ page: fpage, size: fetchparam.itemsPerPage, sortby: fetchparam.sortBy, search: fetchparam.search })
-        console.log(res)
+        const taskId=parseInt($route.params.taskid.toString());
+        const res=await getVideolistbyTaskId({ taskId:taskId,page: fpage, size: fetchparam.itemsPerPage, sortby: fetchparam.sortBy, search: fetchparam.search })
+        
         return res
     }
 }
@@ -64,22 +66,28 @@ const headers: Array<any> = [
         key: 'id',
     },
     {
-        title: computed(_ => CapitalizeFirstLetter(t("common.record_time"))),
+        title: computed(_ => CapitalizeFirstLetter(t("video.url"))),
         align: 'start',
         sortable: false,
-        key: 'record_time',
+        key: 'url',
     },
     {
-        title: computed(_ => CapitalizeFirstLetter(t("video.saved_path"))),
+        title: computed(_ => CapitalizeFirstLetter(t("video.title"))),
         align: 'start',
         sortable: false,
-        key: 'savepath',
+        key: 'title',
     },
     {
         title: computed(_ => CapitalizeFirstLetter(t("common.status"))),
         align: 'start',
         sortable: false,
         key: 'status',
+    },
+    {
+        title: computed(_ => CapitalizeFirstLetter(t("common.record_time"))),
+        align: 'start',
+        sortable: false,
+        key: 'record_time',
     },
     {
     title: computed(_ => CapitalizeFirstLetter(t("common.actions"))),
@@ -91,17 +99,20 @@ const headers: Array<any> = [
 
 ];
 const itemsPerPage = ref(10);
-const serverItems = ref<Array<videoDownloadTaskEntity>>([]);
+const serverItems = ref<Array<VideoDownloadListDisplay>>([]);
 const loading = ref(false);
 const totalItems = ref(0);
 const search = ref('');
-const showDeleteModal = ref(false);
-const deleteId=ref(0);
-const alertext=ref("");
+// const taskId=ref(0);
+// const showDeleteModal = ref(false);
+// const deleteId=ref(0);
+// const alertext=ref("");
 
 
 function loadItems({ page, itemsPerPage, sortBy }) {
+
     loading.value = true
+
     const fetchitem: Fetchparam = {
         // id:parseInt(campaignId),
         page: page,
@@ -126,17 +137,21 @@ function loadItems({ page, itemsPerPage, sortBy }) {
 }
 
 
+
 // const cancelDelete=()=> {
 //       showDeleteModal.value = false;
 // }
 //confirm delete account
-const createDownload=()=>{
-    router.push({
-          path: '/video/download'
-        });
-}
+// const createDownload=()=>{
+//     router.push({
+//           path: '/video/download'
+//         });
+// }
 
+onMounted(() => {
+ 
 
+});
 
 
 </script>

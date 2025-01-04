@@ -1,6 +1,6 @@
 import { Database } from 'better-sqlite3';
 import { Scraperdb } from "@/model/scraperdb";
-import {videoDownloadTaskEntity} from "@/entityTypes/videoType"
+import {VideoDownloadTaskEntity} from "@/entityTypes/videoType"
 import { getRecorddatetime } from "@/modules/lib/function";
 import {TaskStatus} from "@/entityTypes/commonType";
 export class VideoDownloadTaskdb {
@@ -10,10 +10,11 @@ export class VideoDownloadTaskdb {
         const scraperModel = Scraperdb.getInstance(filepath);
         this.db = scraperModel.getdb();
       }
-    public saveVideoDownloadTask(videoDownloadTask:videoDownloadTaskEntity):number{
+    public saveVideoDownloadTask(videoDownloadTask:VideoDownloadTaskEntity):number{
       const recordtime = getRecorddatetime(); 
-      const stmt = this.db.prepare(`INSERT INTO ${this.videoDownloadTaskTable} (platform,savepath,record_time,runtime_log,error_log,status) VALUES (?,?,?,?,?,?)`);
+      const stmt = this.db.prepare(`INSERT INTO ${this.videoDownloadTaskTable} (task_name,platform,savepath,record_time,runtime_log,error_log,status) VALUES (?,?,?,?,?,?,?)`);
         const info = stmt.run(
+          videoDownloadTask.taskName,
           videoDownloadTask.platform,
           // videoDownloadTask.url,
           videoDownloadTask.savepath,
@@ -44,9 +45,9 @@ export class VideoDownloadTaskdb {
       stmt.run(log, taskId)
     }
       //get video download task list
-      public getVideoDownloadTaskList(page:number,size:number):Array<videoDownloadTaskEntity>{
-        const stmt = this.db.prepare(`SELECT platform,savepath,record_time,status FROM ${this.videoDownloadTaskTable} ORDER BY id desc LIMIT ?,? `);
-        const rows = stmt.all(page,size) as Array<videoDownloadTaskEntity>;
+      public getVideoDownloadTaskList(page:number,size:number):Array<VideoDownloadTaskEntity>{
+        const stmt = this.db.prepare(`SELECT id,task_name as taskName,platform,savepath,record_time,status FROM ${this.videoDownloadTaskTable} ORDER BY id desc LIMIT ?,? `);
+        const rows = stmt.all(page,size) as Array<VideoDownloadTaskEntity>;
         return rows;
       }
       //count video download task list

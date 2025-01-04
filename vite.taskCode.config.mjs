@@ -9,9 +9,9 @@ import checker from 'vite-plugin-checker'
 //import commonjs from '@rollup/plugin-commonjs';
 //import copy from 'rollup-plugin-copy'
 import { nodeResolve } from '@rollup/plugin-node-resolve';
-import typescript from 'rollup-plugin-typescript2'
+//import typescript from 'rollup-plugin-typescript2'
 import sourcemaps from 'rollup-plugin-sourcemaps';
-import {nodePolyfills} from 'vite-plugin-node-polyfills';
+// import {nodePolyfills} from 'vite-plugin-node-polyfills';
 export default ({ mode }) => {
     process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
     // Object.defineProperty(process, 'stdout', {
@@ -47,7 +47,7 @@ export default ({ mode }) => {
             // e.g. use TypeScript check
             typescript: true,
         }),
-        nodePolyfills()
+        // nodePolyfills()
         ],
         resolve: {
             alias: {
