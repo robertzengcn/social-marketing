@@ -134,6 +134,7 @@ export default {
         url:"url",
         title:"title",
         description:"description",
+        
     },
     account:{
         accountId:"Account ID",

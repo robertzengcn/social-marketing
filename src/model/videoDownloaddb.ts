@@ -2,16 +2,17 @@ import { Database } from 'better-sqlite3';
 import { Scraperdb } from "@/model/scraperdb";
 import {VideoDownloadEntity} from "@/entityTypes/videoType"
 import { getRecorddatetime } from "@/modules/lib/function";
+import { BaseDb } from "@/model/Basedb";
 
 
-
-export class VideoDownloaddb {
-    db: Database;
+export class VideoDownloaddb extends BaseDb{
+    // db: Database;
     videoDownloadTable = "video_download";
     constructor(filepath:string) {
-        const scraperModel = Scraperdb.getInstance(filepath);
-        this.db = scraperModel.getdb();
-      }
+      super(filepath)
+        // const scraperModel = Scraperdb.getInstance(filepath);
+        // this.db = scraperModel.getdb();
+    }
       public saveVideoDownload(videoDownload:VideoDownloadEntity):number{
         const recordtime = getRecorddatetime(); 
         const stmt = this.db.prepare(`INSERT INTO ${this.videoDownloadTable} (url,savepath,record_time,task_id,error_log,status) VALUES (?,?,?,?,?,?)`);

@@ -78,6 +78,12 @@ const headers: Array<any> = [
         key: 'taskName',
     },
     {
+        title: computed(_ => CapitalizeFirstLetter(t("video.platform"))),
+        align: 'start',
+        sortable: false,
+        key: 'platform'
+    },
+    {
         title: computed(_ => CapitalizeFirstLetter(t("video.saved_path"))),
         align: 'start',
         sortable: false,
