@@ -1,19 +1,22 @@
-import { Token } from "@/modules/token"
-import { USERSDBPATH } from '@/config/usersetting';
+// import { Token } from "@/modules/token"
+// import { USERSDBPATH } from '@/config/usersetting';
 import { VideoDownloadTaskdb } from "@/model/videoDownloadTaskdb"
 import { VideoDownloadTaskEntity } from "@/entityTypes/videoType"
 import {TaskStatus} from "@/entityTypes/commonType"
-export class VideoDownloadTaskModule {
-    private dbpath: string
+import { BaseModule } from "@/modules/baseModule";
+
+export class VideoDownloadTaskModule extends BaseModule{
+    // private dbpath: string
     private videoDownloadTaskdb: VideoDownloadTaskdb
     constructor() {
-        const tokenService = new Token()
-        const dbpath = tokenService.getValue(USERSDBPATH)
-        if (!dbpath) {
-            throw new Error("user path not exist")
-        }
-        this.dbpath = dbpath
-        this.videoDownloadTaskdb = new VideoDownloadTaskdb(dbpath)
+        super()
+        // const tokenService = new Token()
+        // const dbpath = tokenService.getValue(USERSDBPATH)
+        // if (!dbpath) {
+        //     throw new Error("user path not exist")
+        // }
+        // this.dbpath = dbpath
+        this.videoDownloadTaskdb = new VideoDownloadTaskdb(this.dbpath)
     }
 
     public saveVideoDownloadTask(videoDownloadTask: VideoDownloadTaskEntity) {

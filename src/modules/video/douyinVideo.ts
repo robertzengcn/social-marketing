@@ -1,4 +1,4 @@
-import { Video } from '@/modules/video';
+import { Video } from '@/modules/interface/Video';
 import { checkPipPackage } from "@/modules/lib/function"
 import { exec } from 'child_process';
 import { videoScraper, douyinAppYaml } from "@/entityTypes/videoType"

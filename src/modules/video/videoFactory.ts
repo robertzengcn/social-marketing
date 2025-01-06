@@ -4,7 +4,7 @@ import {douyinVideo} from "@/modules/video/douyinVideo"
 // import {CookiesType} from "@/entityTypes/cookiesType"
 import {bilibiliVideo} from "@/modules/video/bilibiliVideo"
 import {youtubeVideo} from "@/modules/video/youtubeVideo"
-import { Video } from '@/modules/video';
+import { Video } from '@/modules/interface/Video';
 // import { SocialAccount } from "@/modules/socialaccount"
 // import { Token } from "@/modules/token"
 // import {USERSDBPATH} from '@/config/usersetting';

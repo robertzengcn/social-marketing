@@ -140,3 +140,41 @@ export interface VideoDownloadListDisplay extends VideoDownloadEntity {
     title?:string
     description?:string
 }
+//the param need for video download
+export type DownloadVideoControlparam={
+    accountId:Array<number>,
+    platform:string,
+    link:Array<string>,
+    savePath:string,
+    isplaylist:boolean,
+    proxy: Array<Proxy>,
+    ProxyOverride:boolean,
+    cookies_type:string,
+    browserName?:string,
+    videoQuality?:number,
+}
+export enum DownloadType {
+    SINGLEVIDEO = 1,
+    MULTIVIDEO = 2,
+}
+export enum CookiesType {
+    USEBROWSER = 1,
+    ACCOUNTCOOKIES=2
+}
+export interface VideoDownloadTaskDetailEntity {
+    id?: number;
+    task_id: number;
+    download_type:DownloadType;
+    cookies_type:CookiesType;
+    browser_type:string;
+}
+export interface VideoDownloadTaskAccountEntity {
+    id?: number;
+    task_id: number;
+    account_id: number;
+}
+export interface VideoDownloadTaskUrlEntity {
+    id?: number;
+    task_id: number;
+    url: string;
+}

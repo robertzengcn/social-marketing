@@ -1,4 +1,4 @@
-import { Video } from '@/modules/video';
+import { Video } from '@/modules/interface/Video';
 import {ExtraModuleController} from '@/controller/extramodule-controller'
 import {CustomError} from '@/modules/customError'
 import * as path from 'path';

@@ -11,14 +11,18 @@ import { utilityProcess, MessageChannelMain } from "electron";
 import { USERLOGPATH, USEREMAIL } from '@/config/usersetting';
 import { WriteLog, getApplogspath, getRandomValues } from "@/modules/lib/function"
 import { v4 as uuidv4 } from 'uuid';
-import { CustomError } from '@/modules/customError'
+// import { CustomError } from '@/modules/customError'
 import { AccountCookiesModule } from "@/modules/accountCookiesModule"
 import { SocialAccountApi } from "@/api/socialAccountApi"
 import {ProcessMessage} from "@/entityTypes/processMessage-type"
 // import {VideodownloadMsg} from "@/entityTypes/videoType";
 import {ListData,TaskStatus} from "@/entityTypes/commonType"
-import {VideoDownloadEntity,VideoDownloadStatus,VideoDescriptionEntity,VideodownloadTaskMsg,VideoDownloadListDisplay,VideodownloadMsg} from "@/entityTypes/videoType"
+import {VideoDownloadEntity,VideoDownloadStatus,VideoDescriptionEntity,VideodownloadTaskMsg,VideoDownloadListDisplay,VideodownloadMsg,DownloadVideoControlparam,VideoDownloadTaskDetailEntity,DownloadType,CookiesType} from "@/entityTypes/videoType"
 import {VideoDescriptionModule} from "@/modules/videoDescriptionModule"
+import { Video } from '@/modules/interface/Video';
+import { VideoDownloadTaskDetailModule } from '@/modules/VideoDownloadTaskDetailModule';
+import {VideoDownloadTaskAccountsModule} from "@/modules/VideoDownloadTaskAccountsModule"
+import {VideoDownloadTaskAccountEntity} from "@/entityTypes/videoType"
 
 //import {} from "@/entityTypes/proxyType"
 export class videoController {
@@ -27,6 +31,8 @@ export class videoController {
     private accountCookiesModule: AccountCookiesModule
     private socialAccountApi: SocialAccountApi
     private videoDescriptionModule:VideoDescriptionModule
+    private videoDownloadTaskDetailModule:VideoDownloadTaskDetailModule
+    private videoDownloadTaskAccountsModule:VideoDownloadTaskAccountsModule
     constructor() {
         // const tokenService = new Token()
         // const dbpath = tokenService.getValue(USERSDBPATH)
@@ -39,36 +45,51 @@ export class videoController {
         this.accountCookiesModule = new AccountCookiesModule()
         this.socialAccountApi = new SocialAccountApi()
         this.videoDescriptionModule=new VideoDescriptionModule()
+        this.videoDownloadTaskDetailModule=new VideoDownloadTaskDetailModule()
     }
-    public async downloadVideo(param: downloadVideoparam, startCall?: (taskId: number) => void) {
+    //get video download tool
+    public async getVideoDownloadTool(platform:string):Promise<Video|null>{
         const videoFactoryInstance = new videoFactory()
+        const videoTool = await videoFactoryInstance.getVideotool(platform)
+        return videoTool
+    }
+    //check video tool requirement
+    public checkVideoRequirement(videoTool:Video):boolean{
+        return videoTool.checkRequirement()
+    }
+    //save video task, get task id
+    public saveVdieoDownloadTask(vdte: VideoDownloadTaskEntity): number {
+        return this.videoDownloadTaskModule.saveVideoDownloadTask(vdte)
+    }
+    public async processDownloadVideo(param: DownloadVideoControlparam,videoTool:Video,taskId:number,startCall?: (taskId: number) => void) {
+        // const videoFactoryInstance = new videoFactory()
         //get random one from array of param.accountId
         // const randomItem = param.accountId[Math.floor(Math.random() * param.accountId.length)]
-        const videoTool = await videoFactoryInstance.getVideotool(param.platform)
-        console.log("video tool:" + videoTool)
-        if (!videoTool) {
+        // const videoTool = await videoFactoryInstance.getVideotool(param.platform)
+        // console.log("video tool:" + videoTool)
+        // if (!videoTool) {
 
-            throw new CustomError("video tool not found", 20241205111934)
-        }
-        const toolres=videoTool.checkRequirement()
-        if(!toolres){
-            throw new CustomError("video tool check requirement failed", 20241205111934)
-        }
+        //     throw new CustomError("video tool not found", 20241205111934)
+        // }
+        // const toolres=videoTool.checkRequirement()
+        // if(!toolres){
+        //     throw new CustomError("video tool check requirement failed", 20241205111934)
+        // }
         const execFilepath = videoTool.getPackagepath()
 
         //save log to download task table
         // const videoTaskdb=new VideoDownloadTaskdb(dbpath)
-        const videoEntity: VideoDownloadTaskEntity = {
-            taskName: param.taskName,
-            platform: param.platform,
-            // url: JSON.stringify(param.link),
-            savepath: param.savePath,
-            status: TaskStatus.Processing
-        }
-        const taskId = this.videoDownloadTaskModule.saveVideoDownloadTask(videoEntity)
-        if (!taskId) {
-            throw new CustomError("video.create_download_task_failuer", 20241206153256)
-        }
+        // const videoEntity: VideoDownloadTaskEntity = {
+        //     taskName: param.taskName,
+        //     platform: param.platform,
+        //     // url: JSON.stringify(param.link),
+        //     savepath: param.savePath,
+        //     status: TaskStatus.Processing
+        // }
+        // const taskId = this.videoDownloadTaskModule.saveVideoDownloadTask(videoEntity)
+        // if (!taskId) {
+        //     throw new CustomError("video.create_download_task_failuer", 20241206153256)
+        // }
         // console.log("task id:"+taskId)
         // const res=videoTool.checkRequirement()
         if (startCall) {
@@ -240,6 +261,52 @@ export class videoController {
         });
 
 
+    }
+    public async DownloadVideo(param:downloadVideoparam,startCall?: (taskId: number) => void){
+        //get video tool
+        const videoTool=await this.getVideoDownloadTool(param.platform)
+        if(!videoTool){
+            throw new Error("video tool not found")
+        }
+        //check video tool requirement
+        const res=this.checkVideoRequirement(videoTool)
+        if(!res){
+            throw new Error("video tool requirement check failed")
+        }
+        //save video task
+        const videoTaskEntity:VideoDownloadTaskEntity={
+            taskName:param.taskName,
+            platform:param.platform,
+            savepath:param.savePath,
+            status:TaskStatus.Processing
+        }
+        const taskId=this.saveVdieoDownloadTask(videoTaskEntity)
+        if(!taskId){
+            throw new Error("video task save failed")
+        }
+        //save video url
+        
+        const vdetd:VideoDownloadTaskDetailEntity={
+            task_id: taskId,
+            download_type:param.isplaylist?DownloadType.MULTIVIDEO:DownloadType.SINGLEVIDEO,
+            cookies_type:param.cookies_type=="browser cookies"?CookiesType.USEBROWSER:CookiesType.ACCOUNTCOOKIES,
+            browser_type:param.browserName?param.browserName:'',
+        }
+        //save video task detail
+        this.videoDownloadTaskDetailModule.create(vdetd)
+        //save task accounts
+        if(param.accountId.length>0){
+            
+            for(const accid of param.accountId){
+                const taskAccount:VideoDownloadTaskAccountEntity={
+                    task_id:taskId,
+                    account_id:accid
+                }
+                this.videoDownloadTaskAccountsModule.create(taskAccount)
+            }
+        }
+        //process download video
+        await this.processDownloadVideo(param,videoTool,taskId,startCall)
     }
     //get video download list
     public videoDownloadtasklist(page: number, size: number):ListData<VideoDownloadTaskEntity> {

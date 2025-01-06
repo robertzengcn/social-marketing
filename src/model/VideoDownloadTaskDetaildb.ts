@@ -1,16 +1,7 @@
 import { BaseDb } from "@/model/Basedb";
 
-export enum DownloadType {
-    SINGLEVIDEO = 1,
-    MULTIVIDEO = 2,
-}
-export interface VideoDownloadTaskDetailEntity {
-    id?: number;
-    task_id: number;
-    download_type:number;
-    cookies_type:number;
-    browser_type:string;
-}
+import {VideoDownloadTaskDetailEntity} from "@/entityTypes/videoType"
+
 
 export class VideoDownloadTaskDetaildb extends BaseDb{
 
@@ -23,28 +14,30 @@ export class VideoDownloadTaskDetaildb extends BaseDb{
     create(vdte: VideoDownloadTaskDetailEntity): number {
 
         const stmt = this.db.prepare("INSERT INTO "+this.table+" (task_id, download_type,cookies_type,browser_type) VALUES (?, ?,?,?)");
-        const res = stmt.run(vdte.task_id, vdte.account_id);
+        const res = stmt.run(vdte.task_id, vdte.download_type,vdte.cookies_type,vdte.browser_type);
         return res.lastInsertRowid as number;
     }
 
-    read(id: number): VideoDownloadTaskAccountEntity {
+    read(id: number): VideoDownloadTaskDetailEntity {
         // return await this.db.get<VideoDownloadTaskAccountEntity>("SELECT * FROM VideoDownloadTaskAccounts WHERE id = ?", id);
            const stmt = this.db.prepare(
               `SELECT * FROM ` + this.table + ` WHERE id = ?`);
-            const res = stmt.get(id) as VideoDownloadTaskAccountEntity;
+            const res = stmt.get(id) as VideoDownloadTaskDetailEntity;
             return res;
     }
 
-    update(id: number, taskAccount: VideoDownloadTaskAccountEntity): void {
+    update(id: number, vdte: VideoDownloadTaskDetailEntity): void {
         const stmt = this.db.prepare(`
             UPDATE ${this.table}
-            SET task_id=@task_id,account_id = @account_id
+            SET task_id=@task_id,download_type = @download_type,cookies_type=@cookies_type,browser_type=@browser_type
             WHERE id = @id
         `);
         stmt.run({
             id: id,
-            task_id: taskAccount.task_id,
-            account_id: taskAccount.account_id
+            task_id: vdte.task_id,
+            download_type: vdte.download_type,
+            cookies_type:vdte.cookies_type,
+            browser_type:vdte.browser_type
         })
     }
 
@@ -55,12 +48,12 @@ export class VideoDownloadTaskDetaildb extends BaseDb{
         stmt.run(id);
     }
 
-    //query account id by task id
-    public getAccountByTaskId(taskId: number): Array<VideoDownloadTaskAccountEntity> {
+    //query item id by task id
+    public getByTaskId(taskId: number): VideoDownloadTaskDetailEntity {
         const stmt = this.db.prepare(
             `SELECT * FROM ` + this.table + ` WHERE task_id = ?`
         );
-        const account = stmt.all(taskId) as Array<VideoDownloadTaskAccountEntity>;
+        const account = stmt.get(taskId) as VideoDownloadTaskDetailEntity;
         return account;
     }
 

@@ -1,4 +1,4 @@
-import { Video } from '@/modules/video';
+import { Video } from '@/modules/interface/Video';
 import { Downloader } from "@/modules/bilibili/downloader";
 import * as path from "path"
 import {videoScraper} from "@/entityTypes/videoType"
