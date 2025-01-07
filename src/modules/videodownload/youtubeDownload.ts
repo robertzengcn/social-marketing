@@ -142,7 +142,17 @@ export class YoutubeDownload implements videoDownloadImpl {
                 //random stop for some time
                 const randomStop=Math.floor(Math.random() * 10000);
                 await new Promise(resolve => setTimeout(resolve, randomStop));
-                await this.downloadVideo(url,savePath,useBrowserCookies,cookiesProxy,proxy,execPath,videoQuality,errorCall,stroutCall,successCall)
+                
+                await this.downloadVideo(url,savePath,useBrowserCookies,cookiesProxy,proxy,execPath,videoQuality,errorCall,stroutCall,successCall).catch((err)=>{
+                    if(err instanceof Error){
+                        error=err.message
+                        if(errorCall){
+                            errorCall(error)
+                        }
+
+                    }
+                })
+
             }
         }else{
             error="playlist not found"
@@ -178,9 +188,12 @@ export class YoutubeDownload implements videoDownloadImpl {
             //console.log(videoUrls)
             //resultUrls.push(...videoUrls)
             if(videoUrls){
-                for(const videoUrl of videoUrls){
+                for(let videoUrl of videoUrls){
                     if(videoUrl){
-                        resultUrls.push('https://www.youtube.com'+videoUrl)
+                        if(!videoUrl.includes("https://www.youtube.com")){
+                            videoUrl='https://www.youtube.com'+videoUrl
+                        }
+                        resultUrls.push(videoUrl)
                     }
                 }
             }
@@ -195,9 +208,12 @@ export class YoutubeDownload implements videoDownloadImpl {
             });
             //console.log(videoUrls)
             if(videoUrls){
-                for(const videoUrl of videoUrls){
+                for(let videoUrl of videoUrls){
                     if(videoUrl){
-                        resultUrls.push('https://www.youtube.com'+videoUrl)
+                        if(!videoUrl.includes("https://www.youtube.com")){
+                            videoUrl='https://www.youtube.com'+videoUrl
+                        }
+                        resultUrls.push(videoUrl)
                     }
                 }
             }

@@ -23,6 +23,7 @@ import { Video } from '@/modules/interface/Video';
 import { VideoDownloadTaskDetailModule } from '@/modules/VideoDownloadTaskDetailModule';
 import {VideoDownloadTaskAccountsModule} from "@/modules/VideoDownloadTaskAccountsModule"
 import {VideoDownloadTaskAccountEntity} from "@/entityTypes/videoType"
+import {VideoDownloadTaskUrlModule} from "@/modules/VideoDownloadTaskUrlModule"
 
 //import {} from "@/entityTypes/proxyType"
 export class videoController {
@@ -33,6 +34,7 @@ export class videoController {
     private videoDescriptionModule:VideoDescriptionModule
     private videoDownloadTaskDetailModule:VideoDownloadTaskDetailModule
     private videoDownloadTaskAccountsModule:VideoDownloadTaskAccountsModule
+    private videoDownloadTaskUrlModule:VideoDownloadTaskUrlModule
     constructor() {
         // const tokenService = new Token()
         // const dbpath = tokenService.getValue(USERSDBPATH)
@@ -46,6 +48,7 @@ export class videoController {
         this.socialAccountApi = new SocialAccountApi()
         this.videoDescriptionModule=new VideoDescriptionModule()
         this.videoDownloadTaskDetailModule=new VideoDownloadTaskDetailModule()
+        this.videoDownloadTaskUrlModule=new VideoDownloadTaskUrlModule()
     }
     //get video download tool
     public async getVideoDownloadTool(platform:string):Promise<Video|null>{
@@ -262,7 +265,7 @@ export class videoController {
 
 
     }
-    public async DownloadVideo(param:downloadVideoparam,startCall?: (taskId: number) => void){
+    public async downloadVideo(param:downloadVideoparam,startCall?: (taskId: number) => void){
         //get video tool
         const videoTool=await this.getVideoDownloadTool(param.platform)
         if(!videoTool){
@@ -285,7 +288,7 @@ export class videoController {
             throw new Error("video task save failed")
         }
         //save video url
-        
+
         const vdetd:VideoDownloadTaskDetailEntity={
             task_id: taskId,
             download_type:param.isplaylist?DownloadType.MULTIVIDEO:DownloadType.SINGLEVIDEO,
@@ -304,6 +307,10 @@ export class videoController {
                 }
                 this.videoDownloadTaskAccountsModule.create(taskAccount)
             }
+        }
+        //save task url
+        for(const link of param.link){
+            this.videoDownloadTaskUrlModule.create({task_id:taskId,url:link})
         }
         //process download video
         await this.processDownloadVideo(param,videoTool,taskId,startCall)

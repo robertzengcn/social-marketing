@@ -1,7 +1,7 @@
 import { VideoDownloadTaskUrldb } from "@/model/VideoDownloadTaskUrldb";
 import { BaseModule } from "@/modules/baseModule";
 import { VideoDownloadTaskUrlEntity } from "@/entityTypes/videoType"
-export class VideoDownloadTaskModule extends BaseModule {
+export class VideoDownloadTaskUrlModule extends BaseModule {
     private videoDownloadTaskUrldb: VideoDownloadTaskUrldb
     constructor() {
         super()
