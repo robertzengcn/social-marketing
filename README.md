@@ -68,6 +68,9 @@ run a parallel task doing checks, i.e. for typescript:
 tsc --noEmit --watch
 ```
 
+### Icon library
+
+https://pictogrammers.com/library/mdi/
 
 
 

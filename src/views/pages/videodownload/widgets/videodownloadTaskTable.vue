@@ -29,8 +29,9 @@
                 mdi-login
             </v-icon>
             <v-icon size="small" class="me-2" @click="openTasklist(item)">
-                mdi-play_circle
+                mdi-play
             </v-icon>
+           
 
         </template>
     </v-data-table-server>

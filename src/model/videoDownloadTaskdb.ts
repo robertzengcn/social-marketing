@@ -66,4 +66,10 @@ export class VideoDownloadTaskdb {
         const result=stmt.run(status, taskId)
        return result.changes > 0;
       }
+      //get video download task info by id
+      public getVideoDownloadTask(taskId:number):VideoDownloadTaskEntity{
+        const stmt = this.db.prepare(`SELECT id,task_name as taskName,platform,savepath,record_time,status FROM ${this.videoDownloadTaskTable} WHERE id=?`);
+        const row = stmt.get(taskId) as VideoDownloadTaskEntity;
+        return row;
+      }
 }

@@ -50,7 +50,7 @@
   },
   "dependencies": {
     "@lem0-packages/puppeteer-page-proxy": "^1.4.1",
-    "@mdi/font": "5.9.55",
+    "@mdi/font": "7.4.47",
     "@rollup/plugin-alias": "^5.1.0",
     "@types/better-sqlite3": "^7.6.9",
     "apexcharts": "^3.44.0",

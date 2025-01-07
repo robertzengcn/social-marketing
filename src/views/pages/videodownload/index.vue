@@ -362,6 +362,12 @@ async function onSubmit() {
     accounts.value.forEach((element) => {
       accountIds.push(element.id);
     });
+    const proxyIds: Array<number> = [];
+    proxyValue.value.forEach((element) => {
+      if(element.id){
+      proxyIds.push(element.id);
+      }
+    });
     const isPlaylist=chooseType.value=="playlist"?true:false
     const data: downloadVideoparam = {
       taskName: taskName.value,
@@ -370,7 +376,7 @@ async function onSubmit() {
       link: validUrls,
       savePath: savePath.value,
       isplaylist:isPlaylist,
-      proxy:proxyValue.value,
+      proxy:proxyIds,
       ProxyOverride:useProxyOverride.value,
       cookies_type:cookiesType.value,
       browserName:browserType.value,

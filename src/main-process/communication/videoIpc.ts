@@ -1,5 +1,5 @@
 import { ipcMain } from 'electron';
-import { VIDEODOWNLOAD, VIDEODOWNLOAD_MESSAGE, VIDEODOWNLOAD_TASK_LIST,VIDEODOWNLOAD_LIST } from '@/config/channellist'
+import { VIDEODOWNLOAD, VIDEODOWNLOAD_MESSAGE, VIDEODOWNLOAD_TASK_LIST,VIDEODOWNLOAD_LIST,VIDEODOWNLOADTASK_RETRY } from '@/config/channellist'
 import { videoController } from '@/controller/videoController';
 import { CommonDialogMsg,CommonResponse } from "@/entityTypes/commonType";
 import { CustomError } from '@/modules/customError';
@@ -76,8 +76,8 @@ export function registerVideoIpcHandlers() {
         //     isplaylist:qdata.isplaylist
         // }
         
-        await videoCtrl.downloadVideo(qdata,(taskId)=>{
-            if(taskId){
+        await videoCtrl.downloadVideo(qdata,()=>{
+            // if(taskId){
                 const videoMsgs: CommonDialogMsg = {
                     status: true,
                     code: 200,
@@ -87,7 +87,7 @@ export function registerVideoIpcHandlers() {
                     }
                 }
                 event.sender.send(VIDEODOWNLOAD_MESSAGE, videoMsgs)
-            }
+            // }
             
         }).catch(function (error) {
             console.log("error:" + error)
@@ -152,5 +152,8 @@ export function registerVideoIpcHandlers() {
             data:res
         }
         return resp
+    })
+    ipcMain.on(VIDEODOWNLOADTASK_RETRY, async (event, arg) => {
+
     })
 }

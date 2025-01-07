@@ -42,4 +42,8 @@ export class VideoDownloadTaskModule extends BaseModule{
       public updateVideoDownloadTaskStatus(taskId: number,status:TaskStatus):boolean{
         return this.videoDownloadTaskdb.updateVideoDownloadTaskStatus(taskId,status);
       }
+      //get video download task info by id
+      public getVideoDownloadTask(taskId:number):VideoDownloadTaskEntity{
+        return this.videoDownloadTaskdb.getVideoDownloadTask(taskId)
+      }
 }

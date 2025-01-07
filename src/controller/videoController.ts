@@ -2,8 +2,8 @@ import { videoFactory } from "@/modules/video/videoFactory";
 import { downloadVideoparam, VideoDownloadTaskEntity, processVideoDownloadParam, CookiesProxy } from "@/entityTypes/videoType";
 // import { VideoDownloadTaskdb } from "@/model/videoDownloadTaskdb";
 // import { VideoDownloaddb} from "@/model/videoDownloaddb"
-import {VideoDownloadModule} from "@/modules/VideoDownloadModule"
-import {VideoDownloadTaskModule} from "@/modules/VideoDownloadTaskModule"
+import { VideoDownloadModule } from "@/modules/VideoDownloadModule"
+import { VideoDownloadTaskModule } from "@/modules/VideoDownloadTaskModule"
 import { Token } from "@/modules/token"
 import * as path from 'path';
 import * as fs from 'fs';
@@ -14,27 +14,28 @@ import { v4 as uuidv4 } from 'uuid';
 // import { CustomError } from '@/modules/customError'
 import { AccountCookiesModule } from "@/modules/accountCookiesModule"
 import { SocialAccountApi } from "@/api/socialAccountApi"
-import {ProcessMessage} from "@/entityTypes/processMessage-type"
+import { ProcessMessage } from "@/entityTypes/processMessage-type"
 // import {VideodownloadMsg} from "@/entityTypes/videoType";
-import {ListData,TaskStatus} from "@/entityTypes/commonType"
-import {VideoDownloadEntity,VideoDownloadStatus,VideoDescriptionEntity,VideodownloadTaskMsg,VideoDownloadListDisplay,VideodownloadMsg,DownloadVideoControlparam,VideoDownloadTaskDetailEntity,DownloadType,CookiesType} from "@/entityTypes/videoType"
-import {VideoDescriptionModule} from "@/modules/videoDescriptionModule"
+import { ListData, TaskStatus } from "@/entityTypes/commonType"
+import { VideoDownloadEntity, VideoDownloadStatus, VideoDescriptionEntity, VideodownloadTaskMsg, VideoDownloadListDisplay, VideodownloadMsg, DownloadVideoControlparam, VideoDownloadTaskDetailEntity, DownloadType, CookiesType } from "@/entityTypes/videoType"
+import { VideoDescriptionModule } from "@/modules/videoDescriptionModule"
 import { Video } from '@/modules/interface/Video';
 import { VideoDownloadTaskDetailModule } from '@/modules/VideoDownloadTaskDetailModule';
-import {VideoDownloadTaskAccountsModule} from "@/modules/VideoDownloadTaskAccountsModule"
-import {VideoDownloadTaskAccountEntity} from "@/entityTypes/videoType"
-import {VideoDownloadTaskUrlModule} from "@/modules/VideoDownloadTaskUrlModule"
-
+import { VideoDownloadTaskAccountsModule } from "@/modules/VideoDownloadTaskAccountsModule"
+import { VideoDownloadTaskAccountEntity } from "@/entityTypes/videoType"
+import { VideoDownloadTaskUrlModule } from "@/modules/VideoDownloadTaskUrlModule"
+import {Proxy} from "@/entityTypes/proxyType"
+import {ProxyApi} from "@/api/proxyApi"
 //import {} from "@/entityTypes/proxyType"
 export class videoController {
     private videoDownloadModule: VideoDownloadModule
     private videoDownloadTaskModule: VideoDownloadTaskModule
     private accountCookiesModule: AccountCookiesModule
     private socialAccountApi: SocialAccountApi
-    private videoDescriptionModule:VideoDescriptionModule
-    private videoDownloadTaskDetailModule:VideoDownloadTaskDetailModule
-    private videoDownloadTaskAccountsModule:VideoDownloadTaskAccountsModule
-    private videoDownloadTaskUrlModule:VideoDownloadTaskUrlModule
+    private videoDescriptionModule: VideoDescriptionModule
+    private videoDownloadTaskDetailModule: VideoDownloadTaskDetailModule
+    private videoDownloadTaskAccountsModule: VideoDownloadTaskAccountsModule
+    private videoDownloadTaskUrlModule: VideoDownloadTaskUrlModule
     constructor() {
         // const tokenService = new Token()
         // const dbpath = tokenService.getValue(USERSDBPATH)
@@ -46,25 +47,25 @@ export class videoController {
         this.videoDownloadTaskModule = new VideoDownloadTaskModule()
         this.accountCookiesModule = new AccountCookiesModule()
         this.socialAccountApi = new SocialAccountApi()
-        this.videoDescriptionModule=new VideoDescriptionModule()
-        this.videoDownloadTaskDetailModule=new VideoDownloadTaskDetailModule()
-        this.videoDownloadTaskUrlModule=new VideoDownloadTaskUrlModule()
+        this.videoDescriptionModule = new VideoDescriptionModule()
+        this.videoDownloadTaskDetailModule = new VideoDownloadTaskDetailModule()
+        this.videoDownloadTaskUrlModule = new VideoDownloadTaskUrlModule()
     }
     //get video download tool
-    public async getVideoDownloadTool(platform:string):Promise<Video|null>{
+    public async getVideoDownloadTool(platform: string): Promise<Video | null> {
         const videoFactoryInstance = new videoFactory()
         const videoTool = await videoFactoryInstance.getVideotool(platform)
         return videoTool
     }
     //check video tool requirement
-    public checkVideoRequirement(videoTool:Video):boolean{
+    public checkVideoRequirement(videoTool: Video): boolean {
         return videoTool.checkRequirement()
     }
     //save video task, get task id
     public saveVdieoDownloadTask(vdte: VideoDownloadTaskEntity): number {
         return this.videoDownloadTaskModule.saveVideoDownloadTask(vdte)
     }
-    public async processDownloadVideo(param: DownloadVideoControlparam,videoTool:Video,taskId:number,startCall?: (taskId: number) => void) {
+    public async processDownloadVideo(param: DownloadVideoControlparam, videoTool: Video, taskId: number, startCall?: () => void) {
         // const videoFactoryInstance = new videoFactory()
         //get random one from array of param.accountId
         // const randomItem = param.accountId[Math.floor(Math.random() * param.accountId.length)]
@@ -95,9 +96,9 @@ export class videoController {
         // }
         // console.log("task id:"+taskId)
         // const res=videoTool.checkRequirement()
-        if (startCall) {
-            startCall(Number(taskId))
-        }
+        // if (startCall) {
+        //     startCall(Number(taskId))
+        // }
 
         // const videoDownloaddb=new VideoDownloaddb(dbpath)
         // if(res){
@@ -124,7 +125,7 @@ export class videoController {
         const { port1, port2 } = new MessageChannelMain()
         const tokenService = new Token()
 
-        
+
         // console.log(path.join(__dirname, 'utilityCode.js'))
         let logpath = tokenService.getValue(USERLOGPATH)
         if (!logpath) {
@@ -136,9 +137,9 @@ export class videoController {
         const uuid = uuidv4({ random: getRandomValues(new Uint8Array(16)) })
         const errorLogfile = path.join(logpath, 'downloadVideo', taskId.toString() + '_' + uuid + '.error.log')
         const runLogfile = path.join(logpath, 'downloadVideo', taskId.toString() + '_' + uuid + '.runtime.log')
-        
-        this.videoDownloadTaskModule.updateTasklog(taskId,runLogfile)
-        this.videoDownloadTaskModule.updateTaskErrorlog(taskId,errorLogfile)
+
+        this.videoDownloadTaskModule.updateTasklog(taskId, runLogfile)
+        this.videoDownloadTaskModule.updateTaskErrorlog(taskId, errorLogfile)
         const cookiesProxies: CookiesProxy[] = []
 
         // const cookies:Array<string>=[]
@@ -150,21 +151,38 @@ export class videoController {
                 const cookiesproxy: CookiesProxy = {
                     cookies: accountEntity.cookies,
                 }
-                if(!param.ProxyOverride){//not use account proxy
-                //get proxy
-                const accResp = await this.socialAccountApi.getAccountdetail(accountid)
-                if (accResp) {
-                    if (accResp.data && accResp.data.proxy) {
-                        cookiesproxy.proxy = accResp.data.proxy
+                if (!param.ProxyOverride) {//not use account proxy
+                    //get proxy
+                    const accResp = await this.socialAccountApi.getAccountdetail(accountid)
+                    if (accResp) {
+                        if (accResp.data && accResp.data.proxy) {
+                            cookiesproxy.proxy = accResp.data.proxy
+                        }
                     }
                 }
-            }
                 cookiesProxies.push(cookiesproxy)
             }
             // const cookie=tokenService.getValue(accountid)
             // if(cookie){
             //     cookies.push(cookie)
             // }
+        }
+        const proxyArr:Array<Proxy>=[]
+        if(param.proxy.length>0){
+           //get proxy from remote
+          const proxyapi =new ProxyApi()
+          param.proxy.forEach(async (value)=>{
+            const proxy=await proxyapi.getProxyDetail(value)
+            if(proxy&&proxy.status){
+                if(proxy.data){
+                proxyArr.push(proxy.data)
+                }
+            }
+          })
+        }
+
+        if (startCall) {
+            startCall()
         }
         const paramData: processVideoDownloadParam = {
             exePath: execFilepath,
@@ -173,13 +191,15 @@ export class videoController {
             isplaylist: param.isplaylist,
             cookiesProxy: cookiesProxies,
             savePath: param.savePath,
-            proxy: param.proxy,
+            proxy: proxyArr,
             BrowserName: param.browserName,
-            videoQuality:param.videoQuality
+            videoQuality: param.videoQuality
         }
         console.log(childPath)
         const child = utilityProcess.fork(childPath, [], { stdio: "pipe" })
+       
         child.on("spawn", () => {
+         
             console.log("child process satart, pid is" + child.pid)
             child.postMessage(JSON.stringify({ action: "downloadVideo", data: paramData }), [port1])
 
@@ -217,106 +237,108 @@ export class videoController {
         child.on('message', (message) => {
             console.log("get message from child")
             console.log('Message from child:', JSON.parse(message));
-            const childdata=JSON.parse(message) as ProcessMessage<any>
-            if(childdata.action=="singlevideodownloadMsg"){//download single video result
-                const getData=childdata.data as VideodownloadMsg
-                if(getData?.status){
+            const childdata = JSON.parse(message) as ProcessMessage<any>
+            if (childdata.action == "singlevideodownloadMsg") {//download single video result
+                const getData = childdata.data as VideodownloadMsg
+                if (getData?.status) {
 
-                //save result
-                let savepath=''
-                if(getData.savepath){
-                    savepath=getData.savepath
-                }
-                const videoDownloadEntity:VideoDownloadEntity={
-                    url:getData.link,
-                    savepath:savepath,
-                    task_id:Number(taskId),
-                    status:VideoDownloadStatus.Finish,
-                    
-                }
-                
-                // this.emailSeachTaskModule.saveSearchResult(taskId,childdata.data)
-                const videoNum=this.videoDownloadModule.saveVideoDownload(videoDownloadEntity)
+                    //save result
+                    let savepath = ''
+                    if (getData.savepath) {
+                        savepath = getData.savepath
+                    }
+                    const videoDownloadEntity: VideoDownloadEntity = {
+                        url: getData.link,
+                        savepath: savepath,
+                        task_id: Number(taskId),
+                        status: VideoDownloadStatus.Finish,
 
-                const videoDescriptionEntity:VideoDescriptionEntity={
-                    videoId:videoNum,
-                    title:getData.title?getData.title:'',
-                    description:getData.description?getData.description:'',
-                    language:"en-us"
-                }
-                //save video Video Description
-                this.videoDescriptionModule.saveVideoDescription(videoDescriptionEntity)
-                }else if(getData&&(!getData?.status)){//failure
-                    const videoDownloadEntity:VideoDownloadEntity={
-                        url:getData.link,
-                        savepath:'',
-                        task_id:Number(taskId),
-                        status:VideoDownloadStatus.Error,
-                        error_log:getData.log
+                    }
+
+                    // this.emailSeachTaskModule.saveSearchResult(taskId,childdata.data)
+                    const videoNum = this.videoDownloadModule.saveVideoDownload(videoDownloadEntity)
+
+                    const videoDescriptionEntity: VideoDescriptionEntity = {
+                        videoId: videoNum,
+                        title: getData.title ? getData.title : '',
+                        description: getData.description ? getData.description : '',
+                        language: "en-us"
+                    }
+                    //save video Video Description
+                    this.videoDescriptionModule.saveVideoDescription(videoDescriptionEntity)
+                } else if (getData && (!getData?.status)) {//failure
+                    const videoDownloadEntity: VideoDownloadEntity = {
+                        url: getData.link,
+                        savepath: '',
+                        task_id: Number(taskId),
+                        status: VideoDownloadStatus.Error,
+                        error_log: getData.log
                     }
                     this.videoDownloadModule.saveVideoDownload(videoDownloadEntity)
                 }
                 //child.kill()
-            }else if(childdata.action=="videodownloadTaskMsg"){
-                const res=childdata.data as VideodownloadTaskMsg
+            } else if (childdata.action == "videodownloadTaskMsg") {
+                const res = childdata.data as VideodownloadTaskMsg
                 WriteLog(errorLogfile, res.msg)
             }
         });
 
 
     }
-    public async downloadVideo(param:downloadVideoparam,startCall?: (taskId: number) => void){
+    public async downloadVideo(param: downloadVideoparam, startCall?: () => void) {
         //get video tool
-        const videoTool=await this.getVideoDownloadTool(param.platform)
-        if(!videoTool){
+        const videoTool = await this.getVideoDownloadTool(param.platform)
+        if (!videoTool) {
             throw new Error("video tool not found")
         }
         //check video tool requirement
-        const res=this.checkVideoRequirement(videoTool)
-        if(!res){
+        const res = this.checkVideoRequirement(videoTool)
+        if (!res) {
             throw new Error("video tool requirement check failed")
         }
         //save video task
-        const videoTaskEntity:VideoDownloadTaskEntity={
-            taskName:param.taskName,
-            platform:param.platform,
-            savepath:param.savePath,
-            status:TaskStatus.Processing
+        const videoTaskEntity: VideoDownloadTaskEntity = {
+            taskName: param.taskName,
+            platform: param.platform,
+            savepath: param.savePath,
+            status: TaskStatus.Processing
         }
-        const taskId=this.saveVdieoDownloadTask(videoTaskEntity)
-        if(!taskId){
+        const taskId = this.saveVdieoDownloadTask(videoTaskEntity)
+        if (!taskId) {
             throw new Error("video task save failed")
         }
         //save video url
 
-        const vdetd:VideoDownloadTaskDetailEntity={
+        const vdetd: VideoDownloadTaskDetailEntity = {
             task_id: taskId,
-            download_type:param.isplaylist?DownloadType.MULTIVIDEO:DownloadType.SINGLEVIDEO,
-            cookies_type:param.cookies_type=="browser cookies"?CookiesType.USEBROWSER:CookiesType.ACCOUNTCOOKIES,
-            browser_type:param.browserName?param.browserName:'',
+            download_type: param.isplaylist ? DownloadType.MULTIVIDEO : DownloadType.SINGLEVIDEO,
+            cookies_type: param.cookies_type == "browser cookies" ? CookiesType.USEBROWSER : CookiesType.ACCOUNTCOOKIES,
+            browser_type: param.browserName ? param.browserName : '',
         }
         //save video task detail
         this.videoDownloadTaskDetailModule.create(vdetd)
         //save task accounts
-        if(param.accountId.length>0){
-            
-            for(const accid of param.accountId){
-                const taskAccount:VideoDownloadTaskAccountEntity={
-                    task_id:taskId,
-                    account_id:accid
+        if (param.accountId.length > 0) {
+
+            for (const accid of param.accountId) {
+                const taskAccount: VideoDownloadTaskAccountEntity = {
+                    task_id: taskId,
+                    account_id: accid
                 }
                 this.videoDownloadTaskAccountsModule.create(taskAccount)
             }
         }
         //save task url
-        for(const link of param.link){
-            this.videoDownloadTaskUrlModule.create({task_id:taskId,url:link})
+        for (const link of param.link) {
+            this.videoDownloadTaskUrlModule.create({ task_id: taskId, url: link })
         }
+        //save proxy id
+
         //process download video
-        await this.processDownloadVideo(param,videoTool,taskId,startCall)
+        await this.processDownloadVideo(param, videoTool, taskId, startCall)
     }
     //get video download list
-    public videoDownloadtasklist(page: number, size: number):ListData<VideoDownloadTaskEntity> {
+    public videoDownloadtasklist(page: number, size: number): ListData<VideoDownloadTaskEntity> {
         // const tokenService=new Token()
         // const dbpath=await tokenService.getValue(USERSDBPATH)
         // if(!dbpath){
@@ -325,44 +347,97 @@ export class videoController {
         // const videoDownloaddb=new VideoDownloaddb(dbpath)
         const list = this.videoDownloadTaskModule.getVideoDownloadTaskList(page, size)
         const count = this.videoDownloadTaskModule.countVideoDownloadTaskList()
-        return {records:list,num:count} as ListData<VideoDownloadTaskEntity>
-        
+        return { records: list, num: count } as ListData<VideoDownloadTaskEntity>
+
     }
 
     //get video download list by task id
-    public videoDownloadlist(taskId: number,page:number,size:number):ListData<VideoDownloadListDisplay> {
+    public videoDownloadlist(taskId: number, page: number, size: number): ListData<VideoDownloadListDisplay> {
         // const tokenService=new Token()
         // const dbpath=await tokenService.getValue(USERSDBPATH)
         // if(!dbpath){
         //     throw new Error("user db path not exist")
         // }
         // const videoDownloaddb=new VideoDownloaddb(dbpath)
-        const res:Array<VideoDownloadListDisplay>=[]
-        const list = this.videoDownloadModule.getVideoDownloadList(taskId,page,size)
-        list.forEach((element)=>{
-            let vdld:VideoDownloadListDisplay={
-                id:element.id,
-                url:element.url,
-                savepath:element.savepath,
-                record_time:element.record_time,
-                task_id:element.task_id,
-                status:element.status,
-                title:'',
-                description:''
+        const res: Array<VideoDownloadListDisplay> = []
+        const list = this.videoDownloadModule.getVideoDownloadList(taskId, page, size)
+        list.forEach((element) => {
+            let vdld: VideoDownloadListDisplay = {
+                id: element.id,
+                url: element.url,
+                savepath: element.savepath,
+                record_time: element.record_time,
+                task_id: element.task_id,
+                status: element.status,
+                title: '',
+                description: ''
             }
-            if(element.id&&element.status==VideoDownloadStatus.Finish){
-                
-                const videoDescription=this.videoDescriptionModule.getVideoDescription(element.id)
-                if(videoDescription){
-                    vdld.title=videoDescription.title
-                    vdld.description=videoDescription.description
+            if (element.id && element.status == VideoDownloadStatus.Finish) {
+
+                const videoDescription = this.videoDescriptionModule.getVideoDescription(element.id)
+                if (videoDescription) {
+                    vdld.title = videoDescription.title
+                    vdld.description = videoDescription.description
                 }
             }
             res.push(vdld)
         })
         const count = this.videoDownloadModule.countVideoDownloadList(taskId)
-        return {records:res,num:count} as ListData<VideoDownloadListDisplay>
+        return { records: res, num: count } as ListData<VideoDownloadListDisplay>
     }
-   
+    public async retryDownloadvideo(taskId: number,startCall:()=>void) {
+        //get task info
+        const taskInfo = this.videoDownloadTaskModule.getVideoDownloadTask(taskId)
+        if(!taskInfo){
+            throw new Error("task info not found")
+        }
+        //get task detail
+        const taskDetail = this.videoDownloadTaskDetailModule.getByTaskId(taskId)
+        if(!taskDetail){
+            throw new Error("task detail not found")
+        }
+
+        //get video tool
+        const videoTool = await this.getVideoDownloadTool(taskInfo.platform)
+        if (!videoTool) {
+            throw new Error("video tool not found")
+        }
+        //check video tool requirement
+        const res = this.checkVideoRequirement(videoTool)
+        if (!res) {
+            throw new Error("video tool requirement check failed")
+        }
+        let accountIds:Array<number>=[]
+        if(taskDetail.cookies_type==CookiesType.ACCOUNTCOOKIES){
+            //get account id
+            const taskAccounts = this.videoDownloadTaskAccountsModule.getAccountByTaskId(taskId)
+            if(taskAccounts.length>0){
+               accountIds=taskAccounts.map((value)=>value.account_id)
+                //process download video
+                //await this.processDownloadVideo({taskName:taskInfo.taskName,platform:taskInfo.platform,link:[],savePath:taskInfo.savepath,isplaylist:taskDetail.download_type==DownloadType.MULTIVIDEO,accountId:accountIds,cookies_type:taskDetail.cookies_type==CookiesType.ACCOUNTCOOKIES?"account cookies":"browser cookies",browserName:taskDetail.browser_type?taskDetail.browser_type:"",videoQuality:""}, videoTool, taskId)
+            }
+
+        }
+        //get task url
+        const taskUrls = this.videoDownloadTaskUrlModule.getItemsByTaskId(taskId)
+        if(taskUrls.length>0){
+            const links=taskUrls.map((value)=>value.url)
+            const data:DownloadVideoControlparam={
+                accountId:accountIds,
+                platform:taskInfo.platform,
+                link:links,
+                savePath:taskInfo.savepath,
+                isplaylist:taskDetail.download_type==DownloadType.MULTIVIDEO,
+                proxy:[],
+                ProxyOverride:false,
+                cookies_type:taskDetail.cookies_type==CookiesType.ACCOUNTCOOKIES?"account cookies":"browser cookies",
+                browserName:taskDetail.browser_type?taskDetail.browser_type:"",
+                videoQuality:0
+            }
+            //process download video
+            await this.processDownloadVideo(data, videoTool, taskId,startCall)
+        }
+
+    }
 
 }
