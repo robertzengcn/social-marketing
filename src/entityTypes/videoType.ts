@@ -85,6 +85,7 @@ export type processVideoDownloadParam={
     proxy?:Array<Proxy>,
     BrowserName?:string,
     videoQuality?:number,
+    successlink?:Array<string>,
 }
 export type VideoDownloadParam={
     platform:string,

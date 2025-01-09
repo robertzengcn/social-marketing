@@ -28,7 +28,7 @@
             <v-icon size="small" class="me-2" @click="openTasklist(item)">
                 mdi-login
             </v-icon>
-            <v-icon size="small" class="me-2" @click="openTasklist(item)">
+            <v-icon size="small" class="me-2" @click="taskRetry(item)">
                 mdi-play
             </v-icon>
            
@@ -41,9 +41,9 @@
 
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
-import { ref, computed } from 'vue'
+import { ref, computed,reactive,onMounted,onUnmounted } from 'vue'
 import { SearchResult } from '@/views/api/types'
-import { getVideoTasklist } from "@/views/api/video";
+import { getVideoTasklist,retryVideoTask } from "@/views/api/video";
 import { VideoDownloadTaskEntity } from "@/entityTypes/videoType";
 import router from '@/views/router';
 const { t } = useI18n({ inheritLocale: true });
@@ -119,9 +119,10 @@ const serverItems = ref<Array<VideoDownloadTaskEntity>>([]);
 const loading = ref(false);
 const totalItems = ref(0);
 const search = ref('');
-const showDeleteModal = ref(false);
-const deleteId = ref(0);
-const alertext = ref("");
+let refreshInterval: ReturnType<typeof setInterval> | undefined;
+// const showDeleteModal = ref(false);
+// const deleteId = ref(0);
+// const alertext = ref("");
 
 
 function loadItems({ page, itemsPerPage, sortBy }) {
@@ -167,7 +168,34 @@ const openTasklist = (item: VideoDownloadTaskEntity) => {
         });
     }
 };
+const taskRetry=(item: VideoDownloadTaskEntity)=>{
+    if (item.id) {
+        retryVideoTask(item.id)
+    }
+}
+const options = reactive({
+  page: 1, // Initial page
+  itemsPerPage: 10, // Items per page
+});
+const startAutoRefresh = () => {
+  refreshInterval = setInterval(function () {
+    loadItems({ page: options.page, itemsPerPage: itemsPerPage.value, sortBy: "" });
+  }, 10000); // Refresh every 5 seconds
+}
+const stopAutoRefresh = () => {
+  if (refreshInterval) {
+    clearInterval(refreshInterval);
+    refreshInterval = undefined;
+  }
+};
+onMounted(() => {
 
+
+startAutoRefresh();
+});
+onUnmounted(() => {
+  stopAutoRefresh();
+});
 
 
 </script>

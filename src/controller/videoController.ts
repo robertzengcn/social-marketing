@@ -186,6 +186,8 @@ export class videoController {
         if (startCall) {
             startCall()
         }
+        //get the video lnk that already download in the task
+        
         const paramData: processVideoDownloadParam = {
             exePath: execFilepath,
             platform: param.platform,
@@ -195,7 +197,8 @@ export class videoController {
             savePath: param.savePath,
             proxy: proxyArr,
             BrowserName: param.browserName,
-            videoQuality: param.videoQuality
+            videoQuality: param.videoQuality,
+            successlink: []
         }
         console.log(childPath)
         const child = utilityProcess.fork(childPath, [], { stdio: "pipe" })
@@ -214,7 +217,7 @@ export class videoController {
         })
 
         child.stderr?.on('data', (data) => {
-            const ingoreStr = ["Debugger attached"]
+            const ingoreStr = ["Debugger attached","Waiting for the debugger to disconnect"]
             if (!ingoreStr.some((value) => data.includes(value))) {
 
                 // seModel.saveTaskerrorlog(taskId,data)

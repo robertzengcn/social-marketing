@@ -172,6 +172,7 @@ export class YoutubeDownload implements videoDownloadImpl {
     }
     //get playlist video link
     async getPlaylist(url:string):Promise<Array<string>|null>{
+        try{
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
         await page.goto(url);
@@ -219,5 +220,11 @@ export class YoutubeDownload implements videoDownloadImpl {
             }
         }
         return resultUrls
+    } catch (error) {
+        if(error instanceof Error){
+        console.error('An error occurred:', error.message);
+        }
+        throw error
+    }
     }
 }

@@ -623,4 +623,12 @@ export function convertNetscapeCookiesToJson (filePath: string): CookiesType[] {
 
   return cookies;
 };
+// Utility function to remove parameters after & in a URL
+function removeParamsAfterAmpersand(url: string): string {
+  const index = url.indexOf('&');
+  if (index !== -1) {
+      return url.substring(0, index);
+  }
+  return url;
+}
 
