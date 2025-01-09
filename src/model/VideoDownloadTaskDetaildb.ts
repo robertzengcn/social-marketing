@@ -12,9 +12,12 @@ export class VideoDownloadTaskDetaildb extends BaseDb{
         // this.db = scraperModel.getdb();
     }
     create(vdte: VideoDownloadTaskDetailEntity): number {
-
-        const stmt = this.db.prepare("INSERT INTO "+this.table+" (task_id, download_type,cookies_type,browser_type) VALUES (?, ?,?,?)");
-        const res = stmt.run(vdte.task_id, vdte.download_type,vdte.cookies_type,vdte.browser_type);
+        let proxy_override=0
+        if(vdte.proxy_override){
+            proxy_override=1
+        }
+        const stmt = this.db.prepare("INSERT INTO "+this.table+" (task_id, download_type,cookies_type,browser_type,proxy_override,video_quality) VALUES (?,?,?,?,?,?)");
+        const res = stmt.run(vdte.task_id, vdte.download_type,vdte.cookies_type,vdte.browser_type,proxy_override,vdte.video_quality);
         return res.lastInsertRowid as number;
     }
 
@@ -27,9 +30,13 @@ export class VideoDownloadTaskDetaildb extends BaseDb{
     }
 
     update(id: number, vdte: VideoDownloadTaskDetailEntity): void {
+        let proxy_override=0
+        if(vdte.proxy_override){
+            proxy_override=1
+        }
         const stmt = this.db.prepare(`
             UPDATE ${this.table}
-            SET task_id=@task_id,download_type = @download_type,cookies_type=@cookies_type,browser_type=@browser_type
+            SET task_id=@task_id,download_type = @download_type,cookies_type=@cookies_type,browser_type=@browser_type,proxy_override=@proxy_override,video_quality=@video_quality
             WHERE id = @id
         `);
         stmt.run({
@@ -37,7 +44,8 @@ export class VideoDownloadTaskDetaildb extends BaseDb{
             task_id: vdte.task_id,
             download_type: vdte.download_type,
             cookies_type:vdte.cookies_type,
-            browser_type:vdte.browser_type
+            browser_type:vdte.browser_type,
+            proxy_override:proxy_override
         })
     }
 

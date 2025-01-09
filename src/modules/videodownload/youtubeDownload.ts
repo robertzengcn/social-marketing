@@ -99,7 +99,7 @@ export class YoutubeDownload implements videoDownloadImpl {
                 let downloadedFilePath = '';
                 if(stdout){
                     //stdout is the file path, check file path is exist
-                    // downloadedFilePath = stdout.trim().replace(/"/g, ''); // Remove any quotation marks
+                    downloadedFilePath = stdout.trim() // Remove any quotation marks
                     if (fs.existsSync(downloadedFilePath)) {
                         // const jscommand=command+" "+url
                         //download success, start to get video title and description

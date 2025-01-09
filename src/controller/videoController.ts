@@ -24,8 +24,9 @@ import { VideoDownloadTaskDetailModule } from '@/modules/VideoDownloadTaskDetail
 import { VideoDownloadTaskAccountsModule } from "@/modules/VideoDownloadTaskAccountsModule"
 import { VideoDownloadTaskAccountEntity } from "@/entityTypes/videoType"
 import { VideoDownloadTaskUrlModule } from "@/modules/VideoDownloadTaskUrlModule"
-import {Proxy} from "@/entityTypes/proxyType"
-import {ProxyApi} from "@/api/proxyApi"
+import { VideoDownloadTaskProxyModule } from "@/modules/VideoDownloadTaskProxyModule"
+import { Proxy } from "@/entityTypes/proxyType"
+import { ProxyApi } from "@/api/proxyApi"
 //import {} from "@/entityTypes/proxyType"
 export class videoController {
     private videoDownloadModule: VideoDownloadModule
@@ -36,6 +37,7 @@ export class videoController {
     private videoDownloadTaskDetailModule: VideoDownloadTaskDetailModule
     private videoDownloadTaskAccountsModule: VideoDownloadTaskAccountsModule
     private videoDownloadTaskUrlModule: VideoDownloadTaskUrlModule
+    private videoDownloadTaskProxyModule: VideoDownloadTaskProxyModule
     constructor() {
         // const tokenService = new Token()
         // const dbpath = tokenService.getValue(USERSDBPATH)
@@ -167,18 +169,18 @@ export class videoController {
             //     cookies.push(cookie)
             // }
         }
-        const proxyArr:Array<Proxy>=[]
-        if(param.proxy.length>0){
-           //get proxy from remote
-          const proxyapi =new ProxyApi()
-          param.proxy.forEach(async (value)=>{
-            const proxy=await proxyapi.getProxyDetail(value)
-            if(proxy&&proxy.status){
-                if(proxy.data){
-                proxyArr.push(proxy.data)
+        const proxyArr: Array<Proxy> = []
+        if (param.proxy.length > 0) {
+            //get proxy from remote
+            const proxyapi = new ProxyApi()
+            param.proxy.forEach(async (value) => {
+                const proxy = await proxyapi.getProxyDetail(value)
+                if (proxy && proxy.status) {
+                    if (proxy.data) {
+                        proxyArr.push(proxy.data)
+                    }
                 }
-            }
-          })
+            })
         }
 
         if (startCall) {
@@ -197,9 +199,9 @@ export class videoController {
         }
         console.log(childPath)
         const child = utilityProcess.fork(childPath, [], { stdio: "pipe" })
-       
+
         child.on("spawn", () => {
-         
+
             console.log("child process satart, pid is" + child.pid)
             child.postMessage(JSON.stringify({ action: "downloadVideo", data: paramData }), [port1])
 
@@ -314,6 +316,9 @@ export class videoController {
             download_type: param.isplaylist ? DownloadType.MULTIVIDEO : DownloadType.SINGLEVIDEO,
             cookies_type: param.cookies_type == "browser cookies" ? CookiesType.USEBROWSER : CookiesType.ACCOUNTCOOKIES,
             browser_type: param.browserName ? param.browserName : '',
+            proxy_override: param.ProxyOverride,
+            video_quality: param.videoQuality ? param.videoQuality : 0
+
         }
         //save video task detail
         this.videoDownloadTaskDetailModule.create(vdetd)
@@ -333,7 +338,11 @@ export class videoController {
             this.videoDownloadTaskUrlModule.create({ task_id: taskId, url: link })
         }
         //save proxy id
-
+        if (param.proxy.length > 0) {
+            param.proxy.forEach((value) => {
+                this.videoDownloadTaskProxyModule.create({ task_id: taskId, proxy_id: value })
+            })
+        }
         //process download video
         await this.processDownloadVideo(param, videoTool, taskId, startCall)
     }
@@ -385,15 +394,15 @@ export class videoController {
         const count = this.videoDownloadModule.countVideoDownloadList(taskId)
         return { records: res, num: count } as ListData<VideoDownloadListDisplay>
     }
-    public async retryDownloadvideo(taskId: number,startCall:()=>void) {
+    public async retryDownloadvideo(taskId: number, startCall: () => void) {
         //get task info
         const taskInfo = this.videoDownloadTaskModule.getVideoDownloadTask(taskId)
-        if(!taskInfo){
+        if (!taskInfo) {
             throw new Error("task info not found")
         }
         //get task detail
         const taskDetail = this.videoDownloadTaskDetailModule.getByTaskId(taskId)
-        if(!taskDetail){
+        if (!taskDetail) {
             throw new Error("task detail not found")
         }
 
@@ -407,35 +416,49 @@ export class videoController {
         if (!res) {
             throw new Error("video tool requirement check failed")
         }
-        let accountIds:Array<number>=[]
-        if(taskDetail.cookies_type==CookiesType.ACCOUNTCOOKIES){
+        let accountIds: Array<number> = []
+        if (taskDetail.cookies_type == CookiesType.ACCOUNTCOOKIES) {
             //get account id
             const taskAccounts = this.videoDownloadTaskAccountsModule.getAccountByTaskId(taskId)
-            if(taskAccounts.length>0){
-               accountIds=taskAccounts.map((value)=>value.account_id)
+            if (taskAccounts.length > 0) {
+                accountIds = taskAccounts.map((value) => value.account_id)
                 //process download video
                 //await this.processDownloadVideo({taskName:taskInfo.taskName,platform:taskInfo.platform,link:[],savePath:taskInfo.savepath,isplaylist:taskDetail.download_type==DownloadType.MULTIVIDEO,accountId:accountIds,cookies_type:taskDetail.cookies_type==CookiesType.ACCOUNTCOOKIES?"account cookies":"browser cookies",browserName:taskDetail.browser_type?taskDetail.browser_type:"",videoQuality:""}, videoTool, taskId)
             }
 
         }
+
         //get task url
         const taskUrls = this.videoDownloadTaskUrlModule.getItemsByTaskId(taskId)
-        if(taskUrls.length>0){
-            const links=taskUrls.map((value)=>value.url)
-            const data:DownloadVideoControlparam={
-                accountId:accountIds,
-                platform:taskInfo.platform,
-                link:links,
-                savePath:taskInfo.savepath,
-                isplaylist:taskDetail.download_type==DownloadType.MULTIVIDEO,
-                proxy:[],
-                ProxyOverride:false,
-                cookies_type:taskDetail.cookies_type==CookiesType.ACCOUNTCOOKIES?"account cookies":"browser cookies",
-                browserName:taskDetail.browser_type?taskDetail.browser_type:"",
-                videoQuality:0
+
+        let proxys:Array<number>=[]
+
+        //get proxy lists
+        const proxylists=this.videoDownloadTaskUrlModule.getItemsByTaskId(taskId)
+        if(proxylists.length>0){
+           proxylists.forEach((value)=>{
+            if(value.id){
+                proxys.push(value.id)
+            }   
+           })
+        }
+
+        if (taskUrls.length > 0) {
+            const links = taskUrls.map((value) => value.url)
+            const data: DownloadVideoControlparam = {
+                accountId: accountIds,
+                platform: taskInfo.platform,
+                link: links,
+                savePath: taskInfo.savepath,
+                isplaylist: taskDetail.download_type == DownloadType.MULTIVIDEO,
+                proxy: proxys,
+                ProxyOverride: taskDetail.proxy_override,
+                cookies_type: taskDetail.cookies_type == CookiesType.ACCOUNTCOOKIES ? "account cookies" : "browser cookies",
+                browserName: taskDetail.browser_type ? taskDetail.browser_type : "",
+                videoQuality: taskDetail.video_quality
             }
             //process download video
-            await this.processDownloadVideo(data, videoTool, taskId,startCall)
+            await this.processDownloadVideo(data, videoTool, taskId, startCall)
         }
 
     }

@@ -167,6 +167,8 @@ export interface VideoDownloadTaskDetailEntity {
     download_type:DownloadType;
     cookies_type:CookiesType;
     browser_type:string;
+    proxy_override:boolean;
+    video_quality:number
 }
 export interface VideoDownloadTaskAccountEntity {
     id?: number;
@@ -177,4 +179,9 @@ export interface VideoDownloadTaskUrlEntity {
     id?: number;
     task_id: number;
     url: string;
+}
+export interface VideoDownloadTaskProxyEntity {
+    id?: number;
+    task_id: number;
+    proxy_id: number;
 }
