@@ -95,11 +95,11 @@ process.parentPort.on('message', async (e) => {
                             //signal download end
                         }else{//download playlist
                             // await downloadTool.downloadPlaylist(element)
-                            await downloadTool.downloadPlaylist(element,param.savePath,param.BrowserName,randCookiesproxy,itemProxy,param.exePath,param.videoQuality,(errorstring)=>{
+                            await downloadTool.downloadPlaylist(element,param.savePath,param.BrowserName,randCookiesproxy,itemProxy,param.exePath,param.videoQuality,(link,errorstring)=>{
                                 const message:ProcessMessage<VideodownloadMsg>={
                                     action:"singlevideodownloadMsg",
                                     data:{
-                                        link:element,
+                                        link:link,
                                         status:false,
                                         log:errorstring
                                     }

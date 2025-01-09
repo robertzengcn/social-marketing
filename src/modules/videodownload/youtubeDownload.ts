@@ -16,7 +16,7 @@ const execAsync = promisify(exec);
 export class YoutubeDownload implements videoDownloadImpl {
     private playerlisttype="/playlist?"
     // private signalplaytype="/watch?"
-    async downloadVideo(url: string, savePath: string, useBrowserCookies?:string,cookiesProxy?: CookiesProxy | null, proxy?: Proxy | null, execPath?: string, videoQuality?:number,errorCall?: (errorMsg: string) => void, stroutCall?: (message: string) => void, successCall?: (param:VideodoanloadSuccessCall) => void) {
+    async downloadVideo(url: string, savePath: string, useBrowserCookies?:string,cookiesProxy?: CookiesProxy | null, proxy?: Proxy | null, execPath?: string, videoQuality?:number,errorCall?: (link:string,errorMsg: string) => void, stroutCall?: (message: string) => void, successCall?: (param:VideodoanloadSuccessCall) => void) {
         if (!execPath) {
             throw new CustomError("youtube video package not found")
         }
@@ -91,7 +91,7 @@ export class YoutubeDownload implements videoDownloadImpl {
         if (stderr) {
             console.error("download error "+stderr)
             if (errorCall) {
-                errorCall(stderr)
+                errorCall(url,stderr)
             }
         } else {
             if (successCall) {
@@ -119,7 +119,7 @@ export class YoutubeDownload implements videoDownloadImpl {
                     }else{
                         console.log("error of file not found in path")
                         if (errorCall) {
-                            errorCall("file not found in path")
+                            errorCall(url,"file not found in path")
                         }
                     }
                    
@@ -134,20 +134,20 @@ export class YoutubeDownload implements videoDownloadImpl {
 
     }
     //download playlist
-    async downloadPlaylist(url: string, savePath: string, useBrowserCookies?:string,cookiesProxy?: CookiesProxy | null, proxy?: Proxy | null, execPath?: string, videoQuality?:number,errorCall?: (errorMsg: string) => void, stroutCall?: (message: string) => void, successCall?: (param:VideodoanloadSuccessCall) => void,endCall?:(error:string)=>void) {
+    async downloadPlaylist(url: string, savePath: string, useBrowserCookies?:string,cookiesProxy?: CookiesProxy | null, proxy?: Proxy | null, execPath?: string, videoQuality?:number,errorCall?: (link:string,errorMsg: string) => void, stroutCall?: (message: string) => void, successCall?: (param:VideodoanloadSuccessCall) => void,endCall?:(error:string)=>void) {
         const urls=await this.getPlaylist(url)
         let error=""
         if(urls){
-            for(const url of urls){
+            for(const urlitem of urls){
                 //random stop for some time
                 const randomStop=Math.floor(Math.random() * 10000);
                 await new Promise(resolve => setTimeout(resolve, randomStop));
                 
-                await this.downloadVideo(url,savePath,useBrowserCookies,cookiesProxy,proxy,execPath,videoQuality,errorCall,stroutCall,successCall).catch((err)=>{
+                await this.downloadVideo(urlitem,savePath,useBrowserCookies,cookiesProxy,proxy,execPath,videoQuality,errorCall,stroutCall,successCall).catch((err)=>{
                     if(err instanceof Error){
                         error=err.message
                         if(errorCall){
-                            errorCall(error)
+                            errorCall(urlitem,error)
                         }
 
                     }

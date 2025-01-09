@@ -242,7 +242,7 @@ export class videoController {
             const childdata = JSON.parse(message) as ProcessMessage<any>
             if (childdata.action == "singlevideodownloadMsg") {//download single video result
                 const getData = childdata.data as VideodownloadMsg
-                if (getData?.status) {
+                if (getData?.status) {//download success
 
                     //save result
                     let savepath = ''
@@ -462,5 +462,6 @@ export class videoController {
         }
 
     }
+    
 
 }

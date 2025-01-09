@@ -153,7 +153,21 @@ export function registerVideoIpcHandlers() {
         }
         return resp
     })
-    ipcMain.on(VIDEODOWNLOADTASK_RETRY, async (event, arg) => {
-
+    ipcMain.on(VIDEODOWNLOADTASK_RETRY, async (event, data) => {
+        const qdata = JSON.parse(data) as VideoDownloadQuery;
+        if (!("taskId" in qdata)) {
+            throw new Error("taskId not found");
+        }
+        await videoCtrl.retryDownloadvideo(qdata.taskId,()=>{
+            const videoMsgs: CommonDialogMsg = {
+                status: true,
+                code: 200,
+                data: {
+                title: "video.download_start",
+                content: "video.revice_download_command"
+                }
+            }
+            event.sender.send(VIDEODOWNLOAD_MESSAGE, videoMsgs)
+        })
     })
 }

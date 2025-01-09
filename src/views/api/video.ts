@@ -1,7 +1,7 @@
 'use strict';
 export { };
 import { windowInvoke, windowSend, windowReceive } from '@/views/utils/apirequest'
-import { OPENDIRECTORY, VIDEODOWNLOAD_MESSAGE, VIDEODOWNLOAD, VIDEODOWNLOAD_TASK_LIST,VIDEODOWNLOAD_LIST } from "@/config/channellist";
+import { OPENDIRECTORY, VIDEODOWNLOAD_MESSAGE, VIDEODOWNLOAD, VIDEODOWNLOAD_TASK_LIST,VIDEODOWNLOAD_LIST,VIDEODOWNLOADTASK_RETRY } from "@/config/channellist";
 import { downloadVideoparam, VideoDownloadTaskEntity,VideoDownloadQuery,VideoDownloadListDisplay } from "@/entityTypes/videoType"
 import { CommonDialogMsg,ItemSearchparam } from "@/entityTypes/commonType";
 import {SearchResult } from '@/views/api/types'
@@ -31,4 +31,7 @@ export async function getVideoTasklist(param: ItemSearchparam): Promise<SearchRe
 export async function getVideolistbyTaskId(param: VideoDownloadQuery): Promise<SearchResult<VideoDownloadListDisplay>> {
     const resp = await windowInvoke(VIDEODOWNLOAD_LIST, param);
     return {data: resp.records,total: resp.num};
+}
+export async function retryVideoTask(taskId: number) {
+    windowSend(VIDEODOWNLOADTASK_RETRY, {taskId:taskId})
 }
