@@ -1,24 +1,32 @@
 <template>
-   
+
     <div class="search_bar mt-4 d-flex jsb mb-5">
         <div class="d-flex jsb search_tool">
             <div class="search_wrap mr-4">
                 <v-text-field rounded class="elevation-0" density="compact" variant="solo" label="Search"
                     append-inner-icon="mdi-magnify" single-line hide-details v-model="search"></v-text-field>
             </div>
-           
-            
+
+
         </div>
-        <div>       
+        <div>
         </div>
     </div>
     <v-data-table-server v-model:items-per-page="itemsPerPage" :search="search" :headers="headers"
-        :items-length="totalItems" :items="serverItems" :loading="loading" item-value="name" @update:options="loadItems">
+        :items-length="totalItems" :items="serverItems" :loading="loading" item-value="name"
+        @update:options="loadItems">
         <template v-slot:item.status="{ item }">
-            <v-chip color="grey" v-if="item.status=='0'">{{CapitalizeFirstLetter(t('common.not_start'))}}</v-chip>
-            <v-chip color="blue" v-if="item.status=='1'">{{CapitalizeFirstLetter(t('common.processing'))}}</v-chip>
-            <v-chip color="green" v-if="item.status=='2'">{{CapitalizeFirstLetter(t('common.complete'))}}</v-chip>
-            <v-chip color="red" v-if="item.status=='3'">{{CapitalizeFirstLetter(t('common.error'))}}</v-chip>
+            <v-chip color="grey" v-if="item.status == '0'">{{ CapitalizeFirstLetter(t('common.not_start')) }}</v-chip>
+            <v-chip color="blue" v-if="item.status == '1'">{{ CapitalizeFirstLetter(t('common.processing')) }}</v-chip>
+            <v-chip color="green" v-if="item.status == '2'">{{ CapitalizeFirstLetter(t('common.complete')) }}</v-chip>
+            <v-chip color="red" v-if="item.status == '3'">{{ CapitalizeFirstLetter(t('common.error')) }}</v-chip>
+        </template>
+        <template v-slot:[`item.actions`]="{ item }">
+
+            
+            <v-icon size="small" class="me-2" @click="retryDownload(item)" v-if="item.status == '3'">
+                mdi-restart
+            </v-icon>
         </template>
     </v-data-table-server>
 
@@ -26,20 +34,20 @@
 </template>
 
 <script setup lang="ts">
-import {useI18n} from "vue-i18n";
-import { ref,computed,onMounted } from 'vue'
+import { useI18n } from "vue-i18n";
+import { ref, computed, onMounted,reactive,onUnmounted } from 'vue'
 import { SearchResult } from '@/views/api/types'
 import { useRoute } from "vue-router";
-import {getVideolistbyTaskId} from "@/views/api/video";
-import {VideoDownloadListDisplay} from "@/entityTypes/videoType";
+import { getVideolistbyTaskId, retryVideoDownloadId } from "@/views/api/video";
+import { VideoDownloadListDisplay } from "@/entityTypes/videoType";
 import router from '@/views/router';
-import {CapitalizeFirstLetter} from "@/views/utils/function"
+import { CapitalizeFirstLetter } from "@/views/utils/function"
 
 const $route = useRoute();
-const {t} = useI18n({inheritLocale: true});
+const { t } = useI18n({ inheritLocale: true });
 type Fetchparam = {
     // id:number
-    
+
     page: number,
     itemsPerPage: number,
     sortBy: { key: string, order: string },
@@ -49,10 +57,10 @@ type Fetchparam = {
 const FakeAPI = {
     async fetch(fetchparam: Fetchparam): Promise<SearchResult<VideoDownloadListDisplay>> {
         // console.log(fetchparam.search)
-        const fpage=(fetchparam.page-1)*fetchparam.itemsPerPage
-        const taskId=parseInt($route.params.taskid.toString());
-        const res=await getVideolistbyTaskId({ taskId:taskId,page: fpage, size: fetchparam.itemsPerPage, sortby: fetchparam.sortBy, search: fetchparam.search })
-        
+        const fpage = (fetchparam.page - 1) * fetchparam.itemsPerPage
+        const taskId = parseInt($route.params.taskid.toString());
+        const res = await getVideolistbyTaskId({ taskId: taskId, page: fpage, size: fetchparam.itemsPerPage, sortby: fetchparam.sortBy, search: fetchparam.search })
+
         return res
     }
 }
@@ -90,12 +98,12 @@ const headers: Array<any> = [
         key: 'record_time',
     },
     {
-    title: computed(_ => CapitalizeFirstLetter(t("common.actions"))),
-    align: 'start',
-    key: 'actions',
-    sortable: false, 
-  },
-   
+        title: computed(_ => CapitalizeFirstLetter(t("common.actions"))),
+        align: 'start',
+        key: 'actions',
+        sortable: false,
+    },
+
 
 ];
 const itemsPerPage = ref(10);
@@ -103,6 +111,11 @@ const serverItems = ref<Array<VideoDownloadListDisplay>>([]);
 const loading = ref(false);
 const totalItems = ref(0);
 const search = ref('');
+let refreshInterval: ReturnType<typeof setInterval> | undefined;
+    const options = reactive({
+  page: 1, // Initial page
+  itemsPerPage: 10, // Items per page
+});
 // const taskId=ref(0);
 // const showDeleteModal = ref(false);
 // const deleteId=ref(0);
@@ -122,11 +135,11 @@ function loadItems({ page, itemsPerPage, sortBy }) {
     }
     FakeAPI.fetch(fetchitem).then(
         ({ data, total }) => {
-     
+
             console.log(data)
             console.log(total)
-            if(!data){
-                data=[];
+            if (!data) {
+                data = [];
             }
             serverItems.value = data
             totalItems.value = total
@@ -137,7 +150,14 @@ function loadItems({ page, itemsPerPage, sortBy }) {
 }
 
 
-
+const retryDownload = async (item: VideoDownloadListDisplay) => {
+    if (item.id) {
+        await retryVideoDownloadId(item.id)
+        // if(res){
+        //     loadItems({ page: 1, itemsPerPage: itemsPerPage.value, sortBy: { key: 'id', order: 'asc' } })
+        // }
+    }
+}
 // const cancelDelete=()=> {
 //       showDeleteModal.value = false;
 // }
@@ -147,10 +167,22 @@ function loadItems({ page, itemsPerPage, sortBy }) {
 //           path: '/video/download'
 //         });
 // }
-
+const startAutoRefresh = () => {
+  refreshInterval = setInterval(function () {
+    loadItems({ page: options.page, itemsPerPage: itemsPerPage.value, sortBy: "" });
+  }, 10000); // Refresh every 5 seconds
+}
+const stopAutoRefresh = () => {
+  if (refreshInterval) {
+    clearInterval(refreshInterval);
+    refreshInterval = undefined;
+  }
+};
 onMounted(() => {
- 
-
+    startAutoRefresh()
+});
+onUnmounted(() => {
+  stopAutoRefresh();
 });
 
 

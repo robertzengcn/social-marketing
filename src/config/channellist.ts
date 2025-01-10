@@ -55,5 +55,6 @@ export const SOCIAL_ACCOUNT_LOGIN_UPLOADCOOKIES="socialaccount:upload:cookies"
 export const SOCIAL_ACCOUNT_CLEAN_COOKIES="socialaccount:clean:cookies"
 export const SOCIAL_ACCOUNT_SHOW_PLATFORMPAGE="socialaccount:show:platformpage"
 export const VIDEODOWNLOADTASK_RETRY='video:downloadtask:retry'
+export const VIDEODOWNLOADITEM_RETRY='video:downloaditem:retry'
 
 

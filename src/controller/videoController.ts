@@ -9,7 +9,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { utilityProcess, MessageChannelMain } from "electron";
 import { USERLOGPATH, USEREMAIL } from '@/config/usersetting';
-import { WriteLog, getApplogspath, getRandomValues } from "@/modules/lib/function"
+import { WriteLog, getApplogspath, getRandomValues,removeParamsAfterAmpersand } from "@/modules/lib/function"
 import { v4 as uuidv4 } from 'uuid';
 // import { CustomError } from '@/modules/customError'
 import { AccountCookiesModule } from "@/modules/accountCookiesModule"
@@ -187,7 +187,8 @@ export class videoController {
             startCall()
         }
         //get the video lnk that already download in the task
-        
+        const alreadsucess=this.videoDownloadModule.getAllvideoDownloadlist(taskId,VideoDownloadStatus.Finish)
+        const alreadlinks=alreadsucess.map((value)=>value.url)
         const paramData: processVideoDownloadParam = {
             exePath: execFilepath,
             platform: param.platform,
@@ -198,7 +199,7 @@ export class videoController {
             proxy: proxyArr,
             BrowserName: param.browserName,
             videoQuality: param.videoQuality,
-            successlink: []
+            successlink: alreadlinks
         }
         console.log(childPath)
         const child = utilityProcess.fork(childPath, [], { stdio: "pipe" })

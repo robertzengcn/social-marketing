@@ -1,6 +1,6 @@
-import { Database } from 'better-sqlite3';
-import { Scraperdb } from "@/model/scraperdb";
-import {VideoDownloadEntity} from "@/entityTypes/videoType"
+//import { Database } from 'better-sqlite3';
+//import { Scraperdb } from "@/model/scraperdb";
+import {VideoDownloadEntity,VideoDownloadStatus} from "@/entityTypes/videoType"
 import { getRecorddatetime } from "@/modules/lib/function";
 import { BaseDb } from "@/model/Basedb";
 
@@ -42,15 +42,26 @@ export class VideoDownloaddb extends BaseDb{
         return info.changes;
       }
       //get video download list
-      public getVideoDownloadList(taskId:number,page:number,size:number):Array<VideoDownloadEntity>{
-        const stmt = this.db.prepare(`SELECT * FROM ${this.videoDownloadTable} WHERE task_id=? ORDER BY id desc LIMIT ?,? `);
-        const rows = stmt.all(taskId,page,size) as Array<VideoDownloadEntity>;
+      public getVideoDownloadList(taskId:number,page:number,size:number,status?:VideoDownloadStatus):Array<VideoDownloadEntity>{
+        let query=`SELECT * FROM ${this.videoDownloadTable} WHERE task_id=@taskId`
+        if(status){
+          query+=` AND status=@status`
+        }
+        query+=` ORDER BY id desc LIMIT @page,@size`
+        const stmt = this.db.prepare(query);
+        //const rows = stmt.all(taskId,page,size) as Array<VideoDownloadEntity>;
+        const rows=stmt.all({taskId:taskId,page:page,size:size,status:status}) as Array<VideoDownloadEntity>;
         return rows;
       }
       //count video download list
-      public countVideoDownloadList(taskId:number):number{
-        const stmt = this.db.prepare(`SELECT count(*) as total FROM ${this.videoDownloadTable} WHERE task_id=?`);
-        const row = stmt.get(taskId) as { total: number };
+      public countVideoDownloadList(taskId:number,status?:VideoDownloadStatus):number{
+        let query=`SELECT count(*) as total FROM ${this.videoDownloadTable} WHERE task_id=@taskId`
+        if(status){
+          query+=` AND status=@status`
+        }
+        const stmt = this.db.prepare(query);
+        const row=stmt.get({taskId:taskId,status:status}) as { total: number };
+        //const row = stmt.get(taskId) as { total: number };
         return row.total;
       }
 
