@@ -64,6 +64,13 @@ export class VideoDownloaddb extends BaseDb{
         //const row = stmt.get(taskId) as { total: number };
         return row.total;
       }
+      //get video download item detail
+      public getVideoDownloaditem(id: number): VideoDownloadEntity {
+        const stmt = this.db.prepare(
+            `SELECT * FROM ` + this.videoDownloadTable + ` WHERE id = ?`);
+        const res = stmt.get(id) as VideoDownloadEntity;
+        return res
+      }
 
    
 }

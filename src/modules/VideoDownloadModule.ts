@@ -50,6 +50,10 @@ export class VideoDownloadModule extends BaseModule{
         }
         return res
       }
+      //get video download item info by id
+      public getVideoDownloaditem(id:number):VideoDownloadEntity{
+        return this.videoDownloaddb.getVideoDownloaditem(id)
+      }
 
     
 }
