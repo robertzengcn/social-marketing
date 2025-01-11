@@ -189,9 +189,10 @@ const stopAutoRefresh = () => {
   }
 };
 onMounted(() => {
-
+   
 
 startAutoRefresh();
+
 });
 onUnmounted(() => {
   stopAutoRefresh();

@@ -1,5 +1,5 @@
 import { ipcMain } from 'electron';
-import { VIDEODOWNLOAD, VIDEODOWNLOAD_MESSAGE, VIDEODOWNLOAD_TASK_LIST,VIDEODOWNLOAD_LIST,VIDEODOWNLOADTASK_RETRY,VIDEODOWNLOADITEM_RETRY } from '@/config/channellist'
+import { VIDEODOWNLOAD, VIDEODOWNLOAD_MESSAGE, VIDEODOWNLOAD_TASK_LIST,VIDEODOWNLOAD_LIST,VIDEODOWNLOADTASK_RETRY,VIDEODOWNLOADITEM_RETRY,VIDEODOWNLOAD_ITEM_MESSAGE } from '@/config/channellist'
 import { videoController } from '@/controller/videoController';
 import { CommonDialogMsg,CommonResponse,CommonIdrequest } from "@/entityTypes/commonType";
 import { CustomError } from '@/modules/customError';
@@ -175,7 +175,18 @@ export function registerVideoIpcHandlers() {
         if (!("id" in qdata)) {
             throw new Error("id not found");
         }
-        
+        await videoCtrl.redownloadItembyId(qdata.id,()=>{
+            const videoMsgs: CommonDialogMsg = {
+                status: true,
+                code: 200,
+                data: {
+                title: "video.download_start",
+                content: "video.revice_download_command"
+                }
+            }
+            event.sender.send(VIDEODOWNLOAD_ITEM_MESSAGE, videoMsgs)
+        })
+
 
     })
 }

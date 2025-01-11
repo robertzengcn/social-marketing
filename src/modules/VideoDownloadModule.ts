@@ -28,7 +28,7 @@ export class VideoDownloadModule extends BaseModule{
       } 
 
       //update download status
-      public updateVideoDownloadStatus(status:number,downloadId:number):number{
+      public updateVideoDownloadStatus(status:VideoDownloadStatus,downloadId:number):number{
        return this.videoDownloaddb.updateVideoDownloadStatus(status,downloadId)
       }
       //get video download list

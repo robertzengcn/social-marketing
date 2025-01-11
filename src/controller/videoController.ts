@@ -188,7 +188,7 @@ export class videoController {
         }
         //get the video lnk that already download in the task
         const alreadsucess = this.videoDownloadModule.getAllvideoDownloadlist(taskId, VideoDownloadStatus.Finish)
-        const alreadlinks = alreadsucess.map((value) => value.url)
+        const alreadlinks = alreadsucess.map((value) => removeParamsAfterAmpersand(value.url))
         const paramData: processVideoDownloadParam = {
             exePath: execFilepath,
             platform: param.platform,
@@ -207,6 +207,7 @@ export class videoController {
         child.on("spawn", () => {
 
             console.log("child process satart, pid is" + child.pid)
+            this.videoDownloadTaskModule.updateVideoDownloadTaskStatus(taskId, TaskStatus.Processing)
             child.postMessage(JSON.stringify({ action: "downloadVideo", data: paramData }), [port1])
 
         })
@@ -539,10 +540,12 @@ export class videoController {
     }
     //try to redownload video by video id
     public async redownloadItembyId(Videoid: number, startCall: () => void) {
+      
         const videoInfo = this.videoDownloadModule.getVideoDownloaditem(Videoid)
         if (!videoInfo) {
             throw new Error("video info not found")
         }
+       
         //get video task info
         const data=await this.getVideoDownloadTaskInfo(videoInfo.task_id)
         let links:Array<string>=[]
@@ -557,6 +560,7 @@ export class videoController {
             throw new Error("video tool not found")
         }
         data.isplaylist=false
+        this.videoDownloadModule.updateVideoDownloadStatus(VideoDownloadStatus.Start,Videoid)
         //process download video
         await this.processDownloadVideo(data, videoTool, videoInfo.task_id, startCall)
 

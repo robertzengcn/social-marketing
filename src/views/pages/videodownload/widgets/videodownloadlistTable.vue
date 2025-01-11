@@ -38,11 +38,11 @@ import { useI18n } from "vue-i18n";
 import { ref, computed, onMounted,reactive,onUnmounted } from 'vue'
 import { SearchResult } from '@/views/api/types'
 import { useRoute } from "vue-router";
-import { getVideolistbyTaskId, retryVideoDownloadId } from "@/views/api/video";
+import { getVideolistbyTaskId, retryVideoDownloadId,receiveVideoItemDownloadMessage } from "@/views/api/video";
 import { VideoDownloadListDisplay } from "@/entityTypes/videoType";
 import router from '@/views/router';
 import { CapitalizeFirstLetter } from "@/views/utils/function"
-
+import { CommonDialogMsg } from "@/entityTypes/commonType";
 const $route = useRoute();
 const { t } = useI18n({ inheritLocale: true });
 type Fetchparam = {
@@ -111,6 +111,12 @@ const serverItems = ref<Array<VideoDownloadListDisplay>>([]);
 const loading = ref(false);
 const totalItems = ref(0);
 const search = ref('');
+const alert = ref(false);
+const alerttext = ref("");
+const alerttitle = ref("");
+const alerttype = ref<"success" | "error" | "warning" | "info" | undefined>(
+  "success"
+);
 let refreshInterval: ReturnType<typeof setInterval> | undefined;
     const options = reactive({
   page: 1, // Initial page
@@ -179,11 +185,52 @@ const stopAutoRefresh = () => {
   }
 };
 onMounted(() => {
+    receiveVideoItemDownloadMessage((res: CommonDialogMsg) => {
+    console.log(res)
+    //revice system message
+    if (res.status) {
+      // if (res.code == 200) {
+        //show message to user
+        if(res.data){
+        setAlert(t(res.data.content), t('common.success'), "success");
+        }
+      // } else {
+      //   //handle other message
+      //   //append msg to logs
+      //   logs.value += res.data.content + "\n";
+      // }
+    //   if (res.code == 200) {
+    //     // route to new page
+    //     router.push({
+    //       path: '/video/dowloadtasklist'
+    //     });
+    //   }
+    } else {
+      if(res.data){
+      setAlert(t(res.data.content), t('common.error'), "error");
+      }
+      //handle failure
+      //append msg to logs with red color
+      // logs.value += res.data.content + "\n";
+    }
+  });
     startAutoRefresh()
 });
 onUnmounted(() => {
   stopAutoRefresh();
 });
-
+const setAlert = (
+  text: string,
+  title: string,
+  type: "success" | "error" | "warning" | "info" | undefined
+) => {
+  alerttext.value = text;
+  alerttitle.value = title;
+  alerttype.value = type;
+  alert.value = true;
+  setTimeout(() => {
+    alert.value = false;
+  }, 5000);
+};
 
 </script>
