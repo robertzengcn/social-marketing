@@ -1,5 +1,5 @@
 import { ipcMain } from 'electron';
-import { VIDEODOWNLOAD, VIDEODOWNLOAD_MESSAGE, VIDEODOWNLOAD_TASK_LIST,VIDEODOWNLOAD_LIST,VIDEODOWNLOADTASK_RETRY,VIDEODOWNLOADITEM_RETRY,VIDEODOWNLOAD_ITEM_MESSAGE } from '@/config/channellist'
+import { VIDEODOWNLOAD, VIDEODOWNLOAD_MESSAGE, VIDEODOWNLOAD_TASK_LIST,VIDEODOWNLOAD_LIST,VIDEODOWNLOADTASK_RETRY,VIDEODOWNLOADITEM_RETRY,VIDEODOWNLOAD_ITEM_MESSAGE,VIDEODOWNLOADITEM_EXPLORER } from '@/config/channellist'
 import { videoController } from '@/controller/videoController';
 import { CommonDialogMsg,CommonResponse,CommonIdrequest } from "@/entityTypes/commonType";
 import { CustomError } from '@/modules/customError';
@@ -170,6 +170,7 @@ export function registerVideoIpcHandlers() {
             event.sender.send(VIDEODOWNLOAD_MESSAGE, videoMsgs)
         })
     })
+    //retry download video item by id
     ipcMain.on(VIDEODOWNLOADITEM_RETRY, async (event, data) => { 
         const qdata = JSON.parse(data) as CommonIdrequest<number>
         if (!("id" in qdata)) {
@@ -188,5 +189,14 @@ export function registerVideoIpcHandlers() {
         })
 
 
+    })
+    //open file in explorer
+    ipcMain.on(VIDEODOWNLOADITEM_EXPLORER, async (event, data) => { 
+        const qdata = JSON.parse(data) as CommonIdrequest<number>
+        if (!("id" in qdata)) {
+            throw new Error("id not found");
+        }
+        await videoCtrl.showFileExplorer(qdata.id)
+       
     })
 }

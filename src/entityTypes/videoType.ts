@@ -140,6 +140,7 @@ export interface VideoDownloadQuery extends ItemSearchparam {
 export interface VideoDownloadListDisplay extends VideoDownloadEntity {
     title?:string
     description?:string
+   
 }
 //the param need for video download
 export type DownloadVideoControlparam={

@@ -163,7 +163,7 @@ export class YoutubeDownload implements videoDownloadImpl {
     }
     //get video title and description
     async getVideodesc(command:string,url:string):Promise<YoutubedlStrout|undefined>{
-        const finalcommand=command+' "'+url+'"'
+        const finalcommand=command+' --dump-single-json "'+url+'"'
         const { stdout, stderr } = await execAsync(finalcommand);
         if (stderr) {
             throw new CustomError(stderr)

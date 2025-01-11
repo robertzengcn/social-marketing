@@ -22,10 +22,11 @@
             <v-chip color="red" v-if="item.status == '3'">{{ CapitalizeFirstLetter(t('common.error')) }}</v-chip>
         </template>
         <template v-slot:[`item.actions`]="{ item }">
-
-            
             <v-icon size="small" class="me-2" @click="retryDownload(item)" v-if="item.status == '3'">
                 mdi-restart
+            </v-icon>
+            <v-icon size="small" class="me-2" @click="openfile(item)" v-if="item.status == '2'">
+                mdi-folder-open
             </v-icon>
         </template>
     </v-data-table-server>
@@ -38,11 +39,12 @@ import { useI18n } from "vue-i18n";
 import { ref, computed, onMounted,reactive,onUnmounted } from 'vue'
 import { SearchResult } from '@/views/api/types'
 import { useRoute } from "vue-router";
-import { getVideolistbyTaskId, retryVideoDownloadId,receiveVideoItemDownloadMessage } from "@/views/api/video";
+import { getVideolistbyTaskId, retryVideoDownloadId,receiveVideoItemDownloadMessage,openFileexplor } from "@/views/api/video";
 import { VideoDownloadListDisplay } from "@/entityTypes/videoType";
 import router from '@/views/router';
 import { CapitalizeFirstLetter } from "@/views/utils/function"
 import { CommonDialogMsg } from "@/entityTypes/commonType";
+
 const $route = useRoute();
 const { t } = useI18n({ inheritLocale: true });
 type Fetchparam = {
@@ -162,6 +164,12 @@ const retryDownload = async (item: VideoDownloadListDisplay) => {
         // if(res){
         //     loadItems({ page: 1, itemsPerPage: itemsPerPage.value, sortBy: { key: 'id', order: 'asc' } })
         // }
+    }
+}
+//open file in explorer
+const openfile = (item: VideoDownloadListDisplay) => {
+    if (item.id){
+        openFileexplor(item.id)
     }
 }
 // const cancelDelete=()=> {

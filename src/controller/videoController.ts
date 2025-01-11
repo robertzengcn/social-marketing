@@ -27,6 +27,7 @@ import { VideoDownloadTaskUrlModule } from "@/modules/VideoDownloadTaskUrlModule
 import { VideoDownloadTaskProxyModule } from "@/modules/VideoDownloadTaskProxyModule"
 import { Proxy } from "@/entityTypes/proxyType"
 import { ProxyApi } from "@/api/proxyApi"
+import { shell } from "electron"
 //import {} from "@/entityTypes/proxyType"
 export class videoController {
     private videoDownloadModule: VideoDownloadModule
@@ -384,7 +385,9 @@ export class videoController {
                 task_id: element.task_id,
                 status: element.status,
                 title: '',
-                description: ''
+                description: '',
+
+
             }
             if (element.id && element.status == VideoDownloadStatus.Finish) {
 
@@ -412,7 +415,7 @@ export class videoController {
         // }
 
         // //get video tool
- 
+
         // //check video tool requirement
         // const res = this.checkVideoRequirement(videoTool)
         // if (!res) {
@@ -460,7 +463,7 @@ export class videoController {
         //     browserName: taskDetail.browser_type ? taskDetail.browser_type : "",
         //     videoQuality: taskDetail.video_quality
         // }
-        const data=await this.getVideoDownloadTaskInfo(taskId)
+        const data = await this.getVideoDownloadTaskInfo(taskId)
         const videoTool = await this.getVideoDownloadTool(data.platform)
         if (!videoTool) {
             throw new Error("video tool not found")
@@ -471,57 +474,57 @@ export class videoController {
 
     }
     public async getVideoDownloadTaskInfo(taskId: number): Promise<DownloadVideoControlparam> {
-         //get task info
-         const taskInfo = this.videoDownloadTaskModule.getVideoDownloadTask(taskId)
-         if (!taskInfo) {
-             throw new Error("task info not found")
-         }
-         //get task detail
-         const taskDetail = this.videoDownloadTaskDetailModule.getByTaskId(taskId)
-         if (!taskDetail) {
-             throw new Error("task detail not found")
-         }
- 
-         //get video tool
-         const videoTool = await this.getVideoDownloadTool(taskInfo.platform)
-         if (!videoTool) {
-             throw new Error("video tool not found")
-         }
-         //check video tool requirement
-         const res = this.checkVideoRequirement(videoTool)
-         if (!res) {
-             throw new Error("video tool requirement check failed")
-         }
-         let accountIds: Array<number> = []
-         if (taskDetail.cookies_type == CookiesType.ACCOUNTCOOKIES) {
-             //get account id
-             const taskAccounts = this.videoDownloadTaskAccountsModule.getAccountByTaskId(taskId)
-             if (taskAccounts.length > 0) {
-                 accountIds = taskAccounts.map((value) => value.account_id)
-                 //process download video
-                 //await this.processDownloadVideo({taskName:taskInfo.taskName,platform:taskInfo.platform,link:[],savePath:taskInfo.savepath,isplaylist:taskDetail.download_type==DownloadType.MULTIVIDEO,accountId:accountIds,cookies_type:taskDetail.cookies_type==CookiesType.ACCOUNTCOOKIES?"account cookies":"browser cookies",browserName:taskDetail.browser_type?taskDetail.browser_type:"",videoQuality:""}, videoTool, taskId)
-             }
- 
-         }
- 
-         //get task url
-         const taskUrls = this.videoDownloadTaskUrlModule.getItemsByTaskId(taskId)
- 
-         let proxys: Array<number> = []
- 
-         //get proxy lists
-         const proxylists = this.videoDownloadTaskUrlModule.getItemsByTaskId(taskId)
-         if (proxylists.length > 0) {
-             proxylists.forEach((value) => {
-                 if (value.id) {
-                     proxys.push(value.id)
-                 }
-             })
-         }
-         let links: Array<string> = []
-         if (taskUrls.length > 0) {
-             links = taskUrls.map((value) => value.url)
-         }
+        //get task info
+        const taskInfo = this.videoDownloadTaskModule.getVideoDownloadTask(taskId)
+        if (!taskInfo) {
+            throw new Error("task info not found")
+        }
+        //get task detail
+        const taskDetail = this.videoDownloadTaskDetailModule.getByTaskId(taskId)
+        if (!taskDetail) {
+            throw new Error("task detail not found")
+        }
+
+        //get video tool
+        const videoTool = await this.getVideoDownloadTool(taskInfo.platform)
+        if (!videoTool) {
+            throw new Error("video tool not found")
+        }
+        //check video tool requirement
+        const res = this.checkVideoRequirement(videoTool)
+        if (!res) {
+            throw new Error("video tool requirement check failed")
+        }
+        let accountIds: Array<number> = []
+        if (taskDetail.cookies_type == CookiesType.ACCOUNTCOOKIES) {
+            //get account id
+            const taskAccounts = this.videoDownloadTaskAccountsModule.getAccountByTaskId(taskId)
+            if (taskAccounts.length > 0) {
+                accountIds = taskAccounts.map((value) => value.account_id)
+                //process download video
+                //await this.processDownloadVideo({taskName:taskInfo.taskName,platform:taskInfo.platform,link:[],savePath:taskInfo.savepath,isplaylist:taskDetail.download_type==DownloadType.MULTIVIDEO,accountId:accountIds,cookies_type:taskDetail.cookies_type==CookiesType.ACCOUNTCOOKIES?"account cookies":"browser cookies",browserName:taskDetail.browser_type?taskDetail.browser_type:"",videoQuality:""}, videoTool, taskId)
+            }
+
+        }
+
+        //get task url
+        const taskUrls = this.videoDownloadTaskUrlModule.getItemsByTaskId(taskId)
+
+        let proxys: Array<number> = []
+
+        //get proxy lists
+        const proxylists = this.videoDownloadTaskUrlModule.getItemsByTaskId(taskId)
+        if (proxylists.length > 0) {
+            proxylists.forEach((value) => {
+                if (value.id) {
+                    proxys.push(value.id)
+                }
+            })
+        }
+        let links: Array<string> = []
+        if (taskUrls.length > 0) {
+            links = taskUrls.map((value) => value.url)
+        }
 
         const data: DownloadVideoControlparam = {
             accountId: accountIds,
@@ -540,31 +543,37 @@ export class videoController {
     }
     //try to redownload video by video id
     public async redownloadItembyId(Videoid: number, startCall: () => void) {
-      
+
         const videoInfo = this.videoDownloadModule.getVideoDownloaditem(Videoid)
         if (!videoInfo) {
             throw new Error("video info not found")
         }
-       
+
         //get video task info
-        const data=await this.getVideoDownloadTaskInfo(videoInfo.task_id)
-        let links:Array<string>=[]
-        if(data.link.length>0){
+        const data = await this.getVideoDownloadTaskInfo(videoInfo.task_id)
+        let links: Array<string> = []
+        if (data.link.length > 0) {
             links.push(videoInfo.url)
-        }else{
+        } else {
             throw new Error("video item url not found")
         }
-        data.link=links
+        data.link = links
         const videoTool = await this.getVideoDownloadTool(data.platform)
         if (!videoTool) {
             throw new Error("video tool not found")
         }
-        data.isplaylist=false
-        this.videoDownloadModule.updateVideoDownloadStatus(VideoDownloadStatus.Start,Videoid)
+        data.isplaylist = false
+        this.videoDownloadModule.updateVideoDownloadStatus(VideoDownloadStatus.Start, Videoid)
         //process download video
         await this.processDownloadVideo(data, videoTool, videoInfo.task_id, startCall)
 
     }
-
-
+    //show file in explorer
+    public async showFileExplorer(id: number) {
+        const videoInfo = this.videoDownloadModule.getVideoDownloaditem(id)
+        if (!videoInfo) {
+            throw new Error("video info not found")
+        }
+        shell.showItemInFolder(videoInfo.savepath);
+    }
 }

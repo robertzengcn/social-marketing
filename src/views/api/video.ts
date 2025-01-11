@@ -1,7 +1,7 @@
 'use strict';
 export { };
 import { windowInvoke, windowSend, windowReceive } from '@/views/utils/apirequest'
-import { OPENDIRECTORY, VIDEODOWNLOAD_MESSAGE, VIDEODOWNLOAD, VIDEODOWNLOAD_TASK_LIST,VIDEODOWNLOAD_LIST,VIDEODOWNLOADTASK_RETRY,VIDEODOWNLOADITEM_RETRY,VIDEODOWNLOAD_ITEM_MESSAGE } from "@/config/channellist";
+import { OPENDIRECTORY, VIDEODOWNLOAD_MESSAGE, VIDEODOWNLOAD, VIDEODOWNLOAD_TASK_LIST,VIDEODOWNLOAD_LIST,VIDEODOWNLOADTASK_RETRY,VIDEODOWNLOADITEM_RETRY,VIDEODOWNLOAD_ITEM_MESSAGE,VIDEODOWNLOADITEM_EXPLORER } from "@/config/channellist";
 import { downloadVideoparam, VideoDownloadTaskEntity,VideoDownloadQuery,VideoDownloadListDisplay } from "@/entityTypes/videoType"
 import { CommonDialogMsg,ItemSearchparam } from "@/entityTypes/commonType";
 import {SearchResult } from '@/views/api/types'
@@ -40,4 +40,8 @@ export async function retryVideoDownloadId(id:number){
 }
 export function receiveVideoItemDownloadMessage(cb: (data: CommonDialogMsg) => void) {
     windowReceive(VIDEODOWNLOAD_ITEM_MESSAGE, cb)
+}
+
+export function openFileexplor(id:number) {
+    windowSend(VIDEODOWNLOADITEM_EXPLORER, {id:id})
 }
