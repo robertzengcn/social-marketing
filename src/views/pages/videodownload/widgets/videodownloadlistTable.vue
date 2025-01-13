@@ -28,8 +28,19 @@
             <v-icon size="small" class="me-2" @click="openfile(item)" v-if="item.status == '2'">
                 mdi-folder-open
             </v-icon>
+            <v-icon
+            size="small"
+            @click="deleteitem(item)"
+          >
+            mdi-delete
+          </v-icon>
         </template>
     </v-data-table-server>
+    <delete-dialog
+    :dialog="showDeleteModal"     
+    @confirm-delete="handleDelete"
+      @confirm-close="showDeleteModal = false"
+  ></delete-dialog>
 
     <ErrorDialog :showDialog="alert" :alertext="alerttext" :alertitle="alerttitle" @dialogclose="alert=false" />
 </template>
@@ -38,13 +49,14 @@
 import { useI18n } from "vue-i18n";
 import { ref, computed, onMounted,reactive,onUnmounted } from 'vue'
 import { SearchResult } from '@/views/api/types'
-import { useRoute,createRouter, createWebHistory } from "vue-router";
-import { getVideolistbyTaskId, retryVideoDownloadId,receiveVideoItemDownloadMessage,openFileexplor } from "@/views/api/video";
+import { useRoute } from "vue-router";
+import { getVideolistbyTaskId, retryVideoDownloadId,receiveVideoItemDownloadMessage,openFileexplor,deleteVideoDownItem } from "@/views/api/video";
 import { VideoDownloadListDisplay } from "@/entityTypes/videoType";
 import router from '@/views/router';
 import { CapitalizeFirstLetter } from "@/views/utils/function"
 import { CommonDialogMsg } from "@/entityTypes/commonType";
 import ErrorDialog from "@/views/components/widgets/errorDialog.vue"
+import DeleteDialog from '@/views/components/widgets/deleteDialog.vue';
 const $route = useRoute();
 const { t } = useI18n({ inheritLocale: true });
 type Fetchparam = {
@@ -60,15 +72,15 @@ type Fetchparam = {
 //   routes
 // });
 
-router.beforeEach((to, from, next) => {
-  const baseTitle = to.meta.title || 'Default Title';
-  if (to.params.taskid) {
-    document.title = `${baseTitle} - Task ID: ${to.params.taskid}`;
-  } else {
-    document.title = String(baseTitle);
-  }
-  next();
-});
+// router.beforeEach((to, from, next) => {
+//   const baseTitle = to.meta.title || 'Default Title';
+//   if (to.params.taskid) {
+//     document.title = `${baseTitle} - Task ID: ${to.params.taskid}`;
+//   } else {
+//     document.title = String(baseTitle);
+//   }
+//   next();
+// });
 
 const FakeAPI = {
     async fetch(fetchparam: Fetchparam): Promise<SearchResult<VideoDownloadListDisplay>> {
@@ -94,6 +106,7 @@ const headers: Array<any> = [
         align: 'start',
         sortable: false,
         key: 'url',
+        width: '100px'
     },
     {
         title: computed(_ => CapitalizeFirstLetter(t("video.title"))),
@@ -133,7 +146,8 @@ const alerttitle = ref("");
 const alerttype = ref<"success" | "error" | "warning" | "info" | undefined>(
   "success"
 );
-
+const deleteId = ref(0);
+const showDeleteModal = ref(false);
 let refreshInterval: ReturnType<typeof setInterval> | undefined;
     const options = reactive({
   page: 1, // Initial page
@@ -186,6 +200,26 @@ const openfile = (item: VideoDownloadListDisplay) => {
     if (item.id){
         openFileexplor(item.id)
     }
+}
+const deleteitem = (item: VideoDownloadListDisplay) => {
+    console.log(item)
+    if (item.id) {
+      deleteId.value = item.id;
+      showDeleteModal.value = true;
+    }  
+    
+}
+const handleDelete=async ()=>{
+    showDeleteModal.value = false;
+    loading.value = true;
+    await deleteVideoDownItem(deleteId.value)
+       
+    // const res=await deleteEmailFilter(deleteId.value)
+    // if(res){
+    //     console.log(res)
+    //     loading.value = false;
+    //     loadItems({ page: 1, itemsPerPage: itemsPerPage.value, sortBy: "" });
+    // }
 }
 // const cancelDelete=()=> {
 //       showDeleteModal.value = false;

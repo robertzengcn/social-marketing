@@ -58,5 +58,8 @@ export const SOCIAL_ACCOUNT_SHOW_PLATFORMPAGE="socialaccount:show:platformpage"
 export const VIDEODOWNLOADTASK_RETRY='video:downloadtask:retry'
 export const VIDEODOWNLOADITEM_RETRY='video:downloaditem:retry'
 export const VIDEODOWNLOADITEM_EXPLORER='video:downloaditem:explorer'
+export const VIDEODOWNLOADITEM_DELETE='video:downloaditem:delete'
+
+
 
 

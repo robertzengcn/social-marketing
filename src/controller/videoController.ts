@@ -576,4 +576,24 @@ export class videoController {
         }
         shell.showItemInFolder(videoInfo.savepath);
     }
+
+    public async deleteVideoDownloadItem(id: number) {
+        //get video info
+        const videoInfo = this.videoDownloadModule.getVideoDownloaditem(id)
+        if (!videoInfo) {
+            throw new Error("video info not found")
+        }
+        //delete video file
+        if (videoInfo.savepath) {
+            //check file exist
+            if (fs.existsSync(videoInfo.savepath)) {
+                fs.unlinkSync(videoInfo.savepath)
+            }
+        }
+        //delete video description
+        this.videoDescriptionModule.deleteVideoDescription(id)
+        //delete video download item
+        this.videoDownloadModule.deleteVideoDownloadItem(id)
+
+    }
 }

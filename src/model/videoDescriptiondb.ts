@@ -86,4 +86,11 @@ export class VideoDescriptiondb extends BaseDb{
     const res = stmt.get(videoId) as VideoDescriptionEntity;
     return res;
   }
+  // delete video description
+  deleteVideoDescription(videoId: number):number {
+    const stmt = this.db.prepare(
+      `DELETE FROM ` + this.videoDescriptionTable + ` WHERE video_id = ?`);
+    const res=stmt.run(videoId);
+    return res.changes;
+  }
 }

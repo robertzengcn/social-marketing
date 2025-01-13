@@ -54,6 +54,9 @@ export class VideoDownloadModule extends BaseModule{
       public getVideoDownloaditem(id:number):VideoDownloadEntity{
         return this.videoDownloaddb.getVideoDownloaditem(id)
       }
+      public deleteVideoDownloadItem(id:number):number{
+        return this.videoDownloaddb.deleteVideoDownloadItem(id)
+      }
 
     
 }

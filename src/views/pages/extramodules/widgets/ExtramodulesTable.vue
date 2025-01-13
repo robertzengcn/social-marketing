@@ -46,7 +46,8 @@ import { SearchResult } from '@/views/api/types'
 import {ExtraModule,ExtraModuleItem} from "@/entityTypes/extramodule-type"
 const {t} = useI18n({inheritLocale: true});
 import {CapitalizeFirstLetter} from '@/views/utils/function'
-
+const showDeleteModal = ref(false);
+// const deleteId = ref(0);
 // const campaignId = i18n.t("campaignId");
 type Fetchparam = {
     page: number,

@@ -1,7 +1,7 @@
 'use strict';
 export { };
 import { windowInvoke, windowSend, windowReceive } from '@/views/utils/apirequest'
-import { OPENDIRECTORY, VIDEODOWNLOAD_MESSAGE, VIDEODOWNLOAD, VIDEODOWNLOAD_TASK_LIST,VIDEODOWNLOAD_LIST,VIDEODOWNLOADTASK_RETRY,VIDEODOWNLOADITEM_RETRY,VIDEODOWNLOAD_ITEM_MESSAGE,VIDEODOWNLOADITEM_EXPLORER } from "@/config/channellist";
+import { OPENDIRECTORY, VIDEODOWNLOAD_MESSAGE, VIDEODOWNLOAD, VIDEODOWNLOAD_TASK_LIST,VIDEODOWNLOAD_LIST,VIDEODOWNLOADTASK_RETRY,VIDEODOWNLOADITEM_RETRY,VIDEODOWNLOAD_ITEM_MESSAGE,VIDEODOWNLOADITEM_EXPLORER,VIDEODOWNLOADITEM_DELETE } from "@/config/channellist";
 import { downloadVideoparam, VideoDownloadTaskEntity,VideoDownloadQuery,VideoDownloadListDisplay } from "@/entityTypes/videoType"
 import { CommonDialogMsg,ItemSearchparam } from "@/entityTypes/commonType";
 import {SearchResult } from '@/views/api/types'
@@ -44,4 +44,7 @@ export function receiveVideoItemDownloadMessage(cb: (data: CommonDialogMsg) => v
 
 export function openFileexplor(id:number) {
     windowSend(VIDEODOWNLOADITEM_EXPLORER, {id:id})
+}
+export function deleteVideoDownItem(id:number){
+    windowSend(VIDEODOWNLOADITEM_DELETE, {id:id})
 }

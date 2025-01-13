@@ -131,6 +131,12 @@ export class YoutubeDownload implements videoDownloadImpl {
             }
 
         }
+        if(cookiesFilePath){
+            //check file exist
+            if (fs.existsSync(cookiesFilePath)) {
+            fs.unlinkSync(cookiesFilePath)
+            }
+        }
 
     }
     //download playlist

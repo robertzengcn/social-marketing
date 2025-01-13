@@ -23,5 +23,8 @@ export class VideoDescriptionModule extends BaseModule{
     getVideoDescription(videoId: number): VideoDescriptionEntity {
         return this.videoDownloaddb.getVideoDescription(videoId)
     }
+    deleteVideoDescription(videoId: number): number {
+        return this.videoDownloaddb.deleteVideoDescription(videoId)
+    }
 
 }
