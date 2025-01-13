@@ -91,6 +91,19 @@ process.parentPort.on('message', async (e) => {
                                 }
                                 process.parentPort.postMessage(JSON.stringify(message))
                                 process.exit(0);
+                            }).catch((error)=>{
+                                if(error instanceof Error){
+                                    const message:ProcessMessage<VideodownloadMsg>={
+                                        action:"singlevideodownloadMsg",
+                                        data:{
+                                            link:element,
+                                            status:false,
+                                            log:error.message
+                                        }
+                                    }
+                                    process.parentPort.postMessage(JSON.stringify(message))
+                                    process.exit(1);
+                                }
                             })
                             //signal download end
                         }else{//download playlist

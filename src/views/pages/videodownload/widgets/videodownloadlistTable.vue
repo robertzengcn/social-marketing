@@ -31,20 +31,20 @@
         </template>
     </v-data-table-server>
 
-
+    <ErrorDialog :showDialog="alert" :alertext="alerttext" :alertitle="alerttitle" @dialogclose="alert=false" />
 </template>
 
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
 import { ref, computed, onMounted,reactive,onUnmounted } from 'vue'
 import { SearchResult } from '@/views/api/types'
-import { useRoute } from "vue-router";
+import { useRoute,createRouter, createWebHistory } from "vue-router";
 import { getVideolistbyTaskId, retryVideoDownloadId,receiveVideoItemDownloadMessage,openFileexplor } from "@/views/api/video";
 import { VideoDownloadListDisplay } from "@/entityTypes/videoType";
 import router from '@/views/router';
 import { CapitalizeFirstLetter } from "@/views/utils/function"
 import { CommonDialogMsg } from "@/entityTypes/commonType";
-
+import ErrorDialog from "@/views/components/widgets/errorDialog.vue"
 const $route = useRoute();
 const { t } = useI18n({ inheritLocale: true });
 type Fetchparam = {
@@ -55,6 +55,20 @@ type Fetchparam = {
     sortBy: { key: string, order: string },
     search: string
 }
+// const crouter = createRouter({
+//   history: createWebHistory(process.env.BASE_URL),
+//   routes
+// });
+
+router.beforeEach((to, from, next) => {
+  const baseTitle = to.meta.title || 'Default Title';
+  if (to.params.taskid) {
+    document.title = `${baseTitle} - Task ID: ${to.params.taskid}`;
+  } else {
+    document.title = String(baseTitle);
+  }
+  next();
+});
 
 const FakeAPI = {
     async fetch(fetchparam: Fetchparam): Promise<SearchResult<VideoDownloadListDisplay>> {
@@ -119,6 +133,7 @@ const alerttitle = ref("");
 const alerttype = ref<"success" | "error" | "warning" | "info" | undefined>(
   "success"
 );
+
 let refreshInterval: ReturnType<typeof setInterval> | undefined;
     const options = reactive({
   page: 1, // Initial page
