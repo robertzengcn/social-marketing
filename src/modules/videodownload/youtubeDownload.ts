@@ -143,8 +143,11 @@ export class YoutubeDownload implements videoDownloadImpl {
     async downloadPlaylist(url: string, savePath: string, useBrowserCookies?:string,cookiesProxy?: CookiesProxy | null, proxy?: Proxy | null, execPath?: string, videoQuality?:number,ignoreLink?:Array<string>,errorCall?: (link:string,errorMsg: string) => void, stroutCall?: (message: string) => void, successCall?: (param:VideodoanloadSuccessCall) => void,endCall?:(error:string)=>void) {
         const urls=await this.getPlaylist(url)
         let error=""
+        console.log("ignore urls")
+        console.log(ignoreLink)
         if(urls){
             for(const urlitem of urls){
+                console.log("current catch url "+urlitem)
                 if(ignoreLink){
                     if(ignoreLink.includes(removeParamsAfterAmpersand(urlitem))){
                         continue
