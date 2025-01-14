@@ -28,7 +28,7 @@
             <v-icon size="small" class="me-2" @click="openTasklist(item)">
                 mdi-login
             </v-icon>
-            <v-icon size="small" class="me-2" @click="taskRetry(item)" v-if="item.status == '3'">
+            <v-icon size="small" class="me-2" @click="taskRetry(item)" v-if="item.status !='1'">
                 mdi-play
             </v-icon>
            
