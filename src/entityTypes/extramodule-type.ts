@@ -14,6 +14,7 @@ export type ExtraModule={
     version:string,
     installed?:boolean,
     link:string,
-    requirePy:boolean
+    requirePy:boolean,
+    ispip:boolean
 
 }

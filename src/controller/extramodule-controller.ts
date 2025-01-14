@@ -5,7 +5,8 @@ import { LinuxExtraModuleConfig } from "@/config/LinuxExtraModuleConfig"
 import { ExtraModule } from "@/entityTypes/extramodule-type"
 import {checkFolderAndGetFiles,downloadFile,getUserPlatform} from "@/modules/lib/function"
 import { ListData } from "@/entityTypes/commonType"
-import { execSync } from 'child_process';
+import { execSync,exec } from 'child_process';
+
 // import { uninstallPipPackage } from "@/modules/lib/function"
 //import log from 'electron-log/node';
 import { app } from 'electron';
@@ -23,13 +24,21 @@ export class ExtraModuleController {
         return this.extraModulePth
     }
     public async getExtraModuleList(offerset: number, length: number): Promise<ListData<ExtraModule>> {
-        const piplist = await this.getExtramoduleinfolder()
+        const extraModuelfold = await this.getExtramoduleinfolder()
     //    const extramodules=this.getExtraModulesConfig()
     
         //loop extra modules check if modules installed
-        this.extramodules.forEach((module) => {
-            module.installed = piplist.includes(module.packagename)
+        this.extramodules.forEach(async (module) => {
+            module.installed = extraModuelfold.includes(module.packagename)
+            if(module.ispip){//check pip package installed
+                const mores=await this.isPipModuleInstalled(module.packagename)
+                if(mores){
+                    module.installed=true
+                }
+            }
         })
+
+
         return {
             records: this.extramodules.slice(offerset, length)
             , num: this.extramodules.length
@@ -61,15 +70,35 @@ export class ExtraModuleController {
             }
             return
         }
-        const saveName=path.join(this.extraModulePth,valid.packagename)
+        if(valid.ispip){//install pip package
+            await this.installPipPackage(valid.packagename).then(()=>{
+                if(success){
+                    success()
+                }
+            }).catch((error)=>{
+                if(strerr){
+                    strerr(error)
+                }
+            })
+
+        }else{
+            
+       await this.downloadInstallPackage(valid.packagename,valid.link,success,strerr)
+    }
+
+    
+   
+    }
+    public async downloadInstallPackage(packagename: string, installLink:string,success?: () => void, strerr?: (message: Error) => void) {
+        const saveName=path.join(this.extraModulePth,packagename)
         //console.log(this.extraModulePth)
         //create folder if not exist
         fs.access(this.extraModulePth,fs.constants.W_OK,(e)  =>{
             if (e) {
-                console.log(e)
+                // console.log(e)
                 fs.promises.mkdir(this.extraModulePth,{ recursive: true },).then(async () => {
-                    console.log(valid.link)
-                    await downloadFile(valid.link,saveName,()=>{
+                    // console.log(valid.link)
+                    await downloadFile(installLink,saveName,()=>{
                         fs.chmodSync(saveName, '755');
 
                         if(success){
@@ -90,7 +119,7 @@ export class ExtraModuleController {
                 })
             } else {
                 //error not exist,access good
-                downloadFile(valid.link,saveName,()=>{
+                downloadFile(installLink,saveName,()=>{
                     fs.chmodSync(saveName, '755');
 
                     if(success){
@@ -103,37 +132,6 @@ export class ExtraModuleController {
                 // }
             }
         })
-    // )) 
-       // {
-            // fs.mkdirSync(this.extraModulePth, { recursive: true });
-      //  }
-        // const saveName=path.join(this.extraModulePth,valid.packagename)
-
-        // downloadFile(valid.link,saveName,success,strerr)
-        // const filePath = ""
-        //install package
-        // installPipPackage(
-        //     valid.packagename,
-        //     valid.version,
-        //     (error) => {
-        //         throw new Error(error.message)
-        //     },
-        //     (message) => {
-        //         const formattedMessage = `${new Date().toISOString()}: ${message}\n`;
-        
-        //         log.info(formattedMessage)
-        //         if (strout) {
-        //             strout(message)
-        //         }
-        //     },
-        //     (message) => {
-        //         const formattedMessage = `${new Date().toISOString()}: ${message}\n`;
-        //         log.error(formattedMessage)
-        //         if (strerr) {
-        //             strerr(message)
-        //         }
-        //     },
-        // )
     }
     public downloadSavefile(filename:string,success:()=>void,strerr:(message:Error)=>void){
         const saveName=path.join(this.extraModulePth,filename)
@@ -216,5 +214,31 @@ export class ExtraModuleController {
         return false;
       }
 }
+//check whether pip modules installed
+public async isPipModuleInstalled(moduleName: string): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+        exec(`pip show ${moduleName}`, (error, stdout, stderr) => {
+            if (error) {
+                // Module is not installed
+                resolve(false);
+            } else {
+                // Module is installed
+                resolve(true);
+            }
+        });
+    });
+}
+public async installPipPackage(packageName: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+        exec(`pip install ${packageName}`, (error, stdout, stderr) => {
+            if (error) {
+                reject(new Error(`Error installing package: ${stderr}`));
+            } else {
+                resolve();
+            }
+        });
+    });
+}
+
 
 }

@@ -7,7 +7,16 @@ export const LinuxExtraModuleConfig:ExtraModule[]=[
         packagename:"yt-dlp",
         version:"2024.08.07",
         link:"https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp",
-        requirePy:true
+        requirePy:true,
+        ispip:false
     },
+    {
+        name:"faster-whisper",
+        packagename:"yt-dlp",
+        version:"1.1.1",
+        link:"https://github.com/SYSTRAN/faster-whisper",
+        requirePy:true,
+        ispip:true
+    }
 
 ]

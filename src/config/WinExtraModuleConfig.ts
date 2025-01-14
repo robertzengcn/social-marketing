@@ -7,7 +7,16 @@ export const WinExtraModuleConfig:ExtraModule[]=[
         packagename:"yt-dlp.exe",
         version:"2024.12.06",
         link:"https://github.com/yt-dlp/yt-dlp/releases/download/2024.12.06/yt-dlp.exe",
-        requirePy:false
+        requirePy:false,
+        ispip:false
     },
+    {
+        name:"faster-whisper",
+        packagename:"yt-dlp",
+        version:"1.1.1",
+        link:"https://github.com/SYSTRAN/faster-whisper",
+        requirePy:true,
+        ispip:true
+    }
 
 ]
