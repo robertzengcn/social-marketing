@@ -10,7 +10,7 @@ import {CookiesProxy} from "@/entityTypes/videoType"
 import {Proxy} from "@/entityTypes/proxyType"
 import {VideoDownloadFactory} from "@/modules/videodownload/VideoDownloadFactory"
 import {VideodoanloadSuccessCall} from "@/entityTypes/videoType"
-
+import {removeParamsAfterAmpersand } from "@/modules/lib/function"
 process.parentPort.on('message', async (e) => {
     // const [port] = e.ports
     // console.log("get parent message")
@@ -108,7 +108,7 @@ process.parentPort.on('message', async (e) => {
                             //signal download end
                         }else{//download playlist
                             // await downloadTool.downloadPlaylist(element)
-                            await downloadTool.downloadPlaylist(element,param.savePath,param.BrowserName,randCookiesproxy,itemProxy,param.exePath,param.videoQuality,(link,errorstring)=>{
+                            await downloadTool.downloadPlaylist(element,param.savePath,param.BrowserName,randCookiesproxy,itemProxy,param.exePath,param.videoQuality,param.successlink,(link,errorstring)=>{
                                 const message:ProcessMessage<VideodownloadMsg>={
                                     action:"singlevideodownloadMsg",
                                     data:{

@@ -4,11 +4,11 @@ import { exec } from "child_process";
 import { promisify } from "util";
 import { CookiesProxy,VideodoanloadSuccessCall,YoutubedlStrout } from "@/entityTypes/videoType"
 import { Proxy, ProxyParseItem } from "@/entityTypes/proxyType"
-import { convertCookiesToNetscapeFile, generateRandomUniqueString, proxyEntityToUrl } from "@/modules/lib/function"
+import { convertCookiesToNetscapeFile, generateRandomUniqueString, proxyEntityToUrl,removeParamsAfterAmpersand } from "@/modules/lib/function"
 import { CookiesType} from "@/entityTypes/cookiesType"
 import * as fs from 'fs';
 import puppeteer from 'puppeteer';
-import { Page, Browser} from 'puppeteer';
+// import { Page, Browser} from 'puppeteer';
 
 // import * as fs from 'fs';
 import * as path from 'path';
@@ -140,11 +140,16 @@ export class YoutubeDownload implements videoDownloadImpl {
 
     }
     //download playlist
-    async downloadPlaylist(url: string, savePath: string, useBrowserCookies?:string,cookiesProxy?: CookiesProxy | null, proxy?: Proxy | null, execPath?: string, videoQuality?:number,errorCall?: (link:string,errorMsg: string) => void, stroutCall?: (message: string) => void, successCall?: (param:VideodoanloadSuccessCall) => void,endCall?:(error:string)=>void) {
+    async downloadPlaylist(url: string, savePath: string, useBrowserCookies?:string,cookiesProxy?: CookiesProxy | null, proxy?: Proxy | null, execPath?: string, videoQuality?:number,ignoreLink?:Array<string>,errorCall?: (link:string,errorMsg: string) => void, stroutCall?: (message: string) => void, successCall?: (param:VideodoanloadSuccessCall) => void,endCall?:(error:string)=>void) {
         const urls=await this.getPlaylist(url)
         let error=""
         if(urls){
             for(const urlitem of urls){
+                if(ignoreLink){
+                    if(ignoreLink.includes(removeParamsAfterAmpersand(urlitem))){
+                        continue
+                    }
+                }
                 //random stop for some time
                 const randomStop=Math.floor(Math.random() * 10000);
                 await new Promise(resolve => setTimeout(resolve, randomStop));

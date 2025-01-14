@@ -190,6 +190,7 @@ export class videoController {
         //get the video lnk that already download in the task
         const alreadsucess = this.videoDownloadModule.getAllvideoDownloadlist(taskId, VideoDownloadStatus.Finish)
         const alreadlinks = alreadsucess.map((value) => removeParamsAfterAmpersand(value.url))
+        console.log(alreadlinks)
         const paramData: processVideoDownloadParam = {
             exePath: execFilepath,
             platform: param.platform,
