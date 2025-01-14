@@ -147,7 +147,7 @@ export class YoutubeDownload implements videoDownloadImpl {
         console.log(ignoreLink)
         if(urls){
             for(const urlitem of urls){
-                console.log("current catch url "+urlitem)
+                console.log("current catch url "+removeParamsAfterAmpersand(urlitem))
                 if(ignoreLink){
                     if(ignoreLink.includes(removeParamsAfterAmpersand(urlitem))){
                         continue
