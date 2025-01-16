@@ -135,6 +135,7 @@ const setAlert = (
   title: string,
   type: "success" | "error" | "warning" | "info" | undefined
 ) => {
+  loading.value = false;
   alerttext.value = text;
   alerttitle.value = title;
   alerttype.value = type;

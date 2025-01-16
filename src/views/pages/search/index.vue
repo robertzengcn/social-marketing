@@ -110,6 +110,7 @@ const setAlert = (
   title: string,
   type: "success" | "error" | "warning" | "info" | undefined
 ) => {
+  loading.value = false;
   alerttext.value = text;
   alerttitle.value = title;
   alerttype.value = type;
@@ -184,6 +185,7 @@ const handleSelectedChanged = (newValue: ProxyListEntity[]) => {
 };
 async function onSubmit() {
   if (!form.value) return;
+  loading.value = true;
   const { valid } = await form.value.validate();
   if (!valid) {
     //console.log("form is not valid");
@@ -221,11 +223,13 @@ async function onSubmit() {
     // subdata.keywords=
     //submit form
     console.log(subdata)
-    submitScraper(subdata).catch(function (err) {
+    await submitScraper(subdata).catch(function (err) {
+      //loading.value = false;
       //catch error
       setAlert(err.message, "Error", "error");
       return null
     })
+    loading.value = false;
     // if(res){
 
     // }

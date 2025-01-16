@@ -175,6 +175,7 @@ async function onSubmit() {
   // console.log(valid);
   loading.value = true;
   if (!valid) {
+    loading.value = false;
     console.log("form is not valid");
   } else {
     const pe: ProxyEntity = {
@@ -191,6 +192,8 @@ async function onSubmit() {
     
     await saveProxy(pe)
       .then((res) => {
+
+        loading.value = false;
         console.log(res)
         if (res.id > 0) {
           alert.value = true;
@@ -210,6 +213,7 @@ async function onSubmit() {
         }, 5000);
       })
       .catch((err) => {
+        loading.value = false;
         alert.value = true;
         alertcolor.value = "error";
         alertContent.value = err.message;

@@ -12,7 +12,7 @@ export const WinExtraModuleConfig:ExtraModule[]=[
     },
     {
         name:"faster-whisper",
-        packagename:"yt-dlp",
+        packagename:"faster-whisper",
         version:"1.1.1",
         link:"https://github.com/SYSTRAN/faster-whisper",
         requirePy:true,

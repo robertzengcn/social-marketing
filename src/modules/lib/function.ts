@@ -631,4 +631,18 @@ export function removeParamsAfterAmpersand(url: string): string {
   }
   return url;
 }
-
+export function removeFile(filePath: string,success?: () => void, strerr?: (message: string) => void): void {
+  if (fs.existsSync(filePath)) {
+    fs.rm(filePath, { recursive: true }, (error) => {
+        if(error){
+            if (strerr) {
+                strerr(`file does not exist: ${filePath}`);
+                }
+        }else{
+            if (success) {
+                success();
+            }
+        }
+    })
+} 
+}

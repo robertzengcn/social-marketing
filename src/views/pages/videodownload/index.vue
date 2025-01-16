@@ -122,6 +122,7 @@
 
       <!-- Define the alert dialog component -->
       <v-dialog
+      persistent
       v-model="alert"
       width="auto"
     >
@@ -140,6 +141,7 @@
         </template>
       </v-card>
     </v-dialog>
+    
     </div>
 
   </v-sheet>
@@ -157,6 +159,7 @@ import { CommonDialogMsg } from "@/entityTypes/commonType";
 import router from '@/views/router';
 import ProxyTableselected from "@/views/pages/proxy/widgets/ProxySelectedTable.vue";
 import { ProxyListEntity, Proxy } from "@/entityTypes/proxyType";
+import ErrorDialog from "@/views/components/widgets/errorDialog.vue"
 const proxyValue = ref<Array<Proxy>>([]);
 const proxyValueshow = ref<Array<string>>([]);
 const proxytableshow = ref(false);
@@ -325,6 +328,7 @@ const setAlert = (
   title: string,
   type: "success" | "error" | "warning" | "info" | undefined
 ) => {
+  loading.value=false
   alerttext.value = text;
   alerttitle.value = title;
   alerttype.value = type;
@@ -346,6 +350,7 @@ async function onSubmit() {
   loading.value = true;
   if (!valid) {
     setAlert("Please fill all required fields", "Error", "error");
+    return
   }else{  
     // console.log(valid);
     const lines = linkstr.value.split("\n");
