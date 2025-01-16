@@ -31,11 +31,13 @@
             <v-icon size="small" class="me-2" @click="taskRetry(item)" v-if="item.status !='1'">
                 mdi-play
             </v-icon>
-           
+            <v-icon size="small" class="me-2" @click="showLog(item)" v-if="item.status =='3'">
+                mdi-file-document
+            </v-icon>
 
         </template>
     </v-data-table-server>
-
+    <LogDialog :dialogModel="logdiastatus" :logContent="logdiaContent" />
 
 </template>
 
@@ -43,12 +45,12 @@
 import { useI18n } from "vue-i18n";
 import { ref, computed,reactive,onMounted,onUnmounted } from 'vue'
 import { SearchResult } from '@/views/api/types'
-import { getVideoTasklist,retryVideoTask } from "@/views/api/video";
+import { getVideoTasklist,retryVideoTask,queryVideoTaskErrorlog } from "@/views/api/video";
 import { VideoDownloadTaskEntity } from "@/entityTypes/videoType";
 import router from '@/views/router';
 const { t } = useI18n({ inheritLocale: true });
 import { CapitalizeFirstLetter } from "@/views/utils/function"
-
+import LogDialog from "@/views/components/widgets/logDialog.vue"        
 type Fetchparam = {
     // id:number
     page: number,
@@ -123,8 +125,8 @@ let refreshInterval: ReturnType<typeof setInterval> | undefined;
 // const showDeleteModal = ref(false);
 // const deleteId = ref(0);
 // const alertext = ref("");
-
-
+const logdiastatus=ref(false);
+const logdiaContent=ref("");
 function loadItems({ page, itemsPerPage, sortBy }) {
     loading.value = true
     const fetchitem: Fetchparam = {
@@ -171,6 +173,19 @@ const openTasklist = (item: VideoDownloadTaskEntity) => {
 const taskRetry=(item: VideoDownloadTaskEntity)=>{
     if (item.id) {
         retryVideoTask(item.id)
+    }
+}
+const showLog = async (item) => {
+    if (item.id) {
+        await queryVideoTaskErrorlog(item.id).then((res) => {
+            logdiaContent.value = res
+            logdiastatus.value = true
+        }).catch(function (error) {
+            console.error(error);
+        })
+        // if (res) {
+            
+        // }  
     }
 }
 const options = reactive({

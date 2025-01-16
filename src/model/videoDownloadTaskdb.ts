@@ -68,7 +68,7 @@ export class VideoDownloadTaskdb {
       }
       //get video download task info by id
       public getVideoDownloadTask(taskId:number):VideoDownloadTaskEntity{
-        const stmt = this.db.prepare(`SELECT id,task_name as taskName,platform,savepath,record_time,status FROM ${this.videoDownloadTaskTable} WHERE id=?`);
+        const stmt = this.db.prepare(`SELECT id,task_name as taskName,platform,savepath,record_time,status,error_log,runtime_log FROM ${this.videoDownloadTaskTable} WHERE id=?`);
         const row = stmt.get(taskId) as VideoDownloadTaskEntity;
         return row;
       }

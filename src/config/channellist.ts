@@ -59,6 +59,8 @@ export const VIDEODOWNLOADTASK_RETRY='video:downloadtask:retry'
 export const VIDEODOWNLOADITEM_RETRY='video:downloaditem:retry'
 export const VIDEODOWNLOADITEM_EXPLORER='video:downloaditem:explorer'
 export const VIDEODOWNLOADITEM_DELETE='video:downloaditem:delete'
+export const VIDEODOWN_TASK_ERROR_LOG='video:download:error:log'
+export const VIDEODOWN_TASK_ERROR_LOG_QUERY='video:download:task:error:log:query'
 
 
 

@@ -1,9 +1,9 @@
 import { ipcMain } from 'electron';
-import { VIDEODOWNLOAD, VIDEODOWNLOAD_MESSAGE, VIDEODOWNLOAD_TASK_LIST,VIDEODOWNLOAD_LIST,VIDEODOWNLOADTASK_RETRY,VIDEODOWNLOADITEM_RETRY,VIDEODOWNLOAD_ITEM_MESSAGE,VIDEODOWNLOADITEM_EXPLORER,VIDEODOWNLOADITEM_DELETE } from '@/config/channellist'
+import { VIDEODOWNLOAD, VIDEODOWNLOAD_MESSAGE, VIDEODOWNLOAD_TASK_LIST, VIDEODOWNLOAD_LIST, VIDEODOWNLOADTASK_RETRY, VIDEODOWNLOADITEM_RETRY, VIDEODOWNLOAD_ITEM_MESSAGE, VIDEODOWNLOADITEM_EXPLORER, VIDEODOWNLOADITEM_DELETE,VIDEODOWN_TASK_ERROR_LOG,VIDEODOWN_TASK_ERROR_LOG_QUERY } from '@/config/channellist'
 import { videoController } from '@/controller/videoController';
-import { CommonDialogMsg,CommonResponse,CommonIdrequest } from "@/entityTypes/commonType";
+import { CommonDialogMsg, CommonResponse, CommonIdrequest,CommonMessage,CommonIdrequestType } from "@/entityTypes/commonType";
 import { CustomError } from '@/modules/customError';
-import {VideoDownloadTaskEntity,VideoDownloadQuery,VideoDownloadListDisplay,downloadVideoparam} from "@/entityTypes/videoType";
+import { VideoDownloadTaskEntity, VideoDownloadQuery, VideoDownloadListDisplay, downloadVideoparam } from "@/entityTypes/videoType";
 
 export function registerVideoIpcHandlers() {
     console.log("video download register")
@@ -67,7 +67,7 @@ export function registerVideoIpcHandlers() {
 
         // }
 
-        
+
         // const dvp: downloadVideoparam = {
         //     accountId: qdata.accountId,
         //     platform: qdata.platform,
@@ -75,23 +75,23 @@ export function registerVideoIpcHandlers() {
         //     savePath: qdata.savePath,
         //     isplaylist:qdata.isplaylist
         // }
-        
-        await videoCtrl.downloadVideo(qdata,()=>{
+
+        await videoCtrl.downloadVideo(qdata, () => {
             // if(taskId){
-                const videoMsgs: CommonDialogMsg = {
-                    status: true,
-                    code: 200,
-                    data: {
+            const videoMsgs: CommonDialogMsg = {
+                status: true,
+                code: 200,
+                data: {
                     title: "video.download_start",
                     content: "video.revice_download_command"
-                    }
                 }
-                event.sender.send(VIDEODOWNLOAD_MESSAGE, videoMsgs)
+            }
+            event.sender.send(VIDEODOWNLOAD_MESSAGE, videoMsgs)
             // }
-            
+
         }).catch(function (error) {
             console.log("error:" + error)
-            if(error instanceof CustomError){
+            if (error instanceof CustomError) {
                 const comMsgs: CommonDialogMsg = {
                     status: false,
                     code: error.code,
@@ -103,7 +103,7 @@ export function registerVideoIpcHandlers() {
                 event.sender.send(VIDEODOWNLOAD_MESSAGE, comMsgs)
                 return
 
-            }else if (error instanceof Error) {
+            } else if (error instanceof Error) {
                 const comMsgs: CommonDialogMsg = {
                     status: false,
                     code: 20240513142039,
@@ -116,25 +116,25 @@ export function registerVideoIpcHandlers() {
                 return
             }
         })
-        
+
         return
     })
     //get video download list
     ipcMain.handle(VIDEODOWNLOAD_TASK_LIST, async (event, data) => {
         const qdata = JSON.parse(data);
         if (!("page" in qdata)) {
-            qdata.page=0
+            qdata.page = 0
         }
         if (!("size" in qdata)) {
-            qdata.size=10
+            qdata.size = 10
         }
         //return video download list
         const videoCtrl = new videoController()
         const res = await videoCtrl.videoDownloadtasklist(qdata.page, qdata.size)
-        const resp:CommonResponse<VideoDownloadTaskEntity>={
-            status:true,
-            msg:"video.download_list",
-            data:res
+        const resp: CommonResponse<VideoDownloadTaskEntity> = {
+            status: true,
+            msg: "video.download_list",
+            data: res
         }
         return resp
     })
@@ -144,12 +144,12 @@ export function registerVideoIpcHandlers() {
         if (!("taskId" in qdata)) {
             throw new Error("taskId not found");
         }
-       
-        const res = await videoCtrl.videoDownloadlist(qdata.taskId,qdata.page,qdata.size)
-        const resp:CommonResponse<VideoDownloadListDisplay>={
-            status:true,
-            msg:"video.download_list",
-            data:res
+
+        const res = await videoCtrl.videoDownloadlist(qdata.taskId, qdata.page, qdata.size)
+        const resp: CommonResponse<VideoDownloadListDisplay> = {
+            status: true,
+            msg: "video.download_list",
+            data: res
         }
         return resp
     })
@@ -158,31 +158,31 @@ export function registerVideoIpcHandlers() {
         if (!("taskId" in qdata)) {
             throw new Error("taskId not found");
         }
-        await videoCtrl.retryDownloadvideo(qdata.taskId,()=>{
+        await videoCtrl.retryDownloadvideo(qdata.taskId, () => {
             const videoMsgs: CommonDialogMsg = {
                 status: true,
                 code: 200,
                 data: {
-                title: "video.download_start",
-                content: "video.revice_download_command"
+                    title: "video.download_start",
+                    content: "video.revice_download_command"
                 }
             }
             event.sender.send(VIDEODOWNLOAD_MESSAGE, videoMsgs)
         })
     })
     //retry download video item by id
-    ipcMain.on(VIDEODOWNLOADITEM_RETRY, async (event, data) => { 
+    ipcMain.on(VIDEODOWNLOADITEM_RETRY, async (event, data) => {
         const qdata = JSON.parse(data) as CommonIdrequest<number>
         if (!("id" in qdata)) {
             throw new Error("id not found");
         }
-        await videoCtrl.redownloadItembyId(qdata.id,()=>{
+        await videoCtrl.redownloadItembyId(qdata.id, () => {
             const videoMsgs: CommonDialogMsg = {
                 status: true,
                 code: 200,
                 data: {
-                title: "video.download_start",
-                content: "video.revice_download_command"
+                    title: "video.download_start",
+                    content: "video.revice_download_command"
                 }
             }
             event.sender.send(VIDEODOWNLOAD_ITEM_MESSAGE, videoMsgs)
@@ -191,21 +191,48 @@ export function registerVideoIpcHandlers() {
 
     })
     //open file in explorer
-    ipcMain.on(VIDEODOWNLOADITEM_EXPLORER, async (event, data) => { 
+    ipcMain.on(VIDEODOWNLOADITEM_EXPLORER, async (event, data) => {
         const qdata = JSON.parse(data) as CommonIdrequest<number>
         if (!("id" in qdata)) {
             throw new Error("id not found");
         }
         await videoCtrl.showFileExplorer(qdata.id)
-       
+
     })
-    
-    ipcMain.on(VIDEODOWNLOADITEM_DELETE, async (event, data) => { 
+
+    ipcMain.on(VIDEODOWNLOADITEM_DELETE, async (event, data) => {
         const qdata = JSON.parse(data) as CommonIdrequest<number>
         if (!("id" in qdata)) {
             throw new Error("id not found");
         }
         await videoCtrl.deleteVideoDownloadItem(qdata.id)
-       
+
+    })
+    ipcMain.handle(VIDEODOWN_TASK_ERROR_LOG_QUERY, async (event, data) => {
+        // readTaskErrorlog
+        const qdata = JSON.parse(data) as CommonIdrequestType<number>
+        if (!("id" in qdata)) {
+            throw new Error("id not found");
+        }
+        await videoCtrl.readTaskErrorlog(qdata.id).then((data) => {
+            const videoMsgs:CommonMessage<string>= {
+                status: true,
+                msg: "",
+                data: data
+            }
+            return videoMsgs
+            // event.sender.send(VIDEODOWN_TASK_ERROR_LOG, videoMsgs)
+        }).catch((error) => {
+            if (error instanceof Error) {
+                const videoMsgs:CommonMessage<string>= {
+                    status: false,
+                    msg: error.message
+                }
+                return videoMsgs
+                // event.sender.send(VIDEODOWN_TASK_ERROR_LOG, videoMsgs)
+            }
+
+        })
+        
     })
 }

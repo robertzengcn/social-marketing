@@ -9,7 +9,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { utilityProcess, MessageChannelMain } from "electron";
 import { USERLOGPATH, USEREMAIL } from '@/config/usersetting';
-import { WriteLog, getApplogspath, getRandomValues, removeParamsAfterAmpersand } from "@/modules/lib/function"
+import { WriteLog, getApplogspath, getRandomValues, removeParamsAfterAmpersand,readLogFile } from "@/modules/lib/function"
 import { v4 as uuidv4 } from 'uuid';
 // import { CustomError } from '@/modules/customError'
 import { AccountCookiesModule } from "@/modules/accountCookiesModule"
@@ -596,5 +596,24 @@ export class videoController {
         //delete video download item
         this.videoDownloadModule.deleteVideoDownloadItem(id)
 
+    }
+    public async readTaskErrorlog(taskId: number): Promise<string> {
+        const task = await this.videoDownloadTaskModule.getVideoDownloadTask(taskId)
+        if (!task) {
+            throw new Error("task info not found")
+        }
+        let content =""
+        if(task.error_log){
+            //check file exist
+            if (fs.existsSync(task.error_log)) {
+                content =await readLogFile(task.error_log)
+            }else{
+                throw new Error("task error file log not found")
+            }
+        }else{
+            throw new Error("task error file log not found")
+        }
+        console.log(content)
+        return content
     }
 }

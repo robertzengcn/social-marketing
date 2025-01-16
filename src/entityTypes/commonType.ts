@@ -53,6 +53,9 @@ export interface CommonApiresp <Type>{
 export interface CommonIdrequest<Type>{
     id:Type
 }
+export interface CommonIdrequestType<Type> extends CommonIdrequest<Type>{
+    type:string
+}
 export type Header = {
     title: string | ReturnType<typeof computed>;
     align?: string;

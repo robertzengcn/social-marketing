@@ -1,10 +1,11 @@
 'use strict';
 export { };
 import { windowInvoke, windowSend, windowReceive } from '@/views/utils/apirequest'
-import { OPENDIRECTORY, VIDEODOWNLOAD_MESSAGE, VIDEODOWNLOAD, VIDEODOWNLOAD_TASK_LIST,VIDEODOWNLOAD_LIST,VIDEODOWNLOADTASK_RETRY,VIDEODOWNLOADITEM_RETRY,VIDEODOWNLOAD_ITEM_MESSAGE,VIDEODOWNLOADITEM_EXPLORER,VIDEODOWNLOADITEM_DELETE } from "@/config/channellist";
+import { OPENDIRECTORY, VIDEODOWNLOAD_MESSAGE, VIDEODOWNLOAD, VIDEODOWNLOAD_TASK_LIST,VIDEODOWNLOAD_LIST,VIDEODOWNLOADTASK_RETRY,VIDEODOWNLOADITEM_RETRY,VIDEODOWNLOAD_ITEM_MESSAGE,VIDEODOWNLOADITEM_EXPLORER,VIDEODOWNLOADITEM_DELETE,VIDEODOWN_TASK_ERROR_LOG_QUERY } from "@/config/channellist";
 import { downloadVideoparam, VideoDownloadTaskEntity,VideoDownloadQuery,VideoDownloadListDisplay } from "@/entityTypes/videoType"
-import { CommonDialogMsg,ItemSearchparam } from "@/entityTypes/commonType";
+import { CommonDialogMsg,ItemSearchparam,CommonMessage,CommonIdrequestType } from "@/entityTypes/commonType";
 import {SearchResult } from '@/views/api/types'
+import { promises } from 'dns';
 
 
 
@@ -47,4 +48,9 @@ export function openFileexplor(id:number) {
 }
 export function deleteVideoDownItem(id:number){
     windowSend(VIDEODOWNLOADITEM_DELETE, {id:id})
+}
+export async function queryVideoTaskErrorlog(id:number):Promise<string>{
+    const querydata:CommonIdrequestType<number>={id:id,type:"errorlog"}
+   const res= await windowInvoke(VIDEODOWN_TASK_ERROR_LOG_QUERY, querydata)
+   return res as string
 }
