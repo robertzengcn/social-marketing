@@ -7,7 +7,12 @@
                     append-inner-icon="mdi-magnify" single-line hide-details v-model="search"></v-text-field>
             </div>
 
-
+            <v-btn  @click="loadItems({ page: options.page, itemsPerPage: options.itemsPerPage, sortBy: '' })">
+              <v-icon>mdi-refresh</v-icon>
+            </v-btn>
+            <v-btn class="btn ml-3" variant="flat" prepend-icon="mdi-plus" color="#5865f2" @click="generateCaptions()">
+              {{CapitalizeFirstLetter($t('video.generate_captions'))}}
+           </v-btn>
         </div>
         <div>
         </div>
@@ -164,7 +169,7 @@ const props = defineProps({
   isSelectedtable: {
     type: Boolean,
     
-    default:false,
+    default:true,
   }
   
 });
@@ -258,6 +263,10 @@ const stopAutoRefresh = () => {
     refreshInterval = undefined;
   }
 };
+const generateCaptions = () => {
+
+}
+    
 onMounted(() => {
     receiveVideoItemDownloadMessage((res: CommonDialogMsg) => {
     console.log(res)

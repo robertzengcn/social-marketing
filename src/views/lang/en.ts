@@ -140,7 +140,7 @@ export default {
         url:"url",
         title:"title",
         description:"description",
-        
+        generate_captions:"generate captions",
     },
     account:{
         accountId:"Account ID",
