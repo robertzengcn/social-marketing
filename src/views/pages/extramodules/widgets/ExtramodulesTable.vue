@@ -1,6 +1,6 @@
 <template>
-    <v-data-table-server v-model:items-per-page="itemsPerPage" :headers="headers"
-        :items-length="totalItems" :items="serverItems" :loading="loading" item-value="name" @update:options="loadItems">
+    <v-data-table-server v-model:items-per-page="itemsPerPage" :headers="computedHeaders"
+        :items-length="totalItems" :items="serverItems" :loading="loading" item-value="name" @update:options="loadItems" :show-select="isSelectedtable">
         <template v-slot:[`item.actions`]="{ item }">
             <v-btn v-if="!item.installed" @click="openDialog(item,true)"  :loading="item.loading" loading-text="{{$t('common.installing')}}...">
                 Install
@@ -34,7 +34,7 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
-    
+    <ErrorDialog :showDialog="showDialog" :alertext="alertext" :alertitle="t('common.error_retry')" @dialogclose="showDialog=false" />
 </template>
 
 <script setup lang="ts">
@@ -46,7 +46,10 @@ import { SearchResult } from '@/views/api/types'
 import {ExtraModule,ExtraModuleItem} from "@/entityTypes/extramodule-type"
 const {t} = useI18n({inheritLocale: true});
 import {CapitalizeFirstLetter} from '@/views/utils/function'
-const showDeleteModal = ref(false);
+import ErrorDialog from "@/views/components/widgets/errorDialog.vue"
+//const showDeleteModal = ref(false);
+const showDialog = ref<boolean>(false);
+const alertext = ref<string>("")
 // const deleteId = ref(0);
 // const campaignId = i18n.t("campaignId");
 type Fetchparam = {
@@ -149,6 +152,7 @@ const openDialog=(item,install:boolean)=>{
         dialogAction.value = "uninstall"
     }    
 }
+
 const confirmAction=()=>{
     dialog.value = false;
     if(!currentItem.value){
@@ -160,6 +164,7 @@ const confirmAction=()=>{
         uninstallItem(currentItem.value)
       }
 }
+
 // const confirmInstall=()=> {
 //       dialog.value = false;
 //       if(currentItem.value){
@@ -171,7 +176,21 @@ const installItem=(item:ExtraModuleItem)=>{
     installExtramodule(item.packagename)
    
 }
-
+const props = defineProps({
+  isSelectedtable: {
+    type: Boolean,
+    
+    default:false,
+  }
+  
+});
+const computedHeaders = computed(() => {
+  if (props.isSelectedtable) {
+    return headers.value.filter(value => value.key !== 'actions');
+  } else {
+    return headers.value;
+  }
+}); 
 const uninstallItem=(item:ExtraModuleItem)=>{
     item.loading=true 
     removeExtramodule(item.packagename)
@@ -198,6 +217,8 @@ onMounted(() => {
             // loadItems({ page: 1, itemsPerPage: itemsPerPage.value, sortBy: '' })
         }else{
             console.error(obj.msg)
+            alertext.value=obj.msg
+            showDialog.value=true
         }
     })
 })

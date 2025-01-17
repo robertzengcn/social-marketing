@@ -24,7 +24,7 @@ const props = defineProps({
     },
 })
 const closeDialog = () => {
-    console.log("closeDialog"+54)
+    //console.log("closeDialog"+54)
   // props.dialog = false;
   emit('dialogclose');
 };

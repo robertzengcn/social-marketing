@@ -12,9 +12,9 @@
         <div>
         </div>
     </div>
-    <v-data-table-server v-model:items-per-page="itemsPerPage" :search="search" :headers="headers"
+    <v-data-table-server v-model:items-per-page="itemsPerPage" :search="search" :headers="computedHeaders"
         :items-length="totalItems" :items="serverItems" :loading="loading" item-value="name"
-        @update:options="loadItems">
+        @update:options="loadItems" :show-select="isSelectedtable" return-object>
         <template v-slot:item.status="{ item }">
             <v-chip color="grey" v-if="item.status == '0'">{{ CapitalizeFirstLetter(t('common.not_start')) }}</v-chip>
             <v-chip color="blue" v-if="item.status == '1'">{{ CapitalizeFirstLetter(t('common.processing')) }}</v-chip>
@@ -57,6 +57,9 @@ import { CapitalizeFirstLetter } from "@/views/utils/function"
 import { CommonDialogMsg } from "@/entityTypes/commonType";
 import ErrorDialog from "@/views/components/widgets/errorDialog.vue"
 import DeleteDialog from '@/views/components/widgets/deleteDialog.vue';
+import { Header } from "@/entityTypes/commonType"
+
+const headers=ref<Array<Header>>([])
 const $route = useRoute();
 const { t } = useI18n({ inheritLocale: true });
 type Fetchparam = {
@@ -94,7 +97,7 @@ const FakeAPI = {
 }
 
 
-const headers: Array<any> = [
+headers.value= [
     {
         title: computed(_ => CapitalizeFirstLetter(t("common.id"))),
         align: 'start',
@@ -157,7 +160,21 @@ let refreshInterval: ReturnType<typeof setInterval> | undefined;
 // const showDeleteModal = ref(false);
 // const deleteId=ref(0);
 // const alertext=ref("");
-
+const props = defineProps({
+  isSelectedtable: {
+    type: Boolean,
+    
+    default:false,
+  }
+  
+});
+const computedHeaders = computed(() => {
+  if (props.isSelectedtable) {
+    return headers.value.filter(value => value.key !== 'actions');
+  } else {
+    return headers.value;
+  }
+});
 
 function loadItems({ page, itemsPerPage, sortBy }) {
 

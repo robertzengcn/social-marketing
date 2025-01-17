@@ -37,7 +37,7 @@
 
         </template>
     </v-data-table-server>
-    <LogDialog :dialogModel="logdiastatus" :logContent="logdiaContent" />
+    <LogDialog :dialogModel="logdiastatus" :logContent="logdiaContent" @dialogclose="logdiastatus=false" />
 
 </template>
 
@@ -181,6 +181,7 @@ const showLog = async (item) => {
             logdiaContent.value = res
             logdiastatus.value = true
         }).catch(function (error) {
+            console.log("error happened")
             console.error(error);
         })
         // if (res) {

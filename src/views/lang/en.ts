@@ -41,6 +41,7 @@ export default {
         not_start:"not start",
         processing:"processing",
         complete:"complete",
+        error_retry:"error happened, please retry again",
     },
     home:{
         search:"Search Extraction",
@@ -107,7 +108,12 @@ export default {
         openai_whisper:{
             name:"openai-whisper",
             describe:"openai-whisper is a module for text generation" 
+        },
+        "faster-whisper":{
+            name:"faster-whisper",
+            describe:"faster-whisper is a module for text generation" 
         }
+        
     },
     video:{
         platform:"platform",

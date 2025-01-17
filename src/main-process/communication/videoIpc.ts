@@ -214,7 +214,7 @@ export function registerVideoIpcHandlers() {
         if (!("id" in qdata)) {
             throw new Error("id not found");
         }
-        await videoCtrl.readTaskErrorlog(qdata.id).then((data) => {
+        const res=await videoCtrl.readTaskErrorlog(qdata.id).then((data) => {
             const videoMsgs:CommonMessage<string>= {
                 status: true,
                 msg: "",
@@ -233,6 +233,6 @@ export function registerVideoIpcHandlers() {
             }
 
         })
-        
+        return res
     })
 }
