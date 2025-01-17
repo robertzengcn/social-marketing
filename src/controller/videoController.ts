@@ -616,4 +616,8 @@ export class videoController {
         console.log(content)
         return content
     }
+    public async generateCaptions(videoIds:Array<string>):Promise<void>{
+       
+
+    }
 }
