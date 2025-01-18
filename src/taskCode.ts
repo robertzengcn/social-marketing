@@ -167,6 +167,10 @@ process.parentPort.on('message', async (e) => {
                     // }
                
             }
+        case 'generateCaption':{
+            //generate capation
+
+        }    
 
         }
     
