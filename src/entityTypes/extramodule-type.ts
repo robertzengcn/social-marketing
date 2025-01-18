@@ -15,6 +15,7 @@ export type ExtraModule={
     installed?:boolean,
     link:string,
     requirePy:boolean,
-    ispip:boolean
+    ispip:boolean,
+    requireFfmpeg:boolean
 
 }

@@ -72,7 +72,7 @@ export class ExtraModuleController {
             return
         }
         if (valid.ispip) {//install pip package
-            await this.installPipPackage(valid.packagename).then(() => {
+            await this.installPipPackage(valid.packagename,valid.version).then(() => {
                 if (success) {
                     success()
                 }
@@ -234,8 +234,12 @@ export class ExtraModuleController {
             });
         });
     }
-    public async installPipPackage(packageName: string): Promise<void> {
+    public async installPipPackage(packageName: string,version?:string): Promise<void> {
         return new Promise((resolve, reject) => {
+            let installCommand = `pip install --force-reinstall -v ${packageName}`;
+            if(version){
+                installCommand += `==${version}`;
+            }   
             exec(`pip install ${packageName}`, (error, stdout, stderr) => {
               
                 if (error) {

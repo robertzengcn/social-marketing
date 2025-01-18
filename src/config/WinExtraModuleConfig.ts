@@ -8,15 +8,17 @@ export const WinExtraModuleConfig:ExtraModule[]=[
         version:"2024.12.06",
         link:"https://github.com/yt-dlp/yt-dlp/releases/download/2024.12.06/yt-dlp.exe",
         requirePy:false,
-        ispip:false
+        ispip:false,
+        requireFfmpeg:false
     },
     {
-        name:"faster-whisper",
-        packagename:"faster-whisper",
-        version:"1.1.1",
-        link:"https://github.com/SYSTRAN/faster-whisper",
+        name:"openai-whisper",
+        packagename:"openai-whisper",
+        version:"v20240930",
+        link:"https://github.com/openai/whisper",
         requirePy:true,
-        ispip:true
+        ispip:true,
+        requireFfmpeg:true
     }
 
 ]

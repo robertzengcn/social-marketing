@@ -105,7 +105,7 @@ export default {
             name:"youtube-dl",
             describe:"youtube-dl is a moudule for youtube video download" 
         },
-        openai_whisper:{
+        "openai-whisper":{
             name:"openai-whisper",
             describe:"openai-whisper is a module for text generation" 
         },
