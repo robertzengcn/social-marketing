@@ -44,7 +44,12 @@ export type VideoDownloadTaskEntity={
     status?:TaskStatus,
     // record_time:string,
 }
-
+export enum VideoCaptionStatus{
+    No = 0,
+    Start = 1,
+    Finish = 2,
+    Error=3
+}
 export enum VideoDownloadStatus {
     Notstart = 0,
     Start = 1,
@@ -57,6 +62,7 @@ export type VideoDownloadEntity={
     savepath:string,
     record_time?:string,
     task_id:number,
+    caption_status?:VideoCaptionStatus,
     // strout?:string,
     error_log?:string,
     status:VideoDownloadStatus,
@@ -186,4 +192,30 @@ export interface VideoDownloadTaskProxyEntity {
     id?: number;
     task_id: number;
     proxy_id: number;
+}
+export interface VideoCaptionGenerateParam{
+    videos:Array<VideoCaptionEntity>,
+    toolName?:string,
+
+}
+export interface VideoCaptionEntity{
+    videoPath:string,
+    savePath:string,
+    isEnglish:boolean,
+    videoId?:number,
+}
+export type extraFileEntity={
+file: string, 
+savePath: string,
+execPath?:string,
+model?:string,
+errorCall?: (errorMsg: string) => void, stroutCall?:(message: string) => void,
+successCall?: () => void
+}
+export type VideoCaptionMsg={
+    status:boolean,
+    msg:string,
+    file:string,
+    savepath?:string,
+    videoId?:number,
 }

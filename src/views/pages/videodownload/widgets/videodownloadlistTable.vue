@@ -129,6 +129,12 @@ headers.value= [
         key: 'status',
     },
     {
+        title: computed(_ => CapitalizeFirstLetter(t("video.caption_status"))),
+        align: 'start',
+        sortable: false,
+        key: 'caption_status',
+    },
+    {
         title: computed(_ => CapitalizeFirstLetter(t("common.record_time"))),
         align: 'start',
         sortable: false,

@@ -12,7 +12,7 @@ export class youtubeVideo implements Video {
      * @throws {CustomError} if chek failed
      * @returns boolean
      */
-    public checkRequirement():boolean{
+    public async checkRequirement():Promise<boolean>{
 
         const dPackage=this.extraModule.getPackageByName(this.moduleName)
         if(!dPackage){
@@ -26,7 +26,7 @@ export class youtubeVideo implements Video {
             }
         }
         // const extraModule=new ExtraModuleController()
-        const res=this.extraModule.checkModule(dPackage.packagename)
+        const res=await this.extraModule.checkModule(dPackage.packagename)
 
         if(!res){
             throw new CustomError("download youtube video must install youtube-dl plugin",2024120511189)

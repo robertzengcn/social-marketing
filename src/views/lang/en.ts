@@ -141,6 +141,8 @@ export default {
         title:"title",
         description:"description",
         generate_captions:"generate captions",
+        caption:"caption",
+        caption_status:"caption status",
     },
     account:{
         accountId:"Account ID",

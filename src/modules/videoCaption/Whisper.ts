@@ -1,28 +1,29 @@
-import { videoCaptionImpl } from '@/modules/interface/VideoCaptionImpl';
+import { VideoCaptionImpl } from '@/modules/interface/VideoCaptionImpl';
+import { extraFileEntity } from "@/entityTypes/videoType";
 import { exec } from 'child_process';
-export class Whisper implements videoCaptionImpl{
+export class Whisper implements VideoCaptionImpl{
     //extract caption from video
-    extractCaption(file: string, savePath: string,  execPath?:string,model?:string,errorCall?: (errorMsg: string) => void, stroutCall?:(message: string) => void, successCall?: () => void)
+    extractCaption(param:extraFileEntity)
     {
-        let command = `${execPath || 'whisper'} "${file}" --output_dir "${savePath}"`;
-        if(model){
-            command += ` --model ${model}`;
+        let command = `${param.execPath || 'whisper'} "${param.file}" --output_dir "${param.savePath}"`;
+        if(param.model){
+            command += ` --model ${param.model}`;
         }
 
         exec(command, (error, stdout, stderr) => {
             if (error) {
-                if (errorCall) {
-                    errorCall(`Error: ${stderr}`);
+                if (param.errorCall) {
+                    param.errorCall(`Error: ${stderr}`);
                 }
                 return;
             }
 
-            if (stroutCall) {
-                stroutCall(stdout);
+            if (param.stroutCall) {
+                param.stroutCall(stdout);
             }
 
-            if (successCall) {
-                successCall();
+            if (param.successCall) {
+                param.successCall();
             }
         });
     }

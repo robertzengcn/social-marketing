@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS video_download (
     savepath TEXT NULL,
     record_time TEXT NULL,
     task_id INTEGER,
+    caption_status INTEGER,
     -- strout TEXT NULL,
     error_log TEXT NULL,
     status INTEGER 

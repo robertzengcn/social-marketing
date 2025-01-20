@@ -1,9 +1,9 @@
 import {YoutubeDownload} from "@/modules/videodownload/youtubeDownload"
-import {videoDownloadImpl} from "@/modules/interface/videoDownloadImpl"
+import {VideoDownloadImpl} from "@/modules/interface/videoDownloadImpl"
 
 
 export class VideoDownloadFactory {
-    static getDownloader(platform: string):videoDownloadImpl {
+    static getDownloader(platform: string):VideoDownloadImpl {
         switch (platform) {
             case 'youtube':
                 return new YoutubeDownload();
@@ -12,5 +12,6 @@ export class VideoDownloadFactory {
                 throw new Error('Unsupported platform');
         }
     }
+    
 }
 

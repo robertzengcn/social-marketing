@@ -1,8 +1,9 @@
 //import { Database } from 'better-sqlite3';
 //import { Scraperdb } from "@/model/scraperdb";
-import { VideoDownloadEntity, VideoDownloadStatus } from "@/entityTypes/videoType"
+import { VideoDownloadEntity, VideoDownloadStatus,VideoCaptionStatus } from "@/entityTypes/videoType"
 import { getRecorddatetime } from "@/modules/lib/function";
 import { BaseDb } from "@/model/Basedb";
+
 
 
 export class VideoDownloaddb extends BaseDb {
@@ -22,14 +23,15 @@ export class VideoDownloaddb extends BaseDb {
     } else {
 
       const recordtime = getRecorddatetime();
-      const stmt = this.db.prepare(`INSERT INTO ${this.videoDownloadTable} (url,savepath,record_time,task_id,error_log,status) VALUES (?,?,?,?,?,?)`);
+      const stmt = this.db.prepare(`INSERT INTO ${this.videoDownloadTable} (url,savepath,record_time,task_id,error_log,status,caption_status) VALUES (?,?,?,?,?,?,?)`);
       const info = stmt.run(
         videoDownload.url,
         videoDownload.savepath,
         recordtime,
         videoDownload.task_id,
         videoDownload.error_log,
-        videoDownload.status
+        videoDownload.status,
+       videoDownload.caption_status?videoDownload.caption_status:VideoCaptionStatus.No
       );
       return Number(info.lastInsertRowid);
     }
@@ -91,7 +93,7 @@ export class VideoDownloaddb extends BaseDb {
   public updateVideoDownloadItem(id: number, videoDownload: VideoDownloadEntity): number {
     const stmt = this.db.prepare(`
             UPDATE ${this.videoDownloadTable}
-            SET url=@url,savepath=@savepath,record_time=@record_time,task_id=@task_id,error_log=@error_log,status=@status
+            SET url=@url,savepath=@savepath,record_time=@record_time,task_id=@task_id,error_log=@error_log,status=@status,caption_status=@caption_status
             WHERE id = @id
         `);
     const info = stmt.run({
@@ -101,7 +103,8 @@ export class VideoDownloaddb extends BaseDb {
       record_time: videoDownload.record_time,
       task_id: videoDownload.task_id,
       error_log: videoDownload.error_log,
-      status: videoDownload.status
+      status: videoDownload.status,
+      caption_status: videoDownload.caption_status
     })
     return info.changes;
   }
@@ -111,6 +114,13 @@ export class VideoDownloaddb extends BaseDb {
             DELETE FROM ${this.videoDownloadTable} WHERE id = ?
         `);
     const info = stmt.run(id);
+    return info.changes;
+  }
+  //update video caption status
+  public updateVideoCaptionStatus(downloadId: number,status:VideoCaptionStatus): number {
+    //update status by downloadId
+    const stmt = this.db.prepare(`UPDATE ${this.videoDownloadTable} SET caption_status = ? WHERE id = ?`);
+    const info = stmt.run(status,downloadId);
     return info.changes;
   }
 

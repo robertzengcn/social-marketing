@@ -191,9 +191,17 @@ export class ExtraModuleController {
 
     }
     //check module exist in folder
-    public checkModule(packageName: string): boolean {
+    public async checkModule(packageName: string): Promise<boolean> {
+        const valid = this.extramodules.find((module) => module.packagename === packageName)
+        if (!valid) {
+            throw new Error("package name not valid:" + packageName)
+        }
+        if (valid.ispip) {
+            return await this.isPipModuleInstalled(valid.packagename)
+        }else{
         const modulePath = path.join(this.extraModulePth, packageName);
         return fs.existsSync(modulePath);
+        }
     }
     //get packagename by name
     public getPackageByName(name: string): ExtraModule | undefined {

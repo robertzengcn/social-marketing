@@ -17,7 +17,7 @@ import { SocialAccountApi } from "@/api/socialAccountApi"
 import { ProcessMessage } from "@/entityTypes/processMessage-type"
 // import {VideodownloadMsg} from "@/entityTypes/videoType";
 import { ListData, TaskStatus } from "@/entityTypes/commonType"
-import { VideoDownloadEntity, VideoDownloadStatus, VideoDescriptionEntity, VideodownloadTaskMsg, VideoDownloadListDisplay, VideodownloadMsg, DownloadVideoControlparam, VideoDownloadTaskDetailEntity, DownloadType, CookiesType } from "@/entityTypes/videoType"
+import { VideoDownloadEntity, VideoDownloadStatus, VideoDescriptionEntity, VideodownloadTaskMsg, VideoDownloadListDisplay, VideodownloadMsg, DownloadVideoControlparam, VideoDownloadTaskDetailEntity, DownloadType, CookiesType,VideoCaptionEntity } from "@/entityTypes/videoType"
 import { VideoDescriptionModule } from "@/modules/videoDescriptionModule"
 import { Video } from '@/modules/interface/Video';
 import { VideoDownloadTaskDetailModule } from '@/modules/VideoDownloadTaskDetailModule';
@@ -616,8 +616,61 @@ export class videoController {
         console.log(content)
         return content
     }
-    public async generateCaptions(videoIds:Array<string>):Promise<void>{
-       
+    //generate caption for videos
+    public async generateCaptions(params:Array<VideoCaptionEntity>):Promise<void>{
+        
+        const childPath = path.join(__dirname, 'taskCode.js')
+        if (!fs.existsSync(childPath)) {
+            throw new Error("child js path not exist for the path " + childPath);
+        }
+        const { port1, port2 } = new MessageChannelMain()
+        
+        const child = utilityProcess.fork(childPath, [], { stdio: "pipe" })
+
+        child.on("spawn", () => {
+
+          
+            child.postMessage(JSON.stringify({ action: "generateCaption", data: params }), [port1])
+
+        })
+
+        child.stdout?.on('data', (data) => {
+            console.log(`Received data chunk ${data}`)
+         
+            // child.kill()
+        })
+
+        child.stderr?.on('data', (data) => {
+            const ingoreStr = ["Debugger attached", "Waiting for the debugger to disconnect"]
+            if (!ingoreStr.some((value) => data.includes(value))) {
+
+                // seModel.saveTaskerrorlog(taskId,data)
+                console.log(`Received error chunk ${data}`)
+                //WriteLog(errorLogfile, data)
+
+            }
+
+        })
+
+        child.on("exit", (code) => {
+            if (code !== 0) {
+                console.error(`Child process exited with code ${code}`);
+               // this.videoDownloadTaskModule.updateVideoDownloadTaskStatus(taskId, TaskStatus.Error)
+                // this.emailSeachTaskModule.updateTaskStatus(taskId,EmailsearchTaskStatus.Error)
+            } else {
+                console.log('Child process exited successfully');
+                //this.videoDownloadTaskModule.updateVideoDownloadTaskStatus(taskId, TaskStatus.Complete)
+                // this.emailSeachTaskModule.updateTaskStatus(taskId,EmailsearchTaskStatus.Complete)
+            }
+        })
+
+        child.on('message', (message) => {
+            console.log("get message from child")
+            console.log('Message from child:', JSON.parse(message));
+            
+            
+        });
+
 
     }
 }

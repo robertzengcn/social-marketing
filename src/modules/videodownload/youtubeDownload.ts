@@ -1,4 +1,4 @@
-import { videoDownloadImpl } from "@/modules/interface/videoDownloadImpl"
+import { VideoDownloadImpl } from "@/modules/interface/videoDownloadImpl"
 import { CustomError } from "@/modules/customError"
 import { exec } from "child_process";
 import { promisify } from "util";
@@ -13,7 +13,7 @@ import puppeteer from 'puppeteer';
 // import * as fs from 'fs';
 import * as path from 'path';
 const execAsync = promisify(exec);
-export class YoutubeDownload implements videoDownloadImpl {
+export class YoutubeDownload implements VideoDownloadImpl {
     private playerlisttype="/playlist?"
     // private signalplaytype="/watch?"
     async downloadVideo(url: string, savePath: string, useBrowserCookies?:string,cookiesProxy?: CookiesProxy | null, proxy?: Proxy | null, execPath?: string, videoQuality?:number,errorCall?: (link:string,errorMsg: string) => void, stroutCall?: (message: string) => void, successCall?: (param:VideodoanloadSuccessCall) => void) {
