@@ -49,6 +49,7 @@ process.parentPort.on('message', async (e) => {
                 return
             }
             downloadVideo(param)
+            break;
             // const videoDownloadFactory=new VideoDownloadFactory()
             // const downloadTool=VideoDownloadFactory.getDownloader(param.platform)
                     
@@ -174,6 +175,7 @@ process.parentPort.on('message', async (e) => {
             
             //generate capation
             generateCaption(pme.data as VideoCaptionGenerateParam)
+            break;
         }    
 
         }

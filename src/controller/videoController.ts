@@ -17,7 +17,7 @@ import { SocialAccountApi } from "@/api/socialAccountApi"
 import { ProcessMessage } from "@/entityTypes/processMessage-type"
 // import {VideodownloadMsg} from "@/entityTypes/videoType";
 import { ListData, TaskStatus } from "@/entityTypes/commonType"
-import { VideoDownloadEntity, VideoDownloadStatus, VideoDescriptionEntity, VideodownloadTaskMsg, VideoDownloadListDisplay, VideodownloadMsg, DownloadVideoControlparam, VideoDownloadTaskDetailEntity, DownloadType, CookiesType,VideoCaptionEntity } from "@/entityTypes/videoType"
+import { VideoDownloadEntity, VideoDownloadStatus, VideoDescriptionEntity, VideodownloadTaskMsg, VideoDownloadListDisplay, VideodownloadMsg, DownloadVideoControlparam, VideoDownloadTaskDetailEntity, DownloadType, CookiesType,VideoCaptionEntity,VideoCaptionMsg } from "@/entityTypes/videoType"
 import { VideoDescriptionModule } from "@/modules/videoDescriptionModule"
 import { Video } from '@/modules/interface/Video';
 import { VideoDownloadTaskDetailModule } from '@/modules/VideoDownloadTaskDetailModule';
@@ -618,7 +618,14 @@ export class videoController {
             console.log('Message from child:', JSON.parse(message));
             const childdata = JSON.parse(message) as ProcessMessage<any>
             if (childdata.action == "generateCaption") {
+                const getData = childdata.data as VideoCaptionMsg
+                if(getData.status){
+                    console.log("generate caption success")
+                    
+                }else{
+                    //generate caption error
 
+                }
             }
             
         });
