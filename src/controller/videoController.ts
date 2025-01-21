@@ -28,6 +28,8 @@ import { VideoDownloadTaskProxyModule } from "@/modules/VideoDownloadTaskProxyMo
 import { Proxy } from "@/entityTypes/proxyType"
 import { ProxyApi } from "@/api/proxyApi"
 import { shell } from "electron"
+import {VideoCaptionFactory} from "@/modules/videoCaption/VideoCaptionFactory"
+import { CustomError } from '@/modules/customError'
 //import {} from "@/entityTypes/proxyType"
 export class videoController {
     private videoDownloadModule: VideoDownloadModule
@@ -61,8 +63,8 @@ export class videoController {
         return videoTool
     }
     //check video tool requirement
-    public checkVideoRequirement(videoTool: Video): boolean {
-        return videoTool.checkRequirement()
+    public async checkVideoRequirement(videoTool: Video): Promise<boolean> {
+        return await videoTool.checkRequirement()
     }
     //save video task, get task id
     public saveVdieoDownloadTask(vdte: VideoDownloadTaskEntity): number {
@@ -404,66 +406,7 @@ export class videoController {
         return { records: res, num: count } as ListData<VideoDownloadListDisplay>
     }
     public async retryDownloadvideo(taskId: number, startCall: () => void) {
-        //get task info
-        // const taskInfo = this.videoDownloadTaskModule.getVideoDownloadTask(taskId)
-        // if (!taskInfo) {
-        //     throw new Error("task info not found")
-        // }
-        // //get task detail
-        // const taskDetail = this.videoDownloadTaskDetailModule.getByTaskId(taskId)
-        // if (!taskDetail) {
-        //     throw new Error("task detail not found")
-        // }
-
-        // //get video tool
-
-        // //check video tool requirement
-        // const res = this.checkVideoRequirement(videoTool)
-        // if (!res) {
-        //     throw new Error("video tool requirement check failed")
-        // }
-        // let accountIds: Array<number> = []
-        // if (taskDetail.cookies_type == CookiesType.ACCOUNTCOOKIES) {
-        //     //get account id
-        //     const taskAccounts = this.videoDownloadTaskAccountsModule.getAccountByTaskId(taskId)
-        //     if (taskAccounts.length > 0) {
-        //         accountIds = taskAccounts.map((value) => value.account_id)
-        //         //process download video
-        //         //await this.processDownloadVideo({taskName:taskInfo.taskName,platform:taskInfo.platform,link:[],savePath:taskInfo.savepath,isplaylist:taskDetail.download_type==DownloadType.MULTIVIDEO,accountId:accountIds,cookies_type:taskDetail.cookies_type==CookiesType.ACCOUNTCOOKIES?"account cookies":"browser cookies",browserName:taskDetail.browser_type?taskDetail.browser_type:"",videoQuality:""}, videoTool, taskId)
-        //     }
-
-        // }
-
-        // //get task url
-        // const taskUrls = this.videoDownloadTaskUrlModule.getItemsByTaskId(taskId)
-
-        // let proxys: Array<number> = []
-
-        // //get proxy lists
-        // const proxylists = this.videoDownloadTaskUrlModule.getItemsByTaskId(taskId)
-        // if (proxylists.length > 0) {
-        //     proxylists.forEach((value) => {
-        //         if (value.id) {
-        //             proxys.push(value.id)
-        //         }
-        //     })
-        // }
-        // let links: Array<string> = []
-        // if (taskUrls.length > 0) {
-        //     links = taskUrls.map((value) => value.url)
-        // }
-        // const data: DownloadVideoControlparam = {
-        //     accountId: accountIds,
-        //     platform: taskInfo.platform,
-        //     link: links,
-        //     savePath: taskInfo.savepath,
-        //     isplaylist: taskDetail.download_type == DownloadType.MULTIVIDEO,
-        //     proxy: proxys,
-        //     ProxyOverride: taskDetail.proxy_override,
-        //     cookies_type: taskDetail.cookies_type == CookiesType.ACCOUNTCOOKIES ? "account cookies" : "browser cookies",
-        //     browserName: taskDetail.browser_type ? taskDetail.browser_type : "",
-        //     videoQuality: taskDetail.video_quality
-        // }
+    
         const data = await this.getVideoDownloadTaskInfo(taskId)
         const videoTool = await this.getVideoDownloadTool(data.platform)
         if (!videoTool) {
@@ -617,11 +560,17 @@ export class videoController {
         return content
     }
     //generate caption for videos
+    //throw error if video caption tool requirement check failed
     public async generateCaptions(params:Array<VideoCaptionEntity>):Promise<void>{
-        
+        //check requirement
+        const VFaction=new VideoCaptionFactory()
+        const res=VFaction.checkRequirement()
+        if(!res){
+            throw new Error("video caption tool requirement check failed")
+        }
         const childPath = path.join(__dirname, 'taskCode.js')
         if (!fs.existsSync(childPath)) {
-            throw new Error("child js path not exist for the path " + childPath);
+            throw new CustomError("child js path not exist for the path " + childPath);
         }
         const { port1, port2 } = new MessageChannelMain()
         
@@ -667,7 +616,10 @@ export class videoController {
         child.on('message', (message) => {
             console.log("get message from child")
             console.log('Message from child:', JSON.parse(message));
-            
+            const childdata = JSON.parse(message) as ProcessMessage<any>
+            if (childdata.action == "generateCaption") {
+
+            }
             
         });
 

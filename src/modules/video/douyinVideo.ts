@@ -47,7 +47,7 @@ export class douyinVideo implements Video {
     public getPackagepath(): string {
         return ""
     }
-    public checkRequirement(): boolean {
+    public async checkRequirement(): Promise<boolean> {
         if (!this.checkPackageInstall()) {
             throw new Error("package not install")
         }

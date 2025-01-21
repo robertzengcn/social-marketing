@@ -10,7 +10,7 @@ export class bilibiliVideo implements Video {
   constructor(){
          
  }
-    public checkRequirement():boolean{
+    public async checkRequirement():Promise<boolean>{
       // console.log("check requirement")
       return true
 
