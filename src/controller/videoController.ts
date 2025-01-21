@@ -17,7 +17,7 @@ import { SocialAccountApi } from "@/api/socialAccountApi"
 import { ProcessMessage } from "@/entityTypes/processMessage-type"
 // import {VideodownloadMsg} from "@/entityTypes/videoType";
 import { ListData, TaskStatus } from "@/entityTypes/commonType"
-import { VideoDownloadEntity, VideoDownloadStatus, VideoDescriptionEntity, VideodownloadTaskMsg, VideoDownloadListDisplay, VideodownloadMsg, DownloadVideoControlparam, VideoDownloadTaskDetailEntity, DownloadType, CookiesType,VideoCaptionEntity,VideoCaptionMsg } from "@/entityTypes/videoType"
+import { VideoDownloadEntity, VideoDownloadStatus, VideoDescriptionEntity, VideodownloadTaskMsg, VideoDownloadListDisplay, VideodownloadMsg, DownloadVideoControlparam, VideoDownloadTaskDetailEntity, DownloadType, CookiesType,VideoCaptionItem,VideoCaptionMsg, VideoCaptionEntity,VideoCaptionStatus } from "@/entityTypes/videoType"
 import { VideoDescriptionModule } from "@/modules/videoDescriptionModule"
 import { Video } from '@/modules/interface/Video';
 import { VideoDownloadTaskDetailModule } from '@/modules/VideoDownloadTaskDetailModule';
@@ -30,6 +30,8 @@ import { ProxyApi } from "@/api/proxyApi"
 import { shell } from "electron"
 import {VideoCaptionFactory} from "@/modules/videoCaption/VideoCaptionFactory"
 import { CustomError } from '@/modules/customError'
+import {VideoCaptiondbModule} from "@/modules/VideoCaptiondbModule"
+import {LanguageEnum} from "@/config/generate"
 //import {} from "@/entityTypes/proxyType"
 export class videoController {
     private videoDownloadModule: VideoDownloadModule
@@ -41,6 +43,7 @@ export class videoController {
     private videoDownloadTaskAccountsModule: VideoDownloadTaskAccountsModule
     private videoDownloadTaskUrlModule: VideoDownloadTaskUrlModule
     private videoDownloadTaskProxyModule: VideoDownloadTaskProxyModule
+    private videoCaptiondbModule:VideoCaptiondbModule
     constructor() {
         // const tokenService = new Token()
         // const dbpath = tokenService.getValue(USERSDBPATH)
@@ -210,7 +213,7 @@ export class videoController {
 
         child.on("spawn", () => {
 
-            console.log("child process satart, pid is" + child.pid)
+            console.log("child process satart, pid is " + child.pid)
             this.videoDownloadTaskModule.updateVideoDownloadTaskStatus(taskId, TaskStatus.Processing)
             child.postMessage(JSON.stringify({ action: "downloadVideo", data: paramData }), [port1])
 
@@ -283,9 +286,9 @@ export class videoController {
                         savepath: '',
                         task_id: Number(taskId),
                         status: VideoDownloadStatus.Error,
-                        error_log: getData.log
+                        // error_log: getData.log
                     }
-                    this.videoDownloadModule.saveVideoDownload(videoDownloadEntity)
+                    this.videoDownloadModule.updateVideoDownload(videoDownloadEntity)
                 }
                 //child.kill()
             } else if (childdata.action == "videodownloadTaskMsg") {
@@ -389,7 +392,7 @@ export class videoController {
                 status: element.status,
                 title: '',
                 description: '',
-
+                error_log: element.error_log
 
             }
             if (element.id && element.status == VideoDownloadStatus.Finish) {
@@ -561,7 +564,7 @@ export class videoController {
     }
     //generate caption for videos
     //throw error if video caption tool requirement check failed
-    public async generateCaptions(params:Array<VideoCaptionEntity>):Promise<void>{
+    public async generateCaptions(params:Array<VideoCaptionItem>):Promise<void>{
         //check requirement
         const VFaction=new VideoCaptionFactory()
         const res=VFaction.checkRequirement()
@@ -620,11 +623,22 @@ export class videoController {
             if (childdata.action == "generateCaption") {
                 const getData = childdata.data as VideoCaptionMsg
                 if(getData.status){
+
                     console.log("generate caption success")
-                    
+                    if(getData.videoId&&getData.savepath){
+                    const vce:VideoCaptionEntity={
+                        videoId:getData.videoId,
+                        language_id:LanguageEnum.Default,
+                        caption_path:getData.savepath
+                    }
+                    this.videoCaptiondbModule.create(vce)
+                    this.videoDownloadModule.updateVideoCaptionStatus(getData.videoId,VideoCaptionStatus.Finish)
+                }
                 }else{
                     //generate caption error
-
+                    if(getData.videoId){
+                    this.videoDownloadModule.updateVideoCaptionStatus(getData.videoId,VideoCaptionStatus.Error)
+                    }
                 }
             }
             

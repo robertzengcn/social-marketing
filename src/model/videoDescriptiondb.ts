@@ -1,5 +1,3 @@
-import { Scraperdb } from "./scraperdb";
-import { Database } from 'better-sqlite3';
 import { VideoDescriptionEntity } from "@/entityTypes/videoType";
 import { getRecorddatetime } from "@/modules/lib/function";
 import { BaseDb } from "@/model/Basedb";

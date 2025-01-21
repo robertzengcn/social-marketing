@@ -1,6 +1,7 @@
 import { Database } from 'better-sqlite3';
 import { Scraperdb } from "@/model/scraperdb";
 import { getRecorddatetime } from "@/modules/lib/function";
+import { BaseDb } from "@/model/Basedb";
 export interface AccountCookiesEntity {
     id?: number;
     account_id: number;
@@ -8,11 +9,13 @@ export interface AccountCookiesEntity {
     partition_path: string;
     record_time?: string;   
 }
-export class AccountCookiesdb {
-    db: Database;
+export class AccountCookiesdb extends BaseDb{
+    Table = "account_cookies";
+    // db: Database;
     constructor(filepath:string) {
-        const scraperModel = Scraperdb.getInstance(filepath);
-        this.db = scraperModel.getdb();
+        super(filepath)
+        // const scraperModel = Scraperdb.getInstance(filepath);
+        // this.db = scraperModel.getdb();
     }
     //save account cookies
     public saveAccountCookies(
@@ -26,7 +29,7 @@ export class AccountCookiesdb {
         if(ac&&ac.id){
             const stmt = this.db.prepare(
                 `UPDATE ` +
-                "account_cookies" +
+                this.Table +
                 ` SET cookies = ?,partition_path = ?,record_time= ? WHERE id = ?`
             );
             const info = stmt.run(
@@ -40,7 +43,7 @@ export class AccountCookiesdb {
        
         const stmt = this.db.prepare(
             `INSERT INTO ` +
-            "account_cookies" +
+            this.Table +
             ` (account_id,cookies,partition_path,record_time) VALUES (?,?,?,?)`
         );
         const info = stmt.run(
@@ -58,7 +61,7 @@ export class AccountCookiesdb {
         accountid: number
     ): AccountCookiesEntity {
         const stmt = this.db.prepare(
-            `SELECT * FROM ` + "account_cookies" + ` WHERE account_id = ?`
+            `SELECT * FROM ` + this.Table + ` WHERE account_id = ?`
         );
         const accountcookies = stmt.get(accountid) as AccountCookiesEntity;
         return accountcookies;
@@ -66,7 +69,7 @@ export class AccountCookiesdb {
 
     public deleteAccountCookies(accountid:number):void{
         const stmt = this.db.prepare(
-            `DELETE FROM ` + "account_cookies" + ` WHERE account_id = ?`
+            `DELETE FROM ` + this.Table + ` WHERE account_id = ?`
         );
         stmt.run(accountid);
     }

@@ -37,10 +37,10 @@ export class VideoDownloaddb extends BaseDb {
     }
   }
   //save log for video download
-  public saveVideoDownloadLog(log: string, downloadId: number) {
+  public saveVideoDownloadLog(logfile: string, downloadId: number) {
     //update log by downloadId
     const stmt = this.db.prepare(`UPDATE ${this.videoDownloadTable} SET error_log = ? WHERE id = ?`);
-    const info = stmt.run(log, downloadId);
+    const info = stmt.run(logfile, downloadId);
     return info.changes;
   }
 
@@ -90,10 +90,10 @@ export class VideoDownloaddb extends BaseDb {
   }
 
   //update video download item
-  public updateVideoDownloadItem(id: number, videoDownload: VideoDownloadEntity): number {
+  public updateVideoDownloadItem(id: number, videoDownload: Omit<VideoDownloadEntity,"error_log">): number {
     const stmt = this.db.prepare(`
             UPDATE ${this.videoDownloadTable}
-            SET url=@url,savepath=@savepath,record_time=@record_time,task_id=@task_id,error_log=@error_log,status=@status,caption_status=@caption_status
+            SET url=@url,savepath=@savepath,record_time=@record_time,task_id=@task_id,status=@status,caption_status=@caption_status
             WHERE id = @id
         `);
     const info = stmt.run({
@@ -102,7 +102,7 @@ export class VideoDownloaddb extends BaseDb {
       savepath: videoDownload.savepath,
       record_time: videoDownload.record_time,
       task_id: videoDownload.task_id,
-      error_log: videoDownload.error_log,
+     
       status: videoDownload.status,
       caption_status: videoDownload.caption_status
     })
@@ -123,6 +123,7 @@ export class VideoDownloaddb extends BaseDb {
     const info = stmt.run(status,downloadId);
     return info.changes;
   }
+
 
 
 }

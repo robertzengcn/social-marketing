@@ -1,5 +1,6 @@
 import {Proxy} from "@/entityTypes/proxyType"
 import {TaskStatus,ItemSearchparam} from "@/entityTypes/commonType"
+import {LanguageEnum} from "@/config/generate"
 
 export type videoScraper={
     cookies: string,
@@ -64,7 +65,7 @@ export type VideoDownloadEntity={
     task_id:number,
     caption_status?:VideoCaptionStatus,
     // strout?:string,
-    error_log?:string,
+    error_log:string,
     status:VideoDownloadStatus,
 }
 export type videoDownloadList={
@@ -194,11 +195,11 @@ export interface VideoDownloadTaskProxyEntity {
     proxy_id: number;
 }
 export interface VideoCaptionGenerateParam{
-    videos:Array<VideoCaptionEntity>,
+    videos:Array<VideoCaptionItem>,
     toolName?:string,
 
 }
-export interface VideoCaptionEntity{
+export interface VideoCaptionItem{
     videoPath:string,
     savePath:string,
     isEnglish:boolean,
@@ -218,4 +219,12 @@ export type VideoCaptionMsg={
     file:string,
     savepath?:string,
     videoId?:number,
+}
+export type VideoCaptionEntity={
+    id?:number,
+    videoId:number,
+    language_id:LanguageEnum,
+    caption_path:string,
+    record_time?:string,
+
 }

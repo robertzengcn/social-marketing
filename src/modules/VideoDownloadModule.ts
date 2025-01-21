@@ -1,8 +1,9 @@
 // import { Token } from "@/modules/token"
 // import { USERSDBPATH } from '@/config/usersetting';
 import {VideoDownloaddb} from "@/model/videoDownloaddb"
-import {VideoDownloadEntity,VideoDownloadStatus} from "@/entityTypes/videoType"
+import {VideoDownloadEntity,VideoDownloadStatus,VideoCaptionStatus} from "@/entityTypes/videoType"
 import { BaseModule } from "@/modules/baseModule";
+import { WriteLog } from "@/modules/lib/function";
 
 
 export class VideoDownloadModule extends BaseModule{
@@ -19,12 +20,23 @@ export class VideoDownloadModule extends BaseModule{
         this.videoDownloaddb=new VideoDownloaddb(this.dbpath)
     }
 
-    public saveVideoDownload(videoDownload:VideoDownloadEntity):number{
+      public saveVideoDownload(videoDownload:VideoDownloadEntity):number{
         return this.videoDownloaddb.saveVideoDownload(videoDownload)
       } 
+      public updateVideoDownload(videoId:number,videoDownload:Omit<VideoDownloadEntity,"error_log">):number{
+        return this.videoDownloaddb.updateVideoDownloadItem(videoId,videoDownload)
+      } 
       //save log for video download
-      public saveVideoDownloadLog(log:string,downloadId:number):number{
-       return this.videoDownloaddb.saveVideoDownloadLog(log,downloadId)
+      public saveVideoDownloadLog(log:string,downloadId:number){
+        //get error log file path
+        const res=this.getVideoDownloaditem(downloadId)
+        if(!res){
+          throw new Error("video download item not exist")
+        }
+        
+        //save log file
+        WriteLog(res.error_log,log)
+       //return this.videoDownloaddb.saveVideoDownloadLog(log,downloadId)
       } 
 
       //update download status
@@ -57,6 +69,8 @@ export class VideoDownloadModule extends BaseModule{
       public deleteVideoDownloadItem(id:number):number{
         return this.videoDownloaddb.deleteVideoDownloadItem(id)
       }
-
+      updateVideoCaptionStatus(id: number,status: VideoCaptionStatus ): number {
+        return this.videoDownloaddb.updateVideoCaptionStatus( id,status);
+    }
     
 }
