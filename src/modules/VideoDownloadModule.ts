@@ -33,9 +33,10 @@ export class VideoDownloadModule extends BaseModule{
         if(!res){
           throw new Error("video download item not exist")
         }
-        
+        if(res.error_log){
         //save log file
         WriteLog(res.error_log,log)
+        }
        //return this.videoDownloaddb.saveVideoDownloadLog(log,downloadId)
       } 
 

@@ -131,9 +131,8 @@ export class videoController {
             throw new Error("child js path not exist for the path " + childPath);
         }
         const { port1, port2 } = new MessageChannelMain()
+
         const tokenService = new Token()
-
-
         // console.log(path.join(__dirname, 'utilityCode.js'))
         let logpath = tokenService.getValue(USERLOGPATH)
         if (!logpath) {
@@ -288,7 +287,11 @@ export class videoController {
                         status: VideoDownloadStatus.Error,
                         // error_log: getData.log
                     }
-                    this.videoDownloadModule.updateVideoDownload(videoDownloadEntity)
+                    const videoId=this.videoDownloadModule.saveVideoDownload(videoDownloadEntity)
+                    if(getData.log){
+                        this.videoDownloadModule.saveVideoDownloadLog(getData.log,videoId)
+                    }
+                   
                 }
                 //child.kill()
             } else if (childdata.action == "videodownloadTaskMsg") {
@@ -638,6 +641,7 @@ export class videoController {
                     //generate caption error
                     if(getData.videoId){
                     this.videoDownloadModule.updateVideoCaptionStatus(getData.videoId,VideoCaptionStatus.Error)
+                    this.videoDownloadModule.saveVideoDownloadLog(getData.msg,getData.videoId)
                     }
                 }
             }

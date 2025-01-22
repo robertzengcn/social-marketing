@@ -65,7 +65,7 @@ export type VideoDownloadEntity={
     task_id:number,
     caption_status?:VideoCaptionStatus,
     // strout?:string,
-    error_log:string,
+    error_log?:string,
     status:VideoDownloadStatus,
 }
 export type videoDownloadList={

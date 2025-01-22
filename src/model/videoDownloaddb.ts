@@ -1,7 +1,7 @@
 //import { Database } from 'better-sqlite3';
 //import { Scraperdb } from "@/model/scraperdb";
 import { VideoDownloadEntity, VideoDownloadStatus,VideoCaptionStatus } from "@/entityTypes/videoType"
-import { getRecorddatetime } from "@/modules/lib/function";
+import { getRecorddatetime,getLogPath } from "@/modules/lib/function";
 import { BaseDb } from "@/model/Basedb";
 
 
@@ -21,7 +21,9 @@ export class VideoDownloaddb extends BaseDb {
       this.updateVideoDownloadItem(itemres.id, videoDownload)
       return itemres.id
     } else {
-
+      if(!videoDownload.error_log){
+        videoDownload.error_log=getLogPath('videodownloaditem')
+      }
       const recordtime = getRecorddatetime();
       const stmt = this.db.prepare(`INSERT INTO ${this.videoDownloadTable} (url,savepath,record_time,task_id,error_log,status,caption_status) VALUES (?,?,?,?,?,?,?)`);
       const info = stmt.run(
