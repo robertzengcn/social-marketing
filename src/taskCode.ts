@@ -326,7 +326,7 @@ function generateCaption(param:VideoCaptionGenerateParam){
             model:modelName,
             errorCall:(errorMsg: string)=>{
                 const message:ProcessMessage<VideoCaptionMsg>={
-                    action:"videodownloadMsg",
+                    action:"generateCaptionMsg",
                     data:{
                         status:false,
                         msg:errorMsg,
@@ -344,7 +344,7 @@ function generateCaption(param:VideoCaptionGenerateParam){
             },
             successCall:()=>{
                 const message:ProcessMessage<VideoCaptionMsg>={
-                    action:"videodownloadMsg",
+                    action:"generateCaptionMsg",
                     data:{
                         status:true,
                         msg:"",
@@ -357,6 +357,7 @@ function generateCaption(param:VideoCaptionGenerateParam){
                 process.parentPort.postMessage(JSON.stringify(message))
             }
         }
-        captionTool.extractCaption(data)
+        await captionTool.extractCaption(data)
     })
+    process.exit(0);
 }

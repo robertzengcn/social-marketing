@@ -143,6 +143,12 @@ export default {
         generate_captions:"generate captions",
         caption:"caption",
         caption_status:"caption status",
+        is_english_video:"is english video",
+        video_language_select:"video language select",
+        caption_save_path:"caption save path",
+        input_caption_save_path:"input caption save path",
+        caption_generate_failed:"caption generate failed",
+        caption_generate_start:"caption generate start",
     },
     account:{
         accountId:"Account ID",

@@ -1,5 +1,5 @@
 import {Proxy} from "@/entityTypes/proxyType"
-import {TaskStatus,ItemSearchparam} from "@/entityTypes/commonType"
+import {TaskStatus,ItemSearchparam,CommonIdrequestIds} from "@/entityTypes/commonType"
 import {LanguageEnum} from "@/config/generate"
 
 export type videoScraper={
@@ -227,4 +227,8 @@ export type VideoCaptionEntity={
     caption_path:string,
     record_time?:string,
 
+}
+export interface VideoCaptionGenerateParamWithIds<Type> extends CommonIdrequestIds<Type>{
+isEnglish:boolean
+savePath:string
 }
