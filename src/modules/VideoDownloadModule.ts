@@ -3,7 +3,7 @@
 import {VideoDownloaddb} from "@/model/videoDownloaddb"
 import {VideoDownloadEntity,VideoDownloadStatus,VideoCaptionStatus} from "@/entityTypes/videoType"
 import { BaseModule } from "@/modules/baseModule";
-import { WriteLog } from "@/modules/lib/function";
+import { WriteLog,getLogPath } from "@/modules/lib/function";
 
 
 export class VideoDownloadModule extends BaseModule{
@@ -29,13 +29,19 @@ export class VideoDownloadModule extends BaseModule{
       //save log for video download
       public saveVideoDownloadLog(log:string,downloadId:number){
         //get error log file path
-        const res=this.getVideoDownloaditem(downloadId)
+        const res=this.videoDownloaddb.getVideoDownloaditem(downloadId)
         if(!res){
           throw new Error("video download item not exist")
         }
         if(res.error_log){
         //save log file
         WriteLog(res.error_log,log)
+        }else{
+          //generate log file path
+          const logpath=getLogPath('videodownload',downloadId.toString())
+          WriteLog(logpath,log)
+          this.videoDownloaddb.updateVideoErrorLogPath(downloadId,logpath)
+
         }
        //return this.videoDownloaddb.saveVideoDownloadLog(log,downloadId)
       } 
@@ -73,5 +79,8 @@ export class VideoDownloadModule extends BaseModule{
       updateVideoCaptionStatus(id: number,status: VideoCaptionStatus ): number {
         return this.videoDownloaddb.updateVideoCaptionStatus( id,status);
     }
+    
+
+
     
 }

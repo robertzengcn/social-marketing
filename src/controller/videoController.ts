@@ -230,7 +230,7 @@ export class videoController {
 
                 // seModel.saveTaskerrorlog(taskId,data)
                 console.log(`Received error chunk ${data}`)
-                console.log('filename'+errorLogfile)
+                //console.log('filename'+errorLogfile)
                 WriteLog(errorLogfile, data)
 
             }
@@ -286,7 +286,7 @@ export class videoController {
                         savepath: '',
                         task_id: Number(taskId),
                         status: VideoDownloadStatus.Error,
-                        // error_log: getData.log
+                      
                     }
                     const videoId = this.videoDownloadModule.saveVideoDownload(videoDownloadEntity)
                     if (getData.log) {

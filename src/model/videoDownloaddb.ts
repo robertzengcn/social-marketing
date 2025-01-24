@@ -125,6 +125,13 @@ export class VideoDownloaddb extends BaseDb {
     const info = stmt.run(status,downloadId);
     return info.changes;
   }
+  //update video log path
+  public updateVideoErrorLogPath(downloadId: number,logpath:string): number {
+    //update status by downloadId
+    const stmt = this.db.prepare(`UPDATE ${this.videoDownloadTable} SET error_log = ? WHERE id = ?`);
+    const info = stmt.run(logpath,downloadId);
+    return info.changes;
+  }
 
 
 
