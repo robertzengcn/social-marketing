@@ -9,7 +9,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { utilityProcess, MessageChannelMain } from "electron";
 import { USERLOGPATH, USEREMAIL } from '@/config/usersetting';
-import { WriteLog, getApplogspath, getRandomValues, removeParamsAfterAmpersand,readLogFile } from "@/modules/lib/function"
+import { WriteLog, getApplogspath, getRandomValues, removeParamsAfterAmpersand, readLogFile } from "@/modules/lib/function"
 import { v4 as uuidv4 } from 'uuid';
 // import { CustomError } from '@/modules/customError'
 import { AccountCookiesModule } from "@/modules/accountCookiesModule"
@@ -17,7 +17,7 @@ import { SocialAccountApi } from "@/api/socialAccountApi"
 import { ProcessMessage } from "@/entityTypes/processMessage-type"
 // import {VideodownloadMsg} from "@/entityTypes/videoType";
 import { ListData, TaskStatus } from "@/entityTypes/commonType"
-import { VideoDownloadEntity, VideoDownloadStatus, VideoDescriptionEntity, VideodownloadTaskMsg, VideoDownloadListDisplay, VideodownloadMsg, DownloadVideoControlparam, VideoDownloadTaskDetailEntity, DownloadType, CookiesType,VideoCaptionItem,VideoCaptionMsg, VideoCaptionEntity,VideoCaptionStatus } from "@/entityTypes/videoType"
+import { VideoDownloadEntity, VideoDownloadStatus, VideoDescriptionEntity, VideodownloadTaskMsg, VideoDownloadListDisplay, VideodownloadMsg, DownloadVideoControlparam, VideoDownloadTaskDetailEntity, DownloadType, CookiesType, VideoCaptionItem, VideoCaptionMsg, VideoCaptionEntity, VideoCaptionStatus, VideoCaptionGenerateParamWithIds } from "@/entityTypes/videoType"
 import { VideoDescriptionModule } from "@/modules/videoDescriptionModule"
 import { Video } from '@/modules/interface/Video';
 import { VideoDownloadTaskDetailModule } from '@/modules/VideoDownloadTaskDetailModule';
@@ -28,10 +28,10 @@ import { VideoDownloadTaskProxyModule } from "@/modules/VideoDownloadTaskProxyMo
 import { Proxy } from "@/entityTypes/proxyType"
 import { ProxyApi } from "@/api/proxyApi"
 import { shell } from "electron"
-import {VideoCaptionFactory} from "@/modules/videoCaption/VideoCaptionFactory"
+import { VideoCaptionFactory } from "@/modules/videoCaption/VideoCaptionFactory"
 import { CustomError } from '@/modules/customError'
-import {VideoCaptiondbModule} from "@/modules/VideoCaptiondbModule"
-import {LanguageEnum} from "@/config/generate"
+import { VideoCaptiondbModule } from "@/modules/VideoCaptiondbModule"
+import { LanguageEnum } from "@/config/generate"
 //import {} from "@/entityTypes/proxyType"
 export class videoController {
     private videoDownloadModule: VideoDownloadModule
@@ -43,7 +43,7 @@ export class videoController {
     private videoDownloadTaskAccountsModule: VideoDownloadTaskAccountsModule
     private videoDownloadTaskUrlModule: VideoDownloadTaskUrlModule
     private videoDownloadTaskProxyModule: VideoDownloadTaskProxyModule
-    private videoCaptiondbModule:VideoCaptiondbModule
+    private videoCaptiondbModule: VideoCaptiondbModule
     constructor() {
         // const tokenService = new Token()
         // const dbpath = tokenService.getValue(USERSDBPATH)
@@ -288,11 +288,11 @@ export class videoController {
                         status: VideoDownloadStatus.Error,
                         // error_log: getData.log
                     }
-                    const videoId=this.videoDownloadModule.saveVideoDownload(videoDownloadEntity)
-                    if(getData.log){
-                        this.videoDownloadModule.saveVideoDownloadLog(getData.log,videoId)
+                    const videoId = this.videoDownloadModule.saveVideoDownload(videoDownloadEntity)
+                    if (getData.log) {
+                        this.videoDownloadModule.saveVideoDownloadLog(getData.log, videoId)
                     }
-                   
+
                 }
                 //child.kill()
             } else if (childdata.action == "videodownloadTaskMsg") {
@@ -413,7 +413,7 @@ export class videoController {
         return { records: res, num: count } as ListData<VideoDownloadListDisplay>
     }
     public async retryDownloadvideo(taskId: number, startCall: () => void) {
-    
+
         const data = await this.getVideoDownloadTaskInfo(taskId)
         const videoTool = await this.getVideoDownloadTool(data.platform)
         if (!videoTool) {
@@ -552,27 +552,53 @@ export class videoController {
         if (!task) {
             throw new Error("task info not found")
         }
-        let content =""
-        if(task.error_log){
+        let content = ""
+        if (task.error_log) {
             //check file exist
             if (fs.existsSync(task.error_log)) {
-                content =await readLogFile(task.error_log)
-            }else{
+                content = await readLogFile(task.error_log)
+            } else {
                 throw new Error("task error file log not found")
             }
-        }else{
+        } else {
             throw new Error("task error file log not found")
         }
         console.log(content)
         return content
     }
+    //pass video id, and generate video caption
+    public async generateCaptionbyids(data: VideoCaptionGenerateParamWithIds<number>) {
+        const res = this.convertToVideoCaptionitem(data)
+        await this.generateCaptionsPath(res)
+    }
+    public convertToVideoCaptionitem(data: VideoCaptionGenerateParamWithIds<number>): Array<VideoCaptionItem> {
+        const res: Array<VideoCaptionItem> = []
+        if (data.ids.length > 0) {
+            data.ids.forEach((value) => {
+                const videoItem = this.videoDownloadModule.getVideoDownloaditem(value)
+                if (videoItem) {
+                    if (videoItem.savepath) {
+                        const item: VideoCaptionItem = {
+                            videoId: value,
+                            videoPath: videoItem.savepath,
+                            isEnglish: data.isEnglish,
+                            savePath: data.savePath
+                        }
+                        res.push(item)
+                    }
+                }
+
+            })
+        }
+        return res
+    }
     //generate caption for videos
     //throw error if video caption tool requirement check failed
-    public async generateCaptions(params:Array<VideoCaptionItem>):Promise<void>{
+    public async generateCaptionsPath(params: Array<VideoCaptionItem>): Promise<void> {
         //check requirement
-        const VFaction=new VideoCaptionFactory()
-        const res=VFaction.checkRequirement()
-        if(!res){
+        const VFaction = new VideoCaptionFactory()
+        const res = VFaction.checkRequirement()
+        if (!res) {
             throw new Error("video caption tool requirement check failed")
         }
         const childPath = path.join(__dirname, 'taskCode.js')
@@ -580,19 +606,19 @@ export class videoController {
             throw new CustomError("child js path not exist for the path " + childPath);
         }
         const { port1, port2 } = new MessageChannelMain()
-        
+
         const child = utilityProcess.fork(childPath, [], { stdio: "pipe" })
 
         child.on("spawn", () => {
 
-          
+
             child.postMessage(JSON.stringify({ action: "generateCaption", data: params }), [port1])
 
         })
 
         child.stdout?.on('data', (data) => {
             console.log(`Received data chunk ${data}`)
-         
+
             // child.kill()
         })
 
@@ -611,7 +637,7 @@ export class videoController {
         child.on("exit", (code) => {
             if (code !== 0) {
                 console.error(`Child process exited with code ${code}`);
-               // this.videoDownloadTaskModule.updateVideoDownloadTaskStatus(taskId, TaskStatus.Error)
+                // this.videoDownloadTaskModule.updateVideoDownloadTaskStatus(taskId, TaskStatus.Error)
                 // this.emailSeachTaskModule.updateTaskStatus(taskId,EmailsearchTaskStatus.Error)
             } else {
                 console.log('Child process exited successfully');
@@ -624,29 +650,29 @@ export class videoController {
             console.log("get message from child")
             console.log('Message from child:', JSON.parse(message));
             const childdata = JSON.parse(message) as ProcessMessage<any>
-            if (childdata.action == "generateCaption") {
+            if (childdata.action == "generateCaptionMsg") {
                 const getData = childdata.data as VideoCaptionMsg
-                if(getData.status){
+                if (getData.status) {
 
                     console.log("generate caption success")
-                    if(getData.videoId&&getData.savepath){
-                    const vce:VideoCaptionEntity={
-                        videoId:getData.videoId,
-                        language_id:LanguageEnum.Default,
-                        caption_path:getData.savepath
+                    if (getData.videoId && getData.savepath) {
+                        const vce: VideoCaptionEntity = {
+                            videoId: getData.videoId,
+                            language_id: LanguageEnum.Default,
+                            caption_path: getData.savepath
+                        }
+                        this.videoCaptiondbModule.create(vce)
+                        this.videoDownloadModule.updateVideoCaptionStatus(getData.videoId, VideoCaptionStatus.Finish)
                     }
-                    this.videoCaptiondbModule.create(vce)
-                    this.videoDownloadModule.updateVideoCaptionStatus(getData.videoId,VideoCaptionStatus.Finish)
-                }
-                }else{
+                } else {
                     //generate caption error
-                    if(getData.videoId){
-                    this.videoDownloadModule.updateVideoCaptionStatus(getData.videoId,VideoCaptionStatus.Error)
-                    this.videoDownloadModule.saveVideoDownloadLog(getData.msg,getData.videoId)
+                    if (getData.videoId) {
+                        this.videoDownloadModule.updateVideoCaptionStatus(getData.videoId, VideoCaptionStatus.Error)
+                        this.videoDownloadModule.saveVideoDownloadLog(getData.msg, getData.videoId)
                     }
                 }
             }
-            
+
         });
 
 

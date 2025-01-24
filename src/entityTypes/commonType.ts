@@ -76,3 +76,7 @@ export enum TaskStatus {
     Complete = 2,
     Error = 3
   }
+  export interface CommonIdrequestIds<Type> {
+   ids:Array<Type>,
+}
+

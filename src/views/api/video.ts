@@ -1,11 +1,11 @@
 'use strict';
 export { };
 import { windowInvoke, windowSend, windowReceive } from '@/views/utils/apirequest'
-import { OPENDIRECTORY, VIDEODOWNLOAD_MESSAGE, VIDEODOWNLOAD, VIDEODOWNLOAD_TASK_LIST,VIDEODOWNLOAD_LIST,VIDEODOWNLOADTASK_RETRY,VIDEODOWNLOADITEM_RETRY,VIDEODOWNLOAD_ITEM_MESSAGE,VIDEODOWNLOADITEM_EXPLORER,VIDEODOWNLOADITEM_DELETE,VIDEODOWN_TASK_ERROR_LOG_QUERY } from "@/config/channellist";
-import { downloadVideoparam, VideoDownloadTaskEntity,VideoDownloadQuery,VideoDownloadListDisplay } from "@/entityTypes/videoType"
-import { CommonDialogMsg,ItemSearchparam,CommonMessage,CommonIdrequestType } from "@/entityTypes/commonType";
+import { OPENDIRECTORY, VIDEODOWNLOAD_MESSAGE, VIDEODOWNLOAD, VIDEODOWNLOAD_TASK_LIST,VIDEODOWNLOAD_LIST,VIDEODOWNLOADTASK_RETRY,VIDEODOWNLOADITEM_RETRY,VIDEODOWNLOAD_ITEM_MESSAGE,VIDEODOWNLOADITEM_EXPLORER,VIDEODOWNLOADITEM_DELETE,VIDEODOWN_TASK_ERROR_LOG_QUERY,VIDEO_CAPTION_GENERATE,VIDEO_CAPTION_GENERATE_MESSAGE } from "@/config/channellist";
+import { downloadVideoparam, VideoDownloadTaskEntity,VideoDownloadQuery,VideoDownloadListDisplay,VideoCaptionGenerateParamWithIds } from "@/entityTypes/videoType"
+import { CommonDialogMsg,ItemSearchparam,CommonIdrequestType } from "@/entityTypes/commonType";
 import {SearchResult } from '@/views/api/types'
-import { promises } from 'dns';
+
 
 
 
@@ -53,4 +53,11 @@ export async function queryVideoTaskErrorlog(id:number):Promise<string>{
     const querydata:CommonIdrequestType<number>={id:id,type:"errorlog"}
    const res= await windowInvoke(VIDEODOWN_TASK_ERROR_LOG_QUERY, querydata)
    return res as string
+}
+export async function generateCaption(data:VideoCaptionGenerateParamWithIds<number>){
+    
+    windowSend(VIDEO_CAPTION_GENERATE, data)
+}
+export function receiveVideoCaptionGenerateMessage(cb: (data: CommonDialogMsg) => void) {
+    windowReceive(VIDEO_CAPTION_GENERATE_MESSAGE, cb)
 }

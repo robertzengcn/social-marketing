@@ -61,6 +61,8 @@ export const VIDEODOWNLOADITEM_EXPLORER='video:downloaditem:explorer'
 export const VIDEODOWNLOADITEM_DELETE='video:downloaditem:delete'
 export const VIDEODOWN_TASK_ERROR_LOG='video:download:error:log'
 export const VIDEODOWN_TASK_ERROR_LOG_QUERY='video:download:task:error:log:query'
+export const VIDEO_CAPTION_GENERATE='video:caption:generate'
+export const VIDEO_CAPTION_GENERATE_MESSAGE='video:caption:generate:message'
 
 
 
