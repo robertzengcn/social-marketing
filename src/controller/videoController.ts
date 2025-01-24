@@ -230,6 +230,7 @@ export class videoController {
 
                 // seModel.saveTaskerrorlog(taskId,data)
                 console.log(`Received error chunk ${data}`)
+                console.log('filename'+errorLogfile)
                 WriteLog(errorLogfile, data)
 
             }
