@@ -2,7 +2,7 @@
 import { WinExtraModuleConfig } from "@/config/WinExtraModuleConfig"
 import { MacExtraModuleConfig } from "@/config/MacExtraModuleConfig"
 import { LinuxExtraModuleConfig } from "@/config/LinuxExtraModuleConfig"
-import { ExtraModule } from "@/entityTypes/extramodule-type"
+import { ExtraModule } from "@/entityTypes/extramoduleType"
 import { checkFolderAndGetFiles, downloadFile, getUserPlatform } from "@/modules/lib/function"
 import { ListData } from "@/entityTypes/commonType"
 import { execSync, exec } from 'child_process';
@@ -12,13 +12,16 @@ import { uninstallPipPackage, removeFile } from "@/modules/lib/function"
 import { app } from 'electron';
 import * as path from 'path';
 import * as fs from 'fs';
-import { s } from "vitest/dist/reporters-1evA5lom"
+import {ExtraModulesModule} from "@/modules/ExtraModulesModule"
+// import { s } from "vitest/dist/reporters-1evA5lom"
 export class ExtraModuleController {
     private extraModulePth: string;
     private extramodules: ExtraModule[]
+    private extraModulesModule:ExtraModulesModule
     constructor() {
         this.extraModulePth = path.join(app.getAppPath(), 'extramodule');
         this.extramodules = this.getExtraModulesConfig()
+        this.extraModulesModule=new ExtraModulesModule()
     }
 
     public getModulePath(): string {
@@ -35,6 +38,12 @@ export class ExtraModuleController {
                 const mores = await this.isPipModuleInstalled(module.packagename)
                 if (mores) {
                     module.installed = true
+                }
+            }
+            if(module.installed){//check installed version
+              const instRes=this.extraModulesModule.getExtraModuleByName(module.name)
+                if(instRes){
+                    module.installVersion=instRes.version
                 }
             }
         })
@@ -73,7 +82,9 @@ export class ExtraModuleController {
         }
         if (valid.ispip) {//install pip package
             await this.installPipPackage(valid.packagename,valid.version).then(() => {
+                this.extraModulesModule.create({name:valid.name,version:valid.version})
                 if (success) {
+                   
                     success()
                 }
             }).catch((error) => {
@@ -84,9 +95,11 @@ export class ExtraModuleController {
 
         } else {
 
-            await this.downloadInstallPackage(valid.packagename, valid.link, success, strerr)
+            await this.downloadInstallPackage(valid.packagename, valid.link, ()=>{
+                this.extraModulesModule.create({name:valid.name,version:valid.version})
+                success}, strerr)
         }
-
+        
 
 
     }
@@ -258,6 +271,26 @@ export class ExtraModuleController {
             });
         });
     }
+    public async upgradePackage(packageName: string): Promise<void> {
+
+        const valid = this.extramodules.find((module) => module.packagename === packageName)
+        if (!valid) {
+           throw new Error("package name not valid:" + packageName)
+        }
+        if(valid.ispip){
+            await this.installPipPackage(valid.packagename,valid.version)
+        }else{
+            const modulePath = path.join(this.extraModulePth, valid.packagename);
+            removeFile(modulePath, () => {
+                this.downloadInstallPackage(valid.packagename, valid.link)
+            }, (message) => {
+                throw new Error(message)
+            })
+        }
+
+
+    }
+
 
 
 }

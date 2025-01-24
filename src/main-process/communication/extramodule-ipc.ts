@@ -1,8 +1,8 @@
 import { ipcMain } from 'electron';
 import { EXTRAMODULECHANNE_LIST, EXTRAMODULECHANNE_INSTALL, EXTRAMODULECHANNE_UNINSTALL, EXTRAMODULECHANNE_MESSAGE } from "@/config/channellist";
-import { ExtraModuleController } from "@/controller/extramodule-controller";
+import { ExtraModuleController } from "@/controller/extramoduleController";
 import { CommonResponse } from "@/entityTypes/commonType"
-import { ExtraModule } from "@/entityTypes/extramodule-type"
+import { ExtraModule } from "@/entityTypes/extramoduleType"
 export function registerExtraModulesIpcHandlers() {
   console.log("extramodules list register")
   ipcMain.handle(EXTRAMODULECHANNE_LIST, async (event, arg) => {

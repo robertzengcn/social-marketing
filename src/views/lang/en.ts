@@ -2,6 +2,9 @@
 // import No from "../feedback/no.vue";
 // import { not } from "cheerio/lib/api/traversing";
 
+import { uninstallPipPackage } from "@/modules/lib/function";
+import install from "electron-devtools-installer";
+
 export default {
     common:{
         more:"More",
@@ -42,6 +45,8 @@ export default {
         processing:"processing",
         complete:"complete",
         error_retry:"error happened, please retry again",
+        install:"install",
+       uninstall:"uninstall",
     },
     home:{
         search:"Search Extraction",
@@ -95,6 +100,8 @@ export default {
         installed:"Installed",
         notInstalled:"Not Installed",
         actions:"action",
+        require_version:"require Version",
+        installed_version:"installed Version",
     },
     modules:{
         f2:{

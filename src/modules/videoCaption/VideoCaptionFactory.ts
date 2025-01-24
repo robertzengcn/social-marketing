@@ -1,6 +1,6 @@
 import { VideoCaptionImpl } from '@/modules/interface/VideoCaptionImpl';
 import { Whisper } from '@/modules/videoCaption/Whisper';
-import { ExtraModuleController } from '@/controller/extramodule-controller'
+import { ExtraModuleController } from '@/controller/extramoduleController'
 import { CustomError } from '@/modules/customError'
 export class VideoCaptionFactory {
     private extraModule: ExtraModuleController

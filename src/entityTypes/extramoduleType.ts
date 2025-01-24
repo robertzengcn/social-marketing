@@ -6,6 +6,7 @@ export type ExtraModuleItem={
     installed:boolean
     loading?:boolean
     description:string
+    installVersion?:string
 }
 export type ExtraModule={
     name:string,
@@ -17,5 +18,10 @@ export type ExtraModule={
     requirePy:boolean,
     ispip:boolean,
     requireFfmpeg:boolean
-
+    installVersion?:string
+}
+export type ExtraModuleEntity={
+    id:number,
+    name:string,
+    version:string,
 }

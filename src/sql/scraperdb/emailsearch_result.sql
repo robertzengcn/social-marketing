@@ -4,5 +4,5 @@ task_id INTEGER,
 url TEXT NULL,
 title TEXT NULL,
 email TEXT NULL,
-record_time INTEGER NULL
+record_time TEXT NULL
 )

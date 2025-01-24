@@ -1,4 +1,4 @@
-import { ExtraModule } from "@/entityTypes/extramodule-type";
+import { ExtraModule } from "@/entityTypes/extramoduleType";
 export const WinExtraModuleConfig:ExtraModule[]=[
 
     {

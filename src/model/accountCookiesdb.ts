@@ -1,5 +1,5 @@
-import { Database } from 'better-sqlite3';
-import { Scraperdb } from "@/model/scraperdb";
+// import { Database } from 'better-sqlite3';
+// import { Scraperdb } from "@/model/scraperdb";
 import { getRecorddatetime } from "@/modules/lib/function";
 import { BaseDb } from "@/model/Basedb";
 export interface AccountCookiesEntity {

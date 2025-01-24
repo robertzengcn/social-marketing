@@ -3,10 +3,10 @@
         :items-length="totalItems" :items="serverItems" :loading="loading" item-value="name" @update:options="loadItems" :show-select="isSelectedtable">
         <template v-slot:[`item.actions`]="{ item }">
             <v-btn v-if="!item.installed" @click="openDialog(item,true)"  :loading="item.loading" loading-text="{{$t('common.installing')}}...">
-                Install
+              {{t('common.install')}}
               </v-btn> 
               <v-btn v-if="item.installed" @click="openDialog(item,false)" :loading="item.loading" loading-text="{{$t('common.uninstalling')}}...">
-                Uninstall
+                {{t('common.uninstall')}}
               </v-btn> 
               
             <!-- <v-icon
@@ -43,7 +43,7 @@ import { getExtramodulelist,installExtramodule,receiveInExtramoduleLog,removeExt
 import { ref,computed,onMounted } from 'vue'
 import { SearchResult } from '@/views/api/types'
 // import router from '@/views/router';
-import {ExtraModule,ExtraModuleItem} from "@/entityTypes/extramodule-type"
+import {ExtraModule,ExtraModuleItem} from "@/entityTypes/extramoduleType"
 const {t} = useI18n({inheritLocale: true});
 import {CapitalizeFirstLetter} from '@/views/utils/function'
 import ErrorDialog from "@/views/components/widgets/errorDialog.vue"
@@ -88,6 +88,18 @@ headers.value = [
         key: 'description',
     },
     {
+        title: computed(_ => CapitalizeFirstLetter(t("extramodule.installed_version"))),
+        align: 'start',
+        sortable: false,
+        key: 'installVersion',
+    },
+    {
+        title: computed(_ => CapitalizeFirstLetter(t("extramodule.require_version"))),
+        align: 'start',
+        sortable: false,
+        key: 'version',
+    },
+    {
         title: computed(_ => CapitalizeFirstLetter(t("extramodule.extramoduleStatus"))),
         align: 'start',
         sortable: false,
@@ -126,9 +138,13 @@ function loadItems({ page, itemsPerPage, sortBy }) {
                     description:t(tranvardesc),
                     installed:false,
                     version:data[i].version,
+                    
                 }
                if(data[i].installed){
                      item.installed=true
+               }
+               if(data[i].installVersion){
+                item.installVersion=data[i].installVersion
                }
                 epi.push(item)
             }

@@ -1,6 +1,6 @@
 import {windowInvoke,windowSend,windowReceive} from '@/views/utils/apirequest'
 import {EXTRAMODULECHANNE_LIST,EXTRAMODULECHANNE_INSTALL,EXTRAMODULECHANNE_UNINSTALL,EXTRAMODULECHANNE_MESSAGE} from "@/config/channellist";
-import {ExtraModule} from "@/entityTypes/extramodule-type"
+import {ExtraModule} from "@/entityTypes/extramoduleType"
 import {ListData} from "@/entityTypes/commonType"
 import { SearchResult } from '@/views/api/types'
 export async function getExtramodulelist(data: any):Promise<SearchResult<ExtraModule>>{

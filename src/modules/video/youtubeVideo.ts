@@ -1,5 +1,5 @@
 import { Video } from '@/modules/interface/Video';
-import {ExtraModuleController} from '@/controller/extramodule-controller'
+import {ExtraModuleController} from '@/controller/extramoduleController'
 import {CustomError} from '@/modules/customError'
 import * as path from 'path';
 export class youtubeVideo implements Video {
