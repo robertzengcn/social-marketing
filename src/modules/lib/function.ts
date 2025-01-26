@@ -561,13 +561,18 @@ export async function downloadFile(url: string, savePath: string, onSuccess?: ()
             if (onFailure) {
               onFailure(error as Error);
             }
+          }else{
+            resolve();
+            if (onSuccess) {
+              onSuccess();
           }
+        }
         })
 
-        resolve();
-        if (onSuccess) {
-          onSuccess();
-        }
+        // resolve();
+        // if (onSuccess) {
+        //   onSuccess();
+        // }
       });
     });
   } catch (error) {
