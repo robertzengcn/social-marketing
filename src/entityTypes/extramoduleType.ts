@@ -7,6 +7,8 @@ export type ExtraModuleItem={
     loading?:boolean
     description:string
     installVersion?:string
+    upgradeLoading?:boolean
+    upgradeAvailable?:boolean
 }
 export type ExtraModule={
     name:string,
@@ -19,6 +21,7 @@ export type ExtraModule={
     ispip:boolean,
     requireFfmpeg:boolean
     installVersion?:string
+    upgradeAvailable?:boolean
 }
 export type ExtraModuleEntity={
     id:number,

@@ -64,6 +64,7 @@ export const VIDEODOWN_TASK_ERROR_LOG_QUERY='video:download:task:error:log:query
 export const VIDEO_CAPTION_GENERATE='video:caption:generate'
 export const VIDEO_CAPTION_GENERATE_MESSAGE='video:caption:generate:message'
 export const EXTRAMODULE_UPGRADE='extramodule:upgrade'
+export const EXTRAMODULE_UPGRAD_MESSAGE='extramodule:upgrade:message'
 
 
 

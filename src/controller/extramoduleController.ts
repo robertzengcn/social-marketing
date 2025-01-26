@@ -44,6 +44,17 @@ export class ExtraModuleController {
               const instRes=this.extraModulesModule.getExtraModuleByName(module.name)
                 if(instRes){
                     module.installVersion=instRes.version
+                    if(module.version!==instRes.version){
+                        //convert version to number to compare whether it can be upgrade
+                        const currentVersion = parseFloat(module.version.replace(/[^\d.]/g, ''));
+                        const installedVersion = parseFloat(instRes.version.replace(/[^\d.]/g, ''));
+                        if (currentVersion > installedVersion) {
+                            module.upgradeAvailable = true;
+                        }else{
+                            module.upgradeAvailable = false;
+                        }
+                       
+                    }
                 }
             }
         })

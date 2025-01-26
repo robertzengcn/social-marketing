@@ -102,6 +102,8 @@ export default {
         actions:"action",
         require_version:"require Version",
         installed_version:"installed Version",
+        upgradeConfirm:"Are you sure you want to upgrade {package}?",
+        
     },
     modules:{
         f2:{
