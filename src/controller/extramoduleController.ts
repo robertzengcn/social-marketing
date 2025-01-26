@@ -108,7 +108,11 @@ export class ExtraModuleController {
 
             await this.downloadInstallPackage(valid.packagename, valid.link, ()=>{
                 this.extraModulesModule.create({name:valid.name,version:valid.version})
-                success}, strerr)
+                if (success) {
+                   
+                    success()
+                }
+            }, strerr)
         }
         
 

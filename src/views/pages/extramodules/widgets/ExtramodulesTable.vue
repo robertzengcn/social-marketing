@@ -11,7 +11,7 @@
                 loading-text="{{$t('common.uninstalling')}}...">
                 {{ t('common.uninstall') }}
             </v-btn>
-            <v-btn v-if="item.upgradeAvailable" @click="openUpgradeDialog(item)" :loading="item.loading"
+            <v-btn v-if="item.upgradeAvailable" @click="openUpgradeDialog(item)" :loading="item.upgradeLoading"
                 loading-text="{{$t('common.uninstalling')}}...">
                 {{ t('common.uninstall') }}
             </v-btn>
