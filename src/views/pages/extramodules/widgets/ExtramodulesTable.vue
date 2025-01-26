@@ -257,17 +257,18 @@ onMounted(() => {
         const obj = JSON.parse(strobj)
         console.log(obj)
         if (obj.status) {
-            for (let i = 0; i < serverItems.value.length; i++) {
-                if (serverItems.value[i].packagename == obj.data.name) {
-                    serverItems.value[i].loading = false
-                    if (dialogAction.value === 'install') {
-                        serverItems.value[i].installed = true
-                    } else {
-                        serverItems.value[i].installed = false
-                    }
-                    break
-                }
-            }
+            loadItems({ page: options.page, itemsPerPage: itemsPerPage.value, sortBy: "" });
+            // for (let i = 0; i < serverItems.value.length; i++) {
+            //     if (serverItems.value[i].packagename == obj.data.name) {
+            //         serverItems.value[i].loading = false
+            //         if (dialogAction.value === 'install') {
+            //             serverItems.value[i].installed = true
+            //         } else {
+            //             serverItems.value[i].installed = false
+            //         }
+            //         break
+            //     }
+            // }
             // loadItems({ page: 1, itemsPerPage: itemsPerPage.value, sortBy: '' })
         } else {
             console.error(obj.msg)
