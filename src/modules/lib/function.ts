@@ -526,13 +526,15 @@ export async function checkFolderAndGetFiles(folderPath: string): Promise<string
 export async function downloadFile(url: string, savePath: string, onSuccess?: () => void,
   onFailure?: (error: Error) => void): Promise<void> {
   try {
+    //defined a tmp file name
+    const tmpFileName = savePath + '.tmp';
     const response = await fetch(url);
 
     if (!response.ok) {
       throw new Error(`Failed to download file: ${response.statusText}`);
     }
 
-    const fileStream = fs.createWriteStream(savePath);
+    const fileStream = fs.createWriteStream(tmpFileName);
 
     return new Promise((resolve, reject) => {
       if (response.body) {
@@ -552,7 +554,15 @@ export async function downloadFile(url: string, savePath: string, onSuccess?: ()
         reject(new Error('Response body is null'));
       }
       fileStream.on('finish', () => {
-
+        //rename to tmp file to save path
+        fs.rename(tmpFileName, savePath, (error) => {
+          if (error) {
+            reject(error);
+            if (onFailure) {
+              onFailure(error as Error);
+            }
+          }
+        })
 
         resolve();
         if (onSuccess) {
@@ -561,6 +571,8 @@ export async function downloadFile(url: string, savePath: string, onSuccess?: ()
       });
     });
   } catch (error) {
+    //remove file if download failed
+    //await removeFile(savePath)
     if (onFailure) {
 
       onFailure(error as Error);
