@@ -30,12 +30,14 @@ export class ExtraModuleController {
     public async getExtraModuleList(offerset: number, length: number): Promise<ListData<ExtraModule>> {
         const extraModuelfold = await this.getExtramoduleinfolder()
         //    const extramodules=this.getExtraModulesConfig()
-
+        console.log(this.extramodules)
         //loop extra modules check if modules installed
         this.extramodules.forEach(async (module) => {
             module.installed = extraModuelfold.includes(module.packagename)
             if (module.ispip) {//check pip package installed
                 const mores = await this.isPipModuleInstalled(module.packagename)
+                console.log("result:")
+                console.log(mores)
                 if (mores) {
                     module.installed = true
                 }
@@ -59,7 +61,7 @@ export class ExtraModuleController {
             }
         })
 
-
+        console.log(this.extramodules)
         return {
             records: this.extramodules.slice(offerset, length)
             , num: this.extramodules.length
