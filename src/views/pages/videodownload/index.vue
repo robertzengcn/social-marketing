@@ -159,7 +159,7 @@ import { CommonDialogMsg } from "@/entityTypes/commonType";
 import router from '@/views/router';
 import ProxyTableselected from "@/views/pages/proxy/widgets/ProxySelectedTable.vue";
 import { ProxyListEntity, Proxy } from "@/entityTypes/proxyType";
-import ErrorDialog from "@/views/components/widgets/errorDialog.vue"
+//import ErrorDialog from "@/views/components/widgets/errorDialog.vue"
 const proxyValue = ref<Array<Proxy>>([]);
 const proxyValueshow = ref<Array<string>>([]);
 const proxytableshow = ref(false);

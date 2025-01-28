@@ -5,7 +5,7 @@ export const LinuxExtraModuleConfig:ExtraModule[]=[
         name:"youtube-dl",
         // description:"video download is a module that can download video from tiktok, Instagram and other platforms",
         packagename:"yt-dlp",
-        version:"2024.08.07",
+        version:"2025.01.26",
         link:"https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp",
         requirePy:true,
         ispip:false,

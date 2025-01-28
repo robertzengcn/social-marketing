@@ -32,13 +32,16 @@ export class ExtraModuleController {
         //    const extramodules=this.getExtraModulesConfig()
         console.log(this.extramodules)
         //loop extra modules check if modules installed
-        this.extramodules.forEach(async (module) => {
-            module.installed = extraModuelfold.includes(module.packagename)
+        //
+        // this.extramodules.forEach(async (module) => {
+        for (const module of this.extramodules) {    
+        module.installed = extraModuelfold.includes(module.packagename)
             if (module.ispip) {//check pip package installed
                 const mores = await this.isPipModuleInstalled(module.packagename)
                 console.log("result:")
                 console.log(mores)
                 if (mores) {
+                    console.log(module.name + " is been set to installed")
                     module.installed = true
                 }
             }
@@ -59,7 +62,7 @@ export class ExtraModuleController {
                     }
                 }
             }
-        })
+        }
 
         console.log(this.extramodules)
         return {
@@ -171,11 +174,13 @@ export class ExtraModuleController {
     }
     //remove modules
     public removeExtraModule(packagename: string, success?: () => void, strerr?: (message: string) => void, strout?: (message: string) => void) {
+        
         //valid package name
         const valid = this.extramodules.find((module) => module.packagename === packagename)
         if (!valid) {
             throw new Error("package name not valid:" + packagename)
         }
+        this.extraModulesModule.deletePackage(valid.name)
         if (valid.ispip) {//uninstall pip package
             //uninstall package
             uninstallPipPackage(valid.packagename, (error) => {
@@ -288,20 +293,36 @@ export class ExtraModuleController {
             });
         });
     }
-    public async upgradePackage(packageName: string): Promise<void> {
+    public async upgradePackage(packageName: string,successcall?:()=>void,errorCall?:(error:string)=>void): Promise<void> {
 
         const valid = this.extramodules.find((module) => module.packagename === packageName)
         if (!valid) {
-           throw new Error("package name not valid:" + packageName)
+           //throw new Error("package name not valid:" + packageName)
+            if(errorCall){
+                errorCall("package name not valid:" + packageName)
+            }
+           return
         }
         if(valid.ispip){
             await this.installPipPackage(valid.packagename,valid.version)
+            this.extraModulesModule.create({name:valid.name,version:valid.version})
+            if(successcall){
+                successcall()
+            }
         }else{
             const modulePath = path.join(this.extraModulePth, valid.packagename);
             removeFile(modulePath, () => {
-                this.downloadInstallPackage(valid.packagename, valid.link)
+                this.downloadInstallPackage(valid.packagename, valid.link,()=>{
+                this.extraModulesModule.create({name:valid.name,version:valid.version})
+                if(successcall){
+                    successcall()
+                }
+            })
             }, (message) => {
-                throw new Error(message)
+                //throw new Error(message)
+                if(errorCall){
+                    errorCall(message)
+                }
             })
         }
 

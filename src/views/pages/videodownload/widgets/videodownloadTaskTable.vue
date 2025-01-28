@@ -28,29 +28,33 @@
             <v-icon size="small" class="me-2" @click="openTasklist(item)">
                 mdi-login
             </v-icon>
-            <v-icon size="small" class="me-2" @click="taskRetry(item)" v-if="item.status !='1'">
+            <v-icon size="small" class="me-2" @click="taskRetry(item)" v-if="item.status != '1'">
                 mdi-play
             </v-icon>
-            <v-icon size="small" class="me-2" @click="showLog(item)" v-if="item.status =='3'">
+            <v-icon size="small" class="me-2" @click="showLog(item)" v-if="item.status == '3'">
                 mdi-file-document
             </v-icon>
 
         </template>
     </v-data-table-server>
-    <LogDialog :dialogModel="logdiastatus" :logContent="logdiaContent" @dialogclose="logdiastatus=false" />
-
+    <LogDialog :dialogModel="logdiastatus" :logContent="logdiaContent" @dialogclose="logdiastatus = false" />
+    <ErrorDialog :showDialog="showDialog" :alertext="alertext" :alertitle="alerttitle"
+        @dialogclose="showDialog = false" />
 </template>
 
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
-import { ref, computed,reactive,onMounted,onUnmounted } from 'vue'
+import { ref, computed, reactive, onMounted, onUnmounted } from 'vue'
 import { SearchResult } from '@/views/api/types'
-import { getVideoTasklist,retryVideoTask,queryVideoTaskErrorlog } from "@/views/api/video";
+import { getVideoTasklist, retryVideoTask, queryVideoTaskErrorlog, receiveVideoTaskDownloadRetryMessage } from "@/views/api/video";
 import { VideoDownloadTaskEntity } from "@/entityTypes/videoType";
 import router from '@/views/router';
 const { t } = useI18n({ inheritLocale: true });
 import { CapitalizeFirstLetter } from "@/views/utils/function"
-import LogDialog from "@/views/components/widgets/logDialog.vue"        
+import LogDialog from "@/views/components/widgets/logDialog.vue"
+const showDialog = ref<boolean>(false);
+const alertext = ref<string>("")
+const alerttitle = ref<string>("")
 type Fetchparam = {
     // id:number
     page: number,
@@ -125,8 +129,8 @@ let refreshInterval: ReturnType<typeof setInterval> | undefined;
 // const showDeleteModal = ref(false);
 // const deleteId = ref(0);
 // const alertext = ref("");
-const logdiastatus=ref(false);
-const logdiaContent=ref("");
+const logdiastatus = ref(false);
+const logdiaContent = ref("");
 function loadItems({ page, itemsPerPage, sortBy }) {
     loading.value = true
     const fetchitem: Fetchparam = {
@@ -170,7 +174,7 @@ const openTasklist = (item: VideoDownloadTaskEntity) => {
         });
     }
 };
-const taskRetry=(item: VideoDownloadTaskEntity)=>{
+const taskRetry = (item: VideoDownloadTaskEntity) => {
     if (item.id) {
         retryVideoTask(item.id)
     }
@@ -185,34 +189,57 @@ const showLog = async (item) => {
             console.error(error);
         })
         // if (res) {
-            
+
         // }  
     }
 }
 const options = reactive({
-  page: 1, // Initial page
-  itemsPerPage: 10, // Items per page
+    page: 1, // Initial page
+    itemsPerPage: 10, // Items per page
 });
 const startAutoRefresh = () => {
-  refreshInterval = setInterval(function () {
-    loadItems({ page: options.page, itemsPerPage: itemsPerPage.value, sortBy: "" });
-  }, 10000); // Refresh every 5 seconds
+    refreshInterval = setInterval(function () {
+        loadItems({ page: options.page, itemsPerPage: itemsPerPage.value, sortBy: "" });
+    }, 10000); // Refresh every 5 seconds
 }
 const stopAutoRefresh = () => {
-  if (refreshInterval) {
-    clearInterval(refreshInterval);
-    refreshInterval = undefined;
-  }
+    if (refreshInterval) {
+        clearInterval(refreshInterval);
+        refreshInterval = undefined;
+    }
 };
 onMounted(() => {
-   
+    receiveVideoTaskDownloadRetryMessage((data) => {
+        console.log(data)
+        if (data.status) {
+            setAlert(t('video.video_task__download_retry_start'), t('common.success'));
+        } else {
+            if (data.data) {
+                setAlert(t(data.data.content), t(data.data.title));
+            }else{
+                setAlert(t('common.unkonw_error'), t('common.error'));
+            }
+        }
+    })
 
-startAutoRefresh();
+    startAutoRefresh();
 
 });
 onUnmounted(() => {
-  stopAutoRefresh();
+    stopAutoRefresh();
 });
+const setAlert = (
+    text: string,
+    title: string
+) => {
+    loading.value = false;
+    alertext.value = text;
+    alerttitle.value = title;
 
+    showDialog.value = true;
+    setTimeout(() => {
+        showDialog.value = false;
+    }, 5000);
+};
 
 </script>

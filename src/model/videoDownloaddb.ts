@@ -93,6 +93,9 @@ export class VideoDownloaddb extends BaseDb {
 
   //update video download item
   public updateVideoDownloadItem(id: number, videoDownload: Omit<VideoDownloadEntity,"error_log">): number {
+    if(!videoDownload.record_time){
+      videoDownload.record_time=getRecorddatetime()
+    }
     const stmt = this.db.prepare(`
             UPDATE ${this.videoDownloadTable}
             SET url=@url,savepath=@savepath,record_time=@record_time,task_id=@task_id,status=@status,caption_status=@caption_status

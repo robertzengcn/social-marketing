@@ -4,16 +4,16 @@
         :show-select="isSelectedtable">
         <template v-slot:[`item.actions`]="{ item }">
             <v-btn v-if="!item.installed" @click="openDialog(item, true)" :loading="item.loading"
-                loading-text="{{$t('common.installing')}}...">
+                loading-text="{{$t('common.installing')}}..." size="small">
                 {{ t('common.install') }}
             </v-btn>
             <v-btn v-if="item.installed" @click="openDialog(item, false)" :loading="item.loading"
-                loading-text="{{$t('common.uninstalling')}}...">
+                loading-text="{{$t('common.uninstalling')}}..." color="primary" size="small" class="ml-2 mr-2 mb-2">
                 {{ t('common.uninstall') }}
             </v-btn>
             <v-btn v-if="item.upgradeAvailable" @click="openUpgradeDialog(item)" :loading="item.upgradeLoading"
-                loading-text="{{$t('common.uninstalling')}}...">
-                {{ t('common.uninstall') }}
+                loading-text="{{$t('common.upgrading')}}..." color="secondary" size="small" class="ml-2 mr-2 mb-2">
+                {{ t('common.upgrade') }}
             </v-btn>
 
             <!-- <v-icon
@@ -44,7 +44,7 @@
             </v-card-actions>
         </v-card>
     </v-dialog>
-    <ErrorDialog :showDialog="showDialog" :alertext="alertext" :alertitle="t('common.error_retry')"
+    <ErrorDialog :showDialog="showDialog" :alertext="alertext" :alertitle="alertitle"
         @dialogclose="showDialog = false" />
 </template>
 
@@ -58,10 +58,11 @@ import { ExtraModule, ExtraModuleItem } from "@/entityTypes/extramoduleType"
 const { t } = useI18n({ inheritLocale: true });
 import { CapitalizeFirstLetter } from '@/views/utils/function'
 import ErrorDialog from "@/views/components/widgets/errorDialog.vue"
-import {Header} from "@/entityTypes/commonType"
+import {Header,CommonDialogMsg} from "@/entityTypes/commonType"
 //const showDeleteModal = ref(false);
 const showDialog = ref<boolean>(false);
 const alertext = ref<string>("")
+const alertitle = ref<string>("")
 // const deleteId = ref(0);
 // const campaignId = i18n.t("campaignId");
 type Fetchparam = {
@@ -212,6 +213,7 @@ const confirmAction = () => {
     }else if(dialogAction.value === 'upgrade'){
         upgradeItem(currentItem.value)
     }
+
 }
 
 // const confirmInstall=()=> {
@@ -277,13 +279,19 @@ onMounted(() => {
         }
     })
     upgradeExtramoduleMsg((res)=>{
-        const obj = JSON.parse(res) 
+        const obj = JSON.parse(res) as CommonDialogMsg
         if(obj.status){
-            loadItems({ page: options.page, itemsPerPage: itemsPerPage.value, sortBy: "" });
+            alertext.value = t('extramodule.upgrade_start')
+            showDialog.value = true
+            alertitle.value = t('common.success')
+            //loadItems({ page: options.page, itemsPerPage: itemsPerPage.value, sortBy: "" });
         }else{
-            console.error(obj.msg)
+            //console.error(obj.msg)
+            if(obj.msg){
             alertext.value = obj.msg
             showDialog.value = true
+            alertitle.value = t('common.error')
+            }
         }
     })
 })

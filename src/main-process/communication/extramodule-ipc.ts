@@ -1,7 +1,7 @@
 import { ipcMain } from 'electron';
 import { EXTRAMODULECHANNE_LIST, EXTRAMODULECHANNE_INSTALL, EXTRAMODULECHANNE_UNINSTALL, EXTRAMODULECHANNE_MESSAGE,EXTRAMODULE_UPGRADE,EXTRAMODULE_UPGRAD_MESSAGE } from "@/config/channellist";
 import { ExtraModuleController } from "@/controller/extramoduleController";
-import { CommonResponse } from "@/entityTypes/commonType"
+import { CommonResponse,CommonDialogMsg } from "@/entityTypes/commonType"
 import { ExtraModule } from "@/entityTypes/extramoduleType"
 export function registerExtraModulesIpcHandlers() {
   console.log("extramodules list register")
@@ -99,22 +99,37 @@ export function registerExtraModulesIpcHandlers() {
     if (!("name" in qdata)) {
       throw new Error("name not found");
     }
-    await extraModulesCtrl.upgradePackage(qdata.name).catch((error) => {
+    await extraModulesCtrl.upgradePackage(qdata.name,()=>{
+      
+      const msgData:CommonDialogMsg={
+        status: true,
+        code:0,
+        msg: "success",
+      }
+      event.sender.send(EXTRAMODULE_UPGRAD_MESSAGE, JSON.stringify(msgData))
+    },(errormsg)=>{
+      const msgData:CommonDialogMsg={
+        status: false,
+        code:0,
+        msg: errormsg,
+      }
+      event.sender.send(EXTRAMODULE_UPGRAD_MESSAGE, JSON.stringify(msgData))
+    }).catch((error) => {
       if (error instanceof Error) {
-        event.sender.send(EXTRAMODULE_UPGRAD_MESSAGE, JSON.stringify({
+        const msgData:CommonDialogMsg={
           status: false,
-          msg: error.message
-        }))
+          code:0,
+          msg: error.message,
+        }
+        event.sender.send(EXTRAMODULE_UPGRAD_MESSAGE, JSON.stringify(msgData))
       }
     }).then(() => {
-      event.sender.send(EXTRAMODULE_UPGRAD_MESSAGE, JSON.stringify({
+      const msgData:CommonDialogMsg={
         status: true,
+        code:0,
         msg: "success",
-        data: {
-          name: qdata.name,
-          message: ""
-        }
-      }))
+      }
+      event.sender.send(EXTRAMODULE_UPGRAD_MESSAGE, JSON.stringify(msgData))
     })
 
   })

@@ -58,4 +58,9 @@ export class ExtraModulesdb extends BaseDb {
         const res = stmt.get(name) as ExtraModuleEntity;
         return res;
     }
+    deletePackage(name: string): void {
+        const stmt = this.db.prepare(
+            `DELETE FROM ` + this._table + ` WHERE name = ?`);
+        const res = stmt.run(name);
+    }
 }

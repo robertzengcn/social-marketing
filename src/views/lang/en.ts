@@ -4,6 +4,7 @@
 
 import { uninstallPipPackage } from "@/modules/lib/function";
 import install from "electron-devtools-installer";
+import { upgrade } from "undici";
 
 export default {
     common:{
@@ -47,6 +48,8 @@ export default {
         error_retry:"error happened, please retry again",
         install:"install",
        uninstall:"uninstall",
+       upgrade:"upgrade",
+       upgrading:"upgrading",
     },
     home:{
         search:"Search Extraction",
@@ -103,7 +106,7 @@ export default {
         require_version:"require Version",
         installed_version:"installed Version",
         upgradeConfirm:"Are you sure you want to upgrade {package}?",
-        
+        upgrade_start:"module upgrade start",
     },
     modules:{
         f2:{
@@ -158,6 +161,7 @@ export default {
         input_caption_save_path:"input caption save path",
         caption_generate_failed:"caption generate failed",
         caption_generate_start:"caption generate start",
+        video_task__download_retry_start:"video task download retry start",
     },
     account:{
         accountId:"Account ID",

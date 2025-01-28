@@ -65,7 +65,7 @@ export const VIDEO_CAPTION_GENERATE='video:caption:generate'
 export const VIDEO_CAPTION_GENERATE_MESSAGE='video:caption:generate:message'
 export const EXTRAMODULE_UPGRADE='extramodule:upgrade'
 export const EXTRAMODULE_UPGRAD_MESSAGE='extramodule:upgrade:message'
-
+export const VIDEOTASKDOWNLOAD_RETRY_MESSAGE='videotask:download:retry:message'
 
 
 

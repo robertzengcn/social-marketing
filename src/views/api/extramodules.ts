@@ -1,7 +1,7 @@
 import {windowInvoke,windowSend,windowReceive} from '@/views/utils/apirequest'
 import {EXTRAMODULECHANNE_LIST,EXTRAMODULECHANNE_INSTALL,EXTRAMODULECHANNE_UNINSTALL,EXTRAMODULECHANNE_MESSAGE,EXTRAMODULE_UPGRADE,EXTRAMODULE_UPGRAD_MESSAGE} from "@/config/channellist";
 import {ExtraModule} from "@/entityTypes/extramoduleType"
-import {ListData} from "@/entityTypes/commonType"
+import {ListData,CommonDialogMsg} from "@/entityTypes/commonType"
 import { SearchResult } from '@/views/api/types'
 export async function getExtramodulelist(data: any):Promise<SearchResult<ExtraModule>>{
      
@@ -30,6 +30,6 @@ export function removeExtramodule(packagename:string){
 export function upgradeExtramodule(packagename:string){
         windowSend(EXTRAMODULE_UPGRADE,{name:packagename})
 }
-export function upgradeExtramoduleMsg(cb:(data:any)=>void){
+export function upgradeExtramoduleMsg(cb:(data:string)=>void){
         windowReceive(EXTRAMODULE_UPGRAD_MESSAGE,cb)
 }

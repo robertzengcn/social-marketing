@@ -27,5 +27,7 @@ export class ExtraModulesModule extends BaseModule {
     getExtraModuleByName(name: string): ExtraModuleEntity | null {
         return this.extraModulesdb.getExtraModuleByName(name)
     }
-
+    deletePackage(name: string): void {
+        return this.extraModulesdb.deletePackage(name)
+    }
 }
