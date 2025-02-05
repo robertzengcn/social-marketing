@@ -36,6 +36,9 @@
       <v-icon size="small" @click="deleteitem(item)">
         mdi-delete
       </v-icon>
+      <v-icon size="small" class="me-2" @click="showitemLog(item)" v-if="item.status == '3'">
+                mdi-file-document
+            </v-icon>
     </template>
   </v-data-table-server>
   <delete-dialog :dialog="showDeleteModal" @confirm-delete="handleDelete"
@@ -80,7 +83,7 @@ import { useI18n } from "vue-i18n";
 import { ref, computed, onMounted, reactive, onUnmounted } from 'vue'
 import { SearchResult } from '@/views/api/types'
 import { useRoute } from "vue-router";
-import { getVideolistbyTaskId, retryVideoDownloadId, receiveVideoItemDownloadMessage, openFileexplor, deleteVideoDownItem, generateCaption,receiveVideoCaptionGenerateMessage } from "@/views/api/video";
+import { getVideolistbyTaskId, retryVideoDownloadId, receiveVideoItemDownloadMessage, openFileexplor, deleteVideoDownItem, generateCaption,receiveVideoCaptionGenerateMessage,queryVideoItemdownloadlog } from "@/views/api/video";
 import { VideoDownloadListDisplay,VideoCaptionGenerateParamWithIds } from "@/entityTypes/videoType";
 import router from '@/views/router';
 import { CapitalizeFirstLetter } from "@/views/utils/function"
@@ -212,11 +215,11 @@ const props = defineProps({
 
 });
 const computedHeaders = computed(() => {
-  if (props.isSelectedtable) {
-    return headers.value.filter(value => value.key !== 'actions');
-  } else {
+  // if (props.isSelectedtable) {
+  //   return headers.value.filter(value => value.key !== 'actions');
+  // } else {
     return headers.value;
-  }
+  // }
 });
 const captionselectPath = async () => {
   const res = await opendialog();
@@ -272,6 +275,17 @@ const deleteitem = (item: VideoDownloadListDisplay) => {
     showDeleteModal.value = true;
   }
 
+}
+const showitemLog= async (item: VideoDownloadListDisplay) => {
+  if (item.id) {
+        await queryVideoItemdownloadlog(item.id).then((res) => {
+            logdiaContent.value = res
+            logdiastatus.value = true
+        }).catch(function (error) {
+            console.log("error happened")
+            console.error(error);
+        }) 
+    }
 }
 const handleDelete = async () => {
   showDeleteModal.value = false;

@@ -2,7 +2,7 @@
 export { };
 import { windowInvoke, windowSend, windowReceive } from '@/views/utils/apirequest'
 import { OPENDIRECTORY, VIDEODOWNLOAD_MESSAGE, VIDEODOWNLOAD, VIDEODOWNLOAD_TASK_LIST,VIDEODOWNLOAD_LIST,VIDEODOWNLOADTASK_RETRY,VIDEODOWNLOADITEM_RETRY,VIDEODOWNLOAD_ITEM_MESSAGE,VIDEODOWNLOADITEM_EXPLORER,VIDEODOWNLOADITEM_DELETE,VIDEODOWN_TASK_ERROR_LOG_QUERY,VIDEO_CAPTION_GENERATE,VIDEO_CAPTION_GENERATE_MESSAGE,
-VIDEOTASKDOWNLOAD_RETRY_MESSAGE   
+VIDEOTASKDOWNLOAD_RETRY_MESSAGE,VIDEODOWNLOAD_LOG_QUERY   
  } from "@/config/channellist";
 import { downloadVideoparam, VideoDownloadTaskEntity,VideoDownloadQuery,VideoDownloadListDisplay,VideoCaptionGenerateParamWithIds } from "@/entityTypes/videoType"
 import { CommonDialogMsg,ItemSearchparam,CommonIdrequestType } from "@/entityTypes/commonType";
@@ -65,4 +65,10 @@ export function receiveVideoCaptionGenerateMessage(cb: (data: CommonDialogMsg) =
 }
 export function receiveVideoTaskDownloadRetryMessage(cb: (data: CommonDialogMsg) => void) {
     windowReceive(VIDEOTASKDOWNLOAD_RETRY_MESSAGE, cb)
+}
+export function queryVideodownloadlog(taskId:number){
+    windowSend(VIDEODOWN_TASK_ERROR_LOG_QUERY, {id:taskId})
+}
+export function queryVideoItemdownloadlog(taskId:number){
+    windowSend(VIDEODOWNLOAD_LOG_QUERY, {id:taskId})
 }

@@ -52,6 +52,8 @@ import router from '@/views/router';
 const { t } = useI18n({ inheritLocale: true });
 import { CapitalizeFirstLetter } from "@/views/utils/function"
 import LogDialog from "@/views/components/widgets/logDialog.vue"
+import ErrorDialog from "@/views/components/widgets/errorDialog.vue"
+
 const showDialog = ref<boolean>(false);
 const alertext = ref<string>("")
 const alerttitle = ref<string>("")
@@ -213,6 +215,7 @@ onMounted(() => {
         console.log(data)
         if (data.status) {
             setAlert(t('video.video_task__download_retry_start'), t('common.success'));
+        
         } else {
             if (data.data) {
                 setAlert(t(data.data.content), t(data.data.title));
