@@ -1,5 +1,5 @@
 import { ipcMain } from 'electron';
-import { VIDEODOWNLOAD, VIDEODOWNLOAD_MESSAGE, VIDEODOWNLOAD_TASK_LIST, VIDEODOWNLOAD_LIST, VIDEODOWNLOADTASK_RETRY, VIDEODOWNLOADITEM_RETRY, VIDEODOWNLOAD_ITEM_MESSAGE, VIDEODOWNLOADITEM_EXPLORER, VIDEODOWNLOADITEM_DELETE,VIDEODOWN_TASK_ERROR_LOG_QUERY,VIDEO_CAPTION_GENERATE,VIDEO_CAPTION_GENERATE_MESSAGE,VIDEOTASKDOWNLOAD_RETRY_MESSAGE } from '@/config/channellist'
+import { VIDEODOWNLOAD, VIDEODOWNLOAD_MESSAGE, VIDEODOWNLOAD_TASK_LIST, VIDEODOWNLOAD_LIST, VIDEODOWNLOADTASK_RETRY, VIDEODOWNLOADITEM_RETRY, VIDEODOWNLOAD_ITEM_MESSAGE, VIDEODOWNLOADITEM_EXPLORER, VIDEODOWNLOADITEM_DELETE,VIDEODOWN_TASK_ERROR_LOG_QUERY,VIDEO_CAPTION_GENERATE,VIDEO_CAPTION_GENERATE_MESSAGE,VIDEOTASKDOWNLOAD_RETRY_MESSAGE,VIDEODOWNLOAD_LOG_QUERY } from '@/config/channellist'
 import { videoController } from '@/controller/videoController';
 import { CommonDialogMsg, CommonResponse, CommonIdrequest,CommonMessage,CommonIdrequestType} from "@/entityTypes/commonType";
 import { CustomError } from '@/modules/customError';
@@ -268,5 +268,37 @@ export function registerVideoIpcHandlers() {
 
 
 
+    })
+    ipcMain.handle(VIDEODOWNLOAD_LOG_QUERY, async (event, data) => {
+        const qdata = JSON.parse(data) as CommonIdrequestType<number>
+        if (!("id" in qdata)) {
+            throw new Error("id not found");
+        }
+        try{
+            const content=await videoCtrl.getVideoErrorlog(qdata.id)
+                  const videoMsgs: CommonMessage<string> = {
+                status: true,
+                msg: "",
+                data: content
+            }
+            return videoMsgs
+
+        // if(videoCompositeEntity){
+        //     const videoMsgs: CommonMessage<string> = {
+        //         status: true,
+        //         msg: "",
+              
+        //     }
+           
+        // }
+        }catch(error){
+            if (error instanceof Error) {
+                const videoMsgs:CommonMessage<string>= {
+                    status: false,
+                    msg: error.message
+                }
+                return videoMsgs
+            }
+        }
     })
 }

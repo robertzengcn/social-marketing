@@ -2,7 +2,7 @@
 import { BaseModule } from "@/modules/baseModule";
 import { VideoCaptiondb } from "@/model/VideoCaptiondb";
 import { VideoCaptionEntity } from "@/entityTypes/videoType";
-export class VideoCaptiondbModule extends BaseModule {
+export class VideoCaptionModule extends BaseModule {
     private videoCaptiondb: VideoCaptiondb
     constructor() {
         super()

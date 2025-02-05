@@ -66,9 +66,11 @@ export function receiveVideoCaptionGenerateMessage(cb: (data: CommonDialogMsg) =
 export function receiveVideoTaskDownloadRetryMessage(cb: (data: CommonDialogMsg) => void) {
     windowReceive(VIDEOTASKDOWNLOAD_RETRY_MESSAGE, cb)
 }
-export function queryVideodownloadlog(taskId:number){
-    windowSend(VIDEODOWN_TASK_ERROR_LOG_QUERY, {id:taskId})
-}
-export function queryVideoItemdownloadlog(taskId:number){
-    windowSend(VIDEODOWNLOAD_LOG_QUERY, {id:taskId})
+// export async function queryVideodownloadlog(taskId:number){
+//     windowSend(VIDEODOWN_TASK_ERROR_LOG_QUERY, {id:taskId})
+// }
+export async function queryVideoItemdownloadlog(id:number):Promise<string>{
+    const querydata:CommonIdrequestType<number>={id:id,type:"errorlog"}
+    const res= await windowInvoke(VIDEODOWNLOAD_LOG_QUERY, querydata)
+    return res as string
 }

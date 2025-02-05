@@ -1,5 +1,5 @@
 import { videoFactory } from "@/modules/video/videoFactory";
-import { downloadVideoparam, VideoDownloadTaskEntity, processVideoDownloadParam, CookiesProxy } from "@/entityTypes/videoType";
+import { downloadVideoparam, VideoDownloadTaskEntity, processVideoDownloadParam, CookiesProxy,VideoCompotionEntity } from "@/entityTypes/videoType";
 // import { VideoDownloadTaskdb } from "@/model/videoDownloadTaskdb";
 // import { VideoDownloaddb} from "@/model/videoDownloaddb"
 import { VideoDownloadModule } from "@/modules/VideoDownloadModule"
@@ -30,7 +30,7 @@ import { ProxyApi } from "@/api/proxyApi"
 import { shell } from "electron"
 import { VideoCaptionFactory } from "@/modules/videoCaption/VideoCaptionFactory"
 import { CustomError } from '@/modules/customError'
-import { VideoCaptiondbModule } from "@/modules/VideoCaptiondbModule"
+import { VideoCaptionModule } from "@/modules/VideoCaptionModule"
 import { LanguageEnum } from "@/config/generate"
 //import {} from "@/entityTypes/proxyType"
 export class videoController {
@@ -43,7 +43,7 @@ export class videoController {
     private videoDownloadTaskAccountsModule: VideoDownloadTaskAccountsModule
     private videoDownloadTaskUrlModule: VideoDownloadTaskUrlModule
     private videoDownloadTaskProxyModule: VideoDownloadTaskProxyModule
-    private videoCaptiondbModule: VideoCaptiondbModule
+    private videoCaptiondbModule: VideoCaptionModule
     constructor() {
         // const tokenService = new Token()
         // const dbpath = tokenService.getValue(USERSDBPATH)
@@ -677,4 +677,26 @@ export class videoController {
 
 
     }
+    //get video info by id
+    public getVideoinfo(id:number):VideoCompotionEntity{
+       const videoDownEntity= this.videoDownloadModule.getVideoDownloaditem(id)
+         if(!videoDownEntity){
+              throw new Error("video download item not found")
+         }
+         //get video description
+        const videoDescription=this.videoDescriptionModule.getVideoDescription(id)
+         //get video caption
+         const videoCaption=this.videoCaptiondbModule.read(id)
+         const res:VideoCompotionEntity={
+            detail:videoDownEntity,
+            description:videoDescription,
+            caption:videoCaption
+         }
+         return res
+    }
+    public async getVideoErrorlog(id:number):Promise<string>{
+        const content=await this.videoDownloadModule.getVideoErrorLog(id)
+        return content
+    }
+   
 }

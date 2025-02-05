@@ -4,7 +4,8 @@ import {VideoDownloaddb} from "@/model/videoDownloaddb"
 import {VideoDownloadEntity,VideoDownloadStatus,VideoCaptionStatus} from "@/entityTypes/videoType"
 import { BaseModule } from "@/modules/baseModule";
 import { WriteLog,getLogPath } from "@/modules/lib/function";
-
+import * as fs from 'fs';
+import { readLogFile } from "@/modules/lib/function"
 
 export class VideoDownloadModule extends BaseModule{
     // private dbpath: string
@@ -78,6 +79,23 @@ export class VideoDownloadModule extends BaseModule{
       }
       updateVideoCaptionStatus(id: number,status: VideoCaptionStatus ): number {
         return this.videoDownloaddb.updateVideoCaptionStatus( id,status);
+    }
+    //get video item log
+    public async getVideoErrorLog(id:number): Promise<string> {
+        const videodownEntity=this.getVideoDownloaditem(id)
+        if(!videodownEntity){
+          throw new Error("video download item not exist")
+        }
+        let content=""
+        if(!videodownEntity.error_log){
+          return content
+        }
+        if (fs.existsSync(videodownEntity.error_log)) {
+                       content = await readLogFile(videodownEntity.error_log)
+        } else {
+            throw new Error("video error file log not found")
+        }
+        return content
     }
     
 

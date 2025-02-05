@@ -232,3 +232,8 @@ export interface VideoCaptionGenerateParamWithIds<Type> extends CommonIdrequestI
 isEnglish:boolean
 savePath:string
 }
+export type VideoCompotionEntity={
+    detail:VideoDownloadEntity,
+    description:VideoDescriptionEntity,
+    caption:VideoCaptionEntity|null
+}

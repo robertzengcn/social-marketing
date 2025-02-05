@@ -202,6 +202,9 @@ const options = reactive({
   page: 1, // Initial page
   itemsPerPage: 10, // Items per page
 });
+
+const logdiaContent = ref("");
+const logdiastatus = ref(false);
 // const taskId=ref(0);
 // const showDeleteModal = ref(false);
 // const deleteId=ref(0);
@@ -284,6 +287,8 @@ const showitemLog= async (item: VideoDownloadListDisplay) => {
         }).catch(function (error) {
             console.log("error happened")
             console.error(error);
+            //setAlert(error.message, t('common.error'));
+            setAlert(error.message, t('common.error'), "error");
         }) 
     }
 }

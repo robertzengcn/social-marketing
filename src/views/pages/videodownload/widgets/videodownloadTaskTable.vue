@@ -184,11 +184,14 @@ const taskRetry = (item: VideoDownloadTaskEntity) => {
 const showLog = async (item) => {
     if (item.id) {
         await queryVideoTaskErrorlog(item.id).then((res) => {
+            console.log(res)
             logdiaContent.value = res
             logdiastatus.value = true
         }).catch(function (error) {
             console.log("error happened")
             console.error(error);
+            
+            setAlert(error.message, t('common.error'));
         })
         // if (res) {
 
