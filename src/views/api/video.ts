@@ -71,6 +71,7 @@ export function receiveVideoTaskDownloadRetryMessage(cb: (data: CommonDialogMsg)
 // }
 export async function queryVideoItemdownloadlog(id:number):Promise<string>{
     const querydata:CommonIdrequestType<number>={id:id,type:"errorlog"}
+    console.log(querydata)
     const res= await windowInvoke(VIDEODOWNLOAD_LOG_QUERY, querydata)
     return res as string
 }

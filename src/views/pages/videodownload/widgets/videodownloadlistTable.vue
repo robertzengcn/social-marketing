@@ -45,6 +45,7 @@
     @confirm-close="showDeleteModal = false"></delete-dialog>
 
   <ErrorDialog :showDialog="alert" :alertext="alerttext" :alertitle="alerttitle" @dialogclose="alert = false" />
+  <LogDialog :dialogModel="logdiastatus" :logContent="logdiaContent" @dialogclose="logdiastatus = false" />
   <v-dialog v-model="showLangDialog" max-width="500px"> 
     <v-card>
       <v-card-title class="headline">{{ CapitalizeFirstLetter(t('video.video_language_select')) }}</v-card-title>
@@ -92,6 +93,7 @@ import ErrorDialog from "@/views/components/widgets/errorDialog.vue"
 import DeleteDialog from '@/views/components/widgets/deleteDialog.vue';
 import { Header } from "@/entityTypes/commonType"
 import { opendialog} from "@/views/api/video";
+import LogDialog from "@/views/components/widgets/logDialog.vue"
 const selected = ref<Array<VideoDownloadListDisplay>>([]);
 const headers = ref<Array<Header>>([])
 const $route = useRoute();
