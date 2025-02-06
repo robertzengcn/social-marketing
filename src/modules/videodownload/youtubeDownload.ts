@@ -7,7 +7,7 @@ import { Proxy, ProxyParseItem } from "@/entityTypes/proxyType"
 import { convertCookiesToNetscapeFile, generateRandomUniqueString, proxyEntityToUrl,removeParamsAfterAmpersand } from "@/modules/lib/function"
 import { CookiesType} from "@/entityTypes/cookiesType"
 import * as fs from 'fs';
-import puppeteer from 'puppeteer';
+import puppeteer, { ElementHandle } from 'puppeteer';
 // import { Page, Browser} from 'puppeteer';
 
 // import * as fs from 'fs';
@@ -186,6 +186,7 @@ export class YoutubeDownload implements VideoDownloadImpl {
     }
     //get playlist video link
     async getPlaylist(url:string):Promise<Array<string>|null>{
+        const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
         try{
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
@@ -213,12 +214,28 @@ export class YoutubeDownload implements VideoDownloadImpl {
                 }
             }
         }else{//get video link in single player
+           const texttofind="From the series"
+           const elementHandle = await page.evaluateHandle((texttofind) => {
+            const elements = Array.from(document.querySelectorAll('*'));
+            return elements.find(element => element.textContent?.includes(texttofind));
+        }, texttofind);
+        if (elementHandle) {
+            // console.log('Element found:', await elementHandle.evaluate((node: Element) => node.outerHTML));
+            // console.log('Element found:', await elementHandle.evaluate(node => node.outerHTML));
+            // Perform any action on the element, e.g., click
+            const element = elementHandle as ElementHandle<Element>;
+            await element.click();
+            await delay(5000);
+        } else {
+            console.log('Element not found');
+        }
+
             //console.log("signal video")
-            const videoUrls = await page.$$eval('#items ytd-playlist-panel-video-renderer', elements => {
+            const videoUrls = await page.$$eval('\/\/*[@id="contents"]/ytd-compact-video-renderer', elements => {
                 //console.log("get element")
                 return elements.map(el => {
                     //console.log(el)
-                    return el.querySelector('#wc-endpoint')?.getAttribute('href')
+                    return el.querySelector('#thumbnail')?.getAttribute('href')
                 });
             });
             //console.log(videoUrls)
