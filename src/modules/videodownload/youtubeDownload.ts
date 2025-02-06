@@ -223,8 +223,9 @@ export class YoutubeDownload implements VideoDownloadImpl {
             // console.log('Element found:', await elementHandle.evaluate((node: Element) => node.outerHTML));
             // console.log('Element found:', await elementHandle.evaluate(node => node.outerHTML));
             // Perform any action on the element, e.g., click
-            const element = elementHandle as ElementHandle<Element>;
-            await element.click();
+            // const element = elementHandle as ElementHandle<Element>;
+            // await element.click();
+            await (elementHandle.asElement() as ElementHandle<Element>)?.click();
             await delay(5000);
         } else {
             console.log('Element not found');
