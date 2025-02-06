@@ -281,6 +281,7 @@ export function registerVideoIpcHandlers() {
                 msg: "",
                 data: content
             }
+           // console.log(videoMsgs)
             return videoMsgs
 
         // if(videoCompositeEntity){
