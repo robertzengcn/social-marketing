@@ -270,7 +270,7 @@ function downloadVideo(param:processVideoDownloadParam){
                         const message:ProcessMessage<VideodownloadMsg>={
                             action:"singlevideodownloadMsg",
                             data:{
-                                link:element,
+                                link:param.link,
                                 status:true,
                                 savepath:param.savepath,
                                 title:param.title,
