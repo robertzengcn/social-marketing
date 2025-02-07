@@ -600,7 +600,7 @@ export class videoController {
     public async generateCaptionsPath(params: Array<VideoCaptionItem>,errorCall?:(message:string)=>void): Promise<void> {
         //check requirement
         const VFaction = new VideoCaptionFactory()
-        const res = VFaction.checkRequirement()
+        const res = await VFaction.checkRequirement()
         if (!res) {
             throw new Error("video caption tool requirement check failed")
         }
