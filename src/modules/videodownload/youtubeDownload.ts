@@ -188,7 +188,9 @@ export class YoutubeDownload implements VideoDownloadImpl {
     async getPlaylist(url:string):Promise<Array<string>|null>{
         const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
         try{
-        const browser = await puppeteer.launch();
+        const browser = await puppeteer.launch({
+            //headless: false, 
+        });
         const page = await browser.newPage();
         await page.goto(url);
         await page.setViewport({width: 1080, height: 1024});
@@ -230,16 +232,30 @@ export class YoutubeDownload implements VideoDownloadImpl {
         } else {
             console.log('Element not found');
         }
-
+        console.log("click element end") 
+        //const htmlContent = await page.content();
+        //fs.writeFileSync('/Users/cengjianze/project/social-marketing/.vite/build/page.html', htmlContent);
             //console.log("signal video")
-            const videoUrls = await page.$$eval('\/\/*[@id="contents"]/ytd-compact-video-renderer', elements => {
-                //console.log("get element")
+            let videoUrls = await page.$$eval('#contents ytd-compact-video-renderer', elements => {
+                console.log("get element")
                 return elements.map(el => {
                     //console.log(el)
                     return el.querySelector('#thumbnail')?.getAttribute('href')
                 });
             });
-            //console.log(videoUrls)
+            if(videoUrls.length<1){
+                console.log("try another way")
+                //try another way
+               videoUrls = await page.$$eval('#items ytd-compact-video-renderer', elements => {
+                    console.log("get element")
+                    return elements.map(el => {
+                        //console.log(el)
+                        return el.querySelector('#thumbnail')?.getAttribute('href')
+                    });
+                });
+            }
+            console.log("get final video urls")
+            console.log(videoUrls)
             if(videoUrls){
                 for(let videoUrl of videoUrls){
                     if(videoUrl){
