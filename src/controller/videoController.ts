@@ -567,9 +567,12 @@ export class videoController {
         return content
     }
     //pass video id, and generate video caption
-    public async generateCaptionbyids(data: VideoCaptionGenerateParamWithIds<number>) {
+    public async generateCaptionbyids(data: VideoCaptionGenerateParamWithIds<number>,errorCall?: (message: string) => void) {
         const res = this.convertToVideoCaptionitem(data)
-        await this.generateCaptionsPath(res)
+        if(res.length<1){
+            throw new Error("video.item_not_found_local")
+        }
+        await this.generateCaptionsPath(res,errorCall)
     }
     public convertToVideoCaptionitem(data: VideoCaptionGenerateParamWithIds<number>): Array<VideoCaptionItem> {
         const res: Array<VideoCaptionItem> = []
@@ -594,7 +597,7 @@ export class videoController {
     }
     //generate caption for videos
     //throw error if video caption tool requirement check failed
-    public async generateCaptionsPath(params: Array<VideoCaptionItem>): Promise<void> {
+    public async generateCaptionsPath(params: Array<VideoCaptionItem>,errorCall?:(message:string)=>void): Promise<void> {
         //check requirement
         const VFaction = new VideoCaptionFactory()
         const res = VFaction.checkRequirement()
@@ -606,7 +609,7 @@ export class videoController {
             throw new CustomError("child js path not exist for the path " + childPath);
         }
         const { port1, port2 } = new MessageChannelMain()
-
+        console.log(params)
         const child = utilityProcess.fork(childPath, [], { stdio: "pipe" })
 
         child.on("spawn", () => {
@@ -664,11 +667,16 @@ export class videoController {
                         this.videoCaptiondbModule.create(vce)
                         this.videoDownloadModule.updateVideoCaptionStatus(getData.videoId, VideoCaptionStatus.Finish)
                     }
+                
                 } else {
                     //generate caption error
                     if (getData.videoId) {
                         this.videoDownloadModule.updateVideoCaptionStatus(getData.videoId, VideoCaptionStatus.Error)
                         this.videoDownloadModule.saveVideoDownloadLog(getData.msg, getData.videoId)
+                    }
+                    //send system message
+                    if(errorCall){
+                        errorCall(getData.msg)
                     }
                 }
             }

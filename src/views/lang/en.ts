@@ -50,6 +50,7 @@ export default {
        uninstall:"uninstall",
        upgrade:"upgrade",
        upgrading:"upgrading",
+       log_content:"log content",
     },
     home:{
         search:"Search Extraction",
@@ -162,6 +163,7 @@ export default {
         caption_generate_failed:"caption generate failed",
         caption_generate_start:"caption generate start",
         video_task__download_retry_start:"video task download retry start",
+        item_not_found_local:"item not found in local",
     },
     account:{
         accountId:"Account ID",

@@ -30,7 +30,7 @@
       <v-icon size="small" class="me-2" @click="retryDownload(item)" v-if="item.status == '3'">
         mdi-restart
       </v-icon>
-      <v-icon size="small" class="me-2" @click="openfile(item)" v-if="item.status == '2'">
+      <v-icon size="small" class="me-2" @click="openfile(item)" v-if="item.status == '2'&&item.savepath.length>0">
         mdi-folder-open
       </v-icon>
       <v-icon size="small" @click="deleteitem(item)">

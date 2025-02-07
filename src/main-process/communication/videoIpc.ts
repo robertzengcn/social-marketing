@@ -1,5 +1,5 @@
 import { ipcMain } from 'electron';
-import { VIDEODOWNLOAD, VIDEODOWNLOAD_MESSAGE, VIDEODOWNLOAD_TASK_LIST, VIDEODOWNLOAD_LIST, VIDEODOWNLOADTASK_RETRY, VIDEODOWNLOADITEM_RETRY, VIDEODOWNLOAD_ITEM_MESSAGE, VIDEODOWNLOADITEM_EXPLORER, VIDEODOWNLOADITEM_DELETE,VIDEODOWN_TASK_ERROR_LOG_QUERY,VIDEO_CAPTION_GENERATE,VIDEO_CAPTION_GENERATE_MESSAGE,VIDEOTASKDOWNLOAD_RETRY_MESSAGE,VIDEODOWNLOAD_LOG_QUERY } from '@/config/channellist'
+import { VIDEODOWNLOAD, VIDEODOWNLOAD_MESSAGE, VIDEODOWNLOAD_TASK_LIST, VIDEODOWNLOAD_LIST, VIDEODOWNLOADTASK_RETRY, VIDEODOWNLOADITEM_RETRY, VIDEODOWNLOAD_ITEM_MESSAGE, VIDEODOWNLOADITEM_EXPLORER, VIDEODOWNLOADITEM_DELETE,VIDEODOWN_TASK_ERROR_LOG_QUERY,VIDEO_CAPTION_GENERATE,VIDEOTASKDOWNLOAD_RETRY_MESSAGE,VIDEODOWNLOAD_LOG_QUERY,SYSTEM_MESSAGE } from '@/config/channellist'
 import { videoController } from '@/controller/videoController';
 import { CommonDialogMsg, CommonResponse, CommonIdrequest,CommonMessage,CommonIdrequestType} from "@/entityTypes/commonType";
 import { CustomError } from '@/modules/customError';
@@ -249,8 +249,18 @@ export function registerVideoIpcHandlers() {
                 content: "video.caption_generate_start"
             }
         }
-        event.sender.send(VIDEO_CAPTION_GENERATE_MESSAGE, startMsg)
-        await videoCtrl.generateCaptionbyids(qdata).catch((error) => {
+        event.sender.send(SYSTEM_MESSAGE, startMsg)
+        await videoCtrl.generateCaptionbyids(qdata,(errorMsg)=>{
+            const videoMsgs: CommonDialogMsg = {
+                status: false,
+                code: 20240513142039,
+                data: {
+                    title: "video.caption_generate_failed",
+                    content: errorMsg
+                }
+            }
+            event.sender.send(SYSTEM_MESSAGE, videoMsgs)  
+        }).catch((error) => {
             if (error instanceof Error) {
                 const videoMsgs: CommonDialogMsg = {
                     status: false,
@@ -260,7 +270,7 @@ export function registerVideoIpcHandlers() {
                         content: error.message
                     }
                 }
-                event.sender.send(VIDEO_CAPTION_GENERATE_MESSAGE, videoMsgs)
+                event.sender.send(SYSTEM_MESSAGE, videoMsgs)
                 return
             }
         })

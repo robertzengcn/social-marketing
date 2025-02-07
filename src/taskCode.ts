@@ -313,6 +313,20 @@ function generateCaption(param:VideoCaptionGenerateParam){
      }else{
        captionTool=videoCaptionFactory.getVideoCaptionTool()
      }
+     if(!param.videos||param.videos.length==0){
+        const message:ProcessMessage<VideoCaptionMsg>={
+            action:"generateCaptionMsg",
+            data:{
+                status:false,
+                msg:"video list is empty",
+                file:"",
+                videoId:0
+            }
+        }
+       
+        process.parentPort.postMessage(JSON.stringify(message))
+        process.exit(1);
+     }
     param.videos.forEach(async (element, index)=>{
         let modelName="medium"
         if(element.isEnglish){
