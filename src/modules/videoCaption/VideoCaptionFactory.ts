@@ -4,6 +4,9 @@ import { ExtraModuleController } from '@/controller/extramoduleController'
 import { CustomError } from '@/modules/customError'
 export class VideoCaptionFactory {
     private extraModule: ExtraModuleController
+    constructor() {
+        this.extraModule = new ExtraModuleController()
+    }
     getVideoCaptionTool(toolName?: string): VideoCaptionImpl {
         switch (toolName) {
             case 'whisper':
@@ -15,11 +18,11 @@ export class VideoCaptionFactory {
         }
     }
     //check if the tool is available
-    public async checkRequirement(toolName = "whisper"): Promise<boolean> {
+    public async checkRequirement(toolName = "openai-whisper"): Promise<boolean> {
 
         const dPackage = this.extraModule.getPackageByName(toolName)
         if (!dPackage) {
-            throw new CustomError(toolName+" package not defined", 20250120152922)
+            throw new CustomError(toolName+" package not installed", 20250120152922)
         }
         if (dPackage.requirePy) {
             //check python installed or not

@@ -313,6 +313,7 @@ function generateCaption(param:VideoCaptionGenerateParam){
      }else{
        captionTool=videoCaptionFactory.getVideoCaptionTool()
      }
+     console.log(param)
      if(!param.videos||param.videos.length==0){
         const message:ProcessMessage<VideoCaptionMsg>={
             action:"generateCaptionMsg",
