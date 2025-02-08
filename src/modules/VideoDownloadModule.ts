@@ -77,7 +77,7 @@ export class VideoDownloadModule extends BaseModule{
       public deleteVideoDownloadItem(id:number):number{
         return this.videoDownloaddb.deleteVideoDownloadItem(id)
       }
-      updateVideoCaptionStatus(id: number,status: VideoCaptionStatus ): number {
+      public updateVideoCaptionStatus(id: number,status: VideoCaptionStatus ): number {
         return this.videoDownloaddb.updateVideoCaptionStatus( id,status);
     }
     //get video item log

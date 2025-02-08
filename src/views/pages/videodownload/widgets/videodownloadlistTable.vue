@@ -20,6 +20,12 @@
   <v-data-table-server v-model="selected" :items-per-page="itemsPerPage" :search="search" :headers="computedHeaders"
     :items-length="totalItems" :items="serverItems" :loading="loading" item-value="name" @update:options="loadItems"
     :show-select="isSelectedtable" return-object>
+    <template v-slot:item.caption_status="{ item }">
+      <v-chip color="grey" v-if="item.caption_status == '0'">{{ CapitalizeFirstLetter(t('common.not_start')) }}</v-chip>
+      <v-chip color="blue" v-if="item.caption_status == '1'">{{ CapitalizeFirstLetter(t('common.processing')) }}</v-chip>
+      <v-chip color="green" v-if="item.caption_status == '2'">{{ CapitalizeFirstLetter(t('common.complete')) }}</v-chip>
+      <v-chip color="red" v-if="item.caption_status == '3'">{{ CapitalizeFirstLetter(t('common.error')) }}</v-chip>
+    </template>
     <template v-slot:item.status="{ item }">
       <v-chip color="grey" v-if="item.status == '0'">{{ CapitalizeFirstLetter(t('common.not_start')) }}</v-chip>
       <v-chip color="blue" v-if="item.status == '1'">{{ CapitalizeFirstLetter(t('common.processing')) }}</v-chip>
