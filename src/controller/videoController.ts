@@ -1,5 +1,5 @@
 import { videoFactory } from "@/modules/video/videoFactory";
-import { downloadVideoparam, VideoDownloadTaskEntity, processVideoDownloadParam, CookiesProxy,VideoCompotionEntity } from "@/entityTypes/videoType";
+import { downloadVideoparam, VideoDownloadTaskEntity, processVideoDownloadParam, CookiesProxy,VideoCompotionEntity,VideoCaptionGenerateParam } from "@/entityTypes/videoType";
 // import { VideoDownloadTaskdb } from "@/model/videoDownloadTaskdb";
 // import { VideoDownloaddb} from "@/model/videoDownloaddb"
 import { VideoDownloadModule } from "@/modules/VideoDownloadModule"
@@ -614,8 +614,11 @@ export class videoController {
 
         child.on("spawn", () => {
 
+            const datas:VideoCaptionGenerateParam={
+                videos:params
+            }
 
-            child.postMessage(JSON.stringify({ action: "generateCaption", data: params }), [port1])
+            child.postMessage(JSON.stringify({ action: "generateCaption", data: datas } as ProcessMessage<VideoCaptionGenerateParam>), [port1])
 
         })
 
