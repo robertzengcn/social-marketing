@@ -9,9 +9,9 @@ import os from "os";
 import * as crypto from 'crypto';
 import { ProxyParseItem, ProxyServer } from "@/entityTypes/proxyType"
 import { TaskStatus } from "@/entityTypes/commonType";
-//import fetch from 'node-fetch';
-import { RequestInfo, RequestInit } from "node-fetch";
-const fetch = (url: RequestInfo, init?: RequestInit) =>  import("node-fetch").then(({ default: fetch }) => fetch(url, init));
+import fetch from 'node-fetch';
+//import { RequestInfo, RequestInit } from "node-fetch";
+//const fetch = (url: RequestInfo, init?: RequestInit) =>  import("node-fetch").then(({ default: fetch }) => fetch(url, init));
 import { CookiesType } from "@/entityTypes/cookiesType"
 import { Token } from "@/modules/token"
 import { USERLOGPATH, USEREMAIL } from '@/config/usersetting';
