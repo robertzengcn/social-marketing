@@ -33,6 +33,7 @@ import { CustomError } from '@/modules/customError'
 import { VideoCaptionModule } from "@/modules/VideoCaptionModule"
 import { LanguageEnum } from "@/config/generate"
 import {ExtraModuleController} from "@/controller/extramoduleController"
+import { param } from "jquery";
 //import {} from "@/entityTypes/proxyType"
 export class videoController {
     private videoDownloadModule: VideoDownloadModule
@@ -397,8 +398,8 @@ export class videoController {
                 status: element.status,
                 title: '',
                 description: '',
-                error_log: element.error_log
-
+                error_log: element.error_log,
+                caption_status:element.caption_status
             }
             if (element.id && element.status == VideoDownloadStatus.Finish) {
 
@@ -619,7 +620,12 @@ export class videoController {
             const datas:VideoCaptionGenerateParam={
                 videos:params
             }
-
+            //update video caption status to start
+            params.forEach((value)=>{
+                if(value.videoId){
+                this.videoDownloadModule.updateVideoCaptionStatus(value.videoId,VideoCaptionStatus.Start)
+                }
+            })
             child.postMessage(JSON.stringify({ action: "generateCaption", data: datas } as ProcessMessage<VideoCaptionGenerateParam>), [port1])
 
         })
