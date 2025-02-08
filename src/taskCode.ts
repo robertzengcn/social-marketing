@@ -314,6 +314,7 @@ function generateCaption(param:VideoCaptionGenerateParam){
        captionTool=videoCaptionFactory.getVideoCaptionTool()
      }
      console.log(param)
+     
      if(!param.videos||param.videos.length==0){
         const message:ProcessMessage<VideoCaptionMsg>={
             action:"generateCaptionMsg",

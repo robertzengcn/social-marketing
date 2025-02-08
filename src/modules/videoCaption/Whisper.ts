@@ -1,31 +1,49 @@
 import { VideoCaptionImpl } from '@/modules/interface/VideoCaptionImpl';
 import { extraFileEntity } from "@/entityTypes/videoType";
 import { exec } from 'child_process';
+import { promisify } from "util";
+const execAsync = promisify(exec);
 export class Whisper implements VideoCaptionImpl{
     //extract caption from video
-    extractCaption(param:extraFileEntity)
+    async extractCaption(param:extraFileEntity)
     {
         let command = `${param.execPath || 'whisper'} "${param.file}" --output_dir "${param.savePath}"`;
+        console.log(command);
         if(param.model){
             command += ` --model ${param.model}`;
         }
-
-        exec(command, (error, stdout, stderr) => {
-            if (error) {
-                if (param.errorCall) {
-                    param.errorCall(`Error: ${stderr}`);
-                }
-                return;
+        const { stdout, stderr } = await execAsync(command);
+        if(stderr){
+            if (param.errorCall) {
+                param.errorCall(`Error: ${stderr}`);
             }
-
-            if (param.stroutCall) {
-                param.stroutCall(stdout);
-            }
-
+            return;
+        }else{
+            console.log("start success call");
             if (param.successCall) {
                 param.successCall();
-            }
-        });
+        }
+    }
+        if(param.stroutCall){
+            param.stroutCall(stdout);
+        }
+
+        // exec(command, (error, stdout, stderr) => {
+        //     if (error) {
+        //         if (param.errorCall) {
+        //             param.errorCall(`Error: ${stderr}`);
+        //         }
+        //         return;
+        //     }
+
+        //     if (param.stroutCall) {
+        //         param.stroutCall(stdout);
+        //     }
+
+        //     if (param.successCall) {
+        //         param.successCall();
+        //     }
+        // });
     }
     
 }
