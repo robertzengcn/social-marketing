@@ -28,10 +28,11 @@ import { VideoDownloadTaskProxyModule } from "@/modules/VideoDownloadTaskProxyMo
 import { Proxy } from "@/entityTypes/proxyType"
 import { ProxyApi } from "@/api/proxyApi"
 import { shell } from "electron"
-import { VideoCaptionFactory } from "@/modules/videoCaption/VideoCaptionFactory"
+//import { VideoCaptionFactory } from "@/modules/videoCaption/VideoCaptionFactory"
 import { CustomError } from '@/modules/customError'
 import { VideoCaptionModule } from "@/modules/VideoCaptionModule"
 import { LanguageEnum } from "@/config/generate"
+import {ExtraModuleController} from "@/controller/extramoduleController"
 //import {} from "@/entityTypes/proxyType"
 export class videoController {
     private videoDownloadModule: VideoDownloadModule
@@ -599,8 +600,9 @@ export class videoController {
     //throw error if video caption tool requirement check failed
     public async generateCaptionsPath(params: Array<VideoCaptionItem>,errorCall?:(message:string)=>void): Promise<void> {
         //check requirement
-        const VFaction = new VideoCaptionFactory()
-        const res = await VFaction.checkRequirement()
+        //const VFaction = new VideoCaptionFactory()
+        const emctrol=new ExtraModuleController()
+        const res = await emctrol.checkRequirement()
         if (!res) {
             throw new Error("video caption tool requirement check failed")
         }

@@ -6,7 +6,7 @@ import { ExtraModule } from "@/entityTypes/extramoduleType"
 import { checkFolderAndGetFiles, downloadFile, getUserPlatform } from "@/modules/lib/function"
 import { ListData } from "@/entityTypes/commonType"
 import { execSync, exec } from 'child_process';
-
+import { CustomError } from '@/modules/customError'
 import { uninstallPipPackage, removeFile } from "@/modules/lib/function"
 //import log from 'electron-log/node';
 import { app } from 'electron';
@@ -328,6 +328,27 @@ export class ExtraModuleController {
 
 
     }
+    //check if the tool is available
+        public async checkRequirement(toolName = "openai-whisper"): Promise<boolean> {
+    
+            const dPackage = this.getPackageByName(toolName)
+            if (!dPackage) {
+                throw new CustomError(toolName+" package not installed", 20250120152922)
+            }
+            if (dPackage.requirePy) {
+                //check python installed or not
+                const res = this.checkPython()
+                if (!res) {
+                    throw new CustomError("the caption tool must install python first", 20250120152928)
+                }
+            }
+             // const extraModule=new ExtraModuleController()
+            const res=await this.checkModule(dPackage.packagename)
+            if(!res){
+                throw new CustomError("generate capation must install "+toolName,2024120511189)
+            }
+            return true
+        }
 
 
 
