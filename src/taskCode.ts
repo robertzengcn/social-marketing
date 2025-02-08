@@ -48,7 +48,7 @@ process.parentPort.on('message', async (e) => {
                 console.error("platform is empty")
                 return
             }
-            downloadVideo(param)
+            await downloadVideo(param)
             break;
             // const videoDownloadFactory=new VideoDownloadFactory()
             // const downloadTool=VideoDownloadFactory.getDownloader(param.platform)
@@ -174,7 +174,7 @@ process.parentPort.on('message', async (e) => {
         case 'generateCaption':{
             
             //generate capation
-            generateCaption(pme.data as VideoCaptionGenerateParam)
+            await generateCaption(pme.data as VideoCaptionGenerateParam)
             break;
         }    
 
@@ -182,7 +182,7 @@ process.parentPort.on('message', async (e) => {
     
     
 })
-function downloadVideo(param:processVideoDownloadParam){
+async function downloadVideo(param:processVideoDownloadParam){
     if(!param.platform){
         console.error("platform is empty")
         return
@@ -304,7 +304,7 @@ function downloadVideo(param:processVideoDownloadParam){
 
                 })
 }
-function generateCaption(param:VideoCaptionGenerateParam){
+async function generateCaption(param:VideoCaptionGenerateParam){
     //get video caption tool
      const videoCaptionFactory=new VideoCaptionFactory()
     let captionTool:VideoCaptionImpl;
@@ -329,8 +329,9 @@ function generateCaption(param:VideoCaptionGenerateParam){
         process.parentPort.postMessage(JSON.stringify(message))
         process.exit(1);
      }
-    param.videos.forEach(async (element, index)=>{
-        let modelName="medium"
+    // param.videos.forEach(async (element, index)=>{
+    for(const element of param.videos){
+    let modelName="medium"
         if(element.isEnglish){
             modelName="medium.en"
         }
@@ -374,6 +375,6 @@ function generateCaption(param:VideoCaptionGenerateParam){
             }
         }
         await captionTool.extractCaption(data)
-    })
+    }
     process.exit(0);
 }
