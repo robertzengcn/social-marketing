@@ -45,7 +45,7 @@ export class videoController {
     private videoDownloadTaskAccountsModule: VideoDownloadTaskAccountsModule
     private videoDownloadTaskUrlModule: VideoDownloadTaskUrlModule
     private videoDownloadTaskProxyModule: VideoDownloadTaskProxyModule
-    private videoCaptiondbModule: VideoCaptionModule
+    private videoCaptionModule: VideoCaptionModule
     constructor() {
         // const tokenService = new Token()
         // const dbpath = tokenService.getValue(USERSDBPATH)
@@ -60,6 +60,7 @@ export class videoController {
         this.videoDescriptionModule = new VideoDescriptionModule()
         this.videoDownloadTaskDetailModule = new VideoDownloadTaskDetailModule()
         this.videoDownloadTaskUrlModule = new VideoDownloadTaskUrlModule()
+        this.videoCaptionModule = new VideoCaptionModule()
     }
     //get video download tool
     public async getVideoDownloadTool(platform: string): Promise<Video | null> {
@@ -675,7 +676,7 @@ export class videoController {
                             language_id: LanguageEnum.Default,
                             caption_path: getData.savepath
                         }
-                        this.videoCaptiondbModule.create(vce)
+                        this.videoCaptionModule.create(vce)
                         this.videoDownloadModule.updateVideoCaptionStatus(getData.videoId, VideoCaptionStatus.Finish)
                     }
                 
@@ -705,12 +706,14 @@ export class videoController {
          //get video description
         const videoDescription=this.videoDescriptionModule.getVideoDescription(id)
          //get video caption
-         const videoCaption=this.videoCaptiondbModule.read(id)
+         const videoCaption=this.videoCaptionModule.getCaptionByVid(id)
+         console.log(videoCaption)
          const res:VideoCompotionEntity={
             detail:videoDownEntity,
             description:videoDescription,
             caption:videoCaption
          }
+         console.log(res)
          return res
     }
     public async getVideoErrorlog(id:number):Promise<string>{

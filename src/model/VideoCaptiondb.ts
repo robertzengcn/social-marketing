@@ -60,5 +60,11 @@ export class VideoCaptiondb extends BaseDb {
         const res = stmt.get(vid, lid) as VideoCaptionEntity;
         return res;
     }
+    //get all catpion by video id
+    getCaptionByVid(vid: number): Array<VideoCaptionEntity> {
+        const stmt = this.db.prepare('SELECT * FROM ' + this._table + ' WHERE video_id = ?');
+        const res = stmt.all(vid) as Array<VideoCaptionEntity>;
+        return res;
+    }
 
 }

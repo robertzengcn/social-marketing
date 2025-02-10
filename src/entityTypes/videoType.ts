@@ -235,5 +235,5 @@ savePath:string
 export type VideoCompotionEntity={
     detail:VideoDownloadEntity,
     description:VideoDescriptionEntity,
-    caption:VideoCaptionEntity|null
+    caption:Array<VideoCaptionEntity>|null
 }

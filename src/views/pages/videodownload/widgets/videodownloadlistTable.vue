@@ -45,6 +45,9 @@
       <v-icon size="small" class="me-2" @click="showitemLog(item)" v-if="item.status == '3'">
                 mdi-file-document
             </v-icon>
+            <v-icon size="small" @click="openDetail(item)">
+              mdi-details
+            </v-icon>
     </template>
   </v-data-table-server>
   <delete-dialog :dialog="showDeleteModal" @confirm-delete="handleDelete"
@@ -346,6 +349,13 @@ const generateCaptions = async () => {
     savePath:captionsavePath.value
   }
   await generateCaption(data)
+}
+const openDetail = (item: VideoDownloadListDisplay) => {
+  if (item.id) {
+    router.push({
+      name: "VideoDetail", params: { id: item.id }
+    });
+  }
 }
 
 onMounted(() => {

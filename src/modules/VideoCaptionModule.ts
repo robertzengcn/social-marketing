@@ -23,6 +23,10 @@ export class VideoCaptionModule extends BaseModule {
     delete(id: number): void {
        this.videoCaptiondb.delete(id);
     }
+    getCaptionByVid(vid: number): Array<VideoCaptionEntity> {
+        return this.videoCaptiondb.getCaptionByVid(vid);
+    }
+    
 
 
 }

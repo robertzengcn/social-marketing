@@ -164,6 +164,7 @@ export default {
         caption_generate_start:"caption generate start",
         video_task__download_retry_start:"video task download retry start",
         item_not_found_local:"item not found in local",
+        caption_files:"caption files",
     },
     account:{
         accountId:"Account ID",

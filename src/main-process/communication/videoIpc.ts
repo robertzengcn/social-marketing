@@ -1,9 +1,9 @@
 import { ipcMain } from 'electron';
-import { VIDEODOWNLOAD, VIDEODOWNLOAD_MESSAGE, VIDEODOWNLOAD_TASK_LIST, VIDEODOWNLOAD_LIST, VIDEODOWNLOADTASK_RETRY, VIDEODOWNLOADITEM_RETRY, VIDEODOWNLOAD_ITEM_MESSAGE, VIDEODOWNLOADITEM_EXPLORER, VIDEODOWNLOADITEM_DELETE,VIDEODOWN_TASK_ERROR_LOG_QUERY,VIDEO_CAPTION_GENERATE,VIDEOTASKDOWNLOAD_RETRY_MESSAGE,VIDEODOWNLOAD_LOG_QUERY,SYSTEM_MESSAGE } from '@/config/channellist'
+import { VIDEODOWNLOAD, VIDEODOWNLOAD_MESSAGE, VIDEODOWNLOAD_TASK_LIST, VIDEODOWNLOAD_LIST, VIDEODOWNLOADTASK_RETRY, VIDEODOWNLOADITEM_RETRY, VIDEODOWNLOAD_ITEM_MESSAGE, VIDEODOWNLOADITEM_EXPLORER, VIDEODOWNLOADITEM_DELETE, VIDEODOWN_TASK_ERROR_LOG_QUERY, VIDEO_CAPTION_GENERATE, VIDEOTASKDOWNLOAD_RETRY_MESSAGE, VIDEODOWNLOAD_LOG_QUERY, SYSTEM_MESSAGE, VIDEODOWNLOAD_DETAIL_QUERY } from '@/config/channellist'
 import { videoController } from '@/controller/videoController';
-import { CommonDialogMsg, CommonResponse, CommonIdrequest,CommonMessage,CommonIdrequestType} from "@/entityTypes/commonType";
+import { CommonDialogMsg, CommonResponse, CommonIdrequest, CommonMessage, CommonIdrequestType } from "@/entityTypes/commonType";
 import { CustomError } from '@/modules/customError';
-import { VideoDownloadTaskEntity, VideoDownloadQuery, VideoDownloadListDisplay, downloadVideoparam,VideoCaptionGenerateParamWithIds } from "@/entityTypes/videoType";
+import { VideoDownloadTaskEntity, VideoDownloadQuery, VideoDownloadListDisplay, downloadVideoparam, VideoCaptionGenerateParamWithIds,VideoCompotionEntity } from "@/entityTypes/videoType";
 
 export function registerVideoIpcHandlers() {
     console.log("video download register")
@@ -214,8 +214,8 @@ export function registerVideoIpcHandlers() {
         if (!("id" in qdata)) {
             throw new Error("id not found");
         }
-        const res=await videoCtrl.readTaskErrorlog(qdata.id).then((data) => {
-            const videoMsgs:CommonMessage<string>= {
+        const res = await videoCtrl.readTaskErrorlog(qdata.id).then((data) => {
+            const videoMsgs: CommonMessage<string> = {
                 status: true,
                 msg: "",
                 data: data
@@ -224,7 +224,7 @@ export function registerVideoIpcHandlers() {
             // event.sender.send(VIDEODOWN_TASK_ERROR_LOG, videoMsgs)
         }).catch((error) => {
             if (error instanceof Error) {
-                const videoMsgs:CommonMessage<string>= {
+                const videoMsgs: CommonMessage<string> = {
                     status: false,
                     msg: error.message
                 }
@@ -233,7 +233,7 @@ export function registerVideoIpcHandlers() {
             }
 
         })
-        return res  
+        return res
     })
 
     ipcMain.on(VIDEO_CAPTION_GENERATE, async (event, data) => {
@@ -243,14 +243,14 @@ export function registerVideoIpcHandlers() {
         }
         const startMsg: CommonDialogMsg = {
             status: true,
-            code: 0, 
+            code: 0,
             data: {
                 title: "video.caption_generate_start",
                 content: "video.caption_generate_start"
             }
         }
         event.sender.send(SYSTEM_MESSAGE, startMsg)
-        await videoCtrl.generateCaptionbyids(qdata,(errorMsg)=>{
+        await videoCtrl.generateCaptionbyids(qdata, (errorMsg) => {
             const videoMsgs: CommonDialogMsg = {
                 status: false,
                 code: 20240513142039,
@@ -259,7 +259,7 @@ export function registerVideoIpcHandlers() {
                     content: errorMsg
                 }
             }
-            event.sender.send(SYSTEM_MESSAGE, videoMsgs)  
+            event.sender.send(SYSTEM_MESSAGE, videoMsgs)
         }).catch((error) => {
             if (error instanceof Error) {
                 const videoMsgs: CommonDialogMsg = {
@@ -274,7 +274,7 @@ export function registerVideoIpcHandlers() {
                 return
             }
         })
-       
+
 
 
 
@@ -284,27 +284,53 @@ export function registerVideoIpcHandlers() {
         if (!("id" in qdata)) {
             throw new Error("id not found");
         }
-        try{
-            const content=await videoCtrl.getVideoErrorlog(qdata.id)
-                  const videoMsgs: CommonMessage<string> = {
+        try {
+            const content = await videoCtrl.getVideoErrorlog(qdata.id)
+            const videoMsgs: CommonMessage<string> = {
                 status: true,
                 msg: "",
                 data: content
             }
-           // console.log(videoMsgs)
+            // console.log(videoMsgs)
             return videoMsgs
 
-        // if(videoCompositeEntity){
-        //     const videoMsgs: CommonMessage<string> = {
-        //         status: true,
-        //         msg: "",
-              
-        //     }
-           
-        // }
-        }catch(error){
+            // if(videoCompositeEntity){
+            //     const videoMsgs: CommonMessage<string> = {
+            //         status: true,
+            //         msg: "",
+
+            //     }
+
+            // }
+        } catch (error) {
             if (error instanceof Error) {
-                const videoMsgs:CommonMessage<string>= {
+                const videoMsgs: CommonMessage<string> = {
+                    status: false,
+                    msg: error.message
+                }
+                return videoMsgs
+            }
+        }
+    })
+    ipcMain.handle(VIDEODOWNLOAD_DETAIL_QUERY, async (event, data) => {
+        try {
+            const qdata = JSON.parse(data) as CommonIdrequest<number>
+            if (!("id" in qdata)) {
+                throw new Error("id not found");
+            }
+            const content:VideoCompotionEntity = videoCtrl.getVideoinfo(qdata.id)
+            console.log(content)
+            const videoMsgs: CommonMessage<VideoCompotionEntity> = {
+                status: true,
+                msg: "",
+                data: content
+            }
+            return videoMsgs
+
+        } catch (error) {
+            console.error(error)
+            if (error instanceof Error) {
+                const videoMsgs: CommonMessage<VideoCompotionEntity> = {
                     status: false,
                     msg: error.message
                 }

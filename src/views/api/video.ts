@@ -2,10 +2,10 @@
 export { };
 import { windowInvoke, windowSend, windowReceive } from '@/views/utils/apirequest'
 import { OPENDIRECTORY, VIDEODOWNLOAD_MESSAGE, VIDEODOWNLOAD, VIDEODOWNLOAD_TASK_LIST,VIDEODOWNLOAD_LIST,VIDEODOWNLOADTASK_RETRY,VIDEODOWNLOADITEM_RETRY,VIDEODOWNLOAD_ITEM_MESSAGE,VIDEODOWNLOADITEM_EXPLORER,VIDEODOWNLOADITEM_DELETE,VIDEODOWN_TASK_ERROR_LOG_QUERY,VIDEO_CAPTION_GENERATE,VIDEO_CAPTION_GENERATE_MESSAGE,
-VIDEOTASKDOWNLOAD_RETRY_MESSAGE,VIDEODOWNLOAD_LOG_QUERY   
+VIDEOTASKDOWNLOAD_RETRY_MESSAGE,VIDEODOWNLOAD_LOG_QUERY,VIDEODOWNLOAD_DETAIL_QUERY   
  } from "@/config/channellist";
-import { downloadVideoparam, VideoDownloadTaskEntity,VideoDownloadQuery,VideoDownloadListDisplay,VideoCaptionGenerateParamWithIds } from "@/entityTypes/videoType"
-import { CommonDialogMsg,ItemSearchparam,CommonIdrequestType } from "@/entityTypes/commonType";
+import { downloadVideoparam, VideoDownloadTaskEntity,VideoDownloadQuery,VideoDownloadListDisplay,VideoCaptionGenerateParamWithIds,VideoCompotionEntity } from "@/entityTypes/videoType"
+import { CommonDialogMsg,ItemSearchparam,CommonIdrequestType,CommonIdrequest } from "@/entityTypes/commonType";
 import {SearchResult } from '@/views/api/types'
 
 
@@ -74,4 +74,10 @@ export async function queryVideoItemdownloadlog(id:number):Promise<string>{
     console.log(querydata)
     const res= await windowInvoke(VIDEODOWNLOAD_LOG_QUERY, querydata)
     return res as string
+}
+export async function getVideoDetail(id:number):Promise<VideoCompotionEntity>{
+    const request:CommonIdrequest<number>={id:id}
+    const res= await windowInvoke(VIDEODOWNLOAD_DETAIL_QUERY,request)
+    console.log(res)
+    return res
 }
