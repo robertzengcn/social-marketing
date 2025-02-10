@@ -4,9 +4,9 @@ import http from "http";
 import https from "https";
 import progress from "progress-stream";
 // const fetch =require("node-fetch");
-//import fetch from 'node-fetch';
-import { RequestInfo, RequestInit } from "node-fetch";
-const fetch = (url: RequestInfo, init?: RequestInit) =>  import("node-fetch").then(({ default: fetch }) => fetch(url, init));
+import fetch from 'node-fetch';
+//import { RequestInfo, RequestInit } from "node-fetch";
+//const fetch = (url: RequestInfo, init?: RequestInit) =>  import("node-fetch").then(({ default: fetch }) => fetch(url, init));
 // const debug = require("debug")("bilibili-download");
 // const debugerror = debug('app:error');
 export interface getAiddata {
