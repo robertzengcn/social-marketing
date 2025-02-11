@@ -720,5 +720,13 @@ export class videoController {
         const content=await this.videoDownloadModule.getVideoErrorLog(id)
         return content
     }
+      //show file in explorer
+      public async showCaptionFileExplorer(id: number) {
+        const videoCaptionInfo = this.videoCaptionModule.read(id)
+        if (!videoCaptionInfo) {
+            throw new Error("video info not found")
+        }
+        shell.showItemInFolder(videoCaptionInfo.caption_path);
+    }
    
 }

@@ -2,7 +2,7 @@
 export { };
 import { windowInvoke, windowSend, windowReceive } from '@/views/utils/apirequest'
 import { OPENDIRECTORY, VIDEODOWNLOAD_MESSAGE, VIDEODOWNLOAD, VIDEODOWNLOAD_TASK_LIST,VIDEODOWNLOAD_LIST,VIDEODOWNLOADTASK_RETRY,VIDEODOWNLOADITEM_RETRY,VIDEODOWNLOAD_ITEM_MESSAGE,VIDEODOWNLOADITEM_EXPLORER,VIDEODOWNLOADITEM_DELETE,VIDEODOWN_TASK_ERROR_LOG_QUERY,VIDEO_CAPTION_GENERATE,VIDEO_CAPTION_GENERATE_MESSAGE,
-VIDEOTASKDOWNLOAD_RETRY_MESSAGE,VIDEODOWNLOAD_LOG_QUERY,VIDEODOWNLOAD_DETAIL_QUERY   
+VIDEOTASKDOWNLOAD_RETRY_MESSAGE,VIDEODOWNLOAD_LOG_QUERY,VIDEODOWNLOAD_DETAIL_QUERY,VIDEODOWNLOAD_OPEN_CAPTIONFILE   
  } from "@/config/channellist";
 import { downloadVideoparam, VideoDownloadTaskEntity,VideoDownloadQuery,VideoDownloadListDisplay,VideoCaptionGenerateParamWithIds,VideoCompotionEntity } from "@/entityTypes/videoType"
 import { CommonDialogMsg,ItemSearchparam,CommonIdrequestType,CommonIdrequest } from "@/entityTypes/commonType";
@@ -80,4 +80,7 @@ export async function getVideoDetail(id:number):Promise<VideoCompotionEntity>{
     const res= await windowInvoke(VIDEODOWNLOAD_DETAIL_QUERY,request)
     console.log(res)
     return res
+}
+export function openCaptionfile(id:number) {
+    windowSend(VIDEODOWNLOAD_OPEN_CAPTIONFILE, {id:id})
 }

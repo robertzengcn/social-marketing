@@ -7,11 +7,12 @@
           </v-btn>
           <v-card class="mt-4">
             <v-card-title>{{t('video.title')}}: {{ videoComEntity?.description?.title }}</v-card-title>
-            <v-card-subtitle>{{t('video.saved_path')}}: {{ videoComEntity?.detail.savepath }}</v-card-subtitle>
+            <v-card-subtitle  v-if="videoComEntity?.detail.id" @click="openFileexplor(videoComEntity?.detail.id)">{{t('video.saved_path')}}: {{ videoComEntity?.detail.savepath }}</v-card-subtitle>
             <v-card-text>
+                <p>{{t('video.description')}}:</p>
               <p>{{ videoComEntity?.description?.description }}</p>
               <v-divider></v-divider>
-              <h3>{{t('video.caption_files')}}</h3>
+              <h3>{{t('video.caption_files')}}:</h3>
               <v-list>
                 <v-list-item v-for="(caption, index) in videoComEntity?.caption" :key="index">
                   <v-list-item-content>
@@ -25,6 +26,7 @@
                 </v-list-item>
               </v-list>
               <v-divider></v-divider>
+              
               <p><strong>{{t('common.record_time')}}:</strong> {{ videoComEntity?.detail.record_time }}</p>
             </v-card-text>
           </v-card>
@@ -36,7 +38,7 @@
   <script setup lang="ts">
   import { ref,onMounted } from 'vue';
   import { useRouter,useRoute } from 'vue-router';
-  import {getVideoDetail} from '@/views/api/video'
+  import {getVideoDetail,openFileexplor} from '@/views/api/video'
 //   import {CommonIdrequest} from "@/entityTypes/commonType";
   import {VideoCompotionEntity} from "@/entityTypes/videoType";
   import { useI18n } from "vue-i18n";

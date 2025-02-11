@@ -1,9 +1,9 @@
 import { ipcMain } from 'electron';
-import { VIDEODOWNLOAD, VIDEODOWNLOAD_MESSAGE, VIDEODOWNLOAD_TASK_LIST, VIDEODOWNLOAD_LIST, VIDEODOWNLOADTASK_RETRY, VIDEODOWNLOADITEM_RETRY, VIDEODOWNLOAD_ITEM_MESSAGE, VIDEODOWNLOADITEM_EXPLORER, VIDEODOWNLOADITEM_DELETE, VIDEODOWN_TASK_ERROR_LOG_QUERY, VIDEO_CAPTION_GENERATE, VIDEOTASKDOWNLOAD_RETRY_MESSAGE, VIDEODOWNLOAD_LOG_QUERY, SYSTEM_MESSAGE, VIDEODOWNLOAD_DETAIL_QUERY } from '@/config/channellist'
+import { VIDEODOWNLOAD, VIDEODOWNLOAD_MESSAGE, VIDEODOWNLOAD_TASK_LIST, VIDEODOWNLOAD_LIST, VIDEODOWNLOADTASK_RETRY, VIDEODOWNLOADITEM_RETRY, VIDEODOWNLOAD_ITEM_MESSAGE, VIDEODOWNLOADITEM_EXPLORER, VIDEODOWNLOADITEM_DELETE, VIDEODOWN_TASK_ERROR_LOG_QUERY, VIDEO_CAPTION_GENERATE, VIDEOTASKDOWNLOAD_RETRY_MESSAGE, VIDEODOWNLOAD_LOG_QUERY, SYSTEM_MESSAGE, VIDEODOWNLOAD_DETAIL_QUERY, VIDEODOWNLOAD_OPEN_CAPTIONFILE } from '@/config/channellist'
 import { videoController } from '@/controller/videoController';
 import { CommonDialogMsg, CommonResponse, CommonIdrequest, CommonMessage, CommonIdrequestType } from "@/entityTypes/commonType";
 import { CustomError } from '@/modules/customError';
-import { VideoDownloadTaskEntity, VideoDownloadQuery, VideoDownloadListDisplay, downloadVideoparam, VideoCaptionGenerateParamWithIds,VideoCompotionEntity } from "@/entityTypes/videoType";
+import { VideoDownloadTaskEntity, VideoDownloadQuery, VideoDownloadListDisplay, downloadVideoparam, VideoCaptionGenerateParamWithIds, VideoCompotionEntity } from "@/entityTypes/videoType";
 
 export function registerVideoIpcHandlers() {
     console.log("video download register")
@@ -318,7 +318,7 @@ export function registerVideoIpcHandlers() {
             if (!("id" in qdata)) {
                 throw new Error("id not found");
             }
-            const content:VideoCompotionEntity = videoCtrl.getVideoinfo(qdata.id)
+            const content: VideoCompotionEntity = videoCtrl.getVideoinfo(qdata.id)
             console.log(content)
             const videoMsgs: CommonMessage<VideoCompotionEntity> = {
                 status: true,
@@ -335,6 +335,28 @@ export function registerVideoIpcHandlers() {
                     msg: error.message
                 }
                 return videoMsgs
+            }
+        }
+    })
+    ipcMain.on(VIDEODOWNLOAD_OPEN_CAPTIONFILE, async (event, data) => {
+        try {
+            const qdata = JSON.parse(data) as CommonIdrequest<number>
+            if (!("id" in qdata)) {
+                throw new Error("id not found");
+            }
+            videoCtrl.showCaptionFileExplorer(qdata.id)
+        } catch (error) {
+            if (error instanceof Error) {
+                const videoMsgs: CommonDialogMsg = {
+                    status: false,
+                    code: 202502111129,
+                    data: {
+                        title: "video.open_caption_file_error",
+                        content: error.message
+                    }
+                }
+                event.sender.send(SYSTEM_MESSAGE, videoMsgs)
+                return
             }
         }
     })

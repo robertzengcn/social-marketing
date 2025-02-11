@@ -152,7 +152,7 @@ export default {
         task_name:"task name",
         url:"url",
         title:"title",
-        description:"description",
+        description:"video description",
         generate_captions:"generate captions",
         caption:"caption",
         caption_status:"caption status",
@@ -165,6 +165,7 @@ export default {
         video_task__download_retry_start:"video task download retry start",
         item_not_found_local:"item not found in local",
         caption_files:"caption files",
+        open_caption_file_error:"open caption file error",
     },
     account:{
         accountId:"Account ID",

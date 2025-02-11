@@ -68,5 +68,6 @@ export const EXTRAMODULE_UPGRAD_MESSAGE='extramodule:upgrade:message'
 export const VIDEOTASKDOWNLOAD_RETRY_MESSAGE='videotask:download:retry:message'
 export const VIDEODOWNLOAD_LOG_QUERY='video:download:log:query'
 export const VIDEODOWNLOAD_DETAIL_QUERY='video:download:detail:query'
+export const VIDEODOWNLOAD_OPEN_CAPTIONFILE='video:download:open:captionfile'
 
 

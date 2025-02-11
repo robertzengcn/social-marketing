@@ -46,7 +46,7 @@
                 mdi-file-document
             </v-icon>
             <v-icon size="small" @click="openDetail(item)">
-              mdi-details
+              mdi-information
             </v-icon>
     </template>
   </v-data-table-server>
