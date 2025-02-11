@@ -13,7 +13,7 @@ export class Whisper implements VideoCaptionImpl{
             command += ` --model ${param.model}`;
         }
         // Limit the standard output to the first 10 lines
-        command += ' | head -n 10';
+        // command += ' | head -n 10';
         console.log(command);
         const { stdout, stderr } = await execAsync(command,{ maxBuffer: 1024 * 1024 * 1024 });
         if(stderr){
