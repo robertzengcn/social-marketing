@@ -8,12 +8,13 @@ export class Whisper implements VideoCaptionImpl{
     async extractCaption(param:extraFileEntity)
     {
         let command = `${param.execPath || 'whisper'} "${param.file}" --output_dir "${param.savePath}"`;
-        console.log(command);
+        //console.log(command);
         if(param.model){
             command += ` --model ${param.model}`;
         }
         // Limit the standard output to the first 10 lines
         command += ' | head -n 10';
+        console.log(command);
         const { stdout, stderr } = await execAsync(command);
         if(stderr){
             if (param.errorCall) {
