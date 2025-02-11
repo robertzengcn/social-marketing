@@ -374,7 +374,21 @@ async function generateCaption(param:VideoCaptionGenerateParam){
                 process.parentPort.postMessage(JSON.stringify(message))
             }
         }
-        await captionTool.extractCaption(data)
-    }
+        await captionTool.extractCaption(data).catch((error)=>{
+            if(error instanceof Error){
+                const message:ProcessMessage<VideoCaptionMsg>={
+                    action:"generateCaptionMsg",
+                    data:{
+                        status:false,
+                        msg:error.message,
+                        file:element.videoPath,
+                        videoId:element.videoId
+                    }
+                }
+               
+                process.parentPort.postMessage(JSON.stringify(message))
+            }
+    })
     process.exit(0);
+}
 }
