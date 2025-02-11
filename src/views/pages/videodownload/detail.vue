@@ -18,8 +18,8 @@
                     <v-list-item-title>{{ caption.caption_path }} </v-list-item-title>
                   </v-list-item-content>
                   <v-list-item-action>
-                    <v-btn icon @click="openCaptionFile(caption.id)">
-                      <v-icon>mdi-open-in-new</v-icon>
+                    <v-btn v-if="caption.id" icon @click="openCaptionFile(caption.id)">
+                      <v-icon>mdi-file-document-arrow-right-outline</v-icon>
                     </v-btn>
                   </v-list-item-action>
                 </v-list-item>
