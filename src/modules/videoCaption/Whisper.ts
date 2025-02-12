@@ -32,7 +32,7 @@ export class Whisper implements VideoCaptionImpl{
                     return;
                 }else{
                     if (param.successCall) {
-                        param.successCall();
+                        param.successCall(srtfile);
                 }
                 }
             } catch (err) {

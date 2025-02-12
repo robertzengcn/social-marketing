@@ -211,7 +211,7 @@ savePath: string,
 execPath?:string,
 model?:string,
 errorCall?: (errorMsg: string) => void, stroutCall?:(message: string) => void,
-successCall?: () => void
+successCall?: (outputfile:string) => void
 }
 export type VideoCaptionMsg={
     status:boolean,

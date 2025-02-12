@@ -359,14 +359,14 @@ async function generateCaption(param:VideoCaptionGenerateParam){
                
                console.log(message)
             },
-            successCall:()=>{
+            successCall:(outputfile:string)=>{
                 const message:ProcessMessage<VideoCaptionMsg>={
                     action:"generateCaptionMsg",
                     data:{
                         status:true,
                         msg:"",
                         file:element.videoPath,
-                        savepath:element.savePath,
+                        savepath:outputfile,
                         videoId:element.videoId
                     }
                 }
