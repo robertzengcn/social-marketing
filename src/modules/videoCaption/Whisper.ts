@@ -7,7 +7,7 @@ export class Whisper implements VideoCaptionImpl{
     //extract caption from video
     async extractCaption(param:extraFileEntity)
     {
-        let command = `${param.execPath || 'whisper'} "${param.file}" --output_dir "${param.savePath}"`;
+        let command = `${param.execPath || 'whisper'} "${param.file}" --output_dir "${param.savePath}" --output_format srt`;
         //console.log(command);
         if(param.model){
             command += ` --model ${param.model}`;
