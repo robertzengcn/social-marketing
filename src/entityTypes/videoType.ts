@@ -226,7 +226,9 @@ export type VideoCaptionEntity={
     language_id:LanguageEnum,
     caption_path:string,
     record_time?:string,
-
+}
+export interface VideoCaptionDisplay extends VideoCaptionEntity{
+    language:string
 }
 export interface VideoCaptionGenerateParamWithIds<Type> extends CommonIdrequestIds<Type>{
 isEnglish:boolean
@@ -235,5 +237,5 @@ savePath:string
 export type VideoCompotionEntity={
     detail:VideoDownloadEntity,
     description:VideoDescriptionEntity,
-    caption:Array<VideoCaptionEntity>|null
+    caption:Array<VideoCaptionDisplay>|null
 }

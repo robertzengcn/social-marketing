@@ -1,5 +1,5 @@
 import { videoFactory } from "@/modules/video/videoFactory";
-import { downloadVideoparam, VideoDownloadTaskEntity, processVideoDownloadParam, CookiesProxy,VideoCompotionEntity,VideoCaptionGenerateParam } from "@/entityTypes/videoType";
+import { downloadVideoparam, VideoDownloadTaskEntity, processVideoDownloadParam, CookiesProxy,VideoCompotionEntity,VideoCaptionGenerateParam,VideoCaptionDisplay } from "@/entityTypes/videoType";
 // import { VideoDownloadTaskdb } from "@/model/videoDownloadTaskdb";
 // import { VideoDownloaddb} from "@/model/videoDownloaddb"
 import { VideoDownloadModule } from "@/modules/VideoDownloadModule"
@@ -707,11 +707,23 @@ export class videoController {
         const videoDescription=this.videoDescriptionModule.getVideoDescription(id)
          //get video caption
          const videoCaption=this.videoCaptionModule.getCaptionByVid(id)
-         console.log(videoCaption)
+         const captionDisplay:Array<VideoCaptionDisplay>=[]
+         if(videoCaption.length>0){
+                videoCaption.forEach((value)=>{
+                    const captionDisplayItem:VideoCaptionDisplay={
+                        id:value.id,
+                        videoId:value.videoId,
+                        language_id:value.language_id,
+                        caption_path:value.caption_path,
+                        record_time:value.record_time,
+                    }
+
+         })
+        }
          const res:VideoCompotionEntity={
             detail:videoDownEntity,
             description:videoDescription,
-            caption:videoCaption
+            caption:captionDisplay
          }
          console.log(res)
          return res
