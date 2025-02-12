@@ -698,3 +698,6 @@ export function getLogPath(folderName: string, fileName?: string, type = 'error'
   const errorLogfile = path.join(logpath, folderName, fileName + '_' + uuid + '.' + type + '.log')
   return errorLogfile
 }
+export function getFileNameWithoutExtension(filePath: string): string {
+  return path.parse(filePath).name;
+}
