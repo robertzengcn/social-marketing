@@ -48,7 +48,7 @@ export class Whisper implements VideoCaptionImpl{
         }else{
             console.log("start success call");
             if (param.successCall) {
-                param.successCall();
+                param.successCall(srtfile);
         }
     }
         if(param.stroutCall){

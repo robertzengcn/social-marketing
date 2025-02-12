@@ -11,7 +11,7 @@ export class VideoCaptiondb extends BaseDb {
             return res.id
         } else {
 
-            const stmt = this.db.prepare('INSERT INTO video_captions (video_id, language_id, caption_path,record_time) VALUES (?, ?, ?, ?)');
+            const stmt = this.db.prepare('INSERT INTO '+this._table+' (video_id, language_id, caption_path,record_time) VALUES (?, ?, ?, ?)');
             // const params = [videoCaption.id, videoCaption.videoId, videoCaption.caption, getRecorddatetime()];
             // await this.execute(query, params);
             const info = stmt.run(
