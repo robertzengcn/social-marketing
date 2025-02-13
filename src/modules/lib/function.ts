@@ -16,6 +16,8 @@ import { CookiesType } from "@/entityTypes/cookiesType"
 import { Token } from "@/modules/token"
 import { USERLOGPATH, USEREMAIL } from '@/config/usersetting';
 import { v4 as uuidv4 } from 'uuid';
+import {LanguageConfig} from '@/config/LanguageConfig'
+import {LanguageItem} from '@/entityTypes/commonType'
 // import { contextIsolated } from "process";
 //import { utilityProcess, MessageChannelMain} from "electron";
 export type queryParams = {
@@ -700,4 +702,13 @@ export function getLogPath(folderName: string, fileName?: string, type = 'error'
 }
 export function getFileNameWithoutExtension(filePath: string): string {
   return path.parse(filePath).name;
+}
+export function getLanaugebyid(id:number):LanguageItem|undefined{
+ let res:LanguageItem|undefined=undefined
+  LanguageConfig.forEach((item)=>{
+    if(item.id==id){
+      res=item
+    }
+  })
+  return res
 }

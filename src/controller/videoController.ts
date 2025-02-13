@@ -31,9 +31,11 @@ import { shell } from "electron"
 //import { VideoCaptionFactory } from "@/modules/videoCaption/VideoCaptionFactory"
 import { CustomError } from '@/modules/customError'
 import { VideoCaptionModule } from "@/modules/VideoCaptionModule"
-import { LanguageEnum } from "@/config/generate"
+// import { LanguageEnum } from "@/config/generate"
+import {LanguageItem} from "@/entityTypes/commonType"
 import {ExtraModuleController} from "@/controller/extramoduleController"
-import { param } from "jquery";
+import {getLanaugebyid} from "@/modules/lib/function"
+// import { param } from "jquery";
 //import {} from "@/entityTypes/proxyType"
 export class videoController {
     private videoDownloadModule: VideoDownloadModule
@@ -673,7 +675,7 @@ export class videoController {
                     if (getData.videoId && getData.savepath) {
                         const vce: VideoCaptionEntity = {
                             videoId: getData.videoId,
-                            language_id: LanguageEnum.Default,
+                            language_id: 0,
                             caption_path: getData.savepath
                         }
                         this.videoCaptionModule.create(vce)
@@ -714,9 +716,11 @@ export class videoController {
                         id:value.id,
                         videoId:value.videoId,
                         language_id:value.language_id,
+                        language:getLanaugebyid(value.language_id),
                         caption_path:value.caption_path,
                         record_time:value.record_time,
                     }
+                    captionDisplay.push(captionDisplayItem)
 
          })
         }

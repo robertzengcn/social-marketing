@@ -1,7 +1,7 @@
 import { getRecorddatetime } from "@/modules/lib/function";
 import { BaseDb } from "@/model/Basedb";
 import { VideoCaptionEntity } from "@/entityTypes/videoType";
-import { LanguageEnum } from "@/config/generate"
+// import { LanguageEnum } from "@/config/generate"
 export class VideoCaptiondb extends BaseDb {
     private _table = "video_caption";
     create(videoCaption: VideoCaptionEntity): number {
@@ -55,7 +55,7 @@ export class VideoCaptiondb extends BaseDb {
             `DELETE FROM ` + this._table + ` WHERE video_id = ?`);
         const res = stmt.run(id);
     }
-    getCaptionByVidLid(vid: number, lid: LanguageEnum): VideoCaptionEntity | null {
+    getCaptionByVidLid(vid: number, lid: number): VideoCaptionEntity | null {
         const stmt = this.db.prepare('SELECT * FROM ' + this._table + ' WHERE video_id = ? AND language_id = ?');
         const res = stmt.get(vid, lid) as VideoCaptionEntity;
         return res;

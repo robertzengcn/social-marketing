@@ -1,6 +1,7 @@
 import {Proxy} from "@/entityTypes/proxyType"
 import {TaskStatus,ItemSearchparam,CommonIdrequestIds} from "@/entityTypes/commonType"
-import {LanguageEnum} from "@/config/generate"
+// import {LanguageEnum} from "@/config/generate"
+import {LanguageItem} from "@/entityTypes/commonType"
 
 export type videoScraper={
     cookies: string,
@@ -223,12 +224,12 @@ export type VideoCaptionMsg={
 export type VideoCaptionEntity={
     id?:number,
     videoId:number,
-    language_id:LanguageEnum,
+    language_id:number,
     caption_path:string,
     record_time?:string,
 }
 export interface VideoCaptionDisplay extends VideoCaptionEntity{
-    language:string
+    language?:LanguageItem
 }
 export interface VideoCaptionGenerateParamWithIds<Type> extends CommonIdrequestIds<Type>{
 isEnglish:boolean

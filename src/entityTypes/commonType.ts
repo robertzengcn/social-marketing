@@ -79,4 +79,9 @@ export enum TaskStatus {
   export interface CommonIdrequestIds<Type> {
    ids:Array<Type>,
 }
+export type LanguageItem={
+    id:number,
+    name:string
+    code:string
+}
 
