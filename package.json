@@ -49,6 +49,8 @@
     "tsc": "tsc --noEmit --watch"
   },
   "dependencies": {
+    "@langchain/core": "^0.3.40",
+    "@langchain/ollama": "^0.2.0",
     "@lem0-packages/puppeteer-page-proxy": "^1.4.1",
     "@mdi/font": "7.4.47",
     "@rollup/plugin-alias": "^5.1.0",
