@@ -241,7 +241,8 @@ const captionselectPath = async () => {
   captionsavePath.value = res;
 };
 function loadItems({ page, itemsPerPage, sortBy }) {
-
+  options.page = page;
+  options.itemsPerPage = itemsPerPage;
   loading.value = true
 
   const fetchitem: Fetchparam = {
