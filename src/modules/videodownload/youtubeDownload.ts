@@ -21,7 +21,7 @@ export class YoutubeDownload implements VideoDownloadImpl {
             throw new CustomError("youtube video package not found")
         }
         let execcommand = '';
-        let command = `${execPath} -P ${savePath}`;
+        let command = `${execPath} -P "${savePath}"`;
         let cookiesFilePath = '';
         if(useBrowserCookies){
             command+=' --cookies-from-browser '+useBrowserCookies
