@@ -15,7 +15,7 @@ export class DeepseekR1 implements LlmImpl {
     }
 
     // Implement the methods defined in LlmImpl interface
-    async translate(inputlang:string,outputlang:string,text:string,systemMsg?:string):Promise<string>{
+    async translate(inputlang:string,outputlang:string,text:string,systemMsg?:string):Promise<string|void>{
 
     }
 
