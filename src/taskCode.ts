@@ -389,6 +389,7 @@ async function generateCaption(param:VideoCaptionGenerateParam){
                 process.parentPort.postMessage(JSON.stringify(message))
             }
     })
-    process.exit(0);
+    
 }
+process.exit(0);
 }
