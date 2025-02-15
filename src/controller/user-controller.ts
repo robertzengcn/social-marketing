@@ -2,6 +2,7 @@ import { RemoteSource, jwtUser } from '@/modules/remotesource'
 // import Store,{ Schema } from 'electron-store';
 import {getUserpath,checkAndCreatePath,getApplogspath} from "@/modules/lib/function"
 import { Scraperdb } from "@/model/scraperdb";
+import {SequelizeConfig} from "@/config/SequelizeConfig"
 // import * as fs from 'fs';
 // import * as path from 'path';
 import {USERSDBPATH,USERLOGPATH,USEREMAIL} from '@/config/usersetting';
@@ -55,8 +56,10 @@ export class userController {
                 tokenService.setValue(USERSDBPATH,userdataPath)
                 tokenService.setValue(USERLOGPATH,logPath)
                 const scraperModel = Scraperdb.getInstance(userdataPath);
+                
                 scraperModel.init()
-               // if()
+                const sequelize=SequelizeConfig.getInstance(userdataPath);
+                await sequelize.sync({ force: true });
             }
             return res;
         }).catch(function (error) {
