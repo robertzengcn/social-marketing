@@ -59,7 +59,7 @@ export class userController {
                 
                 scraperModel.init()
                 const sequelize=SequelizeConfig.getInstance(userdataPath);
-                await sequelize.sync({ force: true });
+                await sequelize.sync({ force: true,alter: true });
             }
             return res;
         }).catch(function (error) {
