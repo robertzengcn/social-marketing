@@ -93,6 +93,8 @@ export default {
     },
     layout:{
         login:"Login",
+        login_out:"Login Out",
+        system_setting:"System Setting",
     },
     extramodule:{
         extramoduleName:"Extra Module Name",

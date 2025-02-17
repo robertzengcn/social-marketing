@@ -96,7 +96,8 @@
                                         </v-list>
                                     
                                 </v-menu>
-                                <v-list-item :title="$t('layout.login')" prepend-icon="mdi-login" @click="Usersignout" />
+                                <v-list-item :title="$t('layout.system_setting')" prepend-icon="mdi-cog" @click="Usersignout" />
+                                <v-list-item :title="$t('layout.login_out')" prepend-icon="mdi-login" @click="Usersignout" />
                             </v-list>
                         </v-menu>
                     </v-btn>
