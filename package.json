@@ -88,6 +88,7 @@
     "nodemailer": "^6.9.16",
     "nprogress": "^0.2.0",
     "papaparse": "^5.4.1",
+    "pg-hstore": "^2.3.4",
     "pinia": "^2.1.7",
     "progress-stream": "^2.0.0",
     "puppeteer": "22.13.1",
