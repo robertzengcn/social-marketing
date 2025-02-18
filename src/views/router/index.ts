@@ -42,6 +42,32 @@ export const constantRoutes: RouteRecordRaw[] = [
     ],
   },
   {
+    path: '/',
+    redirect: '/system-setting',
+    name: 'System Setting',
+    meta: {
+      visible: true,
+      title: 'Dashboard',
+      icon: 'mdi-gauge',
+    },
+    component: Layout,
+    children: [
+      {
+        path: '/dashboard/home',
+        name: 'home',
+          meta: {
+              title: 'Home',
+              icon: 'mdi-alpha-s',
+              keepAlive: false,
+              visible: true,
+          },
+          component: () => import('@/views/dashboard/home.vue'),
+          children: [],
+      }
+    ],
+  },
+
+  {
     path: '/campaign',
     name: 'campaign',
     meta: {
