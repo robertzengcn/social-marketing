@@ -352,6 +352,10 @@ export default {
     },
     video_download_list:{
 
+    },
+    system_settings:{
+        title:"System Settings",
+        no_setting_item_found_exit:"No setting item found, please exit",
     }
 
 }

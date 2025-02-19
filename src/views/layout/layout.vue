@@ -96,7 +96,7 @@
                                         </v-list>
                                     
                                 </v-menu>
-                                <v-list-item :title="$t('layout.system_setting')" prepend-icon="mdi-cog" @click="Usersignout" />
+                                <v-list-item :title="$t('layout.system_setting')" prepend-icon="mdi-cog" @click="gotoSystemsetting" />
                                 <v-list-item :title="$t('layout.login_out')" prepend-icon="mdi-login" @click="Usersignout" />
                             </v-list>
                         </v-menu>
@@ -185,6 +185,9 @@ const switchLanguage = (lang: string) => {
     locale.value=lang
     setLanguage(lang)
     // router.go(0)
+}
+const gotoSystemsetting=()=>{
+    router.push('/systemsetting/index')
 }
 
 watch(permanent, () => {

@@ -7,6 +7,7 @@ import copy from 'rollup-plugin-copy'
 import ClosePlugin from './vite-plugin-close'
 import checker from 'vite-plugin-checker'
 import sourcemaps from 'rollup-plugin-sourcemaps';
+import commonjs from '@rollup/plugin-commonjs';
 // import vue from '@vitejs/plugin-vue'
 // import vuetify from 'vite-plugin-vuetify'
 // import { nodeResolve } from '@rollup/plugin-node-resolve';
@@ -21,15 +22,21 @@ export default ({ mode }) => {
             alias(),
             copy({
                 targets: [
-                    { src: 'src/sql/**/*', dest: 'dist/sql' }   
-                ]  
+                    { src: 'src/sql/**/*', dest: 'dist/sql' }
+                ]
             }),
             sourcemaps(),
             ClosePlugin(),
             checker({
                 // e.g. use TypeScript check
                 typescript: true,
-              }),
+            }),
+            // commonjs({
+            //     dynamicRequireTargets: [
+            //         'node_modules/sqlite3/lib/sqlite3-binding.js',
+            //         'node_modules/sqlite3/lib/sqlite3.js'
+            //     ]
+            // })
         ],
         resolve: {
             alias: {
@@ -38,9 +45,12 @@ export default ({ mode }) => {
         },
         build: {
             sourcemap: true,
+            external: [
+                'sqlite3'
+            ]
         },
         test: {
-            include:['test/vitest/main/*.test.ts'],
+            include: ['test/vitest/main/*.test.ts'],
         }
     })
 }

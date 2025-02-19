@@ -69,5 +69,6 @@ export const VIDEOTASKDOWNLOAD_RETRY_MESSAGE='videotask:download:retry:message'
 export const VIDEODOWNLOAD_LOG_QUERY='video:download:log:query'
 export const VIDEODOWNLOAD_DETAIL_QUERY='video:download:detail:query'
 export const VIDEODOWNLOAD_OPEN_CAPTIONFILE='video:download:open:captionfile'
+export const SYSTEM_SETTING_LIST='system_setting:list'
 
 

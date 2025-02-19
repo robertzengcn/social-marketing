@@ -4,7 +4,7 @@ import { getUserdbpath } from '@/modules/lib/electronfunction';
 import { SystemSetting } from '@/model/SystemSetting.model';
 
 export class SystemSettingDetail extends Model<InferAttributes<SystemSettingDetail>, InferCreationAttributes<SystemSettingDetail>> {
-  declare id: number;
+  declare id: CreationOptional<number>;
   declare setting_id: number;
   declare optionValue: string;
   declare optionLabel: string;

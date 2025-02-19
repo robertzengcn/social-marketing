@@ -102,7 +102,7 @@
 
           <v-card-text v-else>
             <v-alert type="info">
-              {{ $t('system_settings.select_group') }}
+              {{ $t('system_settings.no_setting_item_found_exit') }}
             </v-alert>
           </v-card-text>
         </v-card>
@@ -115,8 +115,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import {SystemSettingDisplay,SystemSettingGroupDisplay,OptionSettingDisplay} from "@/entityTypes/systemsettingType";
-
-
+import {getSystemSettinglist} from "@/views/api/systemsetting";
 // i18n setup
 const { t } = useI18n();
 
@@ -153,12 +152,16 @@ function settingsByGroup(groupId: number): SystemSettingDisplay[] {
 
 // Mock fetching settings and groups
 async function fetchSettings() {
-  // Replace with real API / DB calls
-  settingGroups.value = [
+  await getSystemSettinglist().then((res)=>{
+    console.log(res)
+    settingGroups.value = res
+  })
+  // // Replace with real API / DB calls
+  // settingGroups.value = [
   
-  ];
-  // Each setting now includes a "type" field and possible "options"
-  systemSettings.value = [];
+  // ];
+  // // Each setting now includes a "type" field and possible "options"
+  // systemSettings.value = [];
 }
 
 // Updates a single setting
