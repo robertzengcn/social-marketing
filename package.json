@@ -156,6 +156,7 @@
     "@vue/eslint-config-prettier": "^8.0.0",
     "@vue/eslint-config-typescript": "^12.0.0",
     "@vue/typescript": "^1.8.19",
+    "aws-sdk": "^2.1692.0",
     "babel-eslint": "^10.1.0",
     "bluebird": "^3.7.2",
     "chai": "^4.3.7",
@@ -170,6 +171,8 @@
     "http-mitm-proxy": "^0.8.2",
     "key-cert": "^1.0.1",
     "mocha": "^10.2.0",
+    "mock-aws-s3": "^4.0.2",
+    "nock": "^14.0.1",
     "prettier": "^2.8.4",
     "rollup-plugin-copy": "^3.5.0",
     "rollup-plugin-sourcemaps": "^0.6.3",
@@ -218,7 +221,7 @@
   ],
   "engines": {
     "npm": ">=6.14.17",
-    "node": ">=14.21.2"
+    "node": ">=18.20.4"
   },
   "keywords": [
     "scraping",

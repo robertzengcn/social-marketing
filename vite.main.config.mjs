@@ -32,22 +32,33 @@ export default ({ mode }) => {
                 typescript: true,
             }),
             // commonjs({
-            //     dynamicRequireTargets: [
-            //         'node_modules/sqlite3/lib/sqlite3-binding.js',
-            //         'node_modules/sqlite3/lib/sqlite3.js'
-            //     ]
-            // })
+            //     ignoreDynamicRequires: true
+            //     // or dynamicRequireTargets: ['node_modules/sqlite3/lib/sqlite3.js']
+            //   })
+            commonjs({
+                include: /node_modules/,
+                dynamicRequireTargets: [
+                    'node_modules/sqlite3/lib/sqlite3-binding.js',
+                    'node_modules/sqlite3/lib/sqlite3.js',
+                ],
+                dynamicRequireRoot: `node_modules`,
+                transformMixedEsModules: true,
+            })
         ],
         resolve: {
             alias: {
                 "@": path.resolve(__dirname, "./src"),
             },
+            conditions: ['node', 'default'],
         },
         build: {
             sourcemap: true,
             external: [
                 'sqlite3'
-            ]
+            ],
+            rollupOptions: {
+                external: ['sqlite3']
+            }
         },
         test: {
             include: ['test/vitest/main/*.test.ts'],
