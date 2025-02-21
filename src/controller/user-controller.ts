@@ -3,6 +3,8 @@ import { RemoteSource, jwtUser } from '@/modules/remotesource'
 import {getUserpath,checkAndCreatePath,getApplogspath} from "@/modules/lib/function"
 import { Scraperdb } from "@/model/scraperdb";
 import {SequelizeConfig} from "@/config/SequelizeConfig"
+import { Sequelize } from 'sequelize';
+
 // import * as fs from 'fs';
 // import * as path from 'path';
 import {USERSDBPATH,USERLOGPATH,USEREMAIL} from '@/config/usersetting';
@@ -59,10 +61,16 @@ export class userController {
                 const scraperModel = Scraperdb.getInstance(userdataPath);
                 
                 scraperModel.init()
-                const sequelize=SequelizeConfig.getInstance(userdataPath);
-                await sequelize.sync({ force: true,alter: true });
+                //const sequelize=SequelizeConfig.getInstance(userdataPath);
+                new Sequelize({
+                                dialect: 'sqlite',
+                                storage: userdataPath,
+                                logging: true,
+                            });
+                
+                //await sequelize.sync({ force: true,alter: true });
                  // Insert some sample data after the sync completes
-                 runAfterTableCreate()
+                 //runAfterTableCreate()
 
             }
             return res;

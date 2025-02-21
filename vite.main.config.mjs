@@ -8,6 +8,8 @@ import ClosePlugin from './vite-plugin-close'
 import checker from 'vite-plugin-checker'
 import sourcemaps from 'rollup-plugin-sourcemaps';
 import commonjs from '@rollup/plugin-commonjs';
+//import { nodeResolve } from '@rollup/plugin-node-resolve';
+
 // import vue from '@vitejs/plugin-vue'
 // import vuetify from 'vite-plugin-vuetify'
 // import { nodeResolve } from '@rollup/plugin-node-resolve';
@@ -20,6 +22,7 @@ export default ({ mode }) => {
             //     autoImport: true,
             //   }),
             alias(),
+            //nodeResolve(),
             copy({
                 targets: [
                     { src: 'src/sql/**/*', dest: 'dist/sql' }
