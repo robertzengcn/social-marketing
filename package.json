@@ -46,7 +46,7 @@
     "vitest-googlescraper": "vitest --config vite.utilityCode.config.mjs -t google-scraper",
     "vitest-getyoutubeurl": "vitest --config vite.taskCode.config.mjs -t get-youtube-url",
     "vitest-getyoutubeplaylisturl": "vitest --config vite.taskCode.config.mjs -t get-youtube-url-playerlist",
-    "vitest-findorigin-error": "vitest --config vite.utilityCode.config.mjs -t make-file-back",
+    "make-file-back": "vitest --config vite.utilityCode.config.mjs -t make-file-back",
     "tsc": "tsc --noEmit --watch"
   },
   "dependencies": {
@@ -104,7 +104,6 @@
     "request": "^2.88.2",
     "roboto-fontface": "*",
     "sequelize": "^6.37.5",
-    "sequelize-typescript": "^2.1.6",
     "socks5-http-client": "^1.0.4",
     "source-map": "^0.7.4",
     "sqlite3": "^5.1.6",

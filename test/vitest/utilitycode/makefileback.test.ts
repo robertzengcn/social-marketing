@@ -6,7 +6,7 @@ import sourceMap from 'source-map';
 import { expect, test } from 'vitest'
 
 test('make-file-back', async function () {
- const relativePath = '.vite/build/background-d544d65f.js';
+ const relativePath = '.vite/build/background-b6200fdc.js';
   // const writepath='./tmp/example.ts'
   const absolutePath = path.resolve(relativePath);
   // // console.log(absolutePath)

@@ -40,11 +40,11 @@ SystemSettingDetail.init(
 );
 
 // Establish a one-to-many relationship
-SystemSettingDetail.belongsTo(SystemSetting, {
-  foreignKey: 'setting_id',
-  onDelete: 'CASCADE'
-});
+// SystemSettingDetail.belongsTo(SystemSetting, {
+//   foreignKey: 'setting_id',
+//   onDelete: 'CASCADE'
+// });
 
-SystemSetting.hasMany(SystemSettingDetail, {
-  foreignKey: 'setting_id'
-});
+// SystemSetting.hasMany(SystemSettingDetail, {
+//   foreignKey: 'setting_id'
+// });

@@ -39,13 +39,13 @@ export default ({ mode }) => {
             //     // or dynamicRequireTargets: ['node_modules/sqlite3/lib/sqlite3.js']
             //   })
             commonjs({
-                include: /node_modules/,
+                // include: /node_modules/,
                 dynamicRequireTargets: [
                     'node_modules/sqlite3/lib/sqlite3-binding.js',
                     'node_modules/sqlite3/lib/sqlite3.js',
                 ],
-                dynamicRequireRoot: `node_modules`,
-                transformMixedEsModules: true,
+                // dynamicRequireRoot: `node_modules`,
+                // transformMixedEsModules: true,
             })
         ],
         resolve: {
