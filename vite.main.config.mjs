@@ -52,7 +52,7 @@ export default ({ mode }) => {
             alias: {
                 "@": path.resolve(__dirname, "./src"),
             },
-            conditions: ['node', 'default'],
+            // conditions: ['node', 'default'],
         },
         build: {
             sourcemap: true,
