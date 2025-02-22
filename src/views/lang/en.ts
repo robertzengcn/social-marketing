@@ -2,9 +2,9 @@
 // import No from "../feedback/no.vue";
 // import { not } from "cheerio/lib/api/traversing";
 
-import { uninstallPipPackage } from "@/modules/lib/function";
-import install from "electron-devtools-installer";
-import { upgrade } from "undici";
+// import { uninstallPipPackage } from "@/modules/lib/function";
+// import install from "electron-devtools-installer";
+// import { upgrade } from "undici";
 
 export default {
     common:{
