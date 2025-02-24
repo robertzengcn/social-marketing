@@ -4872,13 +4872,6 @@ ee-first@1.1.1:
   resolved "https://registry.yarnpkg.com/ee-first/-/ee-first-1.1.1.tgz#590c61156b0ae2f4f0255732a158b266bc56b21d"
   integrity sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==
 
-electron-better-ipc@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/electron-better-ipc/-/electron-better-ipc-2.0.1.tgz#982a4468e814f9f19308c7865a148c6dca5e218a"
-  integrity sha512-S/h2vjQjev9FVicGnZeuP2wH/ycO9pOv63JGaTjYB2m5JcKDuXHAM713YmnmDC+VVXP7mh1Y9rtxi6BoNK7YJA==
-  dependencies:
-    serialize-error "^8.1.0"
-
 electron-devtools-installer@^3.2.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/electron-devtools-installer/-/electron-devtools-installer-3.2.0.tgz#acc48d24eb7033fe5af284a19667e73b78d406d0"
@@ -9880,13 +9873,6 @@ serialize-error@^7.0.1:
   integrity sha512-8I8TjW5KMOKsZQTvoxjuSIa7foAwPWGOts+6o7sgjz41/qMD9VQHEDxi6PBvK2l0MXUmqZyNpUK+T2tQaaElvw==
   dependencies:
     type-fest "^0.13.1"
-
-serialize-error@^8.1.0:
-  version "8.1.0"
-  resolved "https://registry.yarnpkg.com/serialize-error/-/serialize-error-8.1.0.tgz#3a069970c712f78634942ddd50fbbc0eaebe2f67"
-  integrity sha512-3NnuWfM6vBYoy5gZFvHiYsVbafvI9vZv/+jlIigFn4oP4zjNPK3LhcY0xSCgeb1a5L8jO71Mit9LlNoi2UfDDQ==
-  dependencies:
-    type-fest "^0.20.2"
 
 serialize-javascript@6.0.0:
   version "6.0.0"
