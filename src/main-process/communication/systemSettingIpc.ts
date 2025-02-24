@@ -13,7 +13,7 @@ export function registerSystemSettingIpcHandlers() {
             const result: CommonMessage<Array<SystemSettingGroupDisplay>> = {
                 status: true,
                 msg: "",
-                data: res
+                data: []
             }
         } catch (error) {
             if (error instanceof Error) {
