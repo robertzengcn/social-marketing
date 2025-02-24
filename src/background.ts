@@ -5,6 +5,7 @@ import { app, protocol, BrowserWindow } from 'electron'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 import {registerCommunicationIpcHandlers} from "./main-process/communication/";
 import * as path from 'path';
+import 'reflect-metadata';
 // import { createProtocol } from 'electron';
 const isDevelopment = process.env.NODE_ENV !== 'production'
 declare const MAIN_WINDOW_VITE_DEV_SERVER_URL: string;
