@@ -1,4 +1,3 @@
-
 import { BaseModule } from "@/modules/baseModule";
 import { VideoCaptiondb } from "@/model/VideoCaptiondb";
 import { VideoCaptionEntity } from "@/entityTypes/videoType";

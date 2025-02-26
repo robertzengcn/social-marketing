@@ -2,12 +2,13 @@ import { RemoteSource, jwtUser } from '@/modules/remotesource'
 // import Store,{ Schema } from 'electron-store';
 import {getUserpath,checkAndCreatePath,getApplogspath} from "@/modules/lib/function"
 import { Scraperdb } from "@/model/scraperdb";
-import {SequelizeConfig} from "@/config/SequelizeConfig"
+// import {SequelizeConfig} from "@/config/SequelizeConfig"
 // import * as fs from 'fs';
 // import * as path from 'path';
 import {USERSDBPATH,USERLOGPATH,USEREMAIL} from '@/config/usersetting';
 import { Token } from "@/modules/token"
-import {runAfterTableCreate} from "@/modules/lib/databaseinit"
+//import {runAfterTableCreate} from "@/modules/lib/databaseinit"
+import {SqliteDb} from "@/modules/SqliteDb"
 
 // import {Token} from "@/modules/token"
 
@@ -57,12 +58,17 @@ export class userController {
                 tokenService.setValue(USERSDBPATH,userdataPath)
                 tokenService.setValue(USERLOGPATH,logPath)
                 const scraperModel = Scraperdb.getInstance(userdataPath);
-                
+                const dbdatapath=scraperModel.getdbpath(userdataPath)
+                // console.log(dbdatapath)
+
                 scraperModel.init()
-                const sequelize=SequelizeConfig.getInstance(userdataPath);
-                await sequelize.sync({ force: true,alter: true });
+                const appDataSource=SqliteDb.getInstance(userdataPath)
+                await appDataSource.connection.initialize()
+                // const sequelize=SequelizeConfig.getInstance(userdataPath);
+                // await sequelize.sync({ force: true,alter: true });
                  // Insert some sample data after the sync completes
-                 runAfterTableCreate()
+                //  runAfterTableCreate()
+                
 
             }
             return res;

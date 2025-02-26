@@ -1,10 +1,12 @@
 'use strict'
+import 'reflect-metadata';
 // import {ipcMain as ipc} from 'electron-better-ipc';
 import { app, protocol, BrowserWindow } from 'electron'
 // import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 import {registerCommunicationIpcHandlers} from "./main-process/communication/";
 import * as path from 'path';
+
 // import { createProtocol } from 'electron';
 const isDevelopment = process.env.NODE_ENV !== 'production'
 declare const MAIN_WINDOW_VITE_DEV_SERVER_URL: string;
