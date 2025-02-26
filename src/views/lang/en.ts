@@ -2,9 +2,9 @@
 // import No from "../feedback/no.vue";
 // import { not } from "cheerio/lib/api/traversing";
 
-import { uninstallPipPackage } from "@/modules/lib/function";
-import install from "electron-devtools-installer";
-import { upgrade } from "undici";
+// import { uninstallPipPackage } from "@/modules/lib/function";
+// import install from "electron-devtools-installer";
+// import { upgrade } from "undici";
 
 export default {
     common:{
@@ -352,6 +352,10 @@ export default {
     },
     video_download_list:{
 
+    },
+    system_settings:{
+        title:"System Settings",
+        no_setting_item_found_exit:"No setting item found, please exit",
     }
 
 }

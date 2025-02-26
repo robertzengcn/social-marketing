@@ -9,24 +9,13 @@ export const constantRoutes: RouteRecordRaw[] = [
     redirect: '/dashboard/home',
     name: 'Dashboard',
     meta: {
-      visible: true,
+      visible: false,
       title: 'Dashboard',
       icon: 'mdi-gauge',
     },
     component: Layout,
     children: [
-      // {
-      //     path: '/dashboard/smart-house',
-      //     name: 'smartHouse',
-      //     meta: {
-      //         title: 'Smart House',
-      //         icon: 'mdi-alpha-s',
-      //         keepAlive: false,
-      //         visible: true,
-      //     },
-      //     component: () => import('@/views/dashboard/smartHouse.vue'),
-      //     children: [],
-      // },
+
       {
         path: '/dashboard/home',
         name: 'home',
@@ -34,13 +23,38 @@ export const constantRoutes: RouteRecordRaw[] = [
               title: 'Home',
               icon: 'mdi-alpha-s',
               keepAlive: false,
-              visible: true,
+              visible: false,
           },
           component: () => import('@/views/dashboard/home.vue'),
           children: [],
       }
     ],
   },
+  {
+    path: '/systemsetting',
+    name: 'system_setting',
+    meta: {
+      visible: false,
+      title: 'System Setting',
+      icon: 'mdi-gauge',
+    },
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        name: 'system_setting_index',
+          meta: {
+              title: 'System Setting',
+              icon: 'mdi-alpha-s',
+              keepAlive: false,
+              visible: true,
+          },
+          component: () => import('@/views/pages/systemsetting/index.vue'),
+          children: [],
+      }
+    ],
+  },
+
   {
     path: '/campaign',
     name: 'campaign',

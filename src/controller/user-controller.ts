@@ -7,6 +7,7 @@ import {SequelizeConfig} from "@/config/SequelizeConfig"
 // import * as path from 'path';
 import {USERSDBPATH,USERLOGPATH,USEREMAIL} from '@/config/usersetting';
 import { Token } from "@/modules/token"
+import {runAfterTableCreate} from "@/modules/lib/databaseinit"
 
 // import {Token} from "@/modules/token"
 
@@ -60,6 +61,9 @@ export class userController {
                 scraperModel.init()
                 const sequelize=SequelizeConfig.getInstance(userdataPath);
                 await sequelize.sync({ force: true,alter: true });
+                 // Insert some sample data after the sync completes
+                 runAfterTableCreate()
+
             }
             return res;
         }).catch(function (error) {

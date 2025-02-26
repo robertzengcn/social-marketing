@@ -94,7 +94,7 @@ export default{
                     // console.log("login fail")
                 });
                 //redirect
-                this.$router.push(this.$route.query.redirect || '/')
+                this.$router.push(this.$route.query.redirect || '/dashboard/home')
             }
             
         },

@@ -46,6 +46,7 @@
     "vitest-googlescraper": "vitest --config vite.utilityCode.config.mjs -t google-scraper",
     "vitest-getyoutubeurl": "vitest --config vite.taskCode.config.mjs -t get-youtube-url",
     "vitest-getyoutubeplaylisturl": "vitest --config vite.taskCode.config.mjs -t get-youtube-url-playerlist",
+    "make-file-back": "vitest --config vite.utilityCode.config.mjs -t make-file-back",
     "tsc": "tsc --noEmit --watch"
   },
   "dependencies": {
@@ -103,7 +104,6 @@
     "request": "^2.88.2",
     "roboto-fontface": "*",
     "sequelize": "^6.37.5",
-    "sequelize-typescript": "^2.1.6",
     "socks5-http-client": "^1.0.4",
     "source-map": "^0.7.4",
     "sqlite3": "^5.1.6",
@@ -156,6 +156,7 @@
     "@vue/eslint-config-prettier": "^8.0.0",
     "@vue/eslint-config-typescript": "^12.0.0",
     "@vue/typescript": "^1.8.19",
+    "aws-sdk": "^2.1692.0",
     "babel-eslint": "^10.1.0",
     "bluebird": "^3.7.2",
     "chai": "^4.3.7",
@@ -170,6 +171,8 @@
     "http-mitm-proxy": "^0.8.2",
     "key-cert": "^1.0.1",
     "mocha": "^10.2.0",
+    "mock-aws-s3": "^4.0.2",
+    "nock": "^14.0.1",
     "prettier": "^2.8.4",
     "rollup-plugin-copy": "^3.5.0",
     "rollup-plugin-sourcemaps": "^0.6.3",
@@ -184,7 +187,7 @@
     "tslib": "^2.5.3",
     "typescript": "^5.1.3",
     "ua-parser-js": "^0.7.21",
-    "vite": "^5.0.12",
+    "vite": "^6.1.1",
     "vite-plugin-checker": "^0.7.2",
     "vite-plugin-node-polyfills": "^0.21.0",
     "vite-plugin-require-transform": "^1.0.21",
@@ -218,7 +221,7 @@
   ],
   "engines": {
     "npm": ">=6.14.17",
-    "node": ">=14.21.2"
+    "node": ">=18.20.4"
   },
   "keywords": [
     "scraping",

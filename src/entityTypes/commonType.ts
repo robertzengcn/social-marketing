@@ -84,4 +84,10 @@ export type LanguageItem={
     name:string
     code:string
 }
+export enum InputTypeEnum {
+    INPUT = 'input',
+    SELECT = 'select',
+    RADIO = 'radio',
+    CHECKBOX = 'checkbox'
+  }
 

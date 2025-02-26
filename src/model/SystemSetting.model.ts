@@ -1,12 +1,20 @@
-import { Model, DataTypes } from 'sequelize';
+import { Model, DataTypes,InferAttributes, InferCreationAttributes, CreationOptional  } from 'sequelize';
 import { SequelizeConfig } from '@/config/SequelizeConfig'; // Adjust the import path as needed
 import {getUserdbpath} from '@/modules/lib/electronfunction'; // Adjust the import path as needed
-export class SystemSetting extends Model {
-    declare id: number;
+import {InputTypeEnum} from "@/entityTypes/commonType"
+// export enum SettingTypeEnum {
+//   INPUT = 'input',
+//   SELECT = 'select',
+//   RADIO = 'radio',
+//   CHECKBOX = 'checkbox'
+// }
+export class SystemSetting extends Model<InferAttributes<SystemSetting>, InferCreationAttributes<SystemSetting>> {
+    declare id: CreationOptional<number>;
     declare key: string;
     declare value: string;
     declare description: string;
     declare group_id: number;
+    declare type: InputTypeEnum;
 }
 SystemSetting.init({
     id: {
@@ -29,6 +37,11 @@ SystemSetting.init({
     group_id:{
         type: DataTypes.INTEGER,
         allowNull: true, 
+    },
+    type: {
+      type: DataTypes.ENUM(...Object.values(InputTypeEnum)), // spread the enum values
+      allowNull: false,
+      defaultValue: InputTypeEnum.INPUT
     }  
         
 },
