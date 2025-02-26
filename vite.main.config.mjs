@@ -44,6 +44,9 @@ export default ({ mode }) => {
             },
         },
         build: {
+            rollupOptions: {
+                external: "typeorm"
+            },
             sourcemap: true,
             external: [
                 'sqlite3'

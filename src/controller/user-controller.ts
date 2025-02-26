@@ -7,7 +7,8 @@ import { Scraperdb } from "@/model/scraperdb";
 // import * as path from 'path';
 import {USERSDBPATH,USERLOGPATH,USEREMAIL} from '@/config/usersetting';
 import { Token } from "@/modules/token"
-import {runAfterTableCreate} from "@/modules/lib/databaseinit"
+//import {runAfterTableCreate} from "@/modules/lib/databaseinit"
+import {SqliteDb} from "@/modules/SqliteDb"
 
 // import {Token} from "@/modules/token"
 
@@ -57,12 +58,17 @@ export class userController {
                 tokenService.setValue(USERSDBPATH,userdataPath)
                 tokenService.setValue(USERLOGPATH,logPath)
                 const scraperModel = Scraperdb.getInstance(userdataPath);
-                
+                const dbdatapath=scraperModel.getdbpath(userdataPath)
+                // console.log(dbdatapath)
+
                 scraperModel.init()
+                const appDataSource=SqliteDb.getInstance(userdataPath)
+                await appDataSource.connection.initialize()
                 // const sequelize=SequelizeConfig.getInstance(userdataPath);
                 // await sequelize.sync({ force: true,alter: true });
                  // Insert some sample data after the sync completes
                 //  runAfterTableCreate()
+                
 
             }
             return res;

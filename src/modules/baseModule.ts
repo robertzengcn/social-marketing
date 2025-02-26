@@ -1,9 +1,9 @@
 import { Token } from "@/modules/token"
 import { USERSDBPATH } from '@/config/usersetting';
-// import {SqliteDb} from "@/modules/SqliteDb"
+import {SqliteDb} from "@/modules/SqliteDb"
 export abstract class BaseModule {
     protected dbpath: string
-    // protected sqliteDb:SqliteDb
+   protected sqliteDb:SqliteDb
     constructor() {
         const tokenService = new Token()
         const dbpath = tokenService.getValue(USERSDBPATH)
@@ -11,6 +11,6 @@ export abstract class BaseModule {
             throw new Error("user path not exist")
         }
         this.dbpath = dbpath
-        // this.sqliteDb = SqliteDb.getInstance(this.dbpath)
+        this.sqliteDb = SqliteDb.getInstance(this.dbpath)
         }
 }

@@ -8,7 +8,7 @@ export abstract class BaseDb {
      constructor(filepath:string) {
         const scraperModel = Scraperdb.getInstance(filepath);
         this.db = scraperModel.getdb();
-        this.sqliteDb = SqliteDb.getInstance(filepath)
+        // this.sqliteDb = SqliteDb.getInstance(filepath)
     }
 
     
