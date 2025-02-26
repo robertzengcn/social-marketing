@@ -12,7 +12,7 @@ examples/data/*
 
 examples/results/
 examples/results/*
-
+extramodule/*
 
 # Logs
 logs
@@ -20,6 +20,7 @@ logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+yt-auth
 
 # Runtime data
 pids
@@ -52,8 +53,7 @@ build/Release
 node_modules/
 jspm_packages/
 
-# TypeScript v1 declaration files
-typings/
+
 
 # Optional npm cache directory
 .npm
@@ -81,3 +81,16 @@ typings/
 GoogleScraperPup.iml
 
 .http-mitm-proxy
+tmp/
+.history/
+dist/
+yt-auth/*
+
+
+#Electron-builder output
+/dist_electron
+dist
+.env.development
+.vite/*
+vite.main.config.mjs.timestamp-*.mjs
+vite.utilityCode.config.mjs.*.mjs

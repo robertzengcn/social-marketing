@@ -1,0 +1,82 @@
+name: Build Electron App
+
+on:
+  push:
+    branches:
+      - test
+  pull_request:
+    branches:
+      - test
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.19.1
+
+      - name: Create .env.test file 
+        run: |
+            touch .env.test
+            echo "NODE_ENV=test" >> .env.production     
+            echo VITE_REMOTEADD=${{ secrets.VITE_REMOTEADD_TEST }} >> .env
+            cat .env.test
+            
+      - name: Install dependencies
+        run: yarn install
+      - name: Install WiX Toolset
+        run: |
+          Invoke-WebRequest -Uri https://github.com/wixtoolset/wix3/releases/download/wix3112rtm/wix311-binaries.zip -OutFile wix.zip
+          Expand-Archive -Path wix.zip -DestinationPath "$env:ProgramFiles\WiX Toolset"
+          Remove-Item -Force wix.zip
+        shell: pwsh
+
+      - name: Build application
+        run: yarn make-win:test
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: electron-app-windows
+          path: out/make
+
+  build-macos:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.19.1
+
+      - name: Create .env.test file 
+        run: |
+            touch .env.test
+            echo "NODE_ENV=test" >> .env.production     
+            echo VITE_REMOTEADD=${{ secrets.VITE_REMOTEADD_TEST }} >> .env
+            cat .env.test
+
+      - name: Install setuptools
+        run: |
+            brew install python-setuptools           
+              
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Build application
+        run: yarn make-mac:test
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: electron-app-macos
+          path: out/make
