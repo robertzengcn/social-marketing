@@ -327,7 +327,7 @@ const handleDelete = async () => {
 // }
 const startAutoRefresh = () => {
   refreshInterval = setInterval(function () {
-    loadItems({ page: options.page, itemsPerPage: itemsPerPage.value, sortBy: "" });
+    loadItems({ page: options.page, itemsPerPage: options.itemsPerPage, sortBy: "" });
   }, 10000); // Refresh every 5 seconds
 }
 const stopAutoRefresh = () => {
