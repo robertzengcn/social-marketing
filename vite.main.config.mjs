@@ -61,10 +61,7 @@ export default ({ mode }) => {
             sourcemap: true,
             external: [
                 'sqlite3'
-            ],
-            rollupOptions: {
-                external: ['sqlite3']
-            }
+            ],   
         },
         test: {
             include: ['test/vitest/main/*.test.ts'],

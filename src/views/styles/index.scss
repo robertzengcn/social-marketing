@@ -2,10 +2,10 @@
 //   $utilities: false,
 //   $color-pack: false,
 // );
-@import "./var.scss";
-@import "./reset.scss";
-@import "./common.scss";
-@import "./layout.scss";
-@import "./mobile.scss";
-@import "./low-code.scss";
-@import "./vue-draggable-resizable.scss";
+@use "./var.scss";
+@use "./reset.scss";
+@use "./common.scss";
+@use "./layout.scss";
+@use "./mobile.scss";
+@use "./low-code.scss";
+@use "./vue-draggable-resizable.scss";
