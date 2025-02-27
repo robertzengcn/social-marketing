@@ -1,9 +1,9 @@
 import { BaseModule } from "@/modules/baseModule";
 import {SystemSettingGroupModel} from "@/model/SystemSettingGroup.model"
-// import {SystemSettingGroupEntity} from "@/entity/SystemSettingGroup.entity"
-// import {Repository} from "typeorm"
+import {SystemSettingGroupEntity} from "@/entity/SystemSettingGroup.entity"
+import {Repository} from "typeorm"
 export class SystemSettingGroupModule extends BaseModule {
-    // private repository:Repository<SystemSettingGroupEntity>
+    private repository:Repository<SystemSettingGroupEntity>
     private systemSettingGroupModel:SystemSettingGroupModel
     constructor() {
         super()

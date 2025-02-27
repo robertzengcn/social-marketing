@@ -6,7 +6,7 @@
         <v-navigation-drawer class="my-4 layout_navigation" :rail="navState.rail" expand-on-hover rail-width="77"
             @update:rail="navigationRail" :permanent="permanent" v-model="navState.menuVisible" style="position: fixed">
             <v-list class="py-4 mx-2 logo" nav>
-                <v-list-item :prepend-avatar="logo" class="mx-1">
+                <v-list-item :prepend-avatar="logo" class="mx-1" @click="gotodashborad()">
                     <v-list-item-title class="title">Material UI</v-list-item-title>
                     <v-list-item-subtitle>vue-material-admin</v-list-item-subtitle>
                 </v-list-item>
@@ -188,6 +188,9 @@ const switchLanguage = (lang: string) => {
 }
 const gotoSystemsetting=()=>{
     router.push('/systemsetting/index')
+}
+const gotodashborad=()=>{
+    router.push('/dashboard/home')
 }
 
 watch(permanent, () => {
