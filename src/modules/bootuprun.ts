@@ -1,5 +1,6 @@
-import {SystemSettingGroupModel} from "@/model/SystemSettingGroup.model"
-export function runafterbootup(dbpath:string){ 
+import {SystemSettingGroupModule} from "@/modules/SystemSettingGroupModule"
+export function runafterbootup(){ 
     // console.log("run after bootup");
-    new SystemSettingGroupModel(dbpath)
+    const systemSettingGroupModule=new SystemSettingGroupModule()
+    systemSettingGroupModule.tableInit()
 }

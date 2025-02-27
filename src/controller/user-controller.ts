@@ -9,6 +9,7 @@ import {USERSDBPATH,USERLOGPATH,USEREMAIL} from '@/config/usersetting';
 import { Token } from "@/modules/token"
 //import {runAfterTableCreate} from "@/modules/lib/databaseinit"
 import {SqliteDb} from "@/modules/SqliteDb"
+import {runafterbootup} from "@/modules/bootuprun"
 
 // import {Token} from "@/modules/token"
 
@@ -69,7 +70,7 @@ export class userController {
                  // Insert some sample data after the sync completes
                 //  runAfterTableCreate()
                 
-
+                await runafterbootup()
             }
             return res;
         }).catch(function (error) {

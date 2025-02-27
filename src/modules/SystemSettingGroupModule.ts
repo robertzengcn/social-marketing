@@ -3,7 +3,7 @@ import {SystemSettingGroupModel} from "@/model/SystemSettingGroup.model"
 import {SystemSettingGroupEntity} from "@/entity/SystemSettingGroup.entity"
 import {Repository} from "typeorm"
 export class SystemSettingGroupModule extends BaseModule {
-    private repository:Repository<SystemSettingGroupEntity>
+   
     private systemSettingGroupModel:SystemSettingGroupModel
     constructor() {
         super()
@@ -11,7 +11,7 @@ export class SystemSettingGroupModule extends BaseModule {
     //    this.repository = this.sqliteDb.connection.getRepository(SystemSettingGroupEntity)
     }
     public tableInit(){
-
+        this.systemSettingGroupModel.tableInit()
     }
     public listall(){
         // return this.repository.find()
