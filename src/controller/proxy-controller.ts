@@ -2,15 +2,16 @@
 // import * as fs from "fs"
 import Papa from 'papaparse';
 import fetch from 'node-fetch';
-import { fetch as undicifetch } from "undici";
+// import { fetch as undicifetch,Agent } from "undici";
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import { ProxyParseItem, ProxyCheckres, ProxylistResp } from "@/entityTypes/proxyType"
 // import * as url from 'url';
-import { socksDispatcher } from "fetch-socks";
+// import { socksDispatcher } from "fetch-socks";
 import { ProxyCheckdb, proxyCheckStatus } from "@/model/proxyCheckdb"
 import { Token } from "@/modules/token"
 import { USERSDBPATH } from '@/config/usersetting';
 import { ProxyApi } from "@/api/proxyApi"
+import { SocksProxyAgent } from 'socks-proxy-agent';
 export class ProxyController {
     //import proxy from csv file
     // public async importProxyfile(filename: string) {
@@ -81,16 +82,23 @@ export class ProxyController {
                 if (proxyEntity.protocol.includes('4')) {
                     socketType = 4
                 }
+                if ((proxyEntity.user && (proxyEntity.user?.length > 0)) && (proxyEntity.pass && (proxyEntity.pass?.length > 0))) {
+                    proxyUrl = `${proxyEntity.protocol}+${socketType}://${proxyEntity.user}:${proxyEntity.pass}@${proxyEntity.host}:${proxyEntity.port}`;
+                } else {
+                    proxyUrl = `${proxyEntity.protocol}+${socketType}://${proxyEntity.host}:${proxyEntity.port}`;
+                }
                 // console.log(proxyEntity.host)
                 // console.log(proxyEntity.port)
-                const dispatcher = socksDispatcher({
-                    type: socketType,
-                    host: proxyEntity.host,
-                    port: parseInt(proxyEntity.port),
-                    userId: proxyEntity.user,
-                    password: proxyEntity.pass,
-                });
-                const res = await undicifetch("https://ident.me/ip", { dispatcher });
+                // const dispatcher = socksDispatcher({
+                //     type: socketType,
+                //     host: proxyEntity.host,
+                //     port: parseInt(proxyEntity.port),
+                //     userId: proxyEntity.user,
+                //     password: proxyEntity.pass,
+                // });
+                const agent = new SocksProxyAgent(proxyUrl);
+                // const res = await undicifetch("https://ident.me/ip", { dispatcher });
+                const res =await fetch("https://ident.me/ip", { agent })
                 if (res.status == 200) {
                     console.log(res.status);
                     return { status: true, msg: "", data: true };
