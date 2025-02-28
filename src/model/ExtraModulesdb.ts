@@ -2,6 +2,11 @@ import { BaseDb } from "@/model/Basedb";
 import { ExtraModuleEntity } from "@/entityTypes/extramoduleType";
 import { getRecorddatetime } from "@/modules/lib/function";
 export class ExtraModulesdb extends BaseDb {
+    constructor(filepath:string) {
+        super(filepath)
+        // const scraperModel = Scraperdb.getInstance(filepath);
+        // this.db = scraperModel.getdb();
+    }
     private _table = "extra_modules";
     //create extra modeule
     create(extraModule: Omit<ExtraModuleEntity, 'id'>): number {

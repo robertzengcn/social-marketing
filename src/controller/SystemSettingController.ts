@@ -1,12 +1,17 @@
 // import {SystemSettingGroup} from '@/model/SystemSettingGroup.model'; 
 import {SystemSettingGroupDisplay} from '@/entityTypes/systemsettingType';
 import {SystemSettingDisplay} from '@/entityTypes/systemsettingType';
+import {SystemSettingGroupModule} from "@/modules/SystemSettingGroupModule"
 // import {SystemSetting,SystemSettingGroup,SystemSettingDetail} from '@/model/modelIndex';  
 
 export class SystemSettingController {
-
+    private systemSettingGroupModule:SystemSettingGroupModule
+    constructor() {
+        this.systemSettingGroupModule = new SystemSettingGroupModule()
+    }
     public async selectAllSystemSettings(): Promise<SystemSettingGroupDisplay[]|void> {
-    //     const systemgrouplist = await SystemSettingGroup.findAll();
+        const grouplist=await this.systemSettingGroupModule.listall()
+        //     const systemgrouplist = await SystemSettingGroup.findAll();
     //     const result: SystemSettingGroupDisplay[] = [];
     //     if (systemgrouplist) {
             

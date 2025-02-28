@@ -13,8 +13,8 @@ export class SystemSettingGroupModule extends BaseModule {
     public tableInit(){
         this.systemSettingGroupModel.tableInit()
     }
-    public listall(){
+    public async listall(): Promise<SystemSettingGroupEntity[]>{
         // return this.repository.find()
-        this.systemSettingGroupModel.listall()
+        return this.systemSettingGroupModel.listall()
     }
 }

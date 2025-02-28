@@ -7,11 +7,11 @@ export abstract class BaseModule {
     constructor() {
         const tokenService = new Token()
         const dbpath = tokenService.getValue(USERSDBPATH)
-        if (!dbpath) {
+        if (dbpath) {
             // throw new Error("user path not exist")
-            return
+            this.dbpath = dbpath
+            this.sqliteDb = SqliteDb.getInstance(this.dbpath)
         }
-        this.dbpath = dbpath
-        this.sqliteDb = SqliteDb.getInstance(this.dbpath)
+        
         }
 }
