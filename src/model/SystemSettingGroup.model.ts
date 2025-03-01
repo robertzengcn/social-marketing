@@ -37,6 +37,9 @@ export class SystemSettingGroupModel extends BaseDb {
             order: {
                 id: 'ASC'  // or 'DESC' for descending
             },
+            relations: {
+                settings: true
+            }
            
         })
     }

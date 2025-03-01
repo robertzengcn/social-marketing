@@ -2,6 +2,7 @@ import "reflect-metadata";
 import { DataSource } from "typeorm";
 import { SystemSettingGroupEntity } from "@/entity/SystemSettingGroup.entity";
 import {SystemSettingEntity} from "@/entity/SystemSetting.entity"
+import {SystemSettingOptionEntity} from "@/entity/SystemSettingOption.entity"
 import path from "node:path";
 export class SqliteDb {
     public connection: DataSource;
@@ -10,7 +11,7 @@ export class SqliteDb {
         this.connection =new DataSource({
             type: "better-sqlite3",
             database:path.join(filepath,'scraper.db'),
-            entities: [SystemSettingGroupEntity,SystemSettingEntity],
+            entities: [SystemSettingGroupEntity,SystemSettingEntity,SystemSettingOptionEntity],
             synchronize: true, 
             migrations: [],
             subscribers: [],

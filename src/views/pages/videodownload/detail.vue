@@ -38,10 +38,11 @@
   <script setup lang="ts">
   import { ref,onMounted } from 'vue';
   import { useRouter,useRoute } from 'vue-router';
-  import {getVideoDetail,openFileexplor} from '@/views/api/video'
+  import {getVideoDetail,openFileexplor,openCaptionfile} from '@/views/api/video'
 //   import {CommonIdrequest} from "@/entityTypes/commonType";
   import {VideoCompotionEntity} from "@/entityTypes/videoType";
   import { useI18n } from "vue-i18n";
+
   const { t } = useI18n({ inheritLocale: true });
   const $route = useRoute();
   const router = useRouter();
@@ -74,7 +75,7 @@ const initialize = async () => {
     router.back();
   };
   const openCaptionFile = (fileId: number) => {
- 
+    openCaptionfile(fileId);
     };
   onMounted(() => {
     initialize();

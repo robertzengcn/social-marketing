@@ -1,7 +1,7 @@
 import { BaseModule } from "@/modules/baseModule";
 import {SystemSettingGroupModel} from "@/model/SystemSettingGroup.model"
 import {SystemSettingGroupEntity} from "@/entity/SystemSettingGroup.entity"
-import {Repository} from "typeorm"
+
 export class SystemSettingGroupModule extends BaseModule {
    
     private systemSettingGroupModel:SystemSettingGroupModel
