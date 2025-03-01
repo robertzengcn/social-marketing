@@ -1,5 +1,5 @@
 'use strict';
-import { userController,userlogin } from '@/controller/user-controller';
+import { userController,userlogin } from '@/controller/UserController';
 import {  test } from 'vitest'
 
 test('user-login', async function () {

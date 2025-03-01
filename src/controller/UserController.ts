@@ -59,7 +59,7 @@ export class userController {
                 tokenService.setValue(USERSDBPATH,userdataPath)
                 tokenService.setValue(USERLOGPATH,logPath)
                 const scraperModel = Scraperdb.getInstance(userdataPath);
-                const dbdatapath=scraperModel.getdbpath(userdataPath)
+                //const dbdatapath=scraperModel.getdbpath(userdataPath)
                 // console.log(dbdatapath)
 
                 scraperModel.init()

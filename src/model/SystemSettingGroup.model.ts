@@ -9,8 +9,9 @@ export class SystemSettingGroupModel extends BaseDb {
     private systemSettingModel:SystemSettingModel
     constructor(filepath: string) {
         super(filepath)
-        this.repository = this.sqliteDb.connection.getRepository(SystemSettingGroupEntity)
         this.systemSettingModel = new SystemSettingModel(filepath)
+        this.repository = this.sqliteDb.connection.getRepository(SystemSettingGroupEntity)
+       
     }
     public async tableInit() {
        const deepseekgroup=await this.insertDeepseekgroup()

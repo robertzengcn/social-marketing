@@ -12,11 +12,14 @@ export abstract class BaseDb {
        this.sqliteDb = SqliteDb.getInstance(filepath)
         }
     }
+    
 
     
 
     protected log(message: string): void {
         console.log(`[BaseDb]: ${message}`);
     }
+    
+
 }
 

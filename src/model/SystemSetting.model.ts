@@ -8,11 +8,13 @@ export class SystemSettingModel extends BaseDb {
     private repository: Repository<SystemSettingEntity>
     constructor(filepath: string) {
         super(filepath)
+      
         this.repository = this.sqliteDb.connection.getRepository(SystemSettingEntity)
     }
     public async tableInit() {
+        // this.sqliteDb.connection  
         
-     }
+    }
 
     public async InsertDeepseekSetting(deepseekgroup:SystemSettingGroupEntity) {
         await this.InsertDeepseekUrl(deepseekgroup)

@@ -1,5 +1,5 @@
 import { ipcMain, dialog, BrowserWindow } from 'electron'
-import { userController, userResponse, userlogin } from '@/controller/user-controller'
+import { userController, userResponse, userlogin } from '@/controller/UserController'
 import { CampaignController } from '@/controller/campaignController'
 // import { campaignResponse } from '@/modules/campaign'
 import { SocialTaskController } from '@/controller/socialtask-controller'

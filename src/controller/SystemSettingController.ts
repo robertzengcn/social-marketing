@@ -12,7 +12,7 @@ export class SystemSettingController {
         this.systemSettingGroupModule = new SystemSettingGroupModule()
         this.systemSettingOptionModule = new SystemSettingOptionModule()
     }
-    public async selectAllSystemSettings(): Promise<SystemSettingGroupDisplay[]|void> {
+    public async selectAllSystemSettings(): Promise<SystemSettingGroupDisplay[]> {
         const grouplist=await this.systemSettingGroupModule.listall()
         const result: SystemSettingGroupDisplay[] = [];
         if (grouplist) {
