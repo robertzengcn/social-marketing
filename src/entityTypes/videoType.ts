@@ -240,3 +240,8 @@ export type VideoCompotionEntity={
     description:VideoDescriptionEntity,
     caption:Array<VideoCaptionDisplay>|null
 }
+
+export interface VideoInformationTransParam<Type> extends CommonIdrequestIds<Type>{
+    source_language:LanguageItem
+    target_language:LanguageItem
+}

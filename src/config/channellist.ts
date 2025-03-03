@@ -70,5 +70,7 @@ export const VIDEODOWNLOAD_LOG_QUERY='video:download:log:query'
 export const VIDEODOWNLOAD_DETAIL_QUERY='video:download:detail:query'
 export const VIDEODOWNLOAD_OPEN_CAPTIONFILE='video:download:open:captionfile'
 export const SYSTEM_SETTING_LIST='system_setting:list'
+export const VIDEO_INFORMATION_TRANSLATE='video:information:translate'
+export const VIDEO_VOICE_TRANSLATE='video:voice:translate'
 
 

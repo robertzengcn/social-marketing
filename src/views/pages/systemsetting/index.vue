@@ -10,8 +10,8 @@
             <v-treeview
               :items="groupItems"
               activatable
-              item-key="id"
-              item-text="name"
+              item-value="id"
+              item-title="name"
               item-children="children"
               v-model:active="activeGroups"
               :open.sync="openGroups"
@@ -134,12 +134,17 @@ const groupItems = computed(() => {
     id: group.id,
     name: group.name,
     description: group.description,
-    children: []
+    children: group.items.map(item => ({
+      id: item.id,
+      name: item.key,
+      description: item.description,
+    })),
   }));
 });
 
 // Derived property for the "currently selected" group
 const selectedGroup = computed(() => {
+  console.log("activeGroups value "+activeGroups.value)
   if (!activeGroups.value.length) return null;
   const groupId = activeGroups.value[0];
   return settingGroups.value.find(g => g.id === groupId) || null;

@@ -11,7 +11,10 @@
         <v-icon>mdi-refresh</v-icon>
       </v-btn>
       <v-btn class="btn ml-3" variant="flat" prepend-icon="mdi-plus" color="#5865f2" @click="showLangDialog=true">
-        {{ CapitalizeFirstLetter($t('video.generate_captions')) }}
+        {{ CapitalizeFirstLetter(t('video.generate_captions')) }}
+      </v-btn>
+      <v-btn class="btn ml-3" variant="flat" prepend-icon="mdi-plus" color="green" @click="showTranslateInfroDialog=true">
+        {{ CapitalizeFirstLetter(t('video.translate_information')) }}
       </v-btn>
     </div>
     <div>
@@ -21,28 +24,28 @@
     :items-length="totalItems" :items="serverItems" :loading="loading" item-value="name" @update:options="loadItems"
     :show-select="isSelectedtable" return-object>
     <template v-slot:item.caption_status="{ item }">
-      <v-chip color="grey" v-if="item.caption_status == '0'">{{ CapitalizeFirstLetter(t('common.not_start')) }}</v-chip>
-      <v-chip color="blue" v-if="item.caption_status == '1'">{{ CapitalizeFirstLetter(t('common.processing')) }}</v-chip>
-      <v-chip color="green" v-if="item.caption_status == '2'">{{ CapitalizeFirstLetter(t('common.complete')) }}</v-chip>
-      <v-chip color="red" v-if="item.caption_status == '3'">{{ CapitalizeFirstLetter(t('common.error')) }}</v-chip>
+      <v-chip color="grey" v-if="item.caption_status?.toString() == '0'">{{ CapitalizeFirstLetter(t('common.not_start')) }}</v-chip>
+      <v-chip color="blue" v-if="item.caption_status?.toString() == '1'">{{ CapitalizeFirstLetter(t('common.processing')) }}</v-chip>
+      <v-chip color="green" v-if="item.caption_status?.toString() == '2'">{{ CapitalizeFirstLetter(t('common.complete')) }}</v-chip>
+      <v-chip color="red" v-if="item.caption_status?.toString() == '3'">{{ CapitalizeFirstLetter(t('common.error')) }}</v-chip>
     </template>
     <template v-slot:item.status="{ item }">
-      <v-chip color="grey" v-if="item.status == '0'">{{ CapitalizeFirstLetter(t('common.not_start')) }}</v-chip>
-      <v-chip color="blue" v-if="item.status == '1'">{{ CapitalizeFirstLetter(t('common.processing')) }}</v-chip>
-      <v-chip color="green" v-if="item.status == '2'">{{ CapitalizeFirstLetter(t('common.complete')) }}</v-chip>
-      <v-chip color="red" v-if="item.status == '3'">{{ CapitalizeFirstLetter(t('common.error')) }}</v-chip>
+      <v-chip color="grey" v-if="item.status.toString() == '0'">{{ CapitalizeFirstLetter(t('common.not_start')) }}</v-chip>
+      <v-chip color="blue" v-if="item.status.toString() == '1'">{{ CapitalizeFirstLetter(t('common.processing')) }}</v-chip>
+      <v-chip color="green" v-if="item.status.toString() == '2'">{{ CapitalizeFirstLetter(t('common.complete')) }}</v-chip>
+      <v-chip color="red" v-if="item.status.toString() == '3'">{{ CapitalizeFirstLetter(t('common.error')) }}</v-chip>
     </template>
     <template v-slot:[`item.actions`]="{ item }">
-      <v-icon size="small" class="me-2" @click="retryDownload(item)" v-if="item.status == '3'">
+      <v-icon size="small" class="me-2" @click="retryDownload(item)" v-if="item.status.toString() == '3'">
         mdi-restart
       </v-icon>
-      <v-icon size="small" class="me-2" @click="openfile(item)" v-if="item.status == '2'&&item.savepath.length>0">
+      <v-icon size="small" class="me-2" @click="openfile(item)" v-if="item.status.toString() == '2'&&item.savepath.length>0">
         mdi-folder-open
       </v-icon>
       <v-icon size="small" @click="deleteitem(item)">
         mdi-delete
       </v-icon>
-      <v-icon size="small" class="me-2" @click="showitemLog(item)" v-if="item.status == '3'">
+      <v-icon size="small" class="me-2" @click="showitemLog(item)" v-if="item.status.toString() == '3'">
                 mdi-file-document
             </v-icon>
             <v-icon size="small" @click="openDetail(item)">
@@ -63,7 +66,7 @@
          
           <v-row>
             <v-col cols="12" md="12">      
-            <v-text-field :label="$t('video.caption_save_path')" :hint="$t('video.input_caption_save_path')" persistent-hint required
+            <v-text-field :label="t('video.caption_save_path')" :hint="t('video.input_caption_save_path')" persistent-hint required
               type="input" @click="captionselectPath" v-model="captionsavePath" class="mt-2" :rules="[rules.required]" ></v-text-field>
             </v-col>
           </v-row> 
@@ -86,6 +89,54 @@
       </v-card-actions>
     </v-card>
   </v-dialog>
+  <v-dialog v-model="showTranslateInfroDialog" max-width="500px"> 
+    <v-card>
+      <v-card-title class="headline">{{ CapitalizeFirstLetter(t('video.translate_video_information')) }}</v-card-title>
+      <v-card-text>
+       
+         
+          <v-row>
+          <v-col cols="12" md="12">
+            <v-label>{{ CapitalizeFirstLetter(t('video.source_language')) }}:</v-label>
+            <v-select
+            v-model="sourcelan"
+            :items="languagelist"
+              :label="t('video.select_language')"
+              item-title="name"
+              item-value="code"
+              return-object
+              class="mt-2"
+              :rules="[rules.required]"
+            ></v-select>
+          </v-col>
+          </v-row> 
+        
+        <row>
+          <v-col cols="12" md="12">
+            <v-label>{{ CapitalizeFirstLetter(t('video.target_language')) }}:</v-label>
+            <v-select
+            v-model="targetlan"
+            :items="languagelist"
+              :label="t('video.select_language')"
+              item-title="name"
+              item-value="code"
+              return-object
+              
+              class="mt-2"
+              :rules="[rules.required]"
+            ></v-select>
+          </v-col>
+    </row>
+   
+
+    </v-card-text>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn color="blue darken-1" text @click="showTranslateInfroDialog=false">{{ t('common.cancel') }}</v-btn>
+        <v-btn color="blue darken-1" text @click="translateVideoInfo">{{ t('common.confirm') }}</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script setup lang="ts">
@@ -93,8 +144,9 @@ import { useI18n } from "vue-i18n";
 import { ref, computed, onMounted, reactive, onUnmounted } from 'vue'
 import { SearchResult } from '@/views/api/types'
 import { useRoute } from "vue-router";
-import { getVideolistbyTaskId, retryVideoDownloadId, receiveVideoItemDownloadMessage, openFileexplor, deleteVideoDownItem, generateCaption,receiveVideoCaptionGenerateMessage,queryVideoItemdownloadlog } from "@/views/api/video";
-import { VideoDownloadListDisplay,VideoCaptionGenerateParamWithIds } from "@/entityTypes/videoType";
+import { getVideolistbyTaskId, retryVideoDownloadId, receiveVideoItemDownloadMessage, openFileexplor, deleteVideoDownItem, generateCaption,
+  receiveVideoCaptionGenerateMessage,queryVideoItemdownloadlog,translateInformation } from "@/views/api/video";
+import { VideoDownloadListDisplay,VideoCaptionGenerateParamWithIds,VideoInformationTransParam } from "@/entityTypes/videoType";
 import router from '@/views/router';
 import { CapitalizeFirstLetter } from "@/views/utils/function"
 import { CommonDialogMsg } from "@/entityTypes/commonType";
@@ -103,6 +155,8 @@ import DeleteDialog from '@/views/components/widgets/deleteDialog.vue';
 import { Header } from "@/entityTypes/commonType"
 import { opendialog} from "@/views/api/video";
 import LogDialog from "@/views/components/widgets/logDialog.vue"
+import {LanguageConfig} from "@/config/LanguageConfig"
+import {LanguageItem} from '@/entityTypes/commonType'
 const selected = ref<Array<VideoDownloadListDisplay>>([]);
 const headers = ref<Array<Header>>([])
 const $route = useRoute();
@@ -111,6 +165,9 @@ const { t } = useI18n({ inheritLocale: true });
 const rules = {
   required: (value) => !!value || "Field is required",
 };
+const languagelist=ref<Array<LanguageItem>>(LanguageConfig)
+const targetlan=ref<LanguageItem>()
+const sourcelan=ref<LanguageItem>()
 type Fetchparam = {
   // id:number
 
@@ -158,7 +215,7 @@ headers.value = [
     align: 'start',
     sortable: false,
     key: 'url',
-    width: '100px'
+    width: '60'
   },
   {
     title: computed(_ => CapitalizeFirstLetter(t("video.title"))),
@@ -213,7 +270,7 @@ const options = reactive({
   page: 1, // Initial page
   itemsPerPage: 10, // Items per page
 });
-
+const showTranslateInfroDialog=ref(false);
 const logdiaContent = ref("");
 const logdiastatus = ref(false);
 // const taskId=ref(0);
@@ -351,12 +408,31 @@ const generateCaptions = async () => {
   }
   await generateCaption(data)
 }
+
 const openDetail = (item: VideoDownloadListDisplay) => {
   if (item.id) {
     router.push({
       name: "VideoDetail", params: { id: item.id }
     });
   }
+}
+const translateVideoInfo=async()=>{
+  const ids: Array<number> = []
+  selected.value.forEach(element => {
+    if (element.id) {
+      ids.push(element.id)
+    }
+  });
+  if(!sourcelan.value||!targetlan.value){
+    setAlert(t('video.select_language_error'), t('common.error'), "error");
+    return;
+  }
+  const data:VideoInformationTransParam<number>={
+    ids:ids,
+    source_language:sourcelan.value,
+    target_language:targetlan.value
+  }
+  await translateInformation(data)
 }
 
 onMounted(() => {
@@ -389,6 +465,7 @@ onMounted(() => {
       // logs.value += res.data.content + "\n";
     }
   });
+
   receiveVideoCaptionGenerateMessage((res: CommonDialogMsg) => {
     console.log(res)
     //revice system message

@@ -168,6 +168,12 @@ export default {
         item_not_found_local:"item not found in local",
         caption_files:"caption files",
         open_caption_file_error:"open caption file error",
+        translate_information:"translate information",
+        translate_video:"translate video",
+        source_language:"source language",
+        target_language:"target language",
+        select_language_error:"lanauge is empty, please select language",
+        translate_video_information:"translate video information",
     },
     account:{
         accountId:"Account ID",
