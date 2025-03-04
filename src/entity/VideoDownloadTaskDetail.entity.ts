@@ -22,7 +22,7 @@ export class VideoDownloadTaskDetailEntity extends AuditableEntity {
     @Column("integer", { nullable: true })
     proxy_override: number | null;
 
-    @Column("text", { nullable: true })
+    @Column("text", { nullable: true, default: "en" })
     video_language: string | null;
 
     @Column("integer", { nullable: true })

@@ -84,8 +84,8 @@
     </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="blue darken-1" text @click="showLangDialog=false">{{ t('common.cancel') }}</v-btn>
-        <v-btn color="blue darken-1" text @click="generateCaptions">{{ t('common.confirm') }}</v-btn>
+        <v-btn color="blue darken-1"  @click="showLangDialog=false">{{ t('common.cancel') }}</v-btn>
+        <v-btn color="blue darken-1"  @click="generateCaptions">{{ t('common.confirm') }}</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -95,7 +95,7 @@
       <v-card-text>
        
          
-          <v-row>
+          <!-- <v-row>
           <v-col cols="12" md="12">
             <v-label>{{ CapitalizeFirstLetter(t('video.source_language')) }}:</v-label>
             <v-select
@@ -109,7 +109,7 @@
               :rules="[rules.required]"
             ></v-select>
           </v-col>
-          </v-row> 
+          </v-row>  -->
         
         <row>
           <v-col cols="12" md="12">
@@ -132,8 +132,8 @@
     </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="blue darken-1" text @click="showTranslateInfroDialog=false">{{ t('common.cancel') }}</v-btn>
-        <v-btn color="blue darken-1" text @click="translateVideoInfo">{{ t('common.confirm') }}</v-btn>
+        <v-btn color="blue darken-1" @click="showTranslateInfroDialog=false">{{ t('common.cancel') }}</v-btn>
+        <v-btn color="blue darken-1" @click="translateVideoInfo">{{ t('common.confirm') }}</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -167,7 +167,7 @@ const rules = {
 };
 const languagelist=ref<Array<LanguageItem>>(LanguageConfig)
 const targetlan=ref<LanguageItem>()
-const sourcelan=ref<LanguageItem>()
+// const sourcelan=ref<LanguageItem>()
 type Fetchparam = {
   // id:number
 
@@ -423,13 +423,13 @@ const translateVideoInfo=async()=>{
       ids.push(element.id)
     }
   });
-  if(!sourcelan.value||!targetlan.value){
+  if(!targetlan.value){
     setAlert(t('video.select_language_error'), t('common.error'), "error");
     return;
   }
   const data:VideoInformationTransParam<number>={
     ids:ids,
-    source_language:sourcelan.value,
+    // source_language:sourcelan.value,
     target_language:targetlan.value
   }
   await translateInformation(data)

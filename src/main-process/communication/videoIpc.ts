@@ -1,16 +1,16 @@
 import { ipcMain } from 'electron';
-import { VIDEODOWNLOAD, VIDEODOWNLOAD_MESSAGE, VIDEODOWNLOAD_TASK_LIST, VIDEODOWNLOAD_LIST, VIDEODOWNLOADTASK_RETRY, VIDEODOWNLOADITEM_RETRY, VIDEODOWNLOAD_ITEM_MESSAGE, VIDEODOWNLOADITEM_EXPLORER, VIDEODOWNLOADITEM_DELETE, VIDEODOWN_TASK_ERROR_LOG_QUERY, VIDEO_CAPTION_GENERATE, VIDEOTASKDOWNLOAD_RETRY_MESSAGE, VIDEODOWNLOAD_LOG_QUERY, SYSTEM_MESSAGE, VIDEODOWNLOAD_DETAIL_QUERY, VIDEODOWNLOAD_OPEN_CAPTIONFILE,VIDEO_VOICE_TRANSLATE } from '@/config/channellist'
+import { VIDEODOWNLOAD, VIDEODOWNLOAD_MESSAGE, VIDEODOWNLOAD_TASK_LIST, VIDEODOWNLOAD_LIST, VIDEODOWNLOADTASK_RETRY, VIDEODOWNLOADITEM_RETRY, VIDEODOWNLOAD_ITEM_MESSAGE, VIDEODOWNLOADITEM_EXPLORER, VIDEODOWNLOADITEM_DELETE, VIDEODOWN_TASK_ERROR_LOG_QUERY, VIDEO_CAPTION_GENERATE, VIDEOTASKDOWNLOAD_RETRY_MESSAGE, VIDEODOWNLOAD_LOG_QUERY, SYSTEM_MESSAGE, VIDEODOWNLOAD_DETAIL_QUERY, VIDEODOWNLOAD_OPEN_CAPTIONFILE, VIDEO_VOICE_TRANSLATE, VIDEO_INFORMATION_TRANSLATE } from '@/config/channellist'
 import { videoController } from '@/controller/videoController';
 import { CommonDialogMsg, CommonResponse, CommonIdrequest, CommonMessage, CommonIdrequestType } from "@/entityTypes/commonType";
 import { CustomError } from '@/modules/customError';
-import { VideoDownloadTaskEntity, VideoDownloadQuery, VideoDownloadListDisplay, downloadVideoparam, VideoCaptionGenerateParamWithIds, VideoCompotionEntity } from "@/entityTypes/videoType";
+import { VideoDownloadTaskEntity, VideoDownloadQuery, VideoDownloadListDisplay, DownloadVideoControlparam, VideoCaptionGenerateParamWithIds, VideoCompotionEntity, VideoInformationTransParam } from "@/entityTypes/videoType";
 
 export function registerVideoIpcHandlers() {
     console.log("video download register")
     const videoCtrl = new videoController()
     ipcMain.on(VIDEODOWNLOAD, async (event, arg) => {
         // console.log("get video download message")
-        const qdata = JSON.parse(arg) as downloadVideoparam;
+        const qdata = JSON.parse(arg) as DownloadVideoControlparam;
         if (!("accountId" in qdata)) {
             // throw new Error("accountId not found");
             const comMsgs: CommonDialogMsg = {
@@ -361,11 +361,20 @@ export function registerVideoIpcHandlers() {
         }
     })
     //translate video information
+    ipcMain.on(VIDEO_INFORMATION_TRANSLATE, async (event, data) => {
+        const qdata = JSON.parse(data) as VideoInformationTransParam<number>
+        if (!("ids" in qdata)) {
+            throw new Error("ids not found");
+        }
+
+
+    })
+    //translate video information
     ipcMain.on(VIDEO_VOICE_TRANSLATE, async (event, data) => {
         const qdata = JSON.parse(data) as CommonIdrequest<number>
         if (!("id" in qdata)) {
             throw new Error("id not found");
         }
-     
+
     })
 }

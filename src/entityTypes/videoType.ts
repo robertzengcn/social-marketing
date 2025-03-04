@@ -19,6 +19,7 @@ export type downloadVideoparam={
     cookies_type:string,
     browserName?:string,
     videoQuality?:number,
+    videoLanguage:LanguageItem,
 }
 export type videoDownloadMsg={
     status:boolean,
@@ -65,6 +66,7 @@ export type VideoDownloadEntity={
     record_time?:string,
     task_id:number,
     caption_status?:VideoCaptionStatus,
+    language_code:string,
     // strout?:string,
     error_log?:string,
     status:VideoDownloadStatus,
@@ -152,6 +154,7 @@ export interface VideoDownloadListDisplay extends VideoDownloadEntity {
 }
 //the param need for video download
 export type DownloadVideoControlparam={
+    taskName:string,
     accountId:Array<number>,
     platform:string,
     link:Array<string>,
@@ -162,6 +165,7 @@ export type DownloadVideoControlparam={
     cookies_type:string,
     browserName?:string,
     videoQuality?:number,
+    language_code:string,
 }
 export enum DownloadType {
     SINGLEVIDEO = 1,
@@ -178,7 +182,8 @@ export interface VideoDownloadTaskDetailEntity {
     cookies_type:CookiesType;
     browser_type:string;
     proxy_override:boolean;
-    video_quality:number
+    video_quality:number;
+    language_code:string
 }
 export interface VideoDownloadTaskAccountEntity {
     id?: number;
@@ -242,6 +247,6 @@ export type VideoCompotionEntity={
 }
 
 export interface VideoInformationTransParam<Type> extends CommonIdrequestIds<Type>{
-    source_language:LanguageItem
+    // source_language:LanguageItem
     target_language:LanguageItem
 }

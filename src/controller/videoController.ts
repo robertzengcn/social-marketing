@@ -271,7 +271,7 @@ export class videoController {
                         savepath: savepath,
                         task_id: Number(taskId),
                         status: VideoDownloadStatus.Finish,
-
+                        language_code:param.language_code
                     }
 
                     // this.emailSeachTaskModule.saveSearchResult(taskId,childdata.data)
@@ -281,7 +281,7 @@ export class videoController {
                         videoId: videoNum,
                         title: getData.title ? getData.title : '',
                         description: getData.description ? getData.description : '',
-                        language: "en-us"
+                        language: param.language_code
                     }
                     //save video Video Description
                     this.videoDescriptionModule.saveVideoDescription(videoDescriptionEntity)
@@ -291,7 +291,7 @@ export class videoController {
                         savepath: '',
                         task_id: Number(taskId),
                         status: VideoDownloadStatus.Error,
-                      
+                        language_code:param.language_code
                     }
                     const videoId = this.videoDownloadModule.saveVideoDownload(videoDownloadEntity)
                     if (getData.log) {
@@ -308,7 +308,7 @@ export class videoController {
 
 
     }
-    public async downloadVideo(param: downloadVideoparam, startCall?: () => void) {
+    public async downloadVideo(param: DownloadVideoControlparam, startCall?: () => void) {
         //get video tool
         const videoTool = await this.getVideoDownloadTool(param.platform)
         if (!videoTool) {
@@ -338,8 +338,8 @@ export class videoController {
             cookies_type: param.cookies_type == "browser cookies" ? CookiesType.USEBROWSER : CookiesType.ACCOUNTCOOKIES,
             browser_type: param.browserName ? param.browserName : '',
             proxy_override: param.ProxyOverride,
-            video_quality: param.videoQuality ? param.videoQuality : 0
-
+            video_quality: param.videoQuality ? param.videoQuality : 0,
+            language_code:param.language_code
         }
         //save video task detail
         this.videoDownloadTaskDetailModule.create(vdetd)
@@ -364,6 +364,7 @@ export class videoController {
                 this.videoDownloadTaskProxyModule.create({ task_id: taskId, proxy_id: value })
             })
         }
+        // param.language_code=param.videoLanguage.code
         //process download video
         await this.processDownloadVideo(param, videoTool, taskId, startCall)
     }
@@ -402,7 +403,8 @@ export class videoController {
                 title: '',
                 description: '',
                 error_log: element.error_log,
-                caption_status:element.caption_status
+                caption_status:element.caption_status,
+                language_code:element.language_code
             }
             if (element.id && element.status == VideoDownloadStatus.Finish) {
 
@@ -483,6 +485,7 @@ export class videoController {
         }
 
         const data: DownloadVideoControlparam = {
+            taskName: taskInfo.taskName,
             accountId: accountIds,
             platform: taskInfo.platform,
             link: links,
@@ -492,7 +495,8 @@ export class videoController {
             ProxyOverride: taskDetail.proxy_override,
             cookies_type: taskDetail.cookies_type == CookiesType.ACCOUNTCOOKIES ? "account cookies" : "browser cookies",
             browserName: taskDetail.browser_type ? taskDetail.browser_type : "",
-            videoQuality: taskDetail.video_quality
+            videoQuality: taskDetail.video_quality,
+            language_code:taskDetail.language_code
         }
         return data
 
@@ -744,5 +748,6 @@ export class videoController {
         }
         shell.showItemInFolder(videoCaptionInfo.caption_path);
     }
+    
    
 }
