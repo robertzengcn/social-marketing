@@ -318,7 +318,7 @@ export function registerVideoIpcHandlers() {
             if (!("id" in qdata)) {
                 throw new Error("id not found");
             }
-            const content: VideoCompotionEntity = videoCtrl.getVideoinfo(qdata.id)
+            const content: VideoCompotionEntity = await videoCtrl.getVideoinfo(qdata.id)
             console.log(content)
             const videoMsgs: CommonMessage<VideoCompotionEntity> = {
                 status: true,
@@ -366,15 +366,16 @@ export function registerVideoIpcHandlers() {
         if (!("ids" in qdata)) {
             throw new Error("ids not found");
         }
-
+        
 
     })
-    //translate video information
+    //translate video voice
     ipcMain.on(VIDEO_VOICE_TRANSLATE, async (event, data) => {
         const qdata = JSON.parse(data) as CommonIdrequest<number>
         if (!("id" in qdata)) {
             throw new Error("id not found");
         }
+       
 
     })
 }

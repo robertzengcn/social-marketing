@@ -2,7 +2,8 @@ import {Proxy} from "@/entityTypes/proxyType"
 import {TaskStatus,ItemSearchparam,CommonIdrequestIds} from "@/entityTypes/commonType"
 // import {LanguageEnum} from "@/config/generate"
 import {LanguageItem} from "@/entityTypes/commonType"
-
+import { VideoDescriptionEntity } from "@/entity/VideoDescription.entity"
+import {VideoDownloadTagEntity} from "@/entity/VideoDownloadTag.entity"
 export type videoScraper={
     cookies: string,
     proxy?:Proxy
@@ -131,15 +132,15 @@ export type VideodoanloadSuccessCall={
  tags:Array<string>,
 categories:Array<string>,
 }
-export type VideoDescriptionEntity={
-    id?:number,
-    videoId:number,
-    title:string,  
-    description:string,
-    language:string,
-    // tags:Array<string>,
-    // categories:Array<string>,
-}
+// export type VideoDescriptionEntity={
+//     id?:number,
+//     videoId:number,
+//     title:string,  
+//     description:string,
+//     language:string,
+//     // tags:Array<string>,
+//     // categories:Array<string>,
+// }
 export type VideodownloadTaskMsg={
     msg:string,
 }
@@ -242,11 +243,19 @@ savePath:string
 }
 export type VideoCompotionEntity={
     detail:VideoDownloadEntity,
-    description:VideoDescriptionEntity,
+    description:VideoDescriptionEntity|null,
     caption:Array<VideoCaptionDisplay>|null
 }
 
 export interface VideoInformationTransParam<Type> extends CommonIdrequestIds<Type>{
     // source_language:LanguageItem
     target_language:LanguageItem
+}
+export interface VideoTranslateItem{
+    videoId:number,
+    title:string,
+    description:string,
+    tags?:Array<VideoDownloadTagEntity>,
+    target_language:LanguageItem
+
 }

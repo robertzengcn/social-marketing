@@ -1,12 +1,15 @@
-import {VideoDescriptiondb} from "@/model/videoDescriptiondb";
+// import {VideoDescriptiondb} from "@/model/videoDescriptiondb";
+import {VideoDescriptionModel} from "@/model/VideoDescription.model";
+import { VideoDescriptionEntity } from "@/entity/VideoDescription.entity"
 //import { Token } from "@/modules/token"
 //import { USERSDBPATH } from '@/config/usersetting';
-import { VideoDescriptionEntity } from "@/entityTypes/videoType";
+// import { VideoDescriptionEntity } from "@/entityTypes/videoType";
 import { BaseModule } from "@/modules/baseModule";
 //import { inherits } from "util";
 export class VideoDescriptionModule extends BaseModule{
     //private dbpath: string
-    private videoDownloaddb:VideoDescriptiondb
+    // private videoDownloaddb:VideoDescriptiondb
+    private videoDescriptionModel:VideoDescriptionModel
     constructor() {
         super()
         // const tokenService = new Token()
@@ -15,16 +18,17 @@ export class VideoDescriptionModule extends BaseModule{
         //     throw new Error("user path not exist")
         // }
         //this.dbpath = dbpath
-        this.videoDownloaddb=new VideoDescriptiondb(this.dbpath)
+        // this.videoDownloaddb=new VideoDescriptiondb(this.dbpath)
+        this.videoDescriptionModel=new VideoDescriptionModel(this.dbpath)
     }
-    saveVideoDescription(videoinfo: VideoDescriptionEntity):number {
-        return this.videoDownloaddb.saveVideoDescription(videoinfo)
+    async saveVideoDescription(videoinfo: VideoDescriptionEntity):Promise<number> {
+        return this.videoDescriptionModel.saveVideoDescription(videoinfo)
     }
-    getVideoDescription(videoId: number): VideoDescriptionEntity {
-        return this.videoDownloaddb.getVideoDescription(videoId)
+    async getVideoDescription(videoId: number,language:string): Promise<VideoDescriptionEntity|null> {
+        return await this.videoDescriptionModel.getVideoDescription(videoId,language)
     }
-    deleteVideoDescription(videoId: number): number {
-        return this.videoDownloaddb.deleteVideoDescription(videoId)
+    async deleteVideoDescription(videoId: number): Promise<number> {
+        return await this.videoDescriptionModel.deleteVideoDescription(videoId)
     }
 
 }

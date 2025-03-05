@@ -1,5 +1,5 @@
 import { videoFactory } from "@/modules/video/videoFactory";
-import { downloadVideoparam, VideoDownloadTaskEntity, processVideoDownloadParam, CookiesProxy,VideoCompotionEntity,VideoCaptionGenerateParam,VideoCaptionDisplay } from "@/entityTypes/videoType";
+import {  VideoDownloadTaskEntity, processVideoDownloadParam, CookiesProxy,VideoCompotionEntity,VideoCaptionGenerateParam,VideoCaptionDisplay,VideoTranslateItem } from "@/entityTypes/videoType";
 // import { VideoDownloadTaskdb } from "@/model/videoDownloadTaskdb";
 // import { VideoDownloaddb} from "@/model/videoDownloaddb"
 import { VideoDownloadModule } from "@/modules/VideoDownloadModule"
@@ -17,7 +17,8 @@ import { SocialAccountApi } from "@/api/socialAccountApi"
 import { ProcessMessage } from "@/entityTypes/processMessage-type"
 // import {VideodownloadMsg} from "@/entityTypes/videoType";
 import { ListData, TaskStatus } from "@/entityTypes/commonType"
-import { VideoDownloadEntity, VideoDownloadStatus, VideoDescriptionEntity, VideodownloadTaskMsg, VideoDownloadListDisplay, VideodownloadMsg, DownloadVideoControlparam, VideoDownloadTaskDetailEntity, DownloadType, CookiesType, VideoCaptionItem, VideoCaptionMsg, VideoCaptionEntity, VideoCaptionStatus, VideoCaptionGenerateParamWithIds } from "@/entityTypes/videoType"
+import { VideoDescriptionEntity } from "@/entity/VideoDescription.entity"
+import { VideoDownloadEntity, VideoDownloadStatus, VideodownloadTaskMsg, VideoDownloadListDisplay, VideodownloadMsg, DownloadVideoControlparam, VideoDownloadTaskDetailEntity, DownloadType, CookiesType, VideoCaptionItem, VideoCaptionMsg, VideoCaptionEntity, VideoCaptionStatus, VideoCaptionGenerateParamWithIds,VideoInformationTransParam } from "@/entityTypes/videoType"
 import { VideoDescriptionModule } from "@/modules/videoDescriptionModule"
 import { Video } from '@/modules/interface/Video';
 import { VideoDownloadTaskDetailModule } from '@/modules/VideoDownloadTaskDetailModule';
@@ -32,9 +33,10 @@ import { shell } from "electron"
 import { CustomError } from '@/modules/customError'
 import { VideoCaptionModule } from "@/modules/VideoCaptionModule"
 // import { LanguageEnum } from "@/config/generate"
-import {LanguageItem} from "@/entityTypes/commonType"
+// import {LanguageItem} from "@/entityTypes/commonType"
 import {ExtraModuleController} from "@/controller/extramoduleController"
 import {getLanaugebyid} from "@/modules/lib/function"
+import {VideoDownloadTagModule} from "@/modules/VideoDownloadTagModule"
 // import { param } from "jquery";
 //import {} from "@/entityTypes/proxyType"
 export class videoController {
@@ -48,6 +50,8 @@ export class videoController {
     private videoDownloadTaskUrlModule: VideoDownloadTaskUrlModule
     private videoDownloadTaskProxyModule: VideoDownloadTaskProxyModule
     private videoCaptionModule: VideoCaptionModule
+    private videoDownloadTagModule: VideoDownloadTagModule
+    // private videoDownloadTagModel:VideoDownloadTagModel
     constructor() {
         // const tokenService = new Token()
         // const dbpath = tokenService.getValue(USERSDBPATH)
@@ -253,7 +257,7 @@ export class videoController {
                 // this.emailSeachTaskModule.updateTaskStatus(taskId,EmailsearchTaskStatus.Complete)
             }
         })
-        child.on('message', (message) => {
+        child.on('message', async (message) => {
             console.log("get message from child")
             console.log('Message from child:', JSON.parse(message));
             const childdata = JSON.parse(message) as ProcessMessage<any>
@@ -276,15 +280,20 @@ export class videoController {
 
                     // this.emailSeachTaskModule.saveSearchResult(taskId,childdata.data)
                     const videoNum = this.videoDownloadModule.saveVideoDownload(videoDownloadEntity)
-
-                    const videoDescriptionEntity: VideoDescriptionEntity = {
-                        videoId: videoNum,
-                        title: getData.title ? getData.title : '',
-                        description: getData.description ? getData.description : '',
-                        language: param.language_code
-                    }
+                    const videoDescriptionEntity=new VideoDescriptionEntity()
+                    videoDescriptionEntity.video_id=videoNum
+                    videoDescriptionEntity.title=getData.title ? getData.title : ''
+                    videoDescriptionEntity.description=getData.description ? getData.description : ''
+                    videoDescriptionEntity.language=param.language_code
+                    // const videoDescriptionEntity: VideoDescriptionEntity = {
+                    //     video_id: videoNum,
+                    //     title: getData.title ? getData.title : '',
+                    //     description: getData.description ? getData.description : '',
+                    //     language: param.language_code
+                        
+                    // }
                     //save video Video Description
-                    this.videoDescriptionModule.saveVideoDescription(videoDescriptionEntity)
+                    await this.videoDescriptionModule.saveVideoDescription(videoDescriptionEntity)
                 } else if (getData && (!getData?.status)) {//failure
                     const videoDownloadEntity: VideoDownloadEntity = {
                         url: getData.link,
@@ -383,16 +392,11 @@ export class videoController {
     }
 
     //get video download list by task id
-    public videoDownloadlist(taskId: number, page: number, size: number): ListData<VideoDownloadListDisplay> {
-        // const tokenService=new Token()
-        // const dbpath=await tokenService.getValue(USERSDBPATH)
-        // if(!dbpath){
-        //     throw new Error("user db path not exist")
-        // }
-        // const videoDownloaddb=new VideoDownloaddb(dbpath)
+    public async videoDownloadlist(taskId: number, page: number, size: number): Promise<ListData<VideoDownloadListDisplay>> {
+       
         const res: Array<VideoDownloadListDisplay> = []
         const list = this.videoDownloadModule.getVideoDownloadList(taskId, page, size)
-        list.forEach((element) => {
+        list.forEach(async (element) => {
             let vdld: VideoDownloadListDisplay = {
                 id: element.id,
                 url: element.url,
@@ -408,7 +412,7 @@ export class videoController {
             }
             if (element.id && element.status == VideoDownloadStatus.Finish) {
 
-                const videoDescription = this.videoDescriptionModule.getVideoDescription(element.id)
+                const videoDescription = await this.videoDescriptionModule.getVideoDescription(element.id,element.language_code)
                 if (videoDescription) {
                     vdld.title = videoDescription.title
                     vdld.description = videoDescription.description
@@ -704,13 +708,13 @@ export class videoController {
 
     }
     //get video info by id
-    public getVideoinfo(id:number):VideoCompotionEntity{
+    public async getVideoinfo(id:number):Promise<VideoCompotionEntity>{
        const videoDownEntity= this.videoDownloadModule.getVideoDownloaditem(id)
          if(!videoDownEntity){
               throw new Error("video download item not found")
          }
          //get video description
-        const videoDescription=this.videoDescriptionModule.getVideoDescription(id)
+        const videoDescription=await this.videoDescriptionModule.getVideoDescription(id,videoDownEntity.language_code)
          //get video caption
          const videoCaption=this.videoCaptionModule.getCaptionByVid(id)
          const captionDisplay:Array<VideoCaptionDisplay>=[]
@@ -748,6 +752,41 @@ export class videoController {
         }
         shell.showItemInFolder(videoCaptionInfo.caption_path);
     }
+
+    //translate video information 
+    public async convertToVideoTranslateitem(data: VideoInformationTransParam<number>): Promise<Array<VideoTranslateItem>> {
+        const res: Array<VideoTranslateItem> = []
+        if (data.ids.length > 0) {
+            data.ids.forEach(async (value) => {
+                const videoItem = this.videoDownloadModule.getVideoDownloaditem(value)
+                if (videoItem) {
+                    const vds=await this.videoDescriptionModule.getVideoDescription(value,data.target_language.code)
+                    const tags=await this.videoDownloadTagModule.getVideoTag(value)
+                    const vti:VideoTranslateItem={
+                        videoId:value,
+                          title:vds?.title?vds.title:'',
+                          description:vds?.description?vds.description:'',
+                          tags:tags,
+                          target_language:data.target_language
+                  }
+                    res.push(vti)
+                }
+
+
+            })
+        }
+        return res
+
+    }
+    public async tranVideoinfo(data:VideoInformationTransParam<number>){
+        const videoItem:Array<VideoTranslateItem>=await this.convertToVideoTranslateitem(data)
+        if(videoItem.length<1){
+            throw new Error("video.item_not_found_local")
+        }
+            
+
+    }
+
     
    
 }
