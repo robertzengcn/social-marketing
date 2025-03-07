@@ -8,7 +8,7 @@ export class LlmFactory extends AbstractTranslateFactory{
         return undefined;
     }
     
-    public getLlmTool(sitename: string,url?:string):LlmImpl | undefined {
+    public getLlmTool(sitename: string,url?:string,apikey?:string):LlmImpl | undefined {
         switch (sitename) {
             case 'deepseek-r1':
                 return new OllamaLlm("deepseek-r1",url);
