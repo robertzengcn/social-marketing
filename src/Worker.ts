@@ -1,6 +1,8 @@
 "use strict";
 export {};
 import {TranslateController} from "@/controller/TranslateController"
+import {ProcessMessage} from "@/entityTypes/processMessage-type"
+
 // Import statement for using postMessage in a worker environment
 const worker: Worker = self as any;
 
@@ -13,6 +15,7 @@ worker.onmessage=   async (e) => {
     if (!e.data) {
         return 
     } 
+    const pme=JSON.parse(e.data) as ProcessMessage<Usersearchdata>
     if(e.data=="translate"){
 
     }

@@ -13,7 +13,7 @@ import {VideoDownloadTaskAccountsEntity} from "@/entity/VideoDownloadTaskAccount
 import {VideoDownloadTaskDetailEntity} from "@/entity/VideoDownloadTaskDetail.entity"
 import {VideoDownloadTaskProxyEntity} from "@/entity/VideoDownloadTaskProxy.entity"
 import {VideoDownloadTaskUrlsEntity} from "@/entity/VideoDownloadTaskUrls.entity"
-
+import {VideoDownloadTagEntity} from "@/entity/VideoDownloadTag.entity"
 import path from "node:path";
 export class SqliteDb {
     public connection: DataSource;
@@ -26,7 +26,7 @@ export class SqliteDb {
             entities: [AccountCookies,BuckemailTask,SystemSettingGroupEntity,
                 SystemSettingEntity,SystemSettingOptionEntity,VideoCaptionEntity,VideoDescriptionEntity,
                 VideoDownloadEntity,VideoDownloadTaskEntity,VideoDownloadTaskAccountsEntity,
-                VideoDownloadTaskDetailEntity,VideoDownloadTaskProxyEntity,VideoDownloadTaskUrlsEntity
+                VideoDownloadTaskDetailEntity,VideoDownloadTaskProxyEntity,VideoDownloadTaskUrlsEntity,VideoDownloadTagEntity
             ],
             synchronize: true, 
             migrations: [],
