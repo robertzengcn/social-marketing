@@ -396,8 +396,9 @@ export class videoController {
        
         const res: Array<VideoDownloadListDisplay> = []
         const list = this.videoDownloadModule.getVideoDownloadList(taskId, page, size)
-        list.forEach(async (element) => {
-            let vdld: VideoDownloadListDisplay = {
+       //list.forEach(async (element) => {
+        for (const element of list) {  
+        let vdld: VideoDownloadListDisplay = {
                 id: element.id,
                 url: element.url,
                 savepath: element.savepath,
@@ -419,7 +420,7 @@ export class videoController {
                 }
             }
             res.push(vdld)
-        })
+        }
         const count = this.videoDownloadModule.countVideoDownloadList(taskId)
         return { records: res, num: count } as ListData<VideoDownloadListDisplay>
     }
@@ -665,7 +666,7 @@ export class videoController {
                 // this.videoDownloadTaskModule.updateVideoDownloadTaskStatus(taskId, TaskStatus.Error)
                 // this.emailSeachTaskModule.updateTaskStatus(taskId,EmailsearchTaskStatus.Error)
             } else {
-                console.log('Child process exited successfully');
+                console.log('Child pr`ocess exited succe`ssfully');
                 //this.videoDownloadTaskModule.updateVideoDownloadTaskStatus(taskId, TaskStatus.Complete)
                 // this.emailSeachTaskModule.updateTaskStatus(taskId,EmailsearchTaskStatus.Complete)
             }
