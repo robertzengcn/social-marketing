@@ -90,4 +90,13 @@ export enum InputTypeEnum {
     RADIO = 'radio',
     CHECKBOX = 'checkbox'
   }
+export type LlmCongfig={
+    model:string,
+    url?:string,
+    apikey?:string,
+}  
+export type TraditionalTranslateCongfig={
+    url:string,
+    apikey:string,
+}  
 

@@ -15,7 +15,7 @@ worker.onmessage=   async (e) => {
     if (!e.data) {
         return 
     } 
-    const pme=JSON.parse(e.data) as ProcessMessage<Usersearchdata>
+    const pme=JSON.parse(e.data) as ProcessMessage<any>
     if(e.data=="translate"){
 
     }
