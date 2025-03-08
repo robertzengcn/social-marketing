@@ -1,8 +1,8 @@
 import {SystemSettingGroupModule} from "@/modules/SystemSettingGroupModule"
 
-export function runafterbootup(){ 
+export async function runafterbootup(){ 
     // console.log("run after bootup");
     const systemSettingGroupModule=new SystemSettingGroupModule()
-    systemSettingGroupModule.tableInit()
+    await systemSettingGroupModule.tableInit()
 
 }

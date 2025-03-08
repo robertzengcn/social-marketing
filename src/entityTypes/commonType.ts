@@ -99,4 +99,7 @@ export type TraditionalTranslateCongfig={
     url:string,
     apikey:string,
 }  
+export type SettingGroup={
+    name:string,
+}
 

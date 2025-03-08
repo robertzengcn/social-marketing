@@ -2,6 +2,8 @@ import { BaseDb } from "@/model/Basedb";
 import { Repository } from "typeorm"
 import { SystemSettingGroupEntity } from "@/entity/SystemSettingGroup.entity"
 import {SystemSettingModel} from "@/model/SystemSetting.model"
+import {settinggroupInit} from "@/config/settinggroupInit"
+import { SystemSettingEntity } from "@/entity/SystemSetting.entity"
 
 export const deepseeklocalgroup = 'Deepseek-local'
 export class SystemSettingGroupModel extends BaseDb {
@@ -14,8 +16,38 @@ export class SystemSettingGroupModel extends BaseDb {
        
     }
     public async tableInit() {
-       const deepseekgroup=await this.insertDeepseekgroup()
-       await this.systemSettingModel.InsertDeepseekSetting(deepseekgroup) 
+        await this.initSystemSetting()
+       //const deepseekgroup=await this.insertDeepseekgroup()
+       //await this.systemSettingModel.InsertDeepseekSetting(deepseekgroup) 
+    }
+    public async initSystemSetting(){
+        for(const sgelement of settinggroupInit){
+           console.log(sgelement)
+            let settargroup=await this.repository.findOne({
+                where:{name: sgelement.name},
+             })
+                if (!settargroup) {
+                    const systemSettingGroupEntity = new SystemSettingGroupEntity();
+                    systemSettingGroupEntity.name = sgelement.name;
+                    systemSettingGroupEntity.description = sgelement.description? sgelement.description:'';
+                    settargroup=await this.repository.save(systemSettingGroupEntity)
+                }
+                for(const settingelement of sgelement.items){
+                    await this.systemSettingModel.getSettingItem(settingelement.key).then((setting)=>{
+                        if(!setting){
+                            const systemSettingEntity = new SystemSettingEntity();
+                            systemSettingEntity.group = settargroup;
+                            systemSettingEntity.key = settingelement.key;
+                            systemSettingEntity.value = settingelement.value;
+                            systemSettingEntity.description = settingelement.description? settingelement.description:'';
+                            systemSettingEntity.type = settingelement.type;
+                           this.systemSettingModel.insert(systemSettingEntity)
+                        }else{
+                            this.systemSettingModel.updateGroup(setting)
+                        }
+                    })
+                }
+        }
     }
     public async insertDeepseekgroup():Promise<SystemSettingGroupEntity>{
         let deepseekgroup = await this.repository.findOne({
@@ -44,6 +76,7 @@ export class SystemSettingGroupModel extends BaseDb {
            
         })
     }
+   
 
 
 

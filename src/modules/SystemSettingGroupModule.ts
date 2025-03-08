@@ -10,8 +10,8 @@ export class SystemSettingGroupModule extends BaseModule {
         this.systemSettingGroupModel = new SystemSettingGroupModel(this.dbpath)
     //    this.repository = this.sqliteDb.connection.getRepository(SystemSettingGroupEntity)
     }
-    public tableInit(){
-        this.systemSettingGroupModel.tableInit()
+    public async tableInit(){
+        await this.systemSettingGroupModel.tableInit()
     }
     public async listall(): Promise<SystemSettingGroupEntity[]>{
         // return this.repository.find()

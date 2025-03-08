@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn,ManyToOne,OneToMany } from "typeorm"
+import { Entity, Column, PrimaryGeneratedColumn,ManyToOne,OneToMany,Index } from "typeorm"
 import AuditableEntity from "@/entity/Auditable.entity"
 import {SystemSettingGroupEntity} from "@/entity/SystemSettingGroup.entity"
 import {SystemSettingOptionEntity} from "@/entity/SystemSettingOption.entity"
@@ -6,6 +6,7 @@ import {SystemSettingOptionEntity} from "@/entity/SystemSettingOption.entity"
 export class SystemSettingEntity extends AuditableEntity{
     @PrimaryGeneratedColumn()
     id: number;
+    @Index({ unique: true })
     @Column('text')
     key: string;
     @Column("text")

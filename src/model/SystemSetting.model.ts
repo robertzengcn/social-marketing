@@ -37,5 +37,23 @@ export class SystemSettingModel extends BaseDb {
         }
         return deepseeksettingurl
     }
-
+    public async getSettingItem(key:string):Promise<SystemSettingEntity|null>{
+        return this.repository.findOne({
+            where: { key: key }
+        })
+    }
+    public async insert(systemSettingEntity:SystemSettingEntity){
+        return this.repository.save(systemSettingEntity)
+    }
+    //update system setting group field
+    public async updateGroup(systemSettingEntity:SystemSettingEntity){
+        if (!systemSettingEntity.id) {
+            throw new Error("Entity ID is required for update");
+        }
+        
+        return this.repository.update(
+            systemSettingEntity.id,
+            { group: systemSettingEntity.group }
+        );
+    }
 }

@@ -13,7 +13,7 @@ export class TranslateController {
         switch(toolName){
             case TranslateToolEnum.DEEPSEEK:
             //get deepseek config
-
+            
                break;
             case TranslateToolEnum.OPENAI:
 
