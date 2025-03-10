@@ -14,6 +14,18 @@ export const settinggroupInit: Array<SystemSettingGroupdf> = [
         ]
     },
     {
+        name: 'deepseek-api',
+        description: 'deepseek-api-description',
+        items: [
+            {
+               key:'deepseek-api-url',
+               value:'http://localhost:11434',
+               description:'deepseek-api-description',
+               type:'input',
+            }
+        ]
+    },
+    {
         name: "grokai-group",
         description: 'grokai-group-description',
         items: [

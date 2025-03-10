@@ -57,4 +57,22 @@ export class SystemSettingModel extends BaseDb {
         //     { group: systemSettingEntity.group }
         // );
     }
+    // update system setting value
+    public async updateSystemSetting(settingId:number, settingValue:string|null): Promise<SystemSettingEntity>{
+       if(!settingId){
+           throw new Error("settingId is required");
+       }
+       if(!settingValue){
+        settingValue=""
+       }
+       const itemToUpdate =await this.repository.findOneBy({
+            id:settingId
+        })
+        if(!itemToUpdate){
+            throw new Error("settingId not found")
+        }
+        itemToUpdate.value=settingValue
+        return this.repository.save(itemToUpdate)
+
+    }
 }
