@@ -12,5 +12,23 @@ export const settinggroupInit: Array<SystemSettingGroupdf> = [
                type:'input',
             }
         ]
+    },
+    {
+        name: "grokai-group",
+        description: 'grokai-group-description',
+        items: [
+            {
+               key:'grokai-url',
+               value:'http://localhost:11434',
+               description:'grokai-url-description',
+               type:'input',
+            },
+            {
+                key:'grokai-api-key',
+                value:'',
+                description:'grokai-api-key-description',
+                type:'input',
+             }
+        ]
     }
 ]

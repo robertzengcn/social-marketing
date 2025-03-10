@@ -1,15 +1,15 @@
 import { RemoteSource, jwtUser } from '@/modules/remotesource'
 // import Store,{ Schema } from 'electron-store';
-import {getUserpath,checkAndCreatePath,getApplogspath} from "@/modules/lib/function"
+import { getUserpath, checkAndCreatePath, getApplogspath } from "@/modules/lib/function"
 import { Scraperdb } from "@/model/scraperdb";
 // import {SequelizeConfig} from "@/config/SequelizeConfig"
 // import * as fs from 'fs';
 // import * as path from 'path';
-import {USERSDBPATH,USERLOGPATH,USEREMAIL} from '@/config/usersetting';
+import { USERSDBPATH, USERLOGPATH, USEREMAIL } from '@/config/usersetting';
 import { Token } from "@/modules/token"
 //import {runAfterTableCreate} from "@/modules/lib/databaseinit"
-import {SqliteDb} from "@/modules/SqliteDb"
-import {runafterbootup} from "@/modules/bootuprun"
+import { SqliteDb } from "@/modules/SqliteDb"
+import { runafterbootup } from "@/modules/bootuprun"
 
 // import {Token} from "@/modules/token"
 
@@ -39,57 +39,84 @@ export class userController {
         const jwtuser = await remoteSourmodel.Login(data.user, data.pass).then(async function (res) {
             //console.log(res);
             res as jwtUser
-            if(res.email.length>0){
-                
+            if (res.email.length > 0) {
+
                 //check db exist, create one if not exist
-                
+
                 //console.log('test')
                 // store.set('useremail',res.email)
-                const userdataPath=getUserpath(res.email)
+                const userdataPath = getUserpath(res.email)
                 console.log(userdataPath)
                 // const schema: Schema<SchemaData> = {
                 //     // type: 'object',                 
-                const logPath=getApplogspath(res.email)
+                const logPath = getApplogspath(res.email)
 
                 await checkAndCreatePath(userdataPath)
                 await checkAndCreatePath(logPath)
-                const tokenService=new Token()
+                const tokenService = new Token()
                 //tokenService.setValue('useremail',res.email)
-                tokenService.setValue(USEREMAIL,res.email)
-                tokenService.setValue(USERSDBPATH,userdataPath)
-                tokenService.setValue(USERLOGPATH,logPath)
+                tokenService.setValue(USEREMAIL, res.email)
+                tokenService.setValue(USERSDBPATH, userdataPath)
+                tokenService.setValue(USERLOGPATH, logPath)
                 const scraperModel = Scraperdb.getInstance(userdataPath);
                 //const dbdatapath=scraperModel.getdbpath(userdataPath)
                 // console.log(dbdatapath)
 
                 scraperModel.init()
-                const appDataSource=SqliteDb.getInstance(userdataPath)
-                await appDataSource.connection.initialize()
+                const appDataSource = SqliteDb.getInstance(userdataPath)
+                try {
+                    await appDataSource.connection.initialize()
+                } catch (error) {
+                    console.error('Failed to initialize database connection:', error)
+
+                    // Log detailed error information
+                    if (error instanceof Error) {
+                        console.error(`Error name: ${error.name}`)
+                        console.error(`Error message: ${error.message}`)
+                        console.error(`Error stack: ${error.stack}`)
+
+
+                        // Handle specific error types
+                        if (error.message === 'SQLITE_CANTOPEN') {
+                            console.error('Could not open SQLite database file. Check path and permissions.')
+                        } else if (error.message === 'SQLITE_CORRUPT') {
+                            console.error('SQLite database file is corrupted.')
+                        } else if (error.name === 'CannotConnectAlreadyConnectedError') {
+                            console.log('SQLite database file is already connected.')
+                        } else {
+                            // Throw a more descriptive error or return a specific error response
+                           throw new Error(`Database initialization failed: ${error.message}`)
+                        }
+
+
+                    }
+                }
+                console.log('initialize')
                 // const sequelize=SequelizeConfig.getInstance(userdataPath);
                 // await sequelize.sync({ force: true,alter: true });
-                 // Insert some sample data after the sync completes
+                // Insert some sample data after the sync completes
                 //  runAfterTableCreate()
-                
+
                 await runafterbootup()
             }
             return res;
         }).catch(function (error) {
             console.log(error.stack)
-                //debug(error);
-                throw new Error(error.message);
+            //debug(error);
+            throw new Error(error.message);
         });
         return jwtuser;
     }
     //check user login status
-    public async checklogin(): Promise<jwtUser|null> {
+    public async checklogin(): Promise<jwtUser | null> {
         const remoteSourmodel = new RemoteSource;
-        const userInfo=await remoteSourmodel.GetUserInfo().then(function (res) {
+        const userInfo = await remoteSourmodel.GetUserInfo().then(function (res) {
             console.log(res);
             return res;
         }).catch(function (error) {
             console.log(error)
-                //debug(error);
-                //throw new Error(error.message);
+            //debug(error);
+            //throw new Error(error.message);
             return null
         });
         return userInfo;

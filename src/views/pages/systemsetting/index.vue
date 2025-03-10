@@ -5,17 +5,19 @@
       <!-- Left Column: Tree Navigation -->
       <v-col cols="3">
         <v-card>
-          <v-card-title>{{ $t('system_settings.title') }}</v-card-title>
+          <v-card-title>{{ t('system_settings.title') }}</v-card-title>
           <v-card-text>
             <v-treeview
               :items="groupItems"
+              color="warning"
               activatable
+              open-all
               item-value="id"
               item-title="name"
               item-children="children"
               v-model:active="activeGroups"
-              :open.sync="openGroups"
-            />
+            
+             />
           </v-card-text>
         </v-card>
       </v-col>
@@ -28,9 +30,9 @@
           </v-card-title>
           <v-card-text v-if="selectedGroup">
             <p>{{ selectedGroup.description }}</p>
-            <v-list dense>
+            <v-list>
               <v-list-item
-                v-for="setting in settingsByGroup(selectedGroup.id)"
+                v-for="setting in settinglist"
                 :key="setting.id"
               >
                 <v-list-item-content>
@@ -38,23 +40,27 @@
                     {{ setting.key }}
                   </v-list-item-title>
                   <v-list-item-subtitle>
-                    {{ setting.description || $t('system_settings.no_description') }}
+                    {{ setting.description || t('system_settings.no_description') }}
                   </v-list-item-subtitle>
                 </v-list-item-content>
-                <v-list-item-action>
+                <v-list-item >
                   <!-- Determine the input component based on setting.type -->
-                  <div v-if="setting.type === 'input'">
-                    <v-text-field
+                  <div v-if="setting.type === 'input'"  class="mt-3">
+                    <v-text-field 
+                    density="compact"
                       :value="setting.value"
                       variant="outlined"
-                      density="compact"
-                      @change="updateSetting(setting.id, $event)"
+                      single-line 
+                      class="shrink"
+                      style="width: 100%;"    
+                      type="text"
                     >
                     </v-text-field>
-                  </div>
+                    <v-divider></v-divider>
+                 </div>
 
-                  <div v-else-if="setting.type === 'select'">
-                    <v-select
+                 <div v-else-if="setting.type === 'select'">
+                    <v-select 
                       :items="setting.options || []"
                       :value="setting.value"
                       variant="outlined"
@@ -62,18 +68,18 @@
                       @change="updateSetting(setting.id, $event)"
                     >
                     </v-select>
-                  </div>
+                 </div>
 
                   <div v-else-if="setting.type === 'radio'">
                     <v-radio-group
                       :model-value="setting.value"
-                      @update:model-value="val => updateSetting(setting.id, val)"
+                     
                     >
                       <v-radio
                         v-for="(opt, idx) in setting.options || []"
                         :key="idx"
-                        :label="opt"
-                        :value="opt"
+                        :label="opt.optionLabel"
+                        :value="opt.optionValue"
                       />
                     </v-radio-group>
                   </div>
@@ -95,14 +101,14 @@
                       @change="updateSetting(setting.id, $event)"
                     ></v-text-field>
                   </div>
-                </v-list-item-action>
+                </v-list-item>
               </v-list-item>
             </v-list>
           </v-card-text>
 
           <v-card-text v-else>
             <v-alert type="info">
-              {{ $t('system_settings.no_setting_item_found_exit') }}
+              {{ t('system_settings.no_setting_item_found_exit') }}
             </v-alert>
           </v-card-text>
         </v-card>
@@ -112,7 +118,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted,watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import {SystemSettingDisplay,SystemSettingGroupDisplay,OptionSettingDisplay} from "@/entityTypes/systemsettingType";
 import {getSystemSettinglist} from "@/views/api/systemsetting";
@@ -120,12 +126,12 @@ import {getSystemSettinglist} from "@/views/api/systemsetting";
 const { t } = useI18n();
 
 // Store references for settings, groups, and tree state
-const systemSettings = ref<SystemSettingDisplay[]>([]);
+//const systemSettings = ref<SystemSettingDisplay[]>([]);
 const settingGroups = ref<SystemSettingGroupDisplay[]>([]);
-
+const settinglist=ref<SystemSettingDisplay[]>([])
 // For Vuetify's Treeview
 const activeGroups = ref<number[]>([]);
-const openGroups = ref<number[]>([]);
+//const openGroups = ref<number[]>([]);
 
 // Convert each group into a tree item.
 // If you need deeper nesting, gather children by parentId, etc.
@@ -147,14 +153,43 @@ const selectedGroup = computed(() => {
   console.log("activeGroups value "+activeGroups.value)
   if (!activeGroups.value.length) return null;
   const groupId = activeGroups.value[0];
+  settinglist.value = settingsByGroup(groupId)
   return settingGroups.value.find(g => g.id === groupId) || null;
 });
 
+// Watch for changes in activeGroups
+watch(activeGroups, (newVal) => {
+  if (newVal && newVal.length > 0) {
+    console.log('Selected group changed:', newVal[0]);
+    // You can perform additional actions here when selection changes
+    settinglist.value = settingsByGroup(newVal[0]);
+  } else {
+    settinglist.value = [];
+  }
+}, { deep: true });
+
 // Return settings belonging to the given group
 function settingsByGroup(groupId: number): SystemSettingDisplay[] {
-  return systemSettings.value.filter(setting => setting.group_id === groupId);
+  let result: SystemSettingDisplay[] = []
+  console.log("groupId",groupId)
+  if(settingGroups.value.length > 0){
+    settingGroups.value.forEach((group)=>{
+      console.log(group)
+    if(group.id === groupId){
+       result = group.items
+    }
+    })
+  }
+  return result
+  // return systemSettings.value.filter(setting => setting.group_id === groupId);
 }
-
+function handleActiveChange(newActiveGroups: number[]) {
+  console.log('Active groups changed:', newActiveGroups);
+  // Custom handling logic here
+  if (newActiveGroups.length > 0) {
+    settinglist.value = settingsByGroup(newActiveGroups[0]);
+  }
+}
 // Mock fetching settings and groups
 async function fetchSettings() {
   await getSystemSettinglist().then((res)=>{
@@ -183,7 +218,12 @@ function updateSetting(settingId: number, e: Event | string) {
 }
 
 onMounted(() => {
-  fetchSettings();
+  fetchSettings().then(()=>{
+    if (settingGroups.value.length > 0 && activeGroups.value.length === 0) {
+      activeGroups.value = [settingGroups.value[0].id];
+    }
+    console.log("activegroup.value",activeGroups.value)
+  })
 });
 </script>
 

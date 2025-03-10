@@ -21,6 +21,7 @@ export class SystemSettingGroupModel extends BaseDb {
        //await this.systemSettingModel.InsertDeepseekSetting(deepseekgroup) 
     }
     public async initSystemSetting(){
+        console.log(settinggroupInit)
         for(const sgelement of settinggroupInit){
            console.log(sgelement)
             let settargroup=await this.repository.findOne({
@@ -33,7 +34,7 @@ export class SystemSettingGroupModel extends BaseDb {
                     settargroup=await this.repository.save(systemSettingGroupEntity)
                 }
                 for(const settingelement of sgelement.items){
-                    await this.systemSettingModel.getSettingItem(settingelement.key).then((setting)=>{
+                    await this.systemSettingModel.getSettingItem(settingelement.key).then(async (setting)=>{
                         if(!setting){
                             const systemSettingEntity = new SystemSettingEntity();
                             systemSettingEntity.group = settargroup;
@@ -41,9 +42,9 @@ export class SystemSettingGroupModel extends BaseDb {
                             systemSettingEntity.value = settingelement.value;
                             systemSettingEntity.description = settingelement.description? settingelement.description:'';
                             systemSettingEntity.type = settingelement.type;
-                           this.systemSettingModel.insert(systemSettingEntity)
+                           await this.systemSettingModel.insert(systemSettingEntity)
                         }else{
-                            this.systemSettingModel.updateGroup(setting)
+                            await this.systemSettingModel.updateGroup(setting,settargroup)
                         }
                     })
                 }

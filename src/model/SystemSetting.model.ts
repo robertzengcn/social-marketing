@@ -46,14 +46,15 @@ export class SystemSettingModel extends BaseDb {
         return this.repository.save(systemSettingEntity)
     }
     //update system setting group field
-    public async updateGroup(systemSettingEntity:SystemSettingEntity){
+    public async updateGroup(systemSettingEntity:SystemSettingEntity,systemsettinggroup:SystemSettingGroupEntity){
         if (!systemSettingEntity.id) {
             throw new Error("Entity ID is required for update");
         }
-        
-        return this.repository.update(
-            systemSettingEntity.id,
-            { group: systemSettingEntity.group }
-        );
+        systemSettingEntity.group = systemsettinggroup;
+        return this.repository.save(systemSettingEntity);
+        // return this.repository.update(
+        //     systemSettingEntity.id,
+        //     { group: systemSettingEntity.group }
+        // );
     }
 }
