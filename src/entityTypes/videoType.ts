@@ -245,6 +245,7 @@ export type VideoCompotionEntity={
     detail:VideoDownloadEntity,
     description:VideoDescriptionEntity|null,
     caption:Array<VideoCaptionDisplay>|null
+    translateInfo?:Array<VideoTranslateInfo>|null
 }
 
 export interface VideoInformationTransParam<Type> extends CommonIdrequestIds<Type>{
@@ -259,4 +260,9 @@ export interface VideoTranslateItem{
     tags?:Array<VideoDownloadTagEntity>,
     target_language:LanguageItem
 
+}
+export type VideoTranslateInfo={
+    language:string,
+    title:string,
+    description:string,
 }

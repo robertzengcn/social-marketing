@@ -11,7 +11,7 @@
                 loading-text="{{$t('common.uninstalling')}}..." color="primary" size="small" class="ml-2 mr-2 mb-2">
                 {{ t('common.uninstall') }}
             </v-btn>
-            <v-btn v-if="item.upgradeAvailable" @click="openUpgradeDialog(item)" :loading="item.upgradeLoading"
+            <v-btn v-if="item.installed&&item.upgradeAvailable" @click="openUpgradeDialog(item)" :loading="item.upgradeLoading"
                 loading-text="{{$t('common.upgrading')}}..." color="secondary" size="small" class="ml-2 mr-2 mb-2">
                 {{ t('common.upgrade') }}
             </v-btn>

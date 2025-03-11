@@ -372,7 +372,7 @@ export function registerVideoIpcHandlers() {
         if(!("translate_tool" in qdata)){
             throw new Error("translate_tool not found");
         }
-        
+        videoCtrl.tranVideoinfo(qdata)
 
     })
     //translate video voice

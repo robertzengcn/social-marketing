@@ -1,5 +1,5 @@
 import { BaseDb } from "@/model/Basedb";
-import { Repository } from "typeorm"
+import { Repository,Not } from "typeorm"
 import { VideoDescriptionEntity } from "@/entity/VideoDescription.entity"
 export class VideoDescriptionModel extends BaseDb {
     private repository: Repository<VideoDescriptionEntity>
@@ -32,6 +32,10 @@ export class VideoDescriptionModel extends BaseDb {
         //     `DELETE FROM ` + this.videoDescriptionTable + ` WHERE video_id = ?`);
         // const res = stmt.run(videoId);
         // return res.changes;
+    }
+    //get video descript list with provide language unequal to the language
+    async getVideoDescriptionOtherLanguage(videoId: number,language:string): Promise<Array<VideoDescriptionEntity> | null> {
+        return this.repository.find({ where: { video_id: videoId,language:Not(language) } });
     }
 
 

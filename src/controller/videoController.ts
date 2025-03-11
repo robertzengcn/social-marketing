@@ -37,6 +37,8 @@ import { VideoCaptionModule } from "@/modules/VideoCaptionModule"
 import {ExtraModuleController} from "@/controller/extramoduleController"
 import {getLanaugebyid} from "@/modules/lib/function"
 import {VideoDownloadTagModule} from "@/modules/VideoDownloadTagModule"
+import { Worker } from "worker_threads";
+import {VideoTranslateData} from "@/entityTypes/translateType"
 // import { param } from "jquery";
 //import {} from "@/entityTypes/proxyType"
 export class videoController {
@@ -785,15 +787,33 @@ export class videoController {
             throw new Error("video.item_not_found_local")
         }
         const translateItem=await this.convertToVideoTranslateitem(data)
-        const childPath = path.join(__dirname, 'worker.js')
-        if (!fs.existsSync(childPath)) {
-            throw new Error("child js path not exist for the path " + childPath);
+        const workerPath = path.join(__dirname, 'worker.js')
+        if (!fs.existsSync(workerPath)) {
+            throw new Error("child js path not exist for the path " + workerPath);
         }
-        const { port1, port2 } = new MessageChannelMain()
+        // Create promises array to handle multiple workers
+        // const translationPromises: Promise<string>[] = [];
+        const worker = new Worker(workerPath, {
+            workerData: {action:"translateVideo",data:translateItem}
+        });
 
-        for(const value of translateItem){
+        worker.on('message', (result) => {
+            console.log('Translation completed:', result);
             
-        }
+            
+        });
+
+        // Handle errors
+        worker.on('error', (error) => {
+            console.error('Worker error:', error);
+            // Optionally record the error or update task status
+            // this.videoDownloadTaskModule.updateTaskErrorlog(taskId, error.message);
+        });
+        worker.on('exit', (code) => {
+            
+        });
+
+      
 
             
 

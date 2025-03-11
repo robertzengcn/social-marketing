@@ -7,7 +7,7 @@ import copy from 'rollup-plugin-copy'
 import ClosePlugin from './vite-plugin-close'
 import checker from 'vite-plugin-checker'
 import sourcemaps from 'rollup-plugin-sourcemaps';
-import commonjs from '@rollup/plugin-commonjs';
+//import commonjs from '@rollup/plugin-commonjs';
 //import { nodeResolve } from '@rollup/plugin-node-resolve';
 
 // import vue from '@vitejs/plugin-vue'
@@ -38,15 +38,15 @@ export default ({ mode }) => {
             //     ignoreDynamicRequires: true
             //     // or dynamicRequireTargets: ['node_modules/sqlite3/lib/sqlite3.js']
             //   })
-            commonjs({
-                // include: /node_modules/,
-                dynamicRequireTargets: [
-                    'node_modules/sqlite3/lib/sqlite3-binding.js',
-                    'node_modules/sqlite3/lib/sqlite3.js',
-                ],
-                // dynamicRequireRoot: `node_modules`,
-                // transformMixedEsModules: true,
-            })
+            // commonjs({
+            //     // include: /node_modules/,
+            //     dynamicRequireTargets: [
+            //         'node_modules/sqlite3/lib/sqlite3-binding.js',
+            //         'node_modules/sqlite3/lib/sqlite3.js',
+            //     ],
+            //     // dynamicRequireRoot: `node_modules`,
+            //     // transformMixedEsModules: true,
+            // })
         ],
         resolve: {
             alias: {
