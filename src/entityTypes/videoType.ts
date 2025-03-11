@@ -250,6 +250,7 @@ export type VideoCompotionEntity={
 export interface VideoInformationTransParam<Type> extends CommonIdrequestIds<Type>{
     // source_language:LanguageItem
     target_language:LanguageItem
+    translate_tool:string
 }
 export interface VideoTranslateItem{
     videoId:number,

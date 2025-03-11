@@ -784,6 +784,17 @@ export class videoController {
         if(videoItem.length<1){
             throw new Error("video.item_not_found_local")
         }
+        const translateItem=await this.convertToVideoTranslateitem(data)
+        const childPath = path.join(__dirname, 'worker.js')
+        if (!fs.existsSync(childPath)) {
+            throw new Error("child js path not exist for the path " + childPath);
+        }
+        const { port1, port2 } = new MessageChannelMain()
+
+        for(const value of translateItem){
+            
+        }
+
             
 
     }

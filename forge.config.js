@@ -71,6 +71,10 @@ module.exports = {
           {
             entry: 'src/buckEmail.ts',
             config: 'vite.buckEmail.config.mjs'
+          },
+          {
+              entry: 'src/worker.ts',
+            config: 'vite.worker.config.mjs'
           }
 
         ],

@@ -366,6 +366,12 @@ export function registerVideoIpcHandlers() {
         if (!("ids" in qdata)) {
             throw new Error("ids not found");
         }
+        if (!("target_language" in qdata)) {
+            throw new Error("target_language not found");
+        }
+        if(!("translate_tool" in qdata)){
+            throw new Error("translate_tool not found");
+        }
         
 
     })
@@ -375,6 +381,7 @@ export function registerVideoIpcHandlers() {
         if (!("id" in qdata)) {
             throw new Error("id not found");
         }
+
        
 
     })

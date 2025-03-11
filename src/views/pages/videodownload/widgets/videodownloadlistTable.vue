@@ -127,6 +127,11 @@
             ></v-select>
           </v-col>
     </row>
+    <row>
+      <v-col cols="12" md="12">
+      <TranslateComponent @update:selectedTool="selectedTranslateTool = $event" />
+    </v-col>
+    </row>
    
 
     </v-card-text>
@@ -152,6 +157,7 @@ import { CapitalizeFirstLetter } from "@/views/utils/function"
 import { CommonDialogMsg } from "@/entityTypes/commonType";
 import ErrorDialog from "@/views/components/widgets/errorDialog.vue"
 import DeleteDialog from '@/views/components/widgets/deleteDialog.vue';
+import TranslateComponent from '@/views/components/select/TranslateSelect.vue';
 import { Header } from "@/entityTypes/commonType"
 import { opendialog} from "@/views/api/video";
 import LogDialog from "@/views/components/widgets/logDialog.vue"
@@ -167,6 +173,7 @@ const rules = {
 };
 const languagelist=ref<Array<LanguageItem>>(LanguageConfig)
 const targetlan=ref<LanguageItem>()
+const selectedTranslateTool = ref('');
 // const sourcelan=ref<LanguageItem>()
 type Fetchparam = {
   // id:number
@@ -423,16 +430,30 @@ const translateVideoInfo=async()=>{
       ids.push(element.id)
     }
   });
+  if(selected.value.length==0){
+    setAlert(t('Please select a video'), t('common.error'), "error");
+    return;
+  }
   if(!targetlan.value){
     setAlert(t('video.select_language_error'), t('common.error'), "error");
     return;
   }
+  // Get the selectedTool from the child component
+  if (!selectedTranslateTool.value) {
+    setAlert(t('Please select a translation tool'), t('common.error'), "error");
+    return;
+  }
+  console.log(selectedTranslateTool.value)
+ 
   const data:VideoInformationTransParam<number>={
     ids:ids,
     // source_language:sourcelan.value,
-    target_language:targetlan.value
+    target_language:targetlan.value,
+    translate_tool:selectedTranslateTool.value
+
   }
   await translateInformation(data)
+  showTranslateInfroDialog.value=false;
 }
 
 onMounted(() => {
