@@ -38,7 +38,8 @@ import {ExtraModuleController} from "@/controller/extramoduleController"
 import {getLanaugebyid} from "@/modules/lib/function"
 import {VideoDownloadTagModule} from "@/modules/VideoDownloadTagModule"
 import { Worker } from "worker_threads";
-import {VideoTranslateData} from "@/entityTypes/translateType"
+import {TransItemsParam} from "@/entityTypes/translateType"
+
 // import { param } from "jquery";
 //import {} from "@/entityTypes/proxyType"
 export class videoController {
@@ -69,6 +70,7 @@ export class videoController {
         this.videoDownloadTaskDetailModule = new VideoDownloadTaskDetailModule()
         this.videoDownloadTaskUrlModule = new VideoDownloadTaskUrlModule()
         this.videoCaptionModule = new VideoCaptionModule()
+        this.videoDownloadTagModule=new VideoDownloadTagModule()
     }
     //get video download tool
     public async getVideoDownloadTool(platform: string): Promise<Video | null> {
@@ -287,6 +289,7 @@ export class videoController {
                     videoDescriptionEntity.title=getData.title ? getData.title : ''
                     videoDescriptionEntity.description=getData.description ? getData.description : ''
                     videoDescriptionEntity.language=param.language_code
+                    
                     // const videoDescriptionEntity: VideoDescriptionEntity = {
                     //     video_id: videoNum,
                     //     title: getData.title ? getData.title : '',
@@ -586,7 +589,7 @@ export class videoController {
     public async generateCaptionbyids(data: VideoCaptionGenerateParamWithIds<number>,errorCall?: (message: string) => void) {
         const res = this.convertToVideoCaptionitem(data)
         if(res.length<1){
-            throw new Error("video.item_not_found_local")
+            throw new Error("video.item_less than one")
         }
         await this.generateCaptionsPath(res,errorCall)
     }
@@ -760,23 +763,27 @@ export class videoController {
     public async convertToVideoTranslateitem(data: VideoInformationTransParam<number>): Promise<Array<VideoTranslateItem>> {
         const res: Array<VideoTranslateItem> = []
         if (data.ids.length > 0) {
-            data.ids.forEach(async (value) => {
+            // data.ids.forEach(async (value) => {
+            for (const value of data.ids) {
                 const videoItem = this.videoDownloadModule.getVideoDownloaditem(value)
                 if (videoItem) {
-                    const vds=await this.videoDescriptionModule.getVideoDescription(value,data.target_language.code)
-                    const tags=await this.videoDownloadTagModule.getVideoTag(value)
+                    const vds=await this.videoDescriptionModule.getVideoDescription(value,videoItem.language_code)
+                    console.log("vds is following")
+                    console.log(vds)
+                    //get item tags by video id and language
+                    const tags=await this.videoDownloadTagModule.getVideoTag(value,videoItem.language_code)
                     const vti:VideoTranslateItem={
                         videoId:value,
                           title:vds?.title?vds.title:'',
                           description:vds?.description?vds.description:'',
                           tags:tags,
-                          target_language:data.target_language
+                        //   target_language:data.target_language
                   }
                     res.push(vti)
                 }
 
 
-            })
+            }
         }
         return res
 
@@ -784,9 +791,15 @@ export class videoController {
     public async tranVideoinfo(data:VideoInformationTransParam<number>){
         const videoItem:Array<VideoTranslateItem>=await this.convertToVideoTranslateitem(data)
         if(videoItem.length<1){
-            throw new Error("video.item_not_found_local")
+            throw new Error("video.translate_item_less_than_one")
         }
-        const translateItem=await this.convertToVideoTranslateitem(data)
+
+        const params:TransItemsParam<VideoTranslateItem>={
+            items:videoItem,
+            target_language:data.target_language,
+            translate_tool:data.translate_tool
+        }
+        // const translateItem=await this.convertToVideoTranslateitem(data)
         const workerPath = path.join(__dirname, 'worker.js')
         if (!fs.existsSync(workerPath)) {
             throw new Error("child js path not exist for the path " + workerPath);
@@ -794,7 +807,7 @@ export class videoController {
         // Create promises array to handle multiple workers
         // const translationPromises: Promise<string>[] = [];
         const worker = new Worker(workerPath, {
-            workerData: {action:"translateVideo",data:translateItem}
+            workerData: {action:"translateVideoInfo",data:params}
         });
 
         worker.on('message', (result) => {

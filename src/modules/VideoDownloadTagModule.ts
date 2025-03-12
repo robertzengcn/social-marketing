@@ -20,8 +20,8 @@ export class VideoDownloadTagModule extends BaseModule{
     return this.videoDownloadTagModel.create(vdte)
 }
 //get video tag by video_id
-public async getVideoTag(videoId: number): Promise<VideoDownloadTagEntity[]> {
-    return this.videoDownloadTagModel.getVideoTag(videoId)
+public async getVideoTag(videoId: number,language:string): Promise<VideoDownloadTagEntity[]> {
+    return this.videoDownloadTagModel.getVideoTag(videoId,language)
 }
 
 }

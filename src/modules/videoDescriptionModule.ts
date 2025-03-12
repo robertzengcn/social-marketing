@@ -5,6 +5,7 @@ import { VideoDescriptionEntity } from "@/entity/VideoDescription.entity"
 //import { USERSDBPATH } from '@/config/usersetting';
 // import { VideoDescriptionEntity } from "@/entityTypes/videoType";
 import { BaseModule } from "@/modules/baseModule";
+import { getRecorddatetime } from "@/modules/lib/function";
 //import { inherits } from "util";
 export class VideoDescriptionModule extends BaseModule{
     //private dbpath: string
@@ -22,6 +23,9 @@ export class VideoDescriptionModule extends BaseModule{
         this.videoDescriptionModel=new VideoDescriptionModel(this.dbpath)
     }
     async saveVideoDescription(videoinfo: VideoDescriptionEntity):Promise<number> {
+        if(!videoinfo.record_time){
+            videoinfo.record_time=getRecorddatetime()
+        }
         return this.videoDescriptionModel.saveVideoDescription(videoinfo)
     }
     async getVideoDescription(videoId: number,language:string): Promise<VideoDescriptionEntity|null> {

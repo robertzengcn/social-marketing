@@ -258,7 +258,7 @@ export interface VideoTranslateItem{
     title:string,
     description:string,
     tags?:Array<VideoDownloadTagEntity>,
-    target_language:LanguageItem
+    // target_language:LanguageItem
 
 }
 export type VideoTranslateInfo={
@@ -266,3 +266,8 @@ export type VideoTranslateInfo={
     title:string,
     description:string,
 }
+export type WorkerTranslateParam={
+
+    data:Array<VideoTranslateItem>
+}
+

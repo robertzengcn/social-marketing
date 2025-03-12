@@ -15,8 +15,8 @@ export class VideoDownloadTagModel extends BaseDb {
         return res.id
     }
     //get video tag by video_id
-    public async getVideoTag(videoId: number): Promise<VideoDownloadTagEntity[]> {
-        return this.repository.find({ where: { video_id: videoId } });
+    public async getVideoTag(videoId: number,language:string): Promise<VideoDownloadTagEntity[]> {
+        return this.repository.find({ where: { video_id: videoId,language:language } });
     }
 
 }

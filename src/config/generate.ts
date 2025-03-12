@@ -1,5 +1,5 @@
 export enum TranslateToolEnum {
-    DEEPSEEK = "deepseek",
+    DEEPSEEK_LOCAL = "deepseek_local",
     OPENAI = "openai",
     XAI = "xai"
   }

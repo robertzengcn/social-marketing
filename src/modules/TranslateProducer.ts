@@ -8,6 +8,15 @@ export class TranslateProducer {
     protected avaialableLlm:string[]=["deepseek-r1","llama","grok"];
     protected availableApi:string[]=["google","baidu"];
 
+    checkTooltype(name:string):string|void{
+        if(this.avaialableLlm.includes(name)){
+            return "llm";
+        }else if(this.availableApi.includes(name)){
+            return "api";
+        }
+        return undefined;
+    }
+
     async translateText(name:string,sourceLan:LanguageItem,targetLan:LanguageItem,text:string,llmconfig?:LlmCongfig,traditionConfig?:TraditionalTranslateCongfig):Promise<string|void>{
         if(this.avaialableLlm.includes(name)){
             if(!llmconfig){
