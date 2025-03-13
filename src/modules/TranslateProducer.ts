@@ -2,10 +2,12 @@ import {LlmFactory} from '@/modules/llm/LlmFactory';
 import { LlmImpl } from '@/modules/interface/LlmImpl';
 import {LanguageItem} from '@/entityTypes/commonType'
 import {LlmCongfig,TraditionalTranslateCongfig} from '@/entityTypes/commonType'
+// import {deepseeklocalgroup} from "@/config/settinggroupInit";
+import {TranslateToolEnum} from "@/config/generate";
 
 
 export class TranslateProducer {
-    protected avaialableLlm:string[]=["deepseek-r1","llama","grok"];
+    protected avaialableLlm:string[]=Object.values(TranslateToolEnum);
     protected availableApi:string[]=["google","baidu"];
 
     checkTooltype(name:string):string|void{
@@ -18,10 +20,13 @@ export class TranslateProducer {
     }
 
     async translateText(name:string,sourceLan:LanguageItem,targetLan:LanguageItem,text:string,llmconfig?:LlmCongfig,traditionConfig?:TraditionalTranslateCongfig):Promise<string|void>{
+       console.log("name",name)
         if(this.avaialableLlm.includes(name)){
+
             if(!llmconfig){
                 throw new Error("llmconfig is required");
             }
+
             return this.translateWithLLM(sourceLan.code,targetLan.code,text,llmconfig);
         }else if(this.availableApi.includes(name)){
             //return this.translateWithAPI(name,sourceLan.code,targetLan.code,text,systemMsg);

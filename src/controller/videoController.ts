@@ -282,7 +282,7 @@ export class videoController {
                         savepath: savepath,
                         task_id: Number(taskId),
                         status: VideoDownloadStatus.Finish,
-                        language_code:param.language_code
+                        language:param.language_code
                     }
 
                     // this.emailSeachTaskModule.saveSearchResult(taskId,childdata.data)
@@ -308,7 +308,7 @@ export class videoController {
                         savepath: '',
                         task_id: Number(taskId),
                         status: VideoDownloadStatus.Error,
-                        language_code:param.language_code
+                        language:param.language_code
                     }
                     const videoId = this.videoDownloadModule.saveVideoDownload(videoDownloadEntity)
                     if (getData.log) {
@@ -417,11 +417,11 @@ export class videoController {
                 description: '',
                 error_log: element.error_log,
                 caption_status:element.caption_status,
-                language_code:element.language_code
+                language:element.language
             }
             if (element.id && element.status == VideoDownloadStatus.Finish) {
 
-                const videoDescription = await this.videoDescriptionModule.getVideoDescription(element.id,element.language_code)
+                const videoDescription = await this.videoDescriptionModule.getVideoDescription(element.id,element.language)
                 if (videoDescription) {
                     vdld.title = videoDescription.title
                     vdld.description = videoDescription.description
@@ -723,7 +723,7 @@ export class videoController {
               throw new Error("video download item not found")
          }
          //get video description
-        const videoDescription=await this.videoDescriptionModule.getVideoDescription(id,videoDownEntity.language_code)
+        const videoDescription=await this.videoDescriptionModule.getVideoDescription(id,videoDownEntity.language)
          //get video caption
          const videoCaption=this.videoCaptionModule.getCaptionByVid(id)
          const captionDisplay:Array<VideoCaptionDisplay>=[]
@@ -770,14 +770,19 @@ export class videoController {
             for (const value of data.ids) {
                 const videoItem = this.videoDownloadModule.getVideoDownloaditem(value)
                 if (videoItem) {
-                    const vds=await this.videoDescriptionModule.getVideoDescription(value,videoItem.language_code)
+                    const vds=await this.videoDescriptionModule.getVideoDescription(value,videoItem.language)
                     console.log("vds is following")
                     console.log(vds)
                     //get item tags by video id and language
-                    const tags=await this.videoDownloadTagModule.getVideoTag(value,videoItem.language_code)
-                    const languageItem=getLanaugebyCode(videoItem.language_code)
+                    const tags=await this.videoDownloadTagModule.getVideoTag(value,videoItem.language)
+                    console.log(videoItem.language)
+                    console.log(videoItem)
+                    const languageItem=getLanaugebyCode(videoItem.language)
                     if(!languageItem){
                         throw new Error("language not found,language code may error")
+                    }
+                    if(videoItem.language==data.target_language.code){
+                        throw new Error("source language and target language can not be same")
                     }
 
                     const vti:VideoTranslateItem={
@@ -830,6 +835,7 @@ export class videoController {
             llmConfig:llmcon,
             traditionalTranslateConfig:traditionalTranslateCongfig
         }
+        console.log(params)
         const childPath = path.join(__dirname, 'taskCode.js')
         if (!fs.existsSync(childPath)) {
             throw new CustomError("child js path not exist for the path " + childPath);

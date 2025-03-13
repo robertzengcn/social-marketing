@@ -67,7 +67,7 @@ export type VideoDownloadEntity={
     record_time?:string,
     task_id:number,
     caption_status?:VideoCaptionStatus,
-    language_code:string,
+    language:string,
     // strout?:string,
     error_log?:string,
     status:VideoDownloadStatus,

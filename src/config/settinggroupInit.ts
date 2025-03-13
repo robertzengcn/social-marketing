@@ -2,6 +2,10 @@ import { SystemSettingGroupdf } from '@/entityTypes/systemsettingType'
 export const deepseeklocalgroup = 'Deepseek-local'
 export const deepseeklocalurl = 'deepseek-local-url'
 export const deepseeklocalmodel = 'deepseek-local-model'
+export const deepseekapigroup = 'deepseek-api-group'
+export const grokaigroup='grokai-group'
+export const grokaiapiurl='grokai-url'
+export const grokaiapilkey='grokai-api-key'
 export const settinggroupInit: Array<SystemSettingGroupdf> = [
     {
         name: deepseeklocalgroup,
@@ -22,7 +26,7 @@ export const settinggroupInit: Array<SystemSettingGroupdf> = [
         ]
     },
     {
-        name: 'deepseek-api',
+        name: deepseekapigroup,
         description: 'deepseek-api-description',
         items: [
             {
@@ -34,11 +38,11 @@ export const settinggroupInit: Array<SystemSettingGroupdf> = [
         ]
     },
     {
-        name: "grokai-group",
+        name: grokaigroup,
         description: 'grokai-group-description',
         items: [
             {
-               key:'grokai-url',
+               key:grokaiapiurl,
                value:'http://localhost:11434',
                description:'grokai-url-description',
                type:'input',

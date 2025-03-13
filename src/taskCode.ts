@@ -52,6 +52,7 @@ process.parentPort.on('message', async (e) => {
                 return
             }
             await downloadVideo(param)
+            process.exit(0);
             break;  
                
             }
@@ -59,10 +60,11 @@ process.parentPort.on('message', async (e) => {
             
             //generate capation
             await generateCaption(pme.data as VideoCaptionGenerateParam)
+            process.exit(0);
             break;
         } 
         case 'translateVideoInfo':{
-
+            await translateVideoinfo(pme.data as TransItemsParam<VideoTranslateItem>)
         }   
 
         }
@@ -101,7 +103,7 @@ async function downloadVideo(param:processVideoDownloadParam){
                         }
                        
                         process.parentPort.postMessage(JSON.stringify(message))
-                        process.exit(1);
+                       // process.exit(1);
                     },(msg)=>{
                         //stdout call
                     },(param:VideodoanloadSuccessCall)=>{
@@ -120,7 +122,7 @@ async function downloadVideo(param:processVideoDownloadParam){
                             }
                         }
                         process.parentPort.postMessage(JSON.stringify(message))
-                        process.exit(0);
+                        // process.exit(0);
                     }).catch((error)=>{
                         if(error instanceof Error){
                             const message:ProcessMessage<VideodownloadMsg>={
@@ -132,10 +134,11 @@ async function downloadVideo(param:processVideoDownloadParam){
                                 }
                             }
                             process.parentPort.postMessage(JSON.stringify(message))
-                            process.exit(1);
+                            // process.exit(1);
                         }
                     })
                     //signal download end
+                   
                 }else{//download playlist
                     // await downloadTool.downloadPlaylist(element)
                     await downloadTool.downloadPlaylist(element,param.savePath,param.BrowserName,randCookiesproxy,itemProxy,param.exePath,param.videoQuality,param.successlink,(link,errorstring)=>{
@@ -182,7 +185,7 @@ async function downloadVideo(param:processVideoDownloadParam){
                             
                             process.exit(1);
                         }else{
-                            process.exit(0);
+                            // process.exit(0);
                         }
                        
                     })
@@ -278,7 +281,7 @@ async function generateCaption(param:VideoCaptionGenerateParam){
     })
     
 }
-process.exit(0);
+
 }
 
 async function translateVideoinfo(data:TransItemsParam<VideoTranslateItem>){
@@ -287,10 +290,10 @@ async function translateVideoinfo(data:TransItemsParam<VideoTranslateItem>){
         return
     }
       const translatePro=new TranslateProducer()
-     
+    console.log(data) 
 
     for (const item in data.items){
     //translate title
-    translatePro.translateText(data.translate_tool,data.items[item].source_language,data.target_language,data.items[item].title,data.llmConfig,data.traditionalTranslateConfig)
+    await translatePro.translateText(data.translate_tool,data.items[item].source_language,data.target_language,data.items[item].title,data.llmConfig,data.traditionalTranslateConfig)
     }
 }

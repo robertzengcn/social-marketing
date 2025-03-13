@@ -372,8 +372,32 @@ export function registerVideoIpcHandlers() {
         if(!("translate_tool" in qdata)){
             throw new Error("translate_tool not found");
         }
-        videoCtrl.tranVideoinfo(qdata)
+        await videoCtrl.tranVideoinfo(qdata).catch((error) => {
+            if (error instanceof CustomError) {
+                const comMsgs: CommonDialogMsg = {
+                    status: false,
+                    code: error.code,
+                    data: {
+                        title: "video.translate_failed",
+                        content: error.message
+                    }
+                }
+                event.sender.send(SYSTEM_MESSAGE, comMsgs)
+                return
 
+            } else if (error instanceof Error) {
+                const comMsgs: CommonDialogMsg = {
+                    status: false,
+                    code: 202503131440391,
+                    data: {
+                        title: "video.translate_failed",
+                        content: error.message
+                    }
+                }
+                event.sender.send(SYSTEM_MESSAGE, comMsgs)
+                return
+            }
+        })
     })
     //translate video voice
     ipcMain.on(VIDEO_VOICE_TRANSLATE, async (event, data) => {

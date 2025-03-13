@@ -80,7 +80,7 @@ export class TranslateController {
             default:
                 throw new Error("toolName not found");
         }
-        await this.getSystemLLMConfig(groupName,modelKey,urlKey,apikey)
+        return await this.getSystemLLMConfig(groupName,modelKey,urlKey,apikey)
 
     }
 }
