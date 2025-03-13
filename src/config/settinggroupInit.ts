@@ -1,16 +1,24 @@
 import { SystemSettingGroupdf } from '@/entityTypes/systemsettingType'
 export const deepseeklocalgroup = 'Deepseek-local'
+export const deepseeklocalurl = 'deepseek-local-url'
+export const deepseeklocalmodel = 'deepseek-local-model'
 export const settinggroupInit: Array<SystemSettingGroupdf> = [
     {
         name: deepseeklocalgroup,
         description: 'deepseek-local-group-description',
         items: [
             {
-               key:'deepseek-local-url',
+               key:deepseeklocalurl,
                value:'http://localhost:11434',
                description:'deepseek-local-url-description',
                type:'input',
-            }
+            },
+            {
+                key:deepseeklocalmodel,
+                value:'deepseek-r1:latest',
+                description:'deepseek-local-model-description',
+                type:'input',
+             }
         ]
     },
     {

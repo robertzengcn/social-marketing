@@ -258,6 +258,7 @@ export interface VideoTranslateItem{
     title:string,
     description:string,
     tags?:Array<VideoDownloadTagEntity>,
+    source_language:LanguageItem,
     // target_language:LanguageItem
 
 }

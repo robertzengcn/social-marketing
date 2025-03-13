@@ -39,7 +39,10 @@ import {getLanaugebyid} from "@/modules/lib/function"
 import {VideoDownloadTagModule} from "@/modules/VideoDownloadTagModule"
 import { Worker } from "worker_threads";
 import {TransItemsParam} from "@/entityTypes/translateType"
-
+import {TranslateProducer} from "@/modules/TranslateProducer"
+import {LlmCongfig,TraditionalTranslateCongfig} from '@/entityTypes/commonType'
+import {TranslateController} from "@/controller/TranslateController"
+import {getLanaugebyCode} from "@/modules/lib/function"
 // import { param } from "jquery";
 //import {} from "@/entityTypes/proxyType"
 export class videoController {
@@ -772,11 +775,17 @@ export class videoController {
                     console.log(vds)
                     //get item tags by video id and language
                     const tags=await this.videoDownloadTagModule.getVideoTag(value,videoItem.language_code)
+                    const languageItem=getLanaugebyCode(videoItem.language_code)
+                    if(!languageItem){
+                        throw new Error("language not found,language code may error")
+                    }
+
                     const vti:VideoTranslateItem={
                         videoId:value,
                           title:vds?.title?vds.title:'',
                           description:vds?.description?vds.description:'',
                           tags:tags,
+                          source_language:languageItem
                         //   target_language:data.target_language
                   }
                     res.push(vti)
@@ -794,39 +803,52 @@ export class videoController {
             throw new Error("video.translate_item_less_than_one")
         }
 
+        let toolType:string|void=undefined
+        const translatePro=new TranslateProducer()
+        toolType=translatePro.checkTooltype(data.translate_tool)
+    
+        const translateCon=new TranslateController()
+        let llmcon:LlmCongfig|undefined
+        let traditionalTranslateCongfig:TraditionalTranslateCongfig|undefined
+        if(toolType=="llm"){
+            const cres= await translateCon.getSystemConfigLLM(data.translate_tool)
+            if(cres){
+                llmcon=cres
+            }
+            // console.log("llmcon",llmcon)
+        }else if(toolType=="api"){
+            const traditiona=await translateCon.getTranslateConfig(data.translate_tool)
+            if(traditiona){
+                traditionalTranslateCongfig=traditiona
+            }
+        }
+
         const params:TransItemsParam<VideoTranslateItem>={
             items:videoItem,
             target_language:data.target_language,
-            translate_tool:data.translate_tool
+            translate_tool:data.translate_tool,
+            llmConfig:llmcon,
+            traditionalTranslateConfig:traditionalTranslateCongfig
         }
-        // const translateItem=await this.convertToVideoTranslateitem(data)
-        const workerPath = path.join(__dirname, 'worker.js')
-        if (!fs.existsSync(workerPath)) {
-            throw new Error("child js path not exist for the path " + workerPath);
+        const childPath = path.join(__dirname, 'taskCode.js')
+        if (!fs.existsSync(childPath)) {
+            throw new CustomError("child js path not exist for the path " + childPath);
         }
-        // Create promises array to handle multiple workers
-        // const translationPromises: Promise<string>[] = [];
-        const worker = new Worker(workerPath, {
-            workerData: {action:"translateVideoInfo",data:params}
-        });
+        const { port1, port2 } = new MessageChannelMain()
+        console.log(params)
+        const child = utilityProcess.fork(childPath, [], { stdio: "pipe" })
 
-        worker.on('message', (result) => {
-            console.log('Translation completed:', result);
-            
-            
-        });
+        child.on("spawn", () => {
 
-        // Handle errors
-        worker.on('error', (error) => {
-            console.error('Worker error:', error);
-            // Optionally record the error or update task status
-            // this.videoDownloadTaskModule.updateTaskErrorlog(taskId, error.message);
-        });
-        worker.on('exit', (code) => {
-            
-        });
+       
+            child.postMessage(JSON.stringify({ action: "translateVideoInfo", data: params } as ProcessMessage<TransItemsParam<VideoTranslateItem>>), [port1])
 
-      
+        })
+
+        child.stdout?.on('data', (data) => {
+            console.log(`Received data chunk ${data}`)
+
+        })
 
             
 

@@ -11,6 +11,8 @@ export abstract class BaseModule {
             // throw new Error("user path not exist")
             this.dbpath = dbpath
             this.sqliteDb = SqliteDb.getInstance(this.dbpath)
+        }else{
+            console.error("dbpath not found")
         }
         
         }

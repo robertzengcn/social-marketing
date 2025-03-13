@@ -13,6 +13,9 @@ import {VideodoanloadSuccessCall,VideoCaptionGenerateParam,CookiesProxy,processV
 import {VideoCaptionFactory} from "@/modules/videoCaption/VideoCaptionFactory"
 import { VideoCaptionImpl } from '@/modules/interface/VideoCaptionImpl';
 import { extraFileEntity,VideoCaptionMsg } from "@/entityTypes/videoType";
+import {TransItemsParam} from "@/entityTypes/translateType"
+import {VideoTranslateItem } from "@/entityTypes/videoType";
+import {TranslateProducer} from "@/modules/TranslateProducer"
 //import {}
 // import {removeParamsAfterAmpersand } from "@/modules/lib/function"
 process.parentPort.on('message', async (e) => {
@@ -49,126 +52,7 @@ process.parentPort.on('message', async (e) => {
                 return
             }
             await downloadVideo(param)
-            break;
-            // const videoDownloadFactory=new VideoDownloadFactory()
-            // const downloadTool=VideoDownloadFactory.getDownloader(param.platform)
-                    
-            //         // const youtubeDownload=new YoutubeDownload()
-            //         // if(!param.isplaylist){//sigle video
-            //             param.link.forEach(async (element, index)=>{
-            //                 let randCookiesproxy:CookiesProxy | null = null;
-            //                 if(param.cookiesProxy){
-            //                    randCookiesproxy =param.cookiesProxy[Math.floor(Math.random() * param.cookiesProxy.length)]
-            //                 }
-            //                 let itemProxy:Proxy|null=null;
-            //                 if(param.proxy){
-            //                     itemProxy=param.proxy[Math.floor(Math.random() * param.proxy.length)]
-            //                 }
-            //                 if(!param.isplaylist){//sigle video
-            //                 await downloadTool.downloadVideo(element,param.savePath,param.BrowserName,randCookiesproxy,itemProxy,param.exePath,param.videoQuality,(errorstring)=>{
-            //                     //error call
-            //                     const message:ProcessMessage<VideodownloadMsg>={
-            //                         action:"singlevideodownloadMsg",
-            //                         data:{
-            //                             link:element,
-            //                             status:false,
-            //                             log:errorstring
-            //                         }
-            //                     }
-                               
-            //                     process.parentPort.postMessage(JSON.stringify(message))
-            //                     process.exit(1);
-            //                 },(msg)=>{
-            //                     //stdout call
-            //                 },(param:VideodoanloadSuccessCall)=>{
-            //                     //success call
-            //                     console.log("success call")
-            //                     const message:ProcessMessage<VideodownloadMsg>={
-            //                         action:"singlevideodownloadMsg",
-            //                         data:{
-            //                             link:element,
-            //                             status:true,
-            //                             savepath:param.savepath,
-            //                             title:param.title,
-            //                             description:param.description,
-            //                             tags:param.tags,
-            //                             categories:param.categories
-            //                         }
-            //                     }
-            //                     process.parentPort.postMessage(JSON.stringify(message))
-            //                     process.exit(0);
-            //                 }).catch((error)=>{
-            //                     if(error instanceof Error){
-            //                         const message:ProcessMessage<VideodownloadMsg>={
-            //                             action:"singlevideodownloadMsg",
-            //                             data:{
-            //                                 link:element,
-            //                                 status:false,
-            //                                 log:error.message
-            //                             }
-            //                         }
-            //                         process.parentPort.postMessage(JSON.stringify(message))
-            //                         process.exit(1);
-            //                     }
-            //                 })
-            //                 //signal download end
-            //             }else{//download playlist
-            //                 // await downloadTool.downloadPlaylist(element)
-            //                 await downloadTool.downloadPlaylist(element,param.savePath,param.BrowserName,randCookiesproxy,itemProxy,param.exePath,param.videoQuality,param.successlink,(link,errorstring)=>{
-            //                     const message:ProcessMessage<VideodownloadMsg>={
-            //                         action:"singlevideodownloadMsg",
-            //                         data:{
-            //                             link:link,
-            //                             status:false,
-            //                             log:errorstring
-            //                         }
-            //                     }
-                               
-            //                     process.parentPort.postMessage(JSON.stringify(message))
-            //                 },(msg)=>{
-            //                     //stdout call
-            //                 },(param:VideodoanloadSuccessCall)=>{
-            //                     //success call
-            //                     console.log("success call")
-            //                     const message:ProcessMessage<VideodownloadMsg>={
-            //                         action:"singlevideodownloadMsg",
-            //                         data:{
-            //                             link:element,
-            //                             status:true,
-            //                             savepath:param.savepath,
-            //                             title:param.title,
-            //                             description:param.description,
-            //                             tags:param.tags,
-            //                             categories:param.categories
-            //                         }
-            //                     }
-            //                     process.parentPort.postMessage(JSON.stringify(message))
-                                
-            //                 },(error)=>{
-            //                     //end call
-            //                     if(error.length>0){
-                                    
-            //                         const message:ProcessMessage<VideodownloadTaskMsg>={
-            //                             action:"videodownloadTaskMsg",
-            //                             data:{
-            //                                 msg:error
-            //                             }
-            //                         }
-            //                         process.parentPort.postMessage(JSON.stringify(message))
-                                    
-            //                         process.exit(1);
-            //                     }else{
-            //                         process.exit(0);
-            //                     }
-                               
-            //                 })
-
-            //             }
-
-            //             })
-                       
-                        
-                   
+            break;  
                
             }
         case 'generateCaption':{
@@ -176,7 +60,10 @@ process.parentPort.on('message', async (e) => {
             //generate capation
             await generateCaption(pme.data as VideoCaptionGenerateParam)
             break;
-        }    
+        } 
+        case 'translateVideoInfo':{
+
+        }   
 
         }
     
@@ -392,4 +279,18 @@ async function generateCaption(param:VideoCaptionGenerateParam){
     
 }
 process.exit(0);
+}
+
+async function translateVideoinfo(data:TransItemsParam<VideoTranslateItem>){
+    if(!data.translate_tool){
+        console.error("translate tool is not provided")
+        return
+    }
+      const translatePro=new TranslateProducer()
+     
+
+    for (const item in data.items){
+    //translate title
+    translatePro.translateText(data.translate_tool,data.items[item].source_language,data.target_language,data.items[item].title,data.llmConfig,data.traditionalTranslateConfig)
+    }
 }

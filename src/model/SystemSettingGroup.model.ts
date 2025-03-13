@@ -77,6 +77,14 @@ export class SystemSettingGroupModel extends BaseDb {
            
         })
     }
+    public async getGroupItembyName(name: string): Promise<SystemSettingGroupEntity | null> {
+        return this.repository.findOne({
+            where: { name: name },
+            relations: {
+                settings: true
+            }
+        });
+    }
    
 
 

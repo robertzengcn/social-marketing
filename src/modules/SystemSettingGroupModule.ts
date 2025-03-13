@@ -17,4 +17,7 @@ export class SystemSettingGroupModule extends BaseModule {
         // return this.repository.find()
         return this.systemSettingGroupModel.listall()
     }
+    public async getGroupItembyName(name:string): Promise<SystemSettingGroupEntity | null>{
+        return this.systemSettingGroupModel.getGroupItembyName(name)
+    }
 }

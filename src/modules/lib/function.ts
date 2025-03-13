@@ -712,3 +712,12 @@ export function getLanaugebyid(id:number):LanguageItem|undefined{
   })
   return res
 }
+export function getLanaugebyCode(code:string):LanguageItem|undefined{
+  let res:LanguageItem|undefined=undefined
+   LanguageConfig.forEach((item)=>{
+     if(item.code==code){
+       res=item
+     }
+   })
+   return res
+ }
