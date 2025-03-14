@@ -21,6 +21,7 @@ export class TranslateProducer {
 
     async translateText(name:string,sourceLan:LanguageItem,targetLan:LanguageItem,text:string,llmconfig?:LlmCongfig,traditionConfig?:TraditionalTranslateCongfig):Promise<string|void>{
        console.log("name",name)
+       console.log(this.avaialableLlm)
         if(this.avaialableLlm.includes(name)){
 
             if(!llmconfig){
@@ -35,7 +36,8 @@ export class TranslateProducer {
     }
     async translateWithLLM(inputlang:string,outputlang:string,text:string,llmconfig:LlmCongfig):Promise<string|void>{
         let factory=new LlmFactory();
-        let tool:LlmImpl|undefined=factory.getLlmTool(llmconfig.model,llmconfig.url);
+        let tool:LlmImpl|undefined=factory.getLlmTool(llmconfig.model,llmconfig);
+        console.log("tool",tool)
         if(tool){
             return tool.translate(inputlang,outputlang,text);
         }else{

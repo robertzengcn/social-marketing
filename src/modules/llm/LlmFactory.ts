@@ -3,17 +3,19 @@ import { LlmImpl } from '@/modules/interface/LlmImpl';
 import {AbstractTranslateFactory} from '@/modules/AbstractTranslateFactory';
 import {TraditionalTranslateImpl} from '@/modules/interface/TraditionalTranslateImpl';
 import {TranslateToolEnum} from "@/config/generate";
+import {LlmCongfig,TraditionalTranslateCongfig} from '@/entityTypes/commonType'
+
 export class LlmFactory extends AbstractTranslateFactory{
-    public getTraditionalTool(name: string): TraditionalTranslateImpl | undefined{
+    public getTraditionalTool(name: string,config:TraditionalTranslateCongfig): TraditionalTranslateImpl | undefined{
         return undefined;
     }
     
-    public getLlmTool(sitename: string,url?:string,apikey?:string):LlmImpl | undefined {
-        switch (sitename) {
+    public getLlmTool(toolname: string, llmconfig: LlmCongfig): LlmImpl | undefined {
+        switch (toolname) {
             case TranslateToolEnum.DEEPSEEK_LOCAL:
-                return new OllamaLlm("deepseek-r1",url);
+                return new OllamaLlm(llmconfig.model,llmconfig.url);
             case TranslateToolEnum.LLAMA:
-                return new OllamaLlm("llama",url);
+                return new OllamaLlm(llmconfig.model,llmconfig.url);
             default:
                 return undefined;
         }

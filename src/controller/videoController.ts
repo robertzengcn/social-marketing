@@ -856,6 +856,28 @@ export class videoController {
 
         })
 
+        child.stderr?.on('data', (data) => {
+            const ingoreStr = ["Debugger attached", "Waiting for the debugger to disconnect"]
+            if (!ingoreStr.some((value) => data.includes(value))) {
+
+                // seModel.saveTaskerrorlog(taskId,data)
+                console.log(`Received error chunk ${data}`)
+                //WriteLog(errorLogfile, data)
+
+            }
+
+        })
+
+        child.on("exit", (code) => {
+            if (code !== 0) {
+                console.error(`Child process exited with code ${code}`);
+                
+            } else {
+                console.log('Child process exited succe`ssfully');
+                
+            }
+        })
+
             
 
     }
