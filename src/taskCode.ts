@@ -52,7 +52,7 @@ process.parentPort.on('message', async (e) => {
                 return
             }
             await downloadVideo(param)
-            process.exit(0);
+            //process.exit(0);
             break;  
                
             }
@@ -81,8 +81,9 @@ async function downloadVideo(param:processVideoDownloadParam){
             
             // const youtubeDownload=new YoutubeDownload()
             // if(!param.isplaylist){//sigle video
-                param.link.forEach(async (element, index)=>{
-                    let randCookiesproxy:CookiesProxy | null = null;
+                //param.link.forEach(async (element, index)=>{
+                for (const element of param.link){
+                let randCookiesproxy:CookiesProxy | null = null;
                     if(param.cookiesProxy){
                        randCookiesproxy =param.cookiesProxy[Math.floor(Math.random() * param.cookiesProxy.length)]
                     }
@@ -192,7 +193,7 @@ async function downloadVideo(param:processVideoDownloadParam){
 
                 }
 
-                })
+                }
 }
 async function generateCaption(param:VideoCaptionGenerateParam){
     //get video caption tool
