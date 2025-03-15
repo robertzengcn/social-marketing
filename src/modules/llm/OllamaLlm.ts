@@ -6,8 +6,10 @@ import { ChatPromptTemplate } from "@langchain/core/prompts";
 //https://js.langchain.com/docs/integrations/chat/ollama/
 export class OllamaLlm implements LlmImpl {
     private llm: ChatOllama;
+    private model:string;
     constructor(model:string,baseUrl:string="http://127.0.0.1:11434",temperature:number=0,maxRetries:number=2,apikey?:string) {
-        // Initialization code here
+      this.model=model  
+      // Initialization code here
         this.llm = new ChatOllama({
             model: model,
             temperature: temperature,
@@ -30,14 +32,16 @@ export class OllamaLlm implements LlmImpl {
             ],
             ["human", "{input}"],
           ]);
-          
+          //console.log("test is "+text)
           const chain = prompt.pipe(this.llm);
           const res=await chain.invoke({
             input_language: inputlang,
             output_language: outputlang,
             input: text,
           });
-          return res.content.toString()
+          let translatedText =res.content.toString()
+          translatedText = translatedText.replace(/<think>[\s\S]*?<\/think>/g, '');
+          return translatedText.trim();
     }
 
 

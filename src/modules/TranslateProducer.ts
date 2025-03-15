@@ -20,8 +20,8 @@ export class TranslateProducer {
     }
 
     async translateText(name:string,sourceLan:LanguageItem,targetLan:LanguageItem,text:string,llmconfig?:LlmCongfig,traditionConfig?:TraditionalTranslateCongfig):Promise<string|void>{
-       console.log("name",name)
-       console.log(this.avaialableLlm)
+       //console.log("name",name)
+    //    console.log(this.avaialableLlm)
         if(this.avaialableLlm.includes(name)){
 
             if(!llmconfig){
@@ -34,10 +34,29 @@ export class TranslateProducer {
         }
         return Promise.resolve(undefined);
     }
+    //get translate tool like llm
+    getTransTool(toolName:string,llmconfig?:LlmCongfig,transConfig?:TraditionalTranslateCongfig):LlmImpl|void{
+        if(this.avaialableLlm.includes(toolName)){
+
+            if(!llmconfig){
+                throw new Error("llmconfig is required");
+            }
+            let factory=new LlmFactory();
+            let tool:LlmImpl|undefined=factory.getLlmTool(toolName,llmconfig); 
+            return tool;
+        }else if(this.availableApi.includes(toolName)){
+
+        }
+    }
+    //translate with translate tool
+    async translateWithTool(inputlang:string,outputlang:string,text:string,tool:LlmImpl):Promise<string|void>{
+        return tool.translate(inputlang,outputlang,text);
+
+    }
     async translateWithLLM(inputlang:string,outputlang:string,text:string,toolName:string,llmconfig:LlmCongfig):Promise<string|void>{
         let factory=new LlmFactory();
         let tool:LlmImpl|undefined=factory.getLlmTool(toolName,llmconfig);
-        console.log("tool",tool)
+       // console.log("tool",tool)
         if(tool){
             return tool.translate(inputlang,outputlang,text);
         }else{
