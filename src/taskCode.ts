@@ -17,6 +17,7 @@ import { TransItemsParam } from "@/entityTypes/translateType"
 import { VideoTranslateItem } from "@/entityTypes/videoType";
 import { TranslateProducer } from "@/modules/TranslateProducer"
 import { VideoDownloadTagEntity } from "@/entity/VideoDownloadTag.entity"
+import { CommonMessage } from "@/entityTypes/commonType"
 //import {}
 // import {removeParamsAfterAmpersand } from "@/modules/lib/function"
 process.parentPort.on('message', async (e) => {
@@ -325,27 +326,31 @@ async function translateVideoinfo(data: TransItemsParam<VideoTranslateItem>) {
                 if (tag.length > 0) {
                     const tagtrans = await translatePro.translateWithTool(data.items[item].source_language.name, data.target_language.name, tag, transTool)
                     if (tagtrans) {
-                        const videotag=new VideoDownloadTagEntity()
-                        videotag.video_id=data.items[item].videoId
-                        videotag.tag=tagtrans
-                        videotag.language=data.target_language.name
+                        const videotag = new VideoDownloadTagEntity()
+                        videotag.video_id = data.items[item].videoId
+                        videotag.tag = tagtrans
+                        videotag.language = data.target_language.name
 
                         tags.push(videotag)
+                    }
                 }
             }
-        } 
-    }
-    const message: ProcessMessage<VideoTranslateItem> = {
-        action: "translateVideoInfoMsg",
-        data: {
-          videoId:data.items[item].videoId,
-              title:title,
-              description:description,
-              tags:tags,
-              source_language:data.target_language, 
         }
-    }
-    process.parentPort.postMessage(JSON.stringify(message))
+        const message: ProcessMessage<CommonMessage<VideoTranslateItem>> = {
+            action: "translateVideoInfoMsg",
+            data: {
+                status: true,
+                msg: "",
+                data: {
+                    videoId: data.items[item].videoId,
+                    title: title,
+                    description: description,
+                    tags: tags,
+                    source_language: data.target_language,
+                }
+            }
+        }
+        process.parentPort.postMessage(JSON.stringify(message))
 
-}
+    }
 }

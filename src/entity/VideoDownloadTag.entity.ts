@@ -7,13 +7,13 @@ export class VideoDownloadTagEntity extends AuditableEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column("integer")
+    @Column("integer",{ nullable: false })
     video_id: number;
 
-    @Column("text")
+    @Column("text", { nullable: false })
     tag: string;
 
-    @Column("text", { nullable: true, default: "en" })
+    @Column("text", { nullable: false, default: "en" })
     language: string;
 
     @ManyToOne(() => VideoDownloadEntity)
