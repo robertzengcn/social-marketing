@@ -30,7 +30,7 @@
               <v-list>
                 <v-list-item v-for="(translation, index) in videoComEntity?.translateInfolist" :key="index">
                   <v-list-item-content>
-                    <v-list-item-title class="font-weight-bold">{{ translation.language }}</v-list-item-title>
+                    <v-list-item-title class="font-weight-bold">{{ t("language."+translation.language) }}</v-list-item-title>
                     
                     <v-expansion-panels flat>
                       <v-expansion-panel>

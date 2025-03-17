@@ -174,8 +174,14 @@ export default {
         target_language:"target language",
         select_language_error:"lanauge is empty, please select language",
         translate_video_information:"translate video information",
+        translation_info:"translation info",
         
     },
+    language:{
+        zh:"Chinese",
+        en:"English",
+    },
+
     account:{
         accountId:"Account ID",
         type:"Account Type",
