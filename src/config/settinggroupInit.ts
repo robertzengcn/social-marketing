@@ -5,7 +5,17 @@ export const deepseeklocalmodel = 'deepseek-local-model'
 export const deepseekapigroup = 'deepseek-api-group'
 export const grokaigroup='grokai-group'
 export const grokaiapiurl='grokai-url'
+export const grokaiapimodel='grokai-model'
 export const grokaiapilkey='grokai-api-key'
+export const openaigroup='openai-group'
+export const openaiapiurl='openai-url'
+export const openaiapikey='openai-api-key'
+export const volcenginegroup='volcengine-group'
+export const volcengineapiurl='volcengine-url'
+export const volcengineapikey='volcengine-key'
+export const openaiapimodel='openai-model'
+export const volcengineapimodel='volcengine-model'
+
 export const settinggroupInit: Array<SystemSettingGroupdf> = [
     {
         name: deepseeklocalgroup,
@@ -16,13 +26,13 @@ export const settinggroupInit: Array<SystemSettingGroupdf> = [
                value:'http://localhost:11434',
                description:'deepseek-local-url-description',
                type:'input',
-            },
+            },  
             {
                 key:deepseeklocalmodel,
                 value:'deepseek-r1:latest',
                 description:'deepseek-local-model-description',
                 type:'input',
-             }
+             },
         ]
     },
     {
@@ -31,10 +41,22 @@ export const settinggroupInit: Array<SystemSettingGroupdf> = [
         items: [
             {
                key:'deepseek-api-url',
-               value:'http://localhost:11434',
+               value:'https://api.deepseek.com',
                description:'deepseek-api-description',
                type:'input',
-            }
+            },
+            {
+                key:'deepseek-api-model',
+                value:'deepseek-chat',
+                description:'deepseek-api-model-description',
+                type:'input',
+             },
+             {
+                key:'deepseek-api-key',
+                value:'',
+                description:'deepseek-api-key-description',
+                type:'input',
+             },
         ]
     },
     {
@@ -43,16 +65,71 @@ export const settinggroupInit: Array<SystemSettingGroupdf> = [
         items: [
             {
                key:grokaiapiurl,
-               value:'http://localhost:11434',
+               value:'',
                description:'grokai-url-description',
                type:'input',
             },
             {
-                key:'grokai-api-key',
+                key:grokaiapimodel,
+                value:'',
+                description:'grokai-url-description',
+                type:'input',
+             },
+            {
+                key:grokaiapilkey,
                 value:'',
                 description:'grokai-api-key-description',
                 type:'input',
              }
         ]
-    }
+    },
+    {
+        name: openaigroup,
+        description: 'openai-group-description',
+        items: [
+            {
+               key:openaiapiurl,
+               value:'',
+               description:'openai-api-url-description',
+               type:'input',
+            },
+            {
+                key:openaiapimodel,
+                value:'',
+                description:'openai-api-key-description',
+                type:'input',
+             },
+            {
+                key:openaiapikey,
+                value:'',
+                description:'openai-api-key-description',
+                type:'input',
+             }
+        ]
+    },
+    {
+        name: volcenginegroup,
+        description: 'volcengine-group-description',
+        items: [
+            {
+               key:volcengineapiurl,
+               value:'https://ark.cn-beijing.volces.com/api/v3/',
+               description:'volcengine-api-url-description',
+               type:'input',
+            },
+            {
+                key:volcengineapimodel,
+                value:'doubao-1.5-pro-32k-250115',
+                description:'volcengine-api-model-description',
+                type:'input',
+             },
+            {
+                key:volcengineapikey,
+                value:'',
+                description:'volcengine-api-key-description',
+                type:'input',
+             }
+        ]
+    },
+
 ]

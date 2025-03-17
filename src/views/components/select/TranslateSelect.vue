@@ -3,7 +3,7 @@
     <label for="translate-tool">Translation Tool:</label>
     <select id="translate-tool" v-model="selectedTool" class="form-select">
         <option v-for="(value, key) in TranslateToolEnum" :key="key" :value="value">
-            {{ key }}
+            {{ value }}
         </option>
     </select>
 </div>

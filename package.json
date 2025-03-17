@@ -51,7 +51,8 @@
     "rebuild-sqlite": "electron-rebuild -f -w better-sqlite3"
   },
   "dependencies": {
-    "@langchain/core": "^0.3.40",
+    "@langchain/core": "^0.3.42",
+    "@langchain/deepseek": "^0.0.1",
     "@langchain/ollama": "^0.2.0",
     "@lem0-packages/puppeteer-page-proxy": "^1.4.1",
     "@mdi/font": "7.4.47",
@@ -88,6 +89,7 @@
     "node-fetch": "^3.3.2",
     "nodemailer": "^6.9.16",
     "nprogress": "^0.2.0",
+    "openai": "^4.87.3",
     "papaparse": "^5.4.1",
     "pg-hstore": "^2.3.4",
     "pinia": "^2.1.7",

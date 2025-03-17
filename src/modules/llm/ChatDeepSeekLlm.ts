@@ -1,20 +1,20 @@
 import { LlmImpl } from '@/modules/interface/LlmImpl';
-import { ChatOllama } from "@langchain/ollama";
+import { ChatDeepSeek } from "@langchain/deepseek";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 
 // Assuming LlmImpl interface is defined somewhere in your project
 //https://js.langchain.com/docs/integrations/chat/ollama/
-export class OllamaLlm implements LlmImpl {
-    private llm: ChatOllama;
+export class ChatDeepSeekLlm implements LlmImpl {
+    private llm: ChatDeepSeek;
     private model:string;
-    constructor(model:string,baseUrl:string="http://127.0.0.1:11434",temperature:number=0,maxRetries:number=2,apikey?:string) {
+    constructor(model:string,apikey:string,temperature:number=0,maxRetries?:number) {
       this.model=model  
       // Initialization code here
-        this.llm = new ChatOllama({
+        this.llm = new ChatDeepSeek({
             model: this.model,
             temperature: temperature,
             maxRetries: maxRetries,
-            baseUrl: baseUrl,
+            apiKey: apikey
             // other params...
           });
     }

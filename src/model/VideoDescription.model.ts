@@ -13,7 +13,19 @@ export class VideoDescriptionModel extends BaseDb {
       * 
       */
     async saveVideoDescription(videoinfo: VideoDescriptionEntity): Promise<number> {
-        await this.repository.save(videoinfo)
+        //find item by video id and language id, if item exist, update it, else insert it
+        let video =await this.getVideoDescription(videoinfo.video_id,videoinfo.language)
+        if(video){
+            video.title=videoinfo.title
+            // video.video_id=videoinfo.video_id
+            video.description=videoinfo.description
+            // video.language=videoinfo.language
+            video.record_time=videoinfo.record_time
+            await this.repository.save(video)
+        }else{
+            await this.repository.save(videoinfo)
+        }
+        
         return videoinfo.video_id;
 
     }

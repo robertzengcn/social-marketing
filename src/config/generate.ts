@@ -4,7 +4,8 @@ export enum TranslateToolEnum {
     DEEPSEEK_API = "deepseek_api",
     OPENAI = "openai",
     XAI = "xai",
-    LLAMA="llama"
+    LLAMA="llama",
+    Doubao_PRO_A="Doubao-1.5-pro-32k",
   }
 
 // You can still use the imported variable elsewhere
