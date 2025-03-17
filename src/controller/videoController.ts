@@ -742,14 +742,24 @@ export class videoController {
 
             })
         }
+        const transinfolist=await this.videoDescriptionModule.getVideoDescriptionOtherLanguage(id, videoDownEntity.language)
         const res: VideoCompotionEntity = {
             detail: videoDownEntity,
             description: videoDescription,
-            caption: captionDisplay
+            caption: captionDisplay,
+            translateInfolist:transinfolist
         }
         console.log(res)
         return res
     }
+    //get video translate info
+    // public async getVideoTranslateinfo(id: number) {
+    //     // const videoDownEntity = this.videoDownloadModule.getVideoDescriptionOtherLanguage(id)
+    //     // if (!videoDownEntity) {
+    //     //     throw new Error("video download item not found")
+    //     // }
+       
+    // } 
     public async getVideoErrorlog(id: number): Promise<string> {
         const content = await this.videoDownloadModule.getVideoErrorLog(id)
         return content

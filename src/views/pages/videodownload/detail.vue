@@ -26,7 +26,35 @@
                 </v-list-item>
               </v-list>
               <v-divider></v-divider>
-              
+              <h3>{{t('video.translation_info')}}:</h3>
+              <v-list>
+                <v-list-item v-for="(translation, index) in videoComEntity?.translateInfolist" :key="index">
+                  <v-list-item-content>
+                    <v-list-item-title class="font-weight-bold">{{ translation.language }}</v-list-item-title>
+                    
+                    <v-expansion-panels flat>
+                      <v-expansion-panel>
+                        <v-expansion-panel-title>
+                          <span class="text-subtitle-1">{{t('video.title')}}</span>
+                        </v-expansion-panel-title>
+                        <v-expansion-panel-text>
+                          {{ translation.title }}
+                        </v-expansion-panel-text>
+                      </v-expansion-panel>
+                      
+                      <v-expansion-panel>
+                        <v-expansion-panel-title>
+                          <span class="text-subtitle-1">{{t('video.description')}}</span>
+                        </v-expansion-panel-title>
+                        <v-expansion-panel-text>
+                          {{ translation.description }}
+                        </v-expansion-panel-text>
+                      </v-expansion-panel>
+                    </v-expansion-panels>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list>
+              <v-divider></v-divider>
               <p><strong>{{t('common.record_time')}}:</strong> {{ videoComEntity?.detail.record_time }}</p>
             </v-card-text>
           </v-card>

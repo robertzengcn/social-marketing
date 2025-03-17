@@ -34,5 +34,9 @@ export class VideoDescriptionModule extends BaseModule{
     async deleteVideoDescription(videoId: number): Promise<number> {
         return await this.videoDescriptionModel.deleteVideoDescription(videoId)
     }
+    //get video translate info that language not equal to the input language
+    async getVideoDescriptionOtherLanguage(videoId: number,language:string): Promise<Array<VideoDescriptionEntity> | null> {
+        return await this.videoDescriptionModel.getVideoDescriptionOtherLanguage(videoId,language)
+    }
 
 }

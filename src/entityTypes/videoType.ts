@@ -244,8 +244,9 @@ savePath:string
 export type VideoCompotionEntity={
     detail:VideoDownloadEntity,
     description:VideoDescriptionEntity|null,
-    caption:Array<VideoCaptionDisplay>|null
-    translateInfo?:Array<VideoTranslateInfo>|null
+    caption:Array<VideoCaptionDisplay>|null,
+    translateInfo?:Array<VideoTranslateInfo>|null,
+    translateInfolist?:Array<VideoTranslateInfo>|null,
 }
 
 export interface VideoInformationTransParam<Type> extends CommonIdrequestIds<Type>{
