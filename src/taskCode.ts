@@ -53,7 +53,20 @@ process.parentPort.on('message', async (e) => {
                 console.error("platform is empty")
                 return
             }
-            await downloadVideo(param)
+            await downloadVideo(param).catch((error) => {
+                if (error instanceof Error) {
+                   
+
+                    const message: ProcessMessage<VideodownloadTaskMsg> = {
+                        action: "videodownloadTaskMsg",
+                        data: {
+                            msg: error.message
+                        }
+                    }
+                    process.parentPort.postMessage(JSON.stringify(message))
+                
+            }
+            })
             process.exit(0);
             break;
 
@@ -61,13 +74,29 @@ process.parentPort.on('message', async (e) => {
         case 'generateCaption': {
 
             //generate capation
-            await generateCaption(pme.data as VideoCaptionGenerateParam)
+            await generateCaption(pme.data as VideoCaptionGenerateParam).catch((error) => {
+                if (error instanceof Error) {
+                    const message: ProcessMessage<VideoCaptionMsg> = {
+                        action: "generateCaptionMsg",
+                        data: {
+                            status: false,
+                            msg: error.message,
+                            file: "",
+                            videoId: 0
+                        }
+                    }
+
+                    process.parentPort.postMessage(JSON.stringify(message))
+                }
+            })
             process.exit(0);
             break;
         }
         case 'translateVideoInfo': {
             await translateVideoinfo(pme.data as TransItemsParam<VideoTranslateItem>)
+            break;
         }
+       
 
     }
 
@@ -186,11 +215,24 @@ async function downloadVideo(param: processVideoDownloadParam) {
                     }
                     process.parentPort.postMessage(JSON.stringify(message))
 
-                    process.exit(1);
+                    //process.exit(1);
                 } else {
                     // process.exit(0);
                 }
 
+            }).catch((error) => {
+                if (error instanceof Error) {
+                   
+
+                        const message: ProcessMessage<VideodownloadTaskMsg> = {
+                            action: "videodownloadTaskMsg",
+                            data: {
+                                msg: error.message
+                            }
+                        }
+                        process.parentPort.postMessage(JSON.stringify(message))
+                    
+                }
             })
 
         }
@@ -220,7 +262,8 @@ async function generateCaption(param: VideoCaptionGenerateParam) {
         }
 
         process.parentPort.postMessage(JSON.stringify(message))
-        process.exit(1);
+        // process.exit(1);
+        return
     }
     // param.videos.forEach(async (element, index)=>{
     for (const element of param.videos) {

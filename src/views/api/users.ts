@@ -5,6 +5,8 @@ export {};
 // import {ipcRenderer as ipc} from 'electron-better-ipc'
 import {Iresponse} from '@/views/api/types'
 import {windowInvoke} from '@/views/utils/apirequest'
+import {QUERY_USER_INFO} from "@/config/channellist";
+import {UserInfoType} from "@/entityTypes/userType"
 
 // export const getUsers = (params: any) =>
 //   request({
@@ -34,14 +36,8 @@ export const login = (data: any) =>
 
 export const Signout = async() =>
 await windowInvoke("user:Signout")
-  // request({
-  //   url: '/users/logout',
-  //   method: 'post'
-  // })
 
-// export const register = (data: any) =>
-//   request({
-//     url: '/users/register',
-//     method: 'post',
-//     data
-//   })
+export async function GetloginUserInfo(id:number):Promise<UserInfoType>{
+    const res=await windowInvoke(QUERY_USER_INFO)
+    return res
+}

@@ -6,7 +6,7 @@ export class SearchResultEntity extends AuditableEntity {
     @PrimaryGeneratedColumn()
     id: number;
     
-    @Column("integer")
+    @Column("integer", { default: 0 })
     task_id: number;
     
     @Column("text", { nullable: true })

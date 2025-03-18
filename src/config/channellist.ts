@@ -73,5 +73,6 @@ export const SYSTEM_SETTING_LIST='system_setting:list'
 export const VIDEO_INFORMATION_TRANSLATE='video:information:translate'
 export const VIDEO_VOICE_TRANSLATE='video:voice:translate'
 export const SYSTEM_SETTING_UPDATE='system_setting:update'
+export const QUERY_USER_INFO='user:info'
 
 

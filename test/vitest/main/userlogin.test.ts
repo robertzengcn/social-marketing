@@ -1,9 +1,9 @@
 'use strict';
-import { userController,userlogin } from '@/controller/UserController';
+import { UserController,userlogin } from '@/controller/UserController';
 import {  test } from 'vitest'
 
 test('user-login', async function () {
-    const userCon=new userController()
+    const userCon=new UserController()
     const data:userlogin={
         user:'test@test.com',
         pass:'testlala123'

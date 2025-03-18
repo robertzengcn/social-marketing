@@ -1,8 +1,10 @@
-import { Entity, Column } from "typeorm";
+import { Entity, Column,PrimaryGeneratedColumn } from "typeorm";
 import AuditableEntity from "@/entity/Auditable.entity";
 
 @Entity("emailsearch_result")
 export class EmailSearchResultEntity extends AuditableEntity {
+    @PrimaryGeneratedColumn()
+   id: number;
     @Column("integer")
     task_id: number;
     

@@ -1,5 +1,5 @@
 import { ipcMain, dialog, BrowserWindow } from 'electron'
-import { userController, userResponse, userlogin } from '@/controller/UserController'
+import { UserController, userResponse, userlogin } from '@/controller/UserController'
 import { CampaignController } from '@/controller/campaignController'
 // import { campaignResponse } from '@/modules/campaign'
 import { SocialTaskController } from '@/controller/socialtask-controller'
@@ -20,7 +20,7 @@ export default function SyncMsg(mainWindow: BrowserWindow) {
   console.log("SyncMsg");
   ipcMain.handle("user:Login", async (event, data) => {
     // console.log("handle user:Login")
-    const userControll = new userController()
+    const userControll = new UserController()
     const logindata: userlogin = {
       user: data.username,
       pass: data.password
@@ -54,7 +54,7 @@ export default function SyncMsg(mainWindow: BrowserWindow) {
   //check if user login
   ipcMain.handle("user:checklogin", async (event, data) => {
     //console.log("handle user:checklogin")
-    const userControll = new userController()
+    const userControll = new UserController()
     const checkres: userResponse = await userControll.checklogin().then(function (res) {
       //console.log(res);
       if (res == null) {

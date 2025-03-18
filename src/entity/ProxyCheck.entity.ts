@@ -1,12 +1,10 @@
-import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
+import { Entity, Column, PrimaryColumn } from "typeorm";
 import AuditableEntity from "@/entity/Auditable.entity";
 
 @Entity("proxy_check")
 export class ProxyCheckEntity extends AuditableEntity {
-    @PrimaryGeneratedColumn()
-    id: number;
-    
-    @Column("integer")
+
+    @PrimaryColumn("integer")
     proxy_id: number;
     
     @Column("text", { nullable: true })

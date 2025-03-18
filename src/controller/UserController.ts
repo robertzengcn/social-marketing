@@ -5,12 +5,13 @@ import { Scraperdb } from "@/model/scraperdb";
 // import {SequelizeConfig} from "@/config/SequelizeConfig"
 // import * as fs from 'fs';
 // import * as path from 'path';
-import { USERSDBPATH, USERLOGPATH, USEREMAIL } from '@/config/usersetting';
+import { USERSDBPATH, USERLOGPATH, USEREMAIL,USERNAME } from '@/config/usersetting';
 import { Token } from "@/modules/token"
 //import {runAfterTableCreate} from "@/modules/lib/databaseinit"
 import { SqliteDb } from "@/modules/SqliteDb"
 import { runafterbootup } from "@/modules/bootuprun"
-
+import {UserInfoType} from "@/entityTypes/userType"
+import { CommonMessage } from "@/entityTypes/commonType";
 // import {Token} from "@/modules/token"
 
 // const debug = require('debug')('user-controller');
@@ -26,7 +27,7 @@ export type userResponse = {
 // interface SchemaData {
 //     userPath: string;
 //   }
-export class userController {
+export class UserController {
 
     // private user: string;
     // private pass: string;
@@ -56,6 +57,7 @@ export class userController {
                 const tokenService = new Token()
                 //tokenService.setValue('useremail',res.email)
                 tokenService.setValue(USEREMAIL, res.email)
+                tokenService.setValue(USERNAME, res.name)
                 tokenService.setValue(USERSDBPATH, userdataPath)
                 tokenService.setValue(USERLOGPATH, logPath)
                 const scraperModel = Scraperdb.getInstance(userdataPath);
@@ -106,6 +108,18 @@ export class userController {
             throw new Error(error.message);
         });
         return jwtuser;
+    }
+    //get user email
+    public getUserInfo(): UserInfoType {
+        const tokenService = new Token()
+        const email = tokenService.getValue(USEREMAIL)
+        const name = tokenService.getValue(USERNAME)
+        const data:UserInfoType={
+            name:name,
+            email:email
+
+        }
+        return data;
     }
     //check user login status
     public async checklogin(): Promise<jwtUser | null> {

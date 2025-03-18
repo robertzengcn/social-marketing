@@ -53,7 +53,8 @@ type keywordItem = {
   UsedTime: number,
 }
 export type jwtUser = {
-  account_id: number,
+  account_id:number
+  name: string,
   email: string,
   // token:string
   roles: Array<string>,
@@ -355,6 +356,7 @@ export class RemoteSource {
     const jwtuser: jwtUser = {
       account_id: decoded.AccountId,
       email: decoded.Email,
+      name:decoded.Email,
       // token:token,
       roles: decoded.Roles ? decoded.Roles : [],
     }

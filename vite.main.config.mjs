@@ -23,11 +23,11 @@ export default ({ mode }) => {
             //   }),
             alias(),
             //nodeResolve(),
-            copy({
-                targets: [
-                    { src: 'src/sql/**/*', dest: 'dist/sql' }
-                ]
-            }),
+            // copy({
+            //     targets: [
+            //         { src: 'src/sql/**/*', dest: 'dist/sql' }
+            //     ]
+            // }),
             sourcemaps(),
             ClosePlugin(),
             checker({
