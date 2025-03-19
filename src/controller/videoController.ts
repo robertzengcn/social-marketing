@@ -837,6 +837,8 @@ export class videoController {
             if (traditiona) {
                 traditionalTranslateCongfig = traditiona
             }
+        }else{
+            throw new Error("translate tool type not found")
         }
 
         const params: TransItemsParam<VideoTranslateItem> = {

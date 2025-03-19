@@ -102,4 +102,10 @@ export type TraditionalTranslateCongfig={
 export type SettingGroup={
     name:string,
 }
+export type LlmDatatype={
+     groupName:string,
+        modelName:string,
+        url:string,
+        apikey:string
+}
 
