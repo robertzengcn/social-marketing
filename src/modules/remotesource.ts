@@ -62,6 +62,7 @@ export type jwtUser = {
 type jwtTokenUser = {
   AccountId: number,
   Email: string,
+  Name: string,
   exp?: number,
   iat?: number,
   iss?: string,
@@ -304,6 +305,7 @@ export class RemoteSource {
         const tokenModel = new Token()
         tokenModel.setValue(thisobj.tokenname, res.data.Token)
       }
+      // console.log(decoded)
       return decoded;
       //return res.data.Token as {token:string};
     })
@@ -356,7 +358,7 @@ export class RemoteSource {
     const jwtuser: jwtUser = {
       account_id: decoded.AccountId,
       email: decoded.Email,
-      name:decoded.Email,
+      name:decoded.Name,
       // token:token,
       roles: decoded.Roles ? decoded.Roles : [],
     }

@@ -218,7 +218,7 @@ const Usersignout = async () => {
 onMounted(async () => {
     await GetloginUserInfo().then(res=>{
         console.log(res)
-        userName.value=res.data.username
+        userName.value=res.name
     })
     receiveSystemMessage((res:CommonDialogMsg)=>{
        

@@ -37,7 +37,7 @@ export const login = (data: any) =>
 export const Signout = async() =>
 await windowInvoke("user:Signout")
 
-export async function GetloginUserInfo(id:number):Promise<UserInfoType>{
+export async function GetloginUserInfo():Promise<UserInfoType>{
     const res=await windowInvoke(QUERY_USER_INFO)
     return res
 }
