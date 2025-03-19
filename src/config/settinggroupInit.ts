@@ -1,4 +1,5 @@
 import { SystemSettingGroupdf } from '@/entityTypes/systemsettingType'
+import {LlmDatatype} from '@/entityTypes/commonType'
 export const deepseeklocalgroup = 'Deepseek-local'
 export const deepseeklocalurl = 'deepseek-local-url'
 export const deepseeklocalmodel = 'deepseek-local-model'
@@ -10,11 +11,17 @@ export const grokaiapilkey='grokai-api-key'
 export const openaigroup='openai-group'
 export const openaiapiurl='openai-url'
 export const openaiapikey='openai-api-key'
-export const volcenginegroup='volcengine-group'
-export const volcengineapiurl='volcengine-url'
-export const volcengineapikey='volcengine-key'
+export const volcenginegrouppro='volcengine-group'
+export const volcengineproapiurl='volcengine-url'
+export const volcengineproapikey='volcengine-key'
 export const openaiapimodel='openai-model'
-export const volcengineapimodel='volcengine-model'
+export const volcengineapipromodel='volcengine-model'
+export const Doubao_PRO_A:LlmDatatype={
+    groupName:volcenginegrouppro,
+    modelName:volcengineapipromodel,
+    url:volcengineproapiurl,
+    apikey:volcengineproapikey
+}
 
 export const settinggroupInit: Array<SystemSettingGroupdf> = [
     {
@@ -108,23 +115,23 @@ export const settinggroupInit: Array<SystemSettingGroupdf> = [
         ]
     },
     {
-        name: volcenginegroup,
+        name: volcenginegrouppro,
         description: 'volcengine-group-description',
         items: [
             {
-               key:volcengineapiurl,
+               key:volcengineproapiurl,
                value:'https://ark.cn-beijing.volces.com/api/v3/',
                description:'volcengine-api-url-description',
                type:'input',
             },
             {
-                key:volcengineapimodel,
+                key:volcengineapipromodel,
                 value:'doubao-1.5-pro-32k-250115',
                 description:'volcengine-api-model-description',
                 type:'input',
              },
             {
-                key:volcengineapikey,
+                key:volcengineproapikey,
                 value:'',
                 description:'volcengine-api-key-description',
                 type:'input',

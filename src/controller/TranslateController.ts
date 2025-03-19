@@ -1,8 +1,11 @@
 import { TranslateToolEnum } from "@/config/generate";
 import { LlmCongfig, TraditionalTranslateCongfig } from '@/entityTypes/commonType'
 import { SystemSettingGroupModule } from '@/modules/SystemSettingGroupModule'
-import { deepseeklocalgroup, deepseeklocalurl, deepseeklocalmodel } from "@/config/settinggroupInit";
-import { group } from "console";
+import { deepseeklocalgroup, deepseeklocalurl, deepseeklocalmodel,volcenginegrouppro,volcengineproapiurl,
+    volcengineapipromodel
+ } from "@/config/settinggroupInit";
+// import { group } from "console";
+import {Doubao_PRO_A} from "@/config/settinggroupInit"
 export class TranslateController {
     private systemSettingGroupModule: SystemSettingGroupModule
     constructor() {
@@ -76,6 +79,12 @@ export class TranslateController {
                 break;
             case TranslateToolEnum.XAI:
 
+                break;
+            case TranslateToolEnum.Doubao_PRO_A:
+                groupName=Doubao_PRO_A.groupName
+                modelKey=Doubao_PRO_A.modelName
+                urlKey=Doubao_PRO_A.url
+                apikey=Doubao_PRO_A.apikey
                 break;
             default:
                 throw new Error("toolName not found");
