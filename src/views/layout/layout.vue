@@ -6,7 +6,7 @@
         <v-navigation-drawer class="my-4 layout_navigation" :rail="navState.rail" expand-on-hover rail-width="77"
             @update:rail="navigationRail" :permanent="permanent" v-model="navState.menuVisible" style="position: fixed">
             <v-list class="py-4 mx-2 logo" nav>
-                <v-list-item :prepend-avatar="logo" class="mx-1">
+                <v-list-item :prepend-avatar="logo" class="mx-1" @click="gotodashborad()">
                     <v-list-item-title class="title">Material UI</v-list-item-title>
                     <v-list-item-subtitle>vue-material-admin</v-list-item-subtitle>
                 </v-list-item>
@@ -79,9 +79,9 @@
                     </v-btn>
                     <v-btn variant="text" append-icon="mdi-chevron-down" class="mr-2">
                         <v-avatar size="x-small" class="avatar mr-2">
-                            <v-img :src="wxtx" alt="陈咩啊"></v-img>
+                            <v-img :src="wxtx" alt="{{userName}}"></v-img>
                         </v-avatar>
-                        <span v-if="!mainStore.isMobile">陈咩咩啊</span>
+                        <span v-if="!mainStore.isMobile">{{userName}}</span>
                         <v-menu activator="parent">
                             <v-list nav class="h_a_menu">
                                 <v-menu :location="location">
@@ -96,7 +96,8 @@
                                         </v-list>
                                     
                                 </v-menu>
-                                <v-list-item :title="$t('layout.login')" prepend-icon="mdi-login" @click="Usersignout" />
+                                <v-list-item :title="t('layout.system_setting')" prepend-icon="mdi-cog" @click="gotoSystemsetting" />
+                                <v-list-item :title="t('layout.login_out')" prepend-icon="mdi-login" @click="Usersignout" />
                             </v-list>
                         </v-menu>
                     </v-btn>
@@ -109,15 +110,22 @@
                 <RouterView />
             </div>
         </main>
-        <v-dialog absolute right persistent width="300" class="dialog-bottom-right">
+        <!-- <v-dialog absolute right persistent width="300" class="dialog-bottom-right">
             <v-card>
               <v-card-title class="headline">{{ dialogTitle }}</v-card-title>
               <v-card-text>
                {{ dialogContent }}
               </v-card-text>
             </v-card>
-          </v-dialog>
+          </v-dialog> -->
+          <NoticeSnackbar
+          v-model="showNotice"
+          :message="noticeMessage"
+          :type="noticeType"
+          :timeout="snaptimeout"
+        />
     </v-layout>
+   
 </template>
 <script setup lang="ts">
 import logo from '@/assets/admin-logo.png';
@@ -132,10 +140,19 @@ import {useI18n} from "vue-i18n";
 import { ref,onMounted } from 'vue'
 import {receiveSystemMessage} from '@/views/api/layout'
 import {CommonDialogMsg} from "@/entityTypes/commonType"
+import NoticeSnackbar from '@/views/components/widgets/noticeSnackbar.vue';
+import {GetloginUserInfo} from '@/views/api/users'
+
+
 // import {ref, watchEffect} from "vue";
+type NoticeType = 'success' | 'error' | 'warning' | 'info';
 const dialogStatus=ref(false)
-const dialogTitle=ref('')
-const dialogContent=ref('')
+const noticeMessage=ref('')
+const noticeType=ref<NoticeType>('info')
+const userName=ref('')
+const snaptimeout=ref<number>(10000)
+// const dialogTitle=ref('')
+// const dialogContent=ref('')
 const mainStore = useMainStore();
 const router = useRouter();
 const navState = reactive({
@@ -147,6 +164,7 @@ const navState = reactive({
 const permanent = computed(() => {
     return !mainStore.isMobile;
 });
+const showNotice = ref(false);
 const {t,locale} = useI18n();
 const location="end"
 type languageType = {
@@ -171,6 +189,13 @@ const switchLanguage = (lang: string) => {
     // router.go(0)
 }
 
+const gotoSystemsetting=()=>{
+    router.push('/systemsetting/index')
+}
+const gotodashborad=()=>{
+    router.push('/dashboard/home')
+}
+
 watch(permanent, () => {
     navState.menuVisible = true;
     changeRail();
@@ -190,22 +215,37 @@ const Usersignout = async () => {
     await Signout()
     router.push('/login')
 }
-onMounted(() => {
+onMounted(async () => {
+    await GetloginUserInfo().then(res=>{
+        console.log(res)
+        userName.value=res.name
+    })
     receiveSystemMessage((res:CommonDialogMsg)=>{
+       
         //revice system message
         if(res.data){
-        showDialog(res.status, res.data.title, res.data.content)
+            console.log(t(res.data.title))
+        showDialog(res.status, t(res.data.title)+": "+t(res.data.content))
         }
     })
 }
 )
-const showDialog=(status:boolean, title:string,content:string)=>{
-    dialogTitle.value=title  
-    dialogContent.value=content
-    dialogStatus.value=status;
-  setTimeout(() => {
-    dialogStatus.value= false
-        }, 10000)
+const showDialog=(status:boolean, content:string)=>{
+    // dialogTitle.value=title  
+    // dialogContent.value=content
+    // dialogStatus.value=status;
+    showNotice.value=true
+    if(status){
+        noticeType.value='success'
+    }else{
+        noticeType.value='error'
+    }
+    noticeMessage.value=content
+
+
+//   setTimeout(() => {
+//     dialogStatus.value= false
+//         }, 10000)
 }
 </script>
 <style scoped lang="scss">

@@ -2,6 +2,10 @@
 // import No from "../feedback/no.vue";
 // import { not } from "cheerio/lib/api/traversing";
 
+// import { uninstallPipPackage } from "@/modules/lib/function";
+// import install from "electron-devtools-installer";
+// import { upgrade } from "undici";
+
 export default {
     common:{
         more:"More",
@@ -22,6 +26,7 @@ export default {
         error:"error",
         yes:"yes",
         no:"no",
+        ok:"ok",
         save_success:"save success",
         delete_confirm_tip:"Are you sure to delete",
         comfirm_delete:"Confirm delete",
@@ -30,7 +35,22 @@ export default {
         test:"test",
         unkonw_error:"unkonw error",
         send:"send",
-        loading:"loading"
+        loading:"loading",
+        change_proxy:"change proxy",
+        select_proxy:"select proxy",
+        id:"id",
+        status:"status",
+        configured:"configured",
+        not_configured:"not configured",
+        not_start:"not start",
+        processing:"processing",
+        complete:"complete",
+        error_retry:"error happened, please retry again",
+        install:"install",
+       uninstall:"uninstall",
+       upgrade:"upgrade",
+       upgrading:"upgrading",
+       log_content:"log content",
     },
     home:{
         search:"Search Extraction",
@@ -73,6 +93,8 @@ export default {
     },
     layout:{
         login:"Login",
+        login_out:"Login Out",
+        system_setting:"System Setting",
     },
     extramodule:{
         extramoduleName:"Extra Module Name",
@@ -84,20 +106,29 @@ export default {
         installed:"Installed",
         notInstalled:"Not Installed",
         actions:"action",
+        require_version:"require Version",
+        installed_version:"installed Version",
+        upgradeConfirm:"Are you sure you want to upgrade {package}?",
+        upgrade_start:"module upgrade start",
     },
     modules:{
         f2:{
             name:"f2 video download",
             describe:"f2 is a module for video download"
         },
-        youtube_dl:{
+        "youtube-dl":{
             name:"youtube-dl",
             describe:"youtube-dl is a moudule for youtube video download" 
         },
-        openai_whisper:{
+        "openai-whisper":{
             name:"openai-whisper",
             describe:"openai-whisper is a module for text generation" 
+        },
+        "faster-whisper":{
+            name:"faster-whisper",
+            describe:"faster-whisper is a module for text generation" 
         }
+        
     },
     video:{
         platform:"platform",
@@ -115,9 +146,42 @@ export default {
         savePath_not_found:"savePath not found",
         start_download_video:"start download video",
         new_video_download:"new video download",
-        downloadtype:"download type"
+        downloadtype:"download type",
+        create_download_task_failuer:"create video download task failure",
+        use_proxy_override:"use choose proxy instead account's blind proxy",
+        cookies_type:"cookies type",
+        choose_browser:"choose browser",
+        task_name:"task name",
+        url:"url",
+        title:"title",
+        description:"video description",
+        generate_captions:"generate captions",
+        caption:"caption",
+        caption_status:"caption status",
+        is_english_video:"is english video",
+        video_language_select:"video language select",
+        caption_save_path:"caption save path",
+        input_caption_save_path:"input caption save path",
+        caption_generate_failed:"caption generate failed",
+        caption_generate_start:"caption generate start",
+        video_task__download_retry_start:"video task download retry start",
+        item_not_found_local:"item not found in local",
+        caption_files:"caption files",
+        open_caption_file_error:"open caption file error",
+        translate_information:"translate information",
+        translate_video:"translate video",
+        source_language:"source language",
+        target_language:"target language",
+        select_language_error:"lanauge is empty, please select language",
+        translate_video_information:"translate video information",
+        translation_info:"translation info",
         
     },
+    language:{
+        zh:"Chinese",
+        en:"English",
+    },
+
     account:{
         accountId:"Account ID",
         type:"Account Type",
@@ -285,6 +349,26 @@ export default {
         title:"title",
         content:"content",
         record_time:"record time",
+    },
+    socialaccount:{
+        create_account:"create account",
+        uploadfilemsg_title:"Manual upload cookies file",
+        uploadfilemsg_content:"Please export cookies from your browser and upload cookies file manually",
+        handleCookiesfileSuccess:"handle cookies file success",
+        handleCookiesfileFailure:"handle cookies file failure",
+        insertCookiesFailure:"insert cookies failure",
+        delete_account_errror:"delete account error",
+        login_account_error:"login account error",
+        manuallogin_title:"Manual login notice",
+        manuallogin_content:"We will open a pop window, please login to the social media platform manually, after you have logged in, please close the pop up window, the system will automatically save account's cookies",
+        saveCookiesSuccess:"save cookies success",
+    },
+    video_download_list:{
+
+    },
+    system_settings:{
+        title:"System Settings",
+        no_setting_item_found_exit:"No setting item found, please exit",
     }
 
 }

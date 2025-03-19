@@ -65,13 +65,13 @@ module.exports = {
             config: 'vite.utilityCode.config.mjs'
           },
           {
-            entry: 'src/emailSearchCode.ts',
-            config: 'vite.emailSearchCode.config.mjs'
+            entry: 'src/taskCode.ts',
+            config: 'vite.taskCode.config.mjs'
           },
           {
             entry: 'src/buckEmail.ts',
             config: 'vite.buckEmail.config.mjs'
-          }
+          },
 
         ],
         renderer: [

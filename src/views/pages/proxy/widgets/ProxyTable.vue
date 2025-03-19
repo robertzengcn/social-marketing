@@ -189,7 +189,7 @@ const alertext=ref("");
 
 const startAutoRefresh = () => {
     refreshInterval = setInterval(function(){
-        loadItems({ page: options.page, itemsPerPage: itemsPerPage.value, sortBy: "" });
+        loadItems({ page: options.page, itemsPerPage: options.itemsPerPage, sortBy: "" });
     }, 10000); // Refresh every 5 seconds
 }
 const stopAutoRefresh = () => {
@@ -203,6 +203,8 @@ const stopAutoRefresh = () => {
 function loadItems({ page, itemsPerPage, sortBy }) {
     options.page = page;
     loading.value = true
+    options.page = page;
+  options.itemsPerPage = itemsPerPage;
     const fetchitem: Fetchparam = {
         // id:parseInt(campaignId),
         page: page,

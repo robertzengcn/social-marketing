@@ -1,7 +1,7 @@
 import { defineConfig, loadEnv } from 'vite';
 import alias from "@rollup/plugin-alias";
 import * as path from 'path';
-import { nodePolyfills } from 'vite-plugin-node-polyfills'
+// import { nodePolyfills } from 'vite-plugin-node-polyfills'
 // import commonjs from 'vite-plugin-commonjs'
 import ClosePlugin from './vite-plugin-close.ts'
 // import { esbuildCommonjs } from '@originjs/vite-plugin-commonjs'

@@ -151,6 +151,7 @@ async function onSubmit() {
   loading.value = true;
   if (!valid) {
     console.log("form is not valid");
+    loading.value=false
     alert.value = true;
     alertcolor.value = "error";
     alertContent.value = "form is not valid";
@@ -168,6 +169,7 @@ async function onSubmit() {
     console.log(soacc);
     await updateEmailfilter(soacc)
       .then((res) => {
+        loading.value = false;
         console.log(res)
         if (res) {
           if (res.id && res.id > 0) {
@@ -195,6 +197,7 @@ async function onSubmit() {
       }
       )
       .catch((err) => {
+        loading.value = false;
         alert.value = true;
         alertcolor.value = "error";
         alertContent.value = err.message;

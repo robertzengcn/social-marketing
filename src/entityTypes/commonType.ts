@@ -16,6 +16,7 @@ export interface ListData <Type>{
 export type CommonDialogMsg={
     status:boolean,
     code:number,
+    msg?:string,
     data?:{
         action?:string,  
         title:string,
@@ -52,6 +53,9 @@ export interface CommonApiresp <Type>{
 export interface CommonIdrequest<Type>{
     id:Type
 }
+export interface CommonIdrequestType<Type> extends CommonIdrequest<Type>{
+    type:string
+}
 export type Header = {
     title: string | ReturnType<typeof computed>;
     align?: string;
@@ -66,3 +70,36 @@ export type VslotHeader = {
     rules?:	any;
      valid: boolean
 }
+export enum TaskStatus {
+    Notstart = 0,
+    Processing = 1,
+    Complete = 2,
+    Error = 3
+  }
+  export interface CommonIdrequestIds<Type> {
+   ids:Array<Type>,
+}
+export type LanguageItem={
+    id:number,
+    name:string
+    code:string
+}
+export enum InputTypeEnum {
+    INPUT = 'input',
+    SELECT = 'select',
+    RADIO = 'radio',
+    CHECKBOX = 'checkbox'
+  }
+export type LlmCongfig={
+    model:string,
+    url?:string,
+    apikey?:string,
+}  
+export type TraditionalTranslateCongfig={
+    url:string,
+    apikey:string,
+}  
+export type SettingGroup={
+    name:string,
+}
+

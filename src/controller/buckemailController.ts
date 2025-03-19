@@ -13,7 +13,7 @@ import { WriteLog, getApplogspath, getRandomValues } from "@/modules/lib/functio
 import { v4 as uuidv4 } from 'uuid';
 import { BuckEmailTaskModule } from "@/modules/buckEmailTaskModule"
 import { BuckemailEntity} from "@/model/buckEmailTaskdb"
-import { TaskStatus } from "@/config/common"
+import { TaskStatus } from "@/entityTypes/commonType"
 import { ProcessMessage } from "@/entityTypes/processMessage-type"
 import { EmailSendResult } from "@/entityTypes/emailmarketingType"
 import { EmailMarketingSendLogModule } from "@/modules/emailMarketingSendLogModule";

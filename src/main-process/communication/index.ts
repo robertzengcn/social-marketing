@@ -11,7 +11,10 @@ import {registerEmailextractionIpcHandlers} from "@/main-process/communication/e
 import {registerEmailMarketingIpcHandlers} from "@/main-process/communication/emailMarketingIpc";
 import {registerBuckEmailIpcHandlers} from "@/main-process/communication/buckEmail-ipc";
 import {registerSocialAccountIpcHandlers} from "@/main-process/communication/socialaccount-ipc";
+import {registerSystemSettingIpcHandlers} from "@/main-process/communication/systemSettingIpc";
+import {registerUserIpcHandlers} from "@/main-process/communication/userIpc";
 export function registerCommunicationIpcHandlers(win: BrowserWindow) {
+    try{
     SyncMsg(win)
     registerExtraModulesIpcHandlers()
     registerVideoIpcHandlers()
@@ -20,8 +23,14 @@ export function registerCommunicationIpcHandlers(win: BrowserWindow) {
     registerEmailextractionIpcHandlers()
     registerEmailMarketingIpcHandlers()
     registerBuckEmailIpcHandlers()
-    registerSocialAccountIpcHandlers()
+    registerSocialAccountIpcHandlers(win)
+    registerSystemSettingIpcHandlers()
+    registerUserIpcHandlers()
     AsyncMsg()
+    }catch(e){
+        console.log("registerCommunicationIpcHandlers error:")
+        console.error(e)
+    }
     // Register extra modules IPC handlers
     
     

@@ -1,7 +1,7 @@
 import { Token } from "@/modules/token"
 import { USERSDBPATH } from '@/config/usersetting';
 import {BuckEmailTaskdb,BuckemailEntity,BuckEmailType} from "@/model/buckEmailTaskdb"
-import {TaskStatus} from "@/config/common"
+import {TaskStatus} from "@/entityTypes/commonType"
 import { SortBy } from "@/entityTypes/commonType"
 
 export class BuckEmailTaskModule {

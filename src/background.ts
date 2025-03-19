@@ -1,10 +1,14 @@
 'use strict'
+import 'reflect-metadata';
 // import {ipcMain as ipc} from 'electron-better-ipc';
 import { app, protocol, BrowserWindow } from 'electron'
 // import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 import {registerCommunicationIpcHandlers} from "./main-process/communication/";
 import * as path from 'path';
+import { Token } from "@/modules/token"
+import {USERSDBPATH} from '@/config/usersetting';
+import {SqliteDb} from "@/modules/SqliteDb"
 // import { createProtocol } from 'electron';
 const isDevelopment = process.env.NODE_ENV !== 'production'
 declare const MAIN_WINDOW_VITE_DEV_SERVER_URL: string;
@@ -97,6 +101,12 @@ function initialize() {
   // Some APIs can only be used after this event occurs.
   app.on('ready', async () => {
     createWindow();
+    const tokenService=new Token()
+    const userdataPath=tokenService.getValue(USERSDBPATH)
+    if(userdataPath){
+      const appDataSource=SqliteDb.getInstance(userdataPath)
+       await appDataSource.connection.initialize()
+    }
     registerCommunicationIpcHandlers(win);
     
 

@@ -22,10 +22,13 @@
       <v-text-field
         v-model="pass"
         label="Pass"
-        type="input"
+        
         hint="input the pass"
         :readonly="loading"
+        :type="show ? 'text' : 'password'"
+            @click:append="show = !show"
         clearable
+        :append-icon="show ? 'mdi-eye' : 'mdi-eye-off'"
       ></v-text-field>
       
       <v-btn-toggle v-model="status" mandatory >
@@ -124,7 +127,7 @@ import { useRoute } from "vue-router";
 import { SocialAccountDetailData } from "@/entityTypes/socialaccount-type";
 import ProxyTableselected from "@/views/pages/proxy/widgets/ProxySelectedTable.vue";
 import { ProxyListEntity, Proxy } from "@/entityTypes/proxyType";
-
+const show = ref<boolean>(false);
 const $route = useRoute();
 const FakeAPI = {
   async fetch(id: number): Promise<SocialAccountDetailData> {
@@ -227,6 +230,7 @@ async function onSubmit() {
   loading.value = true;
   if (!valid) {
     console.log("form is not valid");
+    loading.value = false;
     alert.value = true;
     alertcolor.value = "error";
     alertContent.value = "form is not valid";
@@ -248,6 +252,7 @@ async function onSubmit() {
     console.log(soacc);
     await saveSocialAccount(soacc)
       .then((res) => {
+        loading.value = false;
         if (res.id > 0) {
           alert.value = true;
           alertcolor.value = "success";
@@ -271,6 +276,7 @@ async function onSubmit() {
         }, 5000);
       })
       .catch((err) => {
+        loading.value = false;
         alert.value = true;
         alertcolor.value = "error";
         alertContent.value = err.message;

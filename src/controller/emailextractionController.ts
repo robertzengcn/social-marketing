@@ -23,7 +23,7 @@ export class EmailextractionController {
     public async searchEmail(data: EmailsControldata) {
         //save search email task
         const taskId=await this.emailSeachTaskModule.saveSearchtask(data.type,data.validUrls)
-        const childPath = path.join(__dirname, 'emailSearchCode.js')
+        const childPath = path.join(__dirname, 'taskCode.js')
         if (!fs.existsSync(childPath)) {
             throw new Error("child js path not exist for the path " + childPath);
         }
@@ -41,8 +41,8 @@ export class EmailextractionController {
         }
         // console.log(logpath)
         const uuid=uuidv4({random: getRandomValues(new Uint8Array(16))})
-        const errorLogfile=path.join(logpath,'emailsearch_'+taskId.toString()+'_'+uuid+'.error.log')
-        const runLogfile=path.join(logpath,'emailsearch_'+taskId.toString()+'_'+uuid+'.runtime.log')
+        const errorLogfile=path.join(logpath,'emailsearch',taskId.toString()+'_'+uuid+'.error.log')
+        const runLogfile=path.join(logpath,'emailsearch',taskId.toString()+'_'+uuid+'.runtime.log')
 
         child.on("spawn", () => {
             console.log("child process satart, pid is"+child.pid)

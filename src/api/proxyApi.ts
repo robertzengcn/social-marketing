@@ -1,6 +1,7 @@
 export { };
 import { HttpClient } from "@/modules/lib/httpclient";
 import { ProxylistResp, ProxyEntity, SaveProxyResp, ProxyParseItem, ImportProxyResp, GetProxyCountResp, ProxyListEntity } from "@/entityTypes/proxyType";
+import { CommonApiresp } from "@/entityTypes/commonType"
 export class ProxyApi {
   private _httpClient: HttpClient;
   constructor() {
@@ -75,7 +76,7 @@ export class ProxyApi {
     return resp;
   }
   //get proxy detail from api
-  public async getProxyDetail(id: number): Promise<any> {
+  public async getProxyDetail(id: number): Promise<CommonApiresp<ProxyEntity>> {
     const searchParams: Record<string, any> = new URLSearchParams();
     searchParams.append("id", id);
     const paramstring = searchParams.toString();

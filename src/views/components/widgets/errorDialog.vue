@@ -41,9 +41,9 @@
     </v-dialog>
 </template>
 <script setup lang="ts">
-import { useI18n } from "vue-i18n";
-const { t } = useI18n({ inheritLocale: true });
-import {CapitalizeFirstLetter} from "@/views/utils/function"
+//import { useI18n } from "vue-i18n";
+//const { t } = useI18n({ inheritLocale: true });
+//import {CapitalizeFirstLetter} from "@/views/utils/function"
 const props = defineProps({
     showDialog: {
       type: Boolean,

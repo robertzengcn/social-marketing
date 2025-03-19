@@ -5,16 +5,7 @@ import {UserSearch} from "@/childprocess/userSearch"
 // import { resolveCname } from "node:dns";
 import {ProcessMessage} from "@/entityTypes/processMessage-type"
 import {SearchDataRun} from "@/entityTypes/scrapeType"
-// import { argv } from 'node:process';
-// import {SearchDataRun} from "@/entityTypes/scrapeType"
 
-// async function runCommand(parameter) {
-//     //const action=process.argv[2]
-//     console.log(parameter)
-//     const action=parameter[2]
-//     console.log(action)
-//     switch(action){
-//         case "searchscraper":{
 //             // const data=parameter[3]
 //             // if(!parameter){
 //             //     throw new Error("parameter is empty")
@@ -69,6 +60,3 @@ process.parentPort.on('message', async (e) => {
 
     }
   })
-// setInterval(() => {
-//     //do  nothing
-// }, 1 << 30);

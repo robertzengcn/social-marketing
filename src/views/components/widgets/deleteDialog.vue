@@ -14,7 +14,7 @@
   </v-dialog>    
 </template>
 <script setup lang="ts">
-import { defineProps, defineEmits } from 'vue';
+
 import { useI18n } from "vue-i18n";
 const { t } = useI18n({ inheritLocale: true });
 import {CapitalizeFirstLetter} from "@/views/utils/function"

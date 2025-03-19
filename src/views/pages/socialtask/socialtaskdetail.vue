@@ -127,6 +127,7 @@ async function onSubmit() {
     console.log(valid);
     loading.value = true;
     if(!valid){
+        loading.value = false;
         console.log("form is not valid")
     }else{
         const sotaskentity: SocialTaskEntity = {
@@ -142,6 +143,7 @@ async function onSubmit() {
         console.log(sotaskentity)
         await saveSocialTask(sotaskentity)
             .then((res) => {
+                loading.value = false;
                 if (res.id > 0) {
                     alert.value = true;
                     alertcolor.value = "success";
