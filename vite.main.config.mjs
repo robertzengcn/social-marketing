@@ -51,6 +51,7 @@ export default ({ mode }) => {
             // vuetify({
             //     autoImport: true,
             //   }),
+
             alias(),
             emptyModulesPlugin(),
             sourcemaps(),
@@ -59,11 +60,16 @@ export default ({ mode }) => {
                 // e.g. use TypeScript check
                 typescript: true,
             }),
-            copy({
-                targets: [
-                    { src: 'node_modules/better-sqlite3/build/Release/better_sqlite3.node', dest: 'build' },
-                ]
-            })
+            // copy({
+            //     targets: [
+            //         { src: 'node_modules/better-sqlite3/build/Release/better_sqlite3.node', dest: 'build' },
+            //     ]
+            // })
+            // copy({
+            //     targets: [
+            //         { src: 'node_modules/better-sqlite3/build/Release/better_sqlite3.node', dest: 'build' },
+            //     ]
+            // })
            
         ],
         resolve: {
@@ -91,7 +97,11 @@ export default ({ mode }) => {
             // mainFields: ['main', 'module', 'browser']
         },
         build: {
-           
+            rollupOptions: {
+                external: [
+                    'sqlite3',  // Mark sqlite3 as external
+                ]
+            },
             sourcemap: true,
         },
         test: {
