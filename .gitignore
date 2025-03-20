@@ -94,3 +94,4 @@ dist
 .vite/*
 vite.main.config.mjs.timestamp-*.mjs
 vite.utilityCode.config.mjs.*.mjs
+build/
