@@ -1,9 +1,9 @@
-const path = require('path');
-const dotenv = require('dotenv');
-const fs = require('node:fs/promises');
-const fsSync = require('node:fs');
+import * as path from 'path';
+import * as dotenv from 'dotenv';
+import * as fs from 'node:fs/promises';
+import * as fsSync from 'node:fs';
 import { ForgeConfig } from '@electron-forge/shared-types';
-import { AutoUnpackNativesPlugin } from "@electron-forge/plugin-auto-unpack-natives";
+// import { AutoUnpackNativesPlugin } from "@electron-forge/plugin-auto-unpack-natives";
 // Determine the environment and load the corresponding .env file
 const env = process.env.NODE_ENV || 'development';
 const envFile = `.env.${env}`;
@@ -22,7 +22,7 @@ const config: ForgeConfig = {
     extraResource: [
        // Only include these paths if they exist
        ...(() => {
-        const resources = [];
+        const resources: string[] = [];
         const sqlite3Path = path.join(__dirname, 'node_modules/sqlite3/lib/binding');
         const betterSqlitePath = path.join(__dirname, 'node_modules/better-sqlite3/build/Release');
         
@@ -70,7 +70,6 @@ const config: ForgeConfig = {
     }
   ],
   plugins: [
-    new AutoUnpackNativesPlugin({}),
     {
       name: '@electron-forge/plugin-auto-unpack-natives',
       config: {},
