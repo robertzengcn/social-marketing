@@ -264,6 +264,7 @@ export interface VideoTranslateItem{
 
 }
 export type VideoTranslateInfo={
+    id:number
     language:string,
     title:string,
     description:string,

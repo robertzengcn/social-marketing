@@ -7,7 +7,11 @@ const envFile = `.env.${env}`;
 dotenv.config({ path: path.resolve(__dirname, envFile) });
 module.exports = {
   packagerConfig: {
-    asar: true,
+    asar: {
+      // This ensures native modules are unpacked
+      unpack: "*.node"
+    },
+    extraResource: ["./node_modules/sqlite3/lib/binding","./node_modules/better-sqlite3/build/Release"],
   },
   rebuildConfig: {},
   makers: [

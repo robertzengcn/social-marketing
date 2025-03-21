@@ -34,7 +34,8 @@ export default function SyncMsg(mainWindow: BrowserWindow) {
       } as userResponse;
 
     }).catch(function (err) {
-      console.log(err);
+     // console.error(err);
+      console.error("Error trace:", err);
       if (err instanceof Error) {
         return {
           status: false,

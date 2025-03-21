@@ -26,6 +26,7 @@ import {ProxyCheckEntity} from "@/entity/ProxyCheck.entity"
 import {SearchKeywordEntity} from "@/entity/SearchKeyword.entity"
 import {SearchResultEntity} from "@/entity/SearchResult.entity"
 import {TaskRunEntity} from "@/entity/TaskRun.entity"
+// import sqlite3 from "sqlite3"; 
 
 
 import path from "node:path";
@@ -35,7 +36,7 @@ export class SqliteDb {
     private constructor(filepath:string) {
         if(filepath.length>0){
         this.connection =new DataSource({
-            type: "better-sqlite3",
+            type: "sqlite",
             database:path.join(filepath,'scraper.db'),
             entities: [AccountCookies,
                 BuckemailTask,
@@ -67,7 +68,10 @@ export class SqliteDb {
             synchronize: true, 
             migrations: [],
             subscribers: [],
-            logging: true // use this for debugging
+            logging: true, // use this for debugging
+            // driver: {
+            //     sqlite3: sqlite3
+            // }
         })
     }
 

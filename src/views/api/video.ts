@@ -88,3 +88,7 @@ export async function translateInformation(data:VideoInformationTransParam<numbe
     
     windowSend(VIDEO_INFORMATION_TRANSLATE, data)
 }
+//update video translate information
+export async function updateVideotranslate(id:number){
+    windowSend(VIDEO_INFORMATION_TRANSLATE)
+}
