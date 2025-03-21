@@ -64,10 +64,10 @@ export class UserController {
                 const scraperModel = Scraperdb.getInstance(userdataPath);
                 //const dbdatapath=scraperModel.getdbpath(userdataPath)
                 // console.log(dbdatapath)
-
+                try {
                 scraperModel.init()
                 const appDataSource = SqliteDb.getInstance(userdataPath)
-                try {
+                
                     await appDataSource.connection.initialize()
                 } catch (error) {
                     console.error('Failed to initialize database connection:', error)
@@ -82,10 +82,13 @@ export class UserController {
                         // Handle specific error types
                         if (error.message === 'SQLITE_CANTOPEN') {
                             console.error('Could not open SQLite database file. Check path and permissions.')
-                        } else if (error.message === 'SQLITE_CORRUPT') {
+                        } else if (error.name === 'SQLITE_CORRUPT') {
                             console.error('SQLite database file is corrupted.')
                         } else if (error.name === 'CannotConnectAlreadyConnectedError') {
                             console.log('SQLite database file is already connected.')
+                        }else if(error.name==='CannotConnectAlreadyConnectedError2'){
+                            console.log('SQLite database file is already connected.')
+
                         } else {
                             // Throw a more descriptive error or return a specific error response
                            throw new Error(`Database initialization failed: ${error.message}`)
