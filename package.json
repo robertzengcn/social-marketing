@@ -49,6 +49,7 @@
     "make-file-back": "vitest --config vite.utilityCode.config.mjs -t make-file-back",
     "tsc": "tsc --noEmit --watch",
     "rebuild-better-sqlite": "electron-rebuild -f -w better-sqlite3",
+    "prepackage": "npm run rebuild-sqlite3",
     "rebuild-sqlite3": "electron-rebuild -f -w sqlite3"
   },
   "dependencies": {

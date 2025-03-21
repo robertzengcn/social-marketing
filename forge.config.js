@@ -11,7 +11,24 @@ module.exports = {
       // This ensures native modules are unpacked
       unpack: "*.node"
     },
-    extraResource: ["./node_modules/sqlite3/lib/binding","./node_modules/better-sqlite3/build/Release"],
+    extraResource: [
+       // Only include these paths if they exist
+       ...(() => {
+        const resources = [];
+        const sqlite3Path = path.join(__dirname, 'node_modules/sqlite3/lib/binding');
+        const betterSqlitePath = path.join(__dirname, 'node_modules/better-sqlite3/build/Release');
+        
+        if (fs.existsSync(sqlite3Path)) {
+          resources.push(sqlite3Path);
+        }
+        
+        if (fs.existsSync(betterSqlitePath)) {
+          resources.push(betterSqlitePath);
+        }
+        
+        return resources;
+      })()
+    ],
   },
   rebuildConfig: {},
   makers: [
