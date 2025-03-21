@@ -8,7 +8,7 @@ const fsSync = require('node:fs');
 const env = process.env.NODE_ENV || 'development';
 const envFile = `.env.${env}`;
 dotenv.config({ path: path.resolve(__dirname, envFile) });
-const config = {
+module.exports = {
   packagerConfig: {
     asar: {
       // This ensures native modules are unpacked
