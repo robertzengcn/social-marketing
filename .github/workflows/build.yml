@@ -31,7 +31,9 @@ jobs:
       - name: Install dependencies
         run: yarn install
       - name: Rebuild sqlite3
-        run: yarn rebuild-sqlite3  
+        run: yarn rebuild-sqlite3
+      - name: Rebuild better sqlite
+        run: yarn rebuild-better-sqlite
       - name: Install WiX Toolset
         run: |
           Invoke-WebRequest -Uri https://github.com/wixtoolset/wix3/releases/download/wix3112rtm/wix311-binaries.zip -OutFile wix.zip
@@ -75,7 +77,8 @@ jobs:
         run: yarn install
       - name: Rebuild sqlite3
         run: yarn rebuild-sqlite3
-              
+      - name: Rebuild better sqlite
+        run: yarn rebuild-better-sqlite       
       - name: Build application
         run: yarn make-mac:test
 
