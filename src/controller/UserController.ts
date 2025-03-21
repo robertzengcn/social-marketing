@@ -36,7 +36,7 @@ export class UserController {
     public async login(data: userlogin): Promise<jwtUser> {
 
         const remoteSourmodel = new RemoteSource;
-        //console.log(data)
+       // console.log(data)
         const jwtuser = await remoteSourmodel.Login(data.user, data.pass).then(async function (res) {
             //console.log(res);
             res as jwtUser
@@ -55,6 +55,7 @@ export class UserController {
                 await checkAndCreatePath(userdataPath)
                 await checkAndCreatePath(logPath)
                 const tokenService = new Token()
+                console.log(res)
                 //tokenService.setValue('useremail',res.email)
                 tokenService.setValue(USEREMAIL, res.email)
                 tokenService.setValue(USERNAME, res.name)

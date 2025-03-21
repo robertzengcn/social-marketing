@@ -286,7 +286,7 @@ export class RemoteSource {
     var data = new FormData();
     data.append('username', username);
     data.append('password', password);
-    console.log(Array.from(data));
+    //console.log(Array.from(data));
     const thisobj = this
 
     const loginInfo = await this._httpClient.post(
@@ -355,6 +355,7 @@ export class RemoteSource {
   public ValidateToken(token: string): jwtUser {
     //console.log(token)
     const decoded = jwt_decode(token) as jwtTokenUser;
+    //console.log(decoded)
     const jwtuser: jwtUser = {
       account_id: decoded.AccountId,
       email: decoded.Email,
