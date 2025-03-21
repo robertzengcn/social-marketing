@@ -2,16 +2,23 @@ const path = require('path');
 const dotenv = require('dotenv');
 const fs = require('node:fs/promises');
 const fsSync = require('node:fs');
+import { ForgeConfig } from '@electron-forge/shared-types';
+import { AutoUnpackNativesPlugin } from "@electron-forge/plugin-auto-unpack-natives";
 // Determine the environment and load the corresponding .env file
 const env = process.env.NODE_ENV || 'development';
 const envFile = `.env.${env}`;
 dotenv.config({ path: path.resolve(__dirname, envFile) });
-module.exports = {
+const config: ForgeConfig = {
   packagerConfig: {
     asar: {
       // This ensures native modules are unpacked
-      unpack: "*.node"
+      unpack: "**/node_modules/better-sqlite3/**",
+     
     },
+    ignore: [
+      /node_modules\/(?!(better-sqlite3|bindings|file-uri-to-path)\/)/,
+    ],
+    prune: false,
     extraResource: [
        // Only include these paths if they exist
        ...(() => {
@@ -44,6 +51,7 @@ module.exports = {
     {
       name: '@electron-forge/maker-zip',
       platforms: ['darwin'],
+      config: {},
     },
     {
       name: '@electron-forge/maker-deb',
@@ -62,6 +70,7 @@ module.exports = {
     }
   ],
   plugins: [
+    new AutoUnpackNativesPlugin({}),
     {
       name: '@electron-forge/plugin-auto-unpack-natives',
       config: {},
@@ -127,3 +136,4 @@ module.exports = {
    }
   }
 };
+export default config;
