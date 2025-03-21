@@ -1,6 +1,7 @@
 const path = require('path');
 const dotenv = require('dotenv');
 const fs = require('node:fs/promises');
+const fsSync = require('node:fs');
 // Determine the environment and load the corresponding .env file
 const env = process.env.NODE_ENV || 'development';
 const envFile = `.env.${env}`;
@@ -18,11 +19,11 @@ module.exports = {
         const sqlite3Path = path.join(__dirname, 'node_modules/sqlite3/lib/binding');
         const betterSqlitePath = path.join(__dirname, 'node_modules/better-sqlite3/build/Release');
         
-        if (fs.existsSync(sqlite3Path)) {
+        if (fsSync.existsSync(sqlite3Path)) {
           resources.push(sqlite3Path);
         }
         
-        if (fs.existsSync(betterSqlitePath)) {
+        if (fsSync.existsSync(betterSqlitePath)) {
           resources.push(betterSqlitePath);
         }
         
