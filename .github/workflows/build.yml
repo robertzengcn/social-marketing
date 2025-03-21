@@ -78,7 +78,7 @@ jobs:
       - name: Rebuild sqlite3
         run: yarn rebuild-sqlite3
       - name: Rebuild better sqlite
-        run: yarn rebuild-better-sqlite       
+        run: yarn rebuild-better-sqlite     
       - name: Build application
         run: yarn make-mac:test
 
