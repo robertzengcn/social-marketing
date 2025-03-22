@@ -9,6 +9,7 @@ import * as path from 'path';
 import { Token } from "@/modules/token"
 import {USERSDBPATH} from '@/config/usersetting';
 import {SqliteDb} from "@/modules/SqliteDb"
+import log from 'electron-log/main';
 // import { createProtocol } from 'electron';
 const isDevelopment = process.env.NODE_ENV !== 'production'
 declare const MAIN_WINDOW_VITE_DEV_SERVER_URL: string;
@@ -19,6 +20,8 @@ declare const MAIN_WINDOW_VITE_NAME: string;
 // const { ipcMain } = require("electron");
 
 // Scheme must be registered before the app is ready
+// Configure log
+log.initialize();
 
 let win;
 function initialize() {
