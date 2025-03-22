@@ -41,7 +41,7 @@ export class Scraperdb {
         return Scraperdb.instance;
     }
     init() {
-        this.createTables();
+        //this.createTables();
     }
     //get database
     getdb(){
