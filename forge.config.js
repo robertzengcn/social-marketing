@@ -1,6 +1,9 @@
 const path = require('path');
 const dotenv = require('dotenv');
 const fs = require('node:fs/promises');
+const fsSync = require('node:fs');
+//import { ForgeConfig } from '@electron-forge/shared-types';
+// import { AutoUnpackNativesPlugin } from "@electron-forge/plugin-auto-unpack-natives";
 // Determine the environment and load the corresponding .env file
 const env = process.env.NODE_ENV || 'development';
 const envFile = `.env.${env}`;
@@ -9,9 +12,31 @@ module.exports = {
   packagerConfig: {
     asar: {
       // This ensures native modules are unpacked
-      unpack: "*.node"
+      unpack: "**/node_modules/better-sqlite3/**",
+     
     },
-    extraResource: ["./node_modules/sqlite3/lib/binding","./node_modules/better-sqlite3/build/Release"],
+    ignore: [
+      /node_modules\/(?!(better-sqlite3|bindings|file-uri-to-path)\/)/,
+    ],
+    prune: false,
+    extraResource: [
+       // Only include these paths if they exist
+       ...(() => {
+        const resources= [];
+        const sqlite3Path = path.join(__dirname, 'node_modules/sqlite3/lib/binding');
+        const betterSqlitePath = path.join(__dirname, 'node_modules/better-sqlite3/build/Release');
+        
+        if (fsSync.existsSync(sqlite3Path)) {
+          resources.push(sqlite3Path);
+        }
+        
+        if (fsSync.existsSync(betterSqlitePath)) {
+          resources.push(betterSqlitePath);
+        }
+        
+        return resources;
+      })()
+    ],
   },
   rebuildConfig: {},
   makers: [
@@ -26,6 +51,7 @@ module.exports = {
     {
       name: '@electron-forge/maker-zip',
       platforms: ['darwin'],
+      config: {},
     },
     {
       name: '@electron-forge/maker-deb',

@@ -2,12 +2,12 @@
 import { defineConfig, loadEnv } from 'vite';
 import alias from "@rollup/plugin-alias";
 import * as path from 'path';
-import copy from 'rollup-plugin-copy'
+// import copy from 'rollup-plugin-copy'
 // import { viteStaticCopy } from 'vite-plugin-static-copy'
 import ClosePlugin from './vite-plugin-close'
 import checker from 'vite-plugin-checker'
 import sourcemaps from 'rollup-plugin-sourcemaps';
-import commonjs from '@rollup/plugin-commonjs';
+// import commonjs from '@rollup/plugin-commonjs';
 //import { nodeResolve } from '@rollup/plugin-node-resolve';
 
 // import vue from '@vitejs/plugin-vue'
@@ -60,6 +60,9 @@ export default ({ mode }) => {
                 // e.g. use TypeScript check
                 typescript: true,
             }),
+            // commonjs({
+            //     ignoreDynamicRequires: true
+            // }),
             // copy({
             //     targets: [
             //         { src: 'node_modules/better-sqlite3/build/Release/better_sqlite3.node', dest: 'build' },
@@ -100,7 +103,7 @@ export default ({ mode }) => {
             rollupOptions: {
                 external: [
                     'sqlite3',  // Mark sqlite3 as external
-                    // 'better-sqlite3'
+                    'better-sqlite3'
                 ]
             },
             sourcemap: true,
