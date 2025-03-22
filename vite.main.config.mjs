@@ -103,7 +103,8 @@ export default ({ mode }) => {
             rollupOptions: {
                 external: [
                     'sqlite3',  // Mark sqlite3 as external
-                    'better-sqlite3'
+                    'better-sqlite3',
+                    'bindings'
                 ]
             },
             sourcemap: true,
