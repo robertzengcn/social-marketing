@@ -24,7 +24,7 @@ jobs:
       - name: Create .env.test file 
         run: |
             touch .env.test
-            echo "NODE_ENV=test" >> .env.production     
+            echo "NODE_ENV=test" >> .env.test     
             echo VITE_REMOTEADD=${{ secrets.VITE_REMOTEADD_TEST }} >> .env
             cat .env.test
             
@@ -92,8 +92,9 @@ jobs:
         run: yarn rebuild-sqlite3
         
       - name: Rebuild better sqlite
-        run: yarn rebuild-better-sqlite     
-        
+        run: yarn rebuild-better-sqlite    
+      - name: yarn electron-rebuild
+        run: yarn electron-rebuild   
       - name: Build application
         run: yarn make-mac:test
   

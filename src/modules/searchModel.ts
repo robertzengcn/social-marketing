@@ -13,19 +13,20 @@ import { getEnumKeyByValue, getEnumValueByNumber } from "@/modules/lib/function"
 import * as path from 'path';
 import * as fs from 'fs';
 import {SortBy} from "@/entityTypes/commonType";
-
-export class searhModel {
-    private dbpath: string
+import { BaseModule } from "@/modules/baseModule";
+export class searhModel extends BaseModule {
+   // private dbpath: string
     private taskdbModel: SearchTaskdb
     private serResultModel: SearchResultdb
     private serKeyworddb: SearchKeyworddb
     constructor() {
-        const tokenService = new Token()
-        const dbpath = tokenService.getValue(USERSDBPATH)
-        if (!dbpath) {
-            throw new Error("user path not exist")
-        }
-        this.dbpath = dbpath
+        // const tokenService = new Token()
+        // const dbpath = tokenService.getValue(USERSDBPATH)
+        // if (!dbpath) {
+        //     throw new Error("user path not exist")
+        // }
+        // this.dbpath = dbpath
+        super()
         this.taskdbModel = new SearchTaskdb(this.dbpath)
         this.serResultModel = new SearchResultdb(this.dbpath)
         this.serKeyworddb = new SearchKeyworddb(this.dbpath)
