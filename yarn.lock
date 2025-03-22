@@ -310,7 +310,7 @@
     enabled "2.0.x"
     kuler "^2.0.0"
 
-"@electron-forge/cli@^7.2.0":
+"@electron-forge/cli@^7.7.0":
   version "7.7.0"
   resolved "https://registry.yarnpkg.com/@electron-forge/cli/-/cli-7.7.0.tgz#49403db97e20133bac71cd41e010568aa12a2c87"
   integrity sha512-QfnjghmlHMb7dyArR5cbPA+MP9ff/ulWZi6R/a5MkHlKyhrysRfjzDtZDsmkEv9mGQgRwylssgXrZrKHGlxFkw==
@@ -389,7 +389,7 @@
     fs-extra "^10.0.0"
     which "^2.0.2"
 
-"@electron-forge/maker-deb@^7.2.0":
+"@electron-forge/maker-deb@^7.7.0":
   version "7.7.0"
   resolved "https://registry.yarnpkg.com/@electron-forge/maker-deb/-/maker-deb-7.7.0.tgz#c6a5d82c7fc27c430c1cc2be2194e9c85ff71cb1"
   integrity sha512-yMT0TWpCwXaC9+AYpSr9PBIhcZR297wdJUk5PnEnIROsvOW2y1sh7ny7YdHXTxkvhWdbqY8sLQruL3BE+CyE8w==
@@ -399,7 +399,7 @@
   optionalDependencies:
     electron-installer-debian "^3.2.0"
 
-"@electron-forge/maker-rpm@^7.2.0":
+"@electron-forge/maker-rpm@^7.7.0":
   version "7.7.0"
   resolved "https://registry.yarnpkg.com/@electron-forge/maker-rpm/-/maker-rpm-7.7.0.tgz#a88b0c557f0f4287efbcfa5de71c3c002112cbb4"
   integrity sha512-M9cFO6bCnOuA6BwBUUw35FrnWciWeFyLuByO0KOn3zEYeBDqG2fbBgXXS6OKcRHrpnJVTwiLY5S7eviyO1DJzQ==
@@ -409,7 +409,7 @@
   optionalDependencies:
     electron-installer-redhat "^3.2.0"
 
-"@electron-forge/maker-squirrel@^7.2.0":
+"@electron-forge/maker-squirrel@^7.7.0":
   version "7.7.0"
   resolved "https://registry.yarnpkg.com/@electron-forge/maker-squirrel/-/maker-squirrel-7.7.0.tgz#8b65feabad376c9e7b06295581ecac1efaa0e6e9"
   integrity sha512-9Gcq8e6+1MuXGeE7bEpk7VTd86c0riXTsDFKW8OqwVozeBYhoCd6GU59RmI3b7mcAIKOY1cBY97B+/5bnZ8ZYg==
@@ -420,7 +420,7 @@
   optionalDependencies:
     electron-winstaller "^5.3.0"
 
-"@electron-forge/maker-wix@^7.6.0":
+"@electron-forge/maker-wix@^7.7.0":
   version "7.7.0"
   resolved "https://registry.yarnpkg.com/@electron-forge/maker-wix/-/maker-wix-7.7.0.tgz#cad17bdaedf7dd5e7923a0a4512d8048d59a047b"
   integrity sha512-/Wy0oqOgynWJ4Z+9LdCenLq6C8cCTksT8J/EywJUiv33QjYCDOcH1jITRWOTs4AKJCMrx2Fg0q6pcneSS0pMXg==
@@ -432,7 +432,7 @@
     log-symbols "^4.0.0"
     parse-author "^2.0.0"
 
-"@electron-forge/maker-zip@^7.2.0":
+"@electron-forge/maker-zip@^7.7.0":
   version "7.7.0"
   resolved "https://registry.yarnpkg.com/@electron-forge/maker-zip/-/maker-zip-7.7.0.tgz#70900cfa5e16021969203430482ce0e8e762a007"
   integrity sha512-/rRFiPcojk0hcn+NOfHv2SlMNvghBk1RN0nuLHbbe8r+C0vG4LJV9ee/Y0HhVKkcpapJOQ+MasXJ86fzAp5uAg==
@@ -443,7 +443,7 @@
     fs-extra "^10.0.0"
     got "^11.8.5"
 
-"@electron-forge/plugin-auto-unpack-natives@^7.2.0":
+"@electron-forge/plugin-auto-unpack-natives@^7.7.0":
   version "7.7.0"
   resolved "https://registry.yarnpkg.com/@electron-forge/plugin-auto-unpack-natives/-/plugin-auto-unpack-natives-7.7.0.tgz#45e303c2d10db3011e0f3d32910da27abcbbe5df"
   integrity sha512-cYeD4x2oQXUyK4+DtIR6wMxcIHvyPgsJq1diEuBoQ+MFTh+s6DXZl6JvwtI3scD0XieCkzcmUmf8ygzqs124+w==
@@ -458,7 +458,7 @@
   dependencies:
     "@electron-forge/shared-types" "7.7.0"
 
-"@electron-forge/plugin-vite@^7.2.0":
+"@electron-forge/plugin-vite@^7.7.0":
   version "7.7.0"
   resolved "https://registry.yarnpkg.com/@electron-forge/plugin-vite/-/plugin-vite-7.7.0.tgz#241e10c3d0349fac421c42a3ae0b9b39f1e5e0e2"
   integrity sha512-o/4Z+Rffg8sFwEePcrWIkRTGjMI+uu9Fd2agZlv7s0t2bmxdvSoc4RIAhsuqbI7h3zxi9l60Tofr0uCsPFz1Vg==
@@ -1917,6 +1917,13 @@
   integrity sha512-yvR7Q9LdPz2vGpmpJX5LolrgRdWvB67MJKDPSgIIzpFbaf9a1j/f5DnLp5VDyHGMR0QZHlTr1afsD87QCXFHKw==
   dependencies:
     undici-types "~5.26.4"
+
+"@types/node@^22.7.7":
+  version "22.13.10"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-22.13.10.tgz#df9ea358c5ed991266becc3109dc2dc9125d77e4"
+  integrity sha512-I6LPUvlRH+O6VRUqYOcMudhaIdUVWfsjnZavnsraHvpBwaEyMN29ry+0UVJhImYL16xsscu0aske3yA+uPOWfw==
+  dependencies:
+    undici-types "~6.20.0"
 
 "@types/nodemailer@^6.4.16":
   version "6.4.17"
@@ -4408,13 +4415,13 @@ electron-wix-msi@^5.1.3:
   optionalDependencies:
     "@bitdisaster/exe-icon-extractor" "^1.0.10"
 
-electron@27.0.0:
-  version "27.0.0"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-27.0.0.tgz#bb6c45881e531b2ec1c7cc46c47aba773f38ee14"
-  integrity sha512-mr3Zoy82l8XKK/TgguE5FeNeHZ9KHXIGIpUMjbjZWIREfAv+X2Q3vdX6RG0Pmi1K23AFAxANXQezIHBA2Eypwg==
+electron@^35.0.3:
+  version "35.0.3"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-35.0.3.tgz#0b8aaef52433fbadc94ff7775e2beaa8746abc10"
+  integrity sha512-kjQAYEWXSr2TyK19IZoF85dzFIBaYuX7Yp/C+34b5Y/jmI2z270CGie+RjmEGMMitsy0G8YJKftukhYMuWlK6g==
   dependencies:
     "@electron/get" "^2.0.0"
-    "@types/node" "^18.11.18"
+    "@types/node" "^22.7.7"
     extract-zip "^2.0.1"
 
 elliptic@^6.5.3, elliptic@^6.5.5:
