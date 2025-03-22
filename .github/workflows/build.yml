@@ -54,6 +54,16 @@ jobs:
     runs-on: macos-latest
 
     steps:
+      - name: Set up C++20 environment
+        run: |
+          echo "CXXFLAGS=-std=c++20" >> $GITHUB_ENV
+          echo "npm_config_cxxflags=-std=c++20" >> $GITHUB_ENV
+          echo "npm_config_nodedir=$HOME/.electron-gyp/35.0.3" >> $GITHUB_ENV
+
+      # Make sure to use a recent Xcode version
+      - name: Select Xcode version
+        run: sudo xcode-select -s /Applications/Xcode_14.2.app/Contents/Developer
+      
       - name: Checkout code
         uses: actions/checkout@v3
 
@@ -61,29 +71,31 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 20.18.3  
-
       - name: Create .env.test file 
         run: |
             touch .env.test
             echo "NODE_ENV=test" >> .env.production     
             echo VITE_REMOTEADD=${{ secrets.VITE_REMOTEADD_TEST }} >> .env
             cat .env.test
-
+  
       - name: Install setuptools
         run: |
             brew install python-setuptools           
               
       - name: Install dependencies
         run: yarn install
+      
       - name: Rebuild sqlite3
         run: yarn rebuild-sqlite3
+        
       - name: Rebuild better sqlite
         run: yarn rebuild-better-sqlite     
+        
       - name: Build application
         run: yarn make-mac:test
-
+  
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: electron-app-macos
-          path: out/make
+          path: out/make-app-macos
