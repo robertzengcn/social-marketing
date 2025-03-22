@@ -61,8 +61,11 @@ jobs:
           echo "npm_config_nodedir=$HOME/.electron-gyp/35.0.3" >> $GITHUB_ENV
 
       # Make sure to use a recent Xcode version
-      - name: Select Xcode version
-        run: sudo xcode-select -s /Applications/Xcode_14.2.app/Contents/Developer
+      - name: List available Xcode versions
+        run: ls -la /Applications/ | grep Xcode
+    
+      - name: Select available Xcode version
+        run: sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
       
       - name: Checkout code
         uses: actions/checkout@v3
