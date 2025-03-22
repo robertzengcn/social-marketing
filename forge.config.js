@@ -15,9 +15,9 @@ module.exports = {
       unpack: "**/node_modules/better-sqlite3/**",
      
     },
-    ignore: [
-      /node_modules\/(?!(better-sqlite3|bindings|file-uri-to-path)\/)/,
-    ],
+    // ignore: [
+    //   /node_modules\/(?!(better-sqlite3|bindings|file-uri-to-path)\/)/,
+    // ],
     prune: false,
     extraResource: [
        // Only include these paths if they exist
