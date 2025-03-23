@@ -32,6 +32,8 @@ jobs:
           cat .env.test        
       - name: Install dependencies
         run: yarn install
+      - name: Rebuild electron
+        run: yarn electron-rebuild --force --types prod,dev,optional --module-dir .         
       - name: Rebuild sqlite3
         run: yarn rebuild-sqlite3
       - name: Rebuild better sqlite
@@ -92,10 +94,10 @@ jobs:
               
       - name: Install dependencies
         run: yarn install
-      
+      - name: Rebuild electron
+        run: yarn electron-rebuild --force --types prod,dev,optional --module-dir .    
       - name: Rebuild sqlite3
         run: yarn rebuild-sqlite3
-        
       - name: Rebuild better sqlite
         run: yarn rebuild-better-sqlite    
       - name: yarn electron-rebuild
