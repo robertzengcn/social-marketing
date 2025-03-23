@@ -22,14 +22,14 @@ jobs:
           node-version: 20.18.3
       - name: Create .env file
         run: |
-            echo "NODE_ENV=test" >> .env
-            echo "VITE_REMOTEADD=${{ secrets.VITE_REMOTEADD_TEST }}" >> .env
-            cat .env    
+          touch .env
+          echo "NODE_ENV=test" >> .env
+          cat .env    
       - name: Create .env.test file 
         run: |
-          touch .env.test
-          echo "NODE_ENV=test" >> .env.test     
-          cat .env.test           
+          touch .env.test 
+          echo "VITE_REMOTEADD=${{ secrets.VITE_REMOTEADD_TEST }}" >> .env          
+          cat .env.test        
       - name: Install dependencies
         run: yarn install
       - name: Rebuild sqlite3
@@ -78,16 +78,14 @@ jobs:
           node-version: 20.18.3
       - name: Create .env file
         run: |
+            touch .env
             echo "NODE_ENV=test" >> .env
-            echo "VITE_REMOTEADD=${{ secrets.VITE_REMOTEADD_TEST }}" >> .env
             cat .env               
       - name: Create .env.test file 
         run: |
-            touch .env.test
-            echo "NODE_ENV=test" >> .env.production     
+            touch .env.test   
             echo VITE_REMOTEADD=${{ secrets.VITE_REMOTEADD_TEST }} >> .env
             cat .env.test
-  
       - name: Install setuptools
         run: |
             brew install python-setuptools           
