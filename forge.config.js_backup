@@ -2,6 +2,9 @@ const path = require('path');
 const dotenv = require('dotenv');
 const fs = require('node:fs/promises');
 const fsSync = require('node:fs');
+import { readdirSync, rmdirSync, statSync } from 'node:fs';
+import { join, normalize } from 'node:path';
+
 //import { ForgeConfig } from '@electron-forge/shared-types';
 // import { AutoUnpackNativesPlugin } from "@electron-forge/plugin-auto-unpack-natives";
 // Determine the environment and load the corresponding .env file
