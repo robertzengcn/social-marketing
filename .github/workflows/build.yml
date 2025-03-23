@@ -94,8 +94,12 @@ jobs:
               
       - name: Install dependencies
         run: yarn install
-      - name: Rebuild electron
-        run: yarn electron-rebuild --force --types prod,dev,optional --module-dir .    
+      - name: Download Electron headers
+        run: |
+          npx electron-rebuild -v 35.0.3 --force --types prod,dev,optional --module-dir .
+      - name: Rebuild native modules
+        run: |
+          npx electron-rebuild
       - name: Rebuild sqlite3
         run: yarn rebuild-sqlite3
       - name: Rebuild better sqlite
