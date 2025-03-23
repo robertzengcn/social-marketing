@@ -1,17 +1,10 @@
-import path from 'path';
-import dotenv from 'dotenv';
-import { promises as fs } from 'node:fs';
-import * as fsSync from 'node:fs';
-import type { ForgeConfig } from '@electron-forge/shared-types';
-import { readdirSync, rmdirSync, statSync } from 'node:fs';
-import { join, normalize } from 'node:path';
-// Use flora-colossus for finding all dependencies of EXTERNAL_DEPENDENCIES
-// flora-colossus is maintained by MarshallOfSound (a top electron-forge contributor)
-// already included as a dependency of electron-packager/galactus (so we do NOT have to add it to package.json)
-// grabs nested dependencies from tree
-import { Walker, DepType, type Module } from 'flora-colossus';
-let nativeModuleDependenciesToPackage: string[] = [];
-export const EXTERNAL_DEPENDENCIES = [
+const path = require('path');
+const dotenv = require('dotenv');
+const { readdirSync, rmdirSync, statSync } = require('node:fs');
+const { join, normalize } = require('node:path');
+const { Walker, DepType } = require('flora-colossus');
+let nativeModuleDependenciesToPackage = [];
+const EXTERNAL_DEPENDENCIES = [
   'realm',
   'electron-squirrel-startup',
   'better-sqlite3',
@@ -22,7 +15,7 @@ export const EXTERNAL_DEPENDENCIES = [
 const env = process.env.NODE_ENV || 'development';
 const envFile = `.env.${env}`;
 dotenv.config({ path: path.resolve(__dirname, envFile) });
-const config: ForgeConfig = {
+module.exports={
   packagerConfig: {
     // asar: {
     //   // This ensures native modules are unpacked
@@ -172,28 +165,25 @@ const config: ForgeConfig = {
     prePackage: async () => {
       const projectRoot = normalize(__dirname);
       const getExternalNestedDependencies = async (
-        nodeModuleNames: string[],
+        nodeModuleNames,
         includeNestedDeps = true
       ) => {
         const foundModules = new Set(nodeModuleNames);
         if (includeNestedDeps) {
           for (const external of nodeModuleNames) {
-            type MyPublicClass<T> = {
-              [P in keyof T]: T[P];
-            };
-            type MyPublicWalker = MyPublicClass<Walker> & {
-              modules: Module[];
-              walkDependenciesForModule: (
-                moduleRoot: string,
-                depType: DepType
-              ) => Promise<void>;
-            };
+            /**
+             * @template T
+             * @typedef {Object.<keyof T, T[keyof T]>} MyPublicClass
+             */
+            /**
+             * @typedef {MyPublicClass<Walker> & {modules: Module[], walkDependenciesForModule: (moduleRoot: string, depType: DepType) => Promise<void>}} MyPublicWalker
+             */
             const moduleRoot = join(projectRoot, 'node_modules', external);
-            const walker = new Walker(moduleRoot) as unknown as MyPublicWalker;
+            const walker = new Walker(moduleRoot);
             walker.modules = [];
             await walker.walkDependenciesForModule(moduleRoot, DepType.PROD);
             walker.modules
-              .filter((dep) => (dep.nativeModuleType as number) === DepType.PROD)
+              .filter((dep) => dep.nativeModuleType === DepType.PROD)
               // for a package like '@realm/fetch', need to split the path and just take the first part
               .map((dep) => dep.name.split('/')[0])
               .forEach((name) => foundModules.add(name));
@@ -226,12 +216,8 @@ const config: ForgeConfig = {
   //  }
   packageAfterPrune: async (_forgeConfig, buildPath) => {
     function getItemsFromFolder(
-      path: string,
-      totalCollection: {
-        path: string;
-        type: 'directory' | 'file';
-        empty: boolean;
-      }[] = []
+      path,
+      totalCollection = []
     ) {
       try {
         const normalizedPath = normalize(path);
@@ -287,4 +273,4 @@ const config: ForgeConfig = {
   },
   }
 };
-export default config;
+
