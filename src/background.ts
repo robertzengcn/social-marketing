@@ -10,6 +10,7 @@ import { Token } from "@/modules/token"
 import {USERSDBPATH} from '@/config/usersetting';
 import {SqliteDb} from "@/modules/SqliteDb"
 import log from 'electron-log/main';
+import fs from 'fs';
 // import { createProtocol } from 'electron';
 const isDevelopment = process.env.NODE_ENV !== 'production'
 declare const MAIN_WINDOW_VITE_DEV_SERVER_URL: string;
@@ -25,7 +26,17 @@ log.initialize();
 
 // Configure electron-log
 log.transports.file.level = 'debug';
-log.transports.file.fileName = path.join(app.getPath('userData'), 'logs/main.log');
+const logDir = path.join(app.getPath('userData'), 'logs');
+try {
+  if (!fs.existsSync(logDir)) {
+    fs.mkdirSync(logDir, { recursive: true });
+  }
+  log.info(`Log directory created/verified at: ${logDir}`);
+} catch (err) {
+  console.error('Failed to create log directory:', err);
+}
+log.transports.file.fileName = path.join(logDir, 'logs/main.log');
+
 //override console.log
 Object.assign(console, log.functions);
 log.info('Application starting...');
