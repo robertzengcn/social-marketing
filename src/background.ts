@@ -1,7 +1,7 @@
 'use strict'
 import 'reflect-metadata';
 // import {ipcMain as ipc} from 'electron-better-ipc';
-import { app, protocol, BrowserWindow } from 'electron'
+import { app, protocol, BrowserWindow, dialog } from 'electron'
 // import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 import {registerCommunicationIpcHandlers} from "./main-process/communication/";
@@ -9,6 +9,7 @@ import * as path from 'path';
 import { Token } from "@/modules/token"
 import {USERSDBPATH} from '@/config/usersetting';
 import {SqliteDb} from "@/modules/SqliteDb"
+import log from 'electron-log/main';
 // import { createProtocol } from 'electron';
 const isDevelopment = process.env.NODE_ENV !== 'production'
 declare const MAIN_WINDOW_VITE_DEV_SERVER_URL: string;
@@ -19,6 +20,28 @@ declare const MAIN_WINDOW_VITE_NAME: string;
 // const { ipcMain } = require("electron");
 
 // Scheme must be registered before the app is ready
+// Configure log
+log.initialize();
+
+// Configure electron-log
+log.transports.file.level = 'debug';
+log.transports.file.fileName = path.join(app.getPath('userData'), 'logs/main.log');
+
+// Handle uncaught exceptions
+process.on('uncaughtException', (error) => {
+  log.error('Uncaught Exception:', error);
+  
+  // Show error dialog if possible
+  if (app.isReady()) {
+    dialog.showErrorBox('Application Error', 
+      `An unexpected error occurred: ${error.message}\n\nDetails have been logged.`);
+  }
+});
+
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (reason) => {
+  log.error('Unhandled Promise Rejection:', reason);
+});
 
 let win;
 function initialize() {

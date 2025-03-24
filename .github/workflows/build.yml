@@ -20,16 +20,20 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 20.18.3
-
+      - name: Create .env file
+        run: |
+          touch .env
+          echo "NODE_ENV=test" >> .env
+          cat .env    
       - name: Create .env.test file 
         run: |
-            touch .env.test
-            echo "NODE_ENV=test" >> .env.production     
-            echo VITE_REMOTEADD=${{ secrets.VITE_REMOTEADD_TEST }} >> .env
-            cat .env.test
-            
+          touch .env.test 
+          echo "VITE_REMOTEADD=${{ secrets.VITE_REMOTEADD_TEST }}" >> .env          
+          cat .env.test        
       - name: Install dependencies
         run: yarn install
+      - name: Rebuild electron
+        run: yarn electron-rebuild --force --types prod,dev,optional --module-dir .         
       - name: Rebuild sqlite3
         run: yarn rebuild-sqlite3
       - name: Rebuild better sqlite
@@ -73,27 +77,35 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 20.18.3  
+          node-version: 20.18.3
+      - name: Create .env file
+        run: |
+            touch .env
+            echo "NODE_ENV=test" >> .env
+            cat .env               
       - name: Create .env.test file 
         run: |
-            touch .env.test
-            echo "NODE_ENV=test" >> .env.production     
+            touch .env.test   
             echo VITE_REMOTEADD=${{ secrets.VITE_REMOTEADD_TEST }} >> .env
             cat .env.test
-  
       - name: Install setuptools
         run: |
             brew install python-setuptools           
               
       - name: Install dependencies
         run: yarn install
-      
+      - name: Download Electron headers
+        run: |
+          npx electron-rebuild -v 35.0.3 --force --types prod,dev,optional --module-dir .
+      - name: Rebuild native modules
+        run: |
+          npx electron-rebuild
       - name: Rebuild sqlite3
         run: yarn rebuild-sqlite3
-        
       - name: Rebuild better sqlite
-        run: yarn rebuild-better-sqlite     
-        
+        run: yarn rebuild-better-sqlite    
+      - name: yarn electron-rebuild
+        run: yarn electron-rebuild   
       - name: Build application
         run: yarn make-mac:test
   

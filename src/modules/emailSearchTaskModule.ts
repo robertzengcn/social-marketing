@@ -8,19 +8,21 @@ import { EmailsearchResultDetailEntity, EmailsearchResultDetaildb } from "@/mode
 import { EmailExtractionTypes } from "@/config/emailextraction"
 import { SortBy } from "@/entityTypes/commonType"
 import {EmailItem} from '@/entityTypes/emailmarketingType'
-export class EmailSearchTaskModule {
-    private dbpath: string
+import { BaseModule } from "@/modules/baseModule";
+export class EmailSearchTaskModule extends BaseModule{
+    //private dbpath: string
     private emailsearchTaskdb: EmailsearchTaskdb
     private emailsearchUrldb: EmailsearchUrldb
     private emailsearchresultdb: EmailsearchResultdb
     private emailsearchResultDetaildb: EmailsearchResultDetaildb
     constructor() {
-        const tokenService = new Token()
-        const dbpath = tokenService.getValue(USERSDBPATH)
-        if (!dbpath) {
-            throw new Error("user path not exist")
-        }
-        this.dbpath = dbpath
+        // const tokenService = new Token()
+        // const dbpath = tokenService.getValue(USERSDBPATH)
+        // if (!dbpath) {
+        //     throw new Error("user path not exist")
+        // }
+        super();
+        // this.dbpath = dbpath
         this.emailsearchTaskdb = new EmailsearchTaskdb(this.dbpath);
         this.emailsearchUrldb = new EmailsearchUrldb(this.dbpath)
         this.emailsearchresultdb = new EmailsearchResultdb(this.dbpath)
