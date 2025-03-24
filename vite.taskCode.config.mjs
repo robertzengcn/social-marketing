@@ -62,6 +62,13 @@ export default ({ mode }) => {
                 include: ['winston-transport','bufferutil', 'utf-8-validate']          
         },
         build: {
+            rollupOptions: {
+                external: [
+                    'sqlite3',  // Mark sqlite3 as external
+                    'better-sqlite3',
+                    'bindings'
+                ],
+            },
             // target: 'es6',
             sourcemap: true,
             ssr:true,

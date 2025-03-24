@@ -18,6 +18,7 @@ import { VideoTranslateItem } from "@/entityTypes/videoType";
 import { TranslateProducer } from "@/modules/TranslateProducer"
 import { VideoDownloadTagEntity } from "@/entity/VideoDownloadTag.entity"
 import { CommonMessage } from "@/entityTypes/commonType"
+console.log("child process")
 //import {}
 // import {removeParamsAfterAmpersand } from "@/modules/lib/function"
 process.parentPort.on('message', async (e) => {
