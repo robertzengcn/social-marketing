@@ -11,6 +11,35 @@ import checker from 'vite-plugin-checker'
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 //import typescript from 'rollup-plugin-typescript2'
 import sourcemaps from 'rollup-plugin-sourcemaps';
+
+function emptyModulesPlugin() {
+    const emptyModules = [
+        '@sap/hana-client/extension/Stream',
+        '@sap/hana-client',
+        'typeorm-aurora-data-api-driver',
+        '@google-cloud/spanner',
+        'mysql', 'mysql2',
+        'pg', 'pg-query-stream', 'pg-native',
+        'mongodb', 'mssql', 'oracledb',
+        'hdb-pool', 'redis', 'ioredis', 'sql.js'
+    ];
+
+    return {
+        name: 'empty-modules',
+        resolveId(id) {
+            if (emptyModules.includes(id) || emptyModules.some(m => id.startsWith(`${m}/`))) {
+                return { id: 'virtual:empty-module', external: false };
+            }
+            return null;
+        },
+        load(id) {
+            if (id === 'virtual:empty-module') {
+                return 'export default {}; export const Stream = {}; export const Readable = {}; export const Writable = {}; export const PassThrough = {};';
+            }
+            return null;
+        }
+    };
+}
 // import {nodePolyfills} from 'vite-plugin-node-polyfills';
 export default ({ mode }) => {
     process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
@@ -26,6 +55,7 @@ export default ({ mode }) => {
         //     {globals: { global: true, process: true }}
         // ),
         nodeResolve(),
+        emptyModulesPlugin(),
         //typescript(),
         // commonjs({
         //     //strictRequires:true,
@@ -47,19 +77,34 @@ export default ({ mode }) => {
             // e.g. use TypeScript check
             typescript: true,
         }),
-        // nodePolyfills()
+            // nodePolyfills()
         ],
         resolve: {
             alias: {
                 "@": path.resolve(__dirname, "./src"),
-                // "ws": './node_modules/ws/index.js',
-                // "bufferutil": path.resolve(__dirname, "./node_modules/bufferutil"),
-                // "utf-8-validate": path.resolve(__dirname, "./node_modules/utf-8-validate"),
+                "@sap/hana-client/extension/Stream": path.resolve(__dirname, "./src/utils/typeorm-shim.ts"),
+                "@sap/hana-client": path.resolve(__dirname, "./src/utils/typeorm-shim.ts"),
+                "typeorm-aurora-data-api-driver": path.resolve(__dirname, "./src/utils/typeorm-shim.ts"),
+                "@google-cloud/spanner": path.resolve(__dirname, "./src/utils/typeorm-shim.ts"),
+                "mysql": path.resolve(__dirname, "./src/utils/typeorm-shim.ts"),
+                "mysql2": path.resolve(__dirname, "./src/utils/typeorm-shim.ts"),
+                "pg": path.resolve(__dirname, "./src/utils/typeorm-shim.ts"),
+                "pg-query-stream": path.resolve(__dirname, "./src/utils/typeorm-shim.ts"),
+                "mongodb": path.resolve(__dirname, "./src/utils/typeorm-shim.ts"),
+                "mssql": path.resolve(__dirname, "./src/utils/typeorm-shim.ts"),
+                "oracledb": path.resolve(__dirname, "./src/utils/typeorm-shim.ts"),
+                //"better-sqlite3": path.resolve(__dirname, "./src/utils/typeorm-shim.ts"),
+                "hdb-pool": path.resolve(__dirname, "./src/utils/typeorm-shim.ts"),
+                "pg-native": path.resolve(__dirname, "./src/utils/typeorm-shim.ts"),  // Add this line
+                "redis": path.resolve(__dirname, "./src/utils/typeorm-shim.ts"),  // Add this line
+                "ioredis": path.resolve(__dirname, "./src/utils/typeorm-shim.ts"),  // Add this line
+                "sql.js": path.resolve(__dirname, "./src/utils/typeorm-shim.ts"),  // Add this line
             },
+            conditions: ['node'],
         },
-        optimizeDeps: {    
-                // disabled:false,
-                include: ['winston-transport','bufferutil', 'utf-8-validate']          
+        optimizeDeps: {
+            // disabled:false,
+            include: ['winston-transport', 'bufferutil', 'utf-8-validate']
         },
         build: {
             rollupOptions: {
@@ -71,8 +116,8 @@ export default ({ mode }) => {
             },
             // target: 'es6',
             sourcemap: true,
-            ssr:true,
-            commonjsOptions:{
+            ssr: true,
+            commonjsOptions: {
                 transformMixedEsModules: true,
                 // include:[]   
             },
@@ -99,6 +144,6 @@ export default ({ mode }) => {
         test: {
             include: ['test/vitest/taskCode/*.test.ts'],
         }
-      
+
     })
 }
