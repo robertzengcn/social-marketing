@@ -5,7 +5,7 @@ import { CommonResponse,CommonDialogMsg } from "@/entityTypes/commonType"
 import { ExtraModule } from "@/entityTypes/extramoduleType"
 export function registerExtraModulesIpcHandlers() {
   console.log("extramodules list register")
-  const extraModulesCtrl = new ExtraModuleController()
+ 
   ipcMain.handle(EXTRAMODULECHANNE_LIST, async (event, arg) => {
     const qdata = JSON.parse(arg);
     if (!Object.prototype.hasOwnProperty.call(qdata, "page")) {
@@ -16,6 +16,7 @@ export function registerExtraModulesIpcHandlers() {
     }
     // const extraModules = new ExtraModuleController()
     // Handle IPC call
+    const extraModulesCtrl = new ExtraModuleController()
     const extra = await extraModulesCtrl.getExtraModuleList(qdata.page, qdata.size);
 
     const res: CommonResponse<ExtraModule> = {
@@ -33,6 +34,7 @@ export function registerExtraModulesIpcHandlers() {
     }
     // const extraCtrl = new ExtraModuleController()
     try {
+      const extraModulesCtrl = new ExtraModuleController()
       extraModulesCtrl.installExtraModule(qdata.name, function () {
         
         event.sender.send(EXTRAMODULECHANNE_MESSAGE, JSON.stringify({
@@ -68,6 +70,7 @@ export function registerExtraModulesIpcHandlers() {
     }
     // const extraCtrl = new ExtraModuleController()
     try {
+      const extraModulesCtrl = new ExtraModuleController()
       extraModulesCtrl.removeExtraModule(qdata.name, function () {
         event.sender.send(EXTRAMODULECHANNE_MESSAGE, JSON.stringify({
           status: true,
@@ -99,6 +102,7 @@ export function registerExtraModulesIpcHandlers() {
     if (!("name" in qdata)) {
       throw new Error("name not found");
     }
+    const extraModulesCtrl = new ExtraModuleController()
     await extraModulesCtrl.upgradePackage(qdata.name,()=>{
       
       const msgData:CommonDialogMsg={

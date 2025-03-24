@@ -9,9 +9,7 @@ import fs from "fs";
 //import {} from "@/config/channellist"
 // import { ItemSearchparam } from "@/entityTypes/commonType"
 export function registerSocialAccountIpcHandlers(mainWindow: BrowserWindow) {
-  const socialaccount = new SocialAccount()
-  const socialPlatform = new SocialPlatform()
-  const sac = new SocialAccountController()
+
   ipcMain.handle(SOCIALACCOUNTlIST, async (event, data) => {
     const qdata = JSON.parse(data);
 
@@ -26,8 +24,11 @@ export function registerSocialAccountIpcHandlers(mainWindow: BrowserWindow) {
     }
 
     let platformId = 0
+    const socialaccount = new SocialAccount()
     if (qdata.where) {
       try {
+       
+       
         platformId = socialaccount.convertPlatform(qdata.where)
       } catch (e) {
         if (e instanceof Error) {
@@ -71,6 +72,7 @@ export function registerSocialAccountIpcHandlers(mainWindow: BrowserWindow) {
         msg: "id not found",
       };
     }
+    const socialaccount = new SocialAccount()
     //get detail from remote
     // const socialaccount = new SocialAccount()
     const res = await socialaccount.getAccountdetail(qdata.id).catch(function (err) {
@@ -102,7 +104,7 @@ export function registerSocialAccountIpcHandlers(mainWindow: BrowserWindow) {
       qdata.size = 10;
     }
 
-
+    const socialPlatform=new SocialPlatform() 
     const res = await socialPlatform.listsocialplatform(qdata.page, qdata.size).catch(function (err) {
       console.log(err);
       if (err instanceof Error) {
@@ -132,6 +134,7 @@ export function registerSocialAccountIpcHandlers(mainWindow: BrowserWindow) {
     }
     //const sac = new SocialAccountController()
     try {
+      const sac=new SocialAccountController()
       // event.sender.send('socialaccount:login:msg', JSON.stringify({ msg: "test", status: false }))
       await sac.showSocialaccountMsg(qdata.id, qdata.platform,() => {
         const comMsgs: CommonDialogMsg = {
@@ -200,6 +203,7 @@ export function registerSocialAccountIpcHandlers(mainWindow: BrowserWindow) {
       throw new Error("id not found");
     }
     try {
+      const sac=new SocialAccountController()
       await sac.showSocialmediaWin(qdata.id,undefined,()=>{
         const comMsgs: CommonDialogMsg = {
           status: true,
@@ -232,7 +236,7 @@ export function registerSocialAccountIpcHandlers(mainWindow: BrowserWindow) {
   ipcMain.handle(SOCIALACCOUNTSAVE, async (event, data) => {
     //save social account
     const qdata = JSON.parse(data);
-    // const socialaccount = new SocialAccount()
+    const socialaccount = new SocialAccount()
     const res = await socialaccount.saveSocialAccount(qdata).catch(function (err) {
       console.log(err);
       if (err instanceof Error) {
@@ -260,7 +264,7 @@ export function registerSocialAccountIpcHandlers(mainWindow: BrowserWindow) {
       };
     }
     //get detail from remote
-
+    const socialaccount = new SocialAccount()
     const res = await socialaccount.deleteAccount(qdata.id).catch(function (err) {
       console.log(err);
       if (err instanceof Error) {
@@ -306,6 +310,7 @@ export function registerSocialAccountIpcHandlers(mainWindow: BrowserWindow) {
               event.sender.send(SOCIAL_ACCOUNT_LOGIN_MESSSAGE, JSON.stringify(cmsg))
             }
           } else {
+            const sac=new SocialAccountController()
             const res = sac.handleCookiesfile(filePaths[0], qdata.id)
             if (res) {
               const comMsgs: CommonDialogMsg = {
@@ -349,6 +354,7 @@ export function registerSocialAccountIpcHandlers(mainWindow: BrowserWindow) {
         msg: "id not found",
       };
     }
+    const sac=new SocialAccountController()
     sac.cleanCookies(qdata.id)
     const comMsgs: CommonDialogMsg = {
       status: true,
