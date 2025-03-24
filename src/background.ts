@@ -26,7 +26,9 @@ log.initialize();
 // Configure electron-log
 log.transports.file.level = 'debug';
 log.transports.file.fileName = path.join(app.getPath('userData'), 'logs/main.log');
-
+//override console.log
+Object.assign(console, log.functions);
+log.info('Application starting...');
 // Handle uncaught exceptions
 process.on('uncaughtException', (error) => {
   log.error('Uncaught Exception:', error);
