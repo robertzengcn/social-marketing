@@ -111,4 +111,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: electron-app-macos
-          path: out/make-app-macos
+          path: out/make
