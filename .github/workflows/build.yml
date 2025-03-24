@@ -62,7 +62,6 @@ jobs:
         run: |
           echo "CXXFLAGS=-std=c++20" >> $GITHUB_ENV
           echo "npm_config_cxxflags=-std=c++20" >> $GITHUB_ENV
-          echo "npm_config_nodedir=$HOME/.electron-gyp/35.0.3" >> $GITHUB_ENV
 
       # Make sure to use a recent Xcode version
       - name: List available Xcode versions
@@ -70,7 +69,8 @@ jobs:
     
       - name: Select available Xcode version
         run: sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
-      
+      - name: Install xcode dependence
+        run: sudo xcode-select --install
       - name: Checkout code
         uses: actions/checkout@v3
 
@@ -96,7 +96,7 @@ jobs:
         run: yarn install
       - name: Download Electron headers
         run: |
-          npx electron-rebuild -v 35.0.3 --force --types prod,dev,optional --module-dir .
+          npx electron-rebuild --force --types prod,dev,optional --module-dir .
       - name: Rebuild native modules
         run: |
           npx electron-rebuild
