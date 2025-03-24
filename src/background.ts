@@ -141,7 +141,9 @@ function initialize() {
     const userdataPath=tokenService.getValue(USERSDBPATH)
     if(userdataPath){
       const appDataSource=SqliteDb.getInstance(userdataPath)
+      if(!appDataSource.connection.isInitialized){
        await appDataSource.connection.initialize()
+      }
     }
     registerCommunicationIpcHandlers(win);
     
