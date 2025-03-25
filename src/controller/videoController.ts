@@ -225,7 +225,10 @@ export class videoController {
             successlink: alreadlinks
         }
         console.log(childPath)
-        const child = utilityProcess.fork(childPath, [], { stdio: "pipe" })
+        const child = utilityProcess.fork(childPath, [], { stdio: "pipe",env:{
+            ...process.env,
+            NODE_OPTIONS: ""  
+        } })
 
         child.on("spawn", () => {
 
