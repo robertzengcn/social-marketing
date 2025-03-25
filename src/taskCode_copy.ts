@@ -2,9 +2,11 @@
 export { };
 import { ProcessMessage } from "@/entityTypes/processMessage-type"
 import { EmailSearch } from "@/childprocess/emailSearch"
-
+//import {EmailSearchData} from "@/entityTypes/emailextraction-type"
 import { EmailsControldata, EmailResult } from '@/entityTypes/emailextraction-type'
-
+//import { } from "@/entityTypes/videoType";
+// import {YoutubeDownload} from "@/modules/videodownload/youtubeDownload"
+//import {CookiesProxy} from "@/entityTypes/videoType"
 import { Proxy } from "@/entityTypes/proxyType"
 import { VideoDownloadFactory } from "@/modules/videodownload/VideoDownloadFactory"
 import { VideodoanloadSuccessCall, VideoCaptionGenerateParam, CookiesProxy, processVideoDownloadParam, VideodownloadMsg, VideodownloadTaskMsg } from "@/entityTypes/videoType"
@@ -16,9 +18,12 @@ import { VideoTranslateItem } from "@/entityTypes/videoType";
 import { TranslateProducer } from "@/modules/TranslateProducer"
 import { VideoDownloadTagEntity } from "@/entity/VideoDownloadTag.entity"
 import { CommonMessage } from "@/entityTypes/commonType"
-
+//import {}
+// import {removeParamsAfterAmpersand } from "@/modules/lib/function"
 process.parentPort.on('message', async (e) => {
-    
+    // const [port] = e.ports
+    // console.log("get parent message")
+    // console.log(e)
     const pme = JSON.parse(e.data) as ProcessMessage<any>
     switch (pme.action) {
         //check action
