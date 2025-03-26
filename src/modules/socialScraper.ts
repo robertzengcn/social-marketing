@@ -10,7 +10,7 @@ import { Page } from 'puppeteer';
 import { Linkdata } from '@/modules/remotesource';
 import {get_http_headers,get_ip_data} from "@/modules/metadata"
 import {TaskResultdb,TaskResultEntity} from "@/model/taskResultdb"
-import appRoot from 'app-root-path';
+// import appRoot from 'app-root-path';
 //import { Token } from "@/modules/token"
 import {USERSDBPATH} from '@/config/usersetting';
 
@@ -365,39 +365,39 @@ export class SocialScraper implements Subject {
     /**
      * download video
      */
-    async downloadvideo(list: Array<Linkdata>): Promise<void> {
+    // async downloadvideo(list: Array<Linkdata>): Promise<void> {
 
-        const currentdate = new Date();
-        const datetime = currentdate.getFullYear() + "-"
-            + (currentdate.getMonth() + 1) + "-"
-            + (currentdate.getDate());
-        const videosavepath: string = path.resolve(appRoot + "/tmp/video/" + datetime + "/");
-        if (!fs.existsSync(videosavepath)) {
-            fs.mkdirSync(videosavepath, { recursive: true });
-        }
-        // debug('linklist=%o',list)
-        //debug(list)
-        //const scraperDb = Scraperdb.getInstance();
-        list.forEach(async (linkItem, index) => {
-            // console.log(linkItem)
-            // console.log(index)
-            // const lt=linkItem as Linkdata
-            // console.log(lt.id)
-            logger(linkItem)
-            // console.log(Object.getPrototypeOf(linkItem))
-            const videoArray = await this.downloadSigleVideo(linkItem.url, videosavepath)
-            if (videoArray) {
+    //     const currentdate = new Date();
+    //     const datetime = currentdate.getFullYear() + "-"
+    //         + (currentdate.getMonth() + 1) + "-"
+    //         + (currentdate.getDate());
+    //     const videosavepath: string = path.resolve(appRoot + "/tmp/video/" + datetime + "/");
+    //     if (!fs.existsSync(videosavepath)) {
+    //         fs.mkdirSync(videosavepath, { recursive: true });
+    //     }
+    //     // debug('linklist=%o',list)
+    //     //debug(list)
+    //     //const scraperDb = Scraperdb.getInstance();
+    //     list.forEach(async (linkItem, index) => {
+    //         // console.log(linkItem)
+    //         // console.log(index)
+    //         // const lt=linkItem as Linkdata
+    //         // console.log(lt.id)
+    //         logger(linkItem)
+    //         // console.log(Object.getPrototypeOf(linkItem))
+    //         const videoArray = await this.downloadSigleVideo(linkItem.url, videosavepath)
+    //         if (videoArray) {
 
-                for (let i = 0; i < videoArray.length; i++) {
-                    //    console.log(videoArray[i])
-                    const videoItem:VideoInfo={url:linkItem.url,localpath:videoArray[i],title:linkItem.title,description:linkItem.content,language:linkItem.lang}
-                    const scrapeitem:ScrapeVideo={video:videoItem,scrapeinfo:linkItem}
-                    //scraperDb.saveVideo(linkItem.url, videoArray[i], linkItem.title, linkItem.content, linkItem.lang)
-                    this.notify("downloadvideoend",scrapeitem);
-                }
-            }
-        })
-    }
+    //             for (let i = 0; i < videoArray.length; i++) {
+    //                 //    console.log(videoArray[i])
+    //                 const videoItem:VideoInfo={url:linkItem.url,localpath:videoArray[i],title:linkItem.title,description:linkItem.content,language:linkItem.lang}
+    //                 const scrapeitem:ScrapeVideo={video:videoItem,scrapeinfo:linkItem}
+    //                 //scraperDb.saveVideo(linkItem.url, videoArray[i], linkItem.title, linkItem.content, linkItem.lang)
+    //                 this.notify("downloadvideoend",scrapeitem);
+    //             }
+    //         }
+    //     })
+    // }
     /**
      * download single video
      * @param string link 
