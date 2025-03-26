@@ -139,7 +139,7 @@ function initialize() {
     createWindow();
     const tokenService=new Token()
     const userdataPath=tokenService.getValue(USERSDBPATH)
-    if(userdataPath){
+    if(userdataPath&&userdataPath.length>0){
       const appDataSource=SqliteDb.getInstance(userdataPath)
       if(!appDataSource.connection.isInitialized){
        await appDataSource.connection.initialize()
