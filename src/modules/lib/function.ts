@@ -721,3 +721,19 @@ export function getLanaugebyCode(code:string):LanguageItem|undefined{
    })
    return res
  }
+ export function compareVersions(versionA: string, versionB: string): number {
+  // Split versions by decimal points
+  const partsA = versionA.split('.').map(part => parseInt(part, 10));
+  const partsB = versionB.split('.').map(part => parseInt(part, 10));
+  
+  // Compare each part numerically
+  for (let i = 0; i < Math.max(partsA.length, partsB.length); i++) {
+    const partA = i < partsA.length ? partsA[i] : 0;
+    const partB = i < partsB.length ? partsB[i] : 0;
+    
+    if (partA > partB) return 1;  // versionA is greater
+    if (partA < partB) return -1; // versionB is greater
+  }
+  
+  return 0; // Versions are equal
+}
