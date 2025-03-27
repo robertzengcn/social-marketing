@@ -36,6 +36,7 @@
             </v-icon>
 
         </template>
+       
     </v-data-table-server>
     <LogDialog :dialogModel="logdiastatus" :logContent="logdiaContent" @dialogclose="logdiastatus = false" />
     <ErrorDialog :showDialog="showDialog" :alertext="alertext" :alertitle="alerttitle"

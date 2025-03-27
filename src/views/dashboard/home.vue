@@ -97,13 +97,13 @@ const homeCardlist: homecardEntity[] = [
     //     prependIcon: 'mdi-alarm',
     //     description: t('home.video_translation_description')
     // }
-        {
-      title: t('home.account_manage'),
-        subtitle: t('home.account_manage_subtitle'),
-        prependIcon: 'mdi-alarm',
-        description: t('home.account_manage_description'),
-        link:'/socialaccount/list'
-    },
+    //     {
+    //   title: t('home.account_manage'),
+    //     subtitle: t('home.account_manage_subtitle'),
+    //     prependIcon: 'mdi-alarm',
+    //     description: t('home.account_manage_description'),
+    //     link:'/socialaccount/list'
+    // },
 ]
 </script>
 <style scoped>
