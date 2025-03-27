@@ -140,6 +140,18 @@ function initialize() {
     const tokenService=new Token()
     const userdataPath=tokenService.getValue(USERSDBPATH)
     if(userdataPath&&userdataPath.length>0){
+      // Check if the user data path exists, create it if not
+      try {
+        if (!fs.existsSync(userdataPath)) {
+          fs.mkdirSync(userdataPath, { recursive: true });
+          log.info(`Created user data directory at: ${userdataPath}`);
+        }
+      } catch (err) {
+        log.error(`Failed to create user data path: ${err}`);
+        const errorMessage = err instanceof Error ? err.message : String(err);
+        dialog.showErrorBox('Configuration Error', 
+          `Failed to create user data directory: ${errorMessage}`);
+      }
       const appDataSource=SqliteDb.getInstance(userdataPath)
       if(!appDataSource.connection.isInitialized){
        await appDataSource.connection.initialize()

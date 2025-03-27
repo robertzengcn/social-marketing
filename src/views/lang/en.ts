@@ -83,6 +83,9 @@ export default {
         emailextraction:"Email Extraction",
         emailextraction_subtitle:"Email Extraction",
         emailextraction_description:"Extract email from website",
+        account_manage:"Account Manage",
+        account_manage_subtitle:"Account Manage",
+        account_manage_description:"Manage account in system",
     },
     campaign:{
         campaignId:"Campaign ID", 
