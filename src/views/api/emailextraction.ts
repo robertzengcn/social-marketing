@@ -9,7 +9,7 @@ import {EmailsearchTaskEntityDisplay} from '@/entityTypes/emailextraction-type'
 
 export async function submitScraper(data: EmailscFormdata) {
     
-    windowSend(EMAILEXTRACTIONAPI, data) 
+    await windowSend(EMAILEXTRACTIONAPI, data) 
     
     // return resp 
 }
