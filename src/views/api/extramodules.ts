@@ -18,7 +18,7 @@ export async function getExtramodulelist(data: any):Promise<SearchResult<ExtraMo
         }
         return resdata;  
 }
-export function installExtramodule(packagename:string){
+export async function installExtramodule(packagename:string){
         windowSend(EXTRAMODULECHANNE_INSTALL,{name:packagename})
 }
 export function receiveInExtramoduleLog(cb:(data:any)=>void){

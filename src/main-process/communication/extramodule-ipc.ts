@@ -35,7 +35,7 @@ export function registerExtraModulesIpcHandlers() {
     // const extraCtrl = new ExtraModuleController()
     try {
       const extraModulesCtrl = new ExtraModuleController()
-      extraModulesCtrl.installExtraModule(qdata.name, function () {
+      await extraModulesCtrl.installExtraModule(qdata.name, function () {
         
         event.sender.send(EXTRAMODULECHANNE_MESSAGE, JSON.stringify({
           status: true,

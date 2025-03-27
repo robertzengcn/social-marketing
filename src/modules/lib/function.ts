@@ -1,7 +1,7 @@
 import path from "path";
 import { execSync, exec } from 'child_process';
 import { Notification, app } from 'electron'
-import * as yaml from 'js-yaml';
+// import * as yaml from 'js-yaml';
 import * as fs from 'fs';
 // import { CommonDialogMsg } from "@/entityTypes/commonType";
 import { Page } from 'puppeteer';
@@ -186,14 +186,14 @@ export function uninstallPipPackage(packageName: string, errorcall?: (error: Err
   );
 }
 //write data to yaml file
-export function writeYamlFile(filepath: string, data: object) {
+// export function writeYamlFile(filepath: string, data: object) {
 
-  try {
-    fs.writeFileSync(filepath, yaml.dump(data));
-  } catch (e) {
-    console.log(e);
-  }
-}
+//   try {
+//     fs.writeFileSync(filepath, yaml.dump(data));
+//   } catch (e) {
+//     console.log(e);
+//   }
+// }
 //create random file name
 export function randomFileName(prefix: string, suffix: string): string {
   return prefix + '-' + Date.now() + '-' + Math.floor(Math.random() * 1000) + '.' + suffix
