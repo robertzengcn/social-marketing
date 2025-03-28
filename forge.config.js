@@ -138,18 +138,18 @@ module.exports={
             entry: 'src/preload.ts',
             config: 'vite.preload.config.mjs'
           },
-          {
-            entry: 'src/utilityCode.ts',
-            config: 'vite.utilityCode.config.mjs'
-          },
+          // {
+          //   entry: 'src/utilityCode.ts',
+          //   config: 'vite.utilityCode.config.mjs'
+          // },
           {
             entry: 'src/taskCode.ts',
             config: 'vite.taskCode.config.mjs'
           },
-          {
-            entry: 'src/buckEmail.ts',
-            config: 'vite.buckEmail.config.mjs'
-          },
+          // {
+          //   entry: 'src/buckEmail.ts',
+          //   config: 'vite.buckEmail.config.mjs'
+          // },
 
         ],
         renderer: [

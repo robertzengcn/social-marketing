@@ -637,7 +637,10 @@ export class videoController {
         }
         const { port1, port2 } = new MessageChannelMain()
         console.log(params)
-        const child = utilityProcess.fork(childPath, [], { stdio: "pipe" })
+        const child = utilityProcess.fork(childPath, [], { stdio: "pipe",env:{
+            ...process.env,
+            NODE_OPTIONS: ""  
+        } })
 
         child.on("spawn", () => {
 
@@ -858,7 +861,10 @@ export class videoController {
         }
         const { port1, port2 } = new MessageChannelMain()
         console.log(params)
-        const child = utilityProcess.fork(childPath, [], { stdio: "pipe" })
+        const child = utilityProcess.fork(childPath, [], { stdio: "pipe",env:{
+            ...process.env,
+            NODE_OPTIONS: ""  
+        } })
 
         child.on("spawn", () => {
 

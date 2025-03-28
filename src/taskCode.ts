@@ -2,9 +2,9 @@
 export { };
 import { ProcessMessage } from "@/entityTypes/processMessage-type"
 import { EmailSearch } from "@/childprocess/emailSearch"
-
 import { EmailsControldata, EmailResult } from '@/entityTypes/emailextraction-type'
-
+import { Buckemailremotedata, EmailSendResult } from "@/entityTypes/emailmarketingType"
+import { EmailSend } from "@/childprocess/emailSend"
 import { Proxy } from "@/entityTypes/proxyType"
 import { VideoDownloadFactory } from "@/modules/videodownload/VideoDownloadFactory"
 import { VideodoanloadSuccessCall, VideoCaptionGenerateParam, CookiesProxy, processVideoDownloadParam, VideodownloadMsg, VideodownloadTaskMsg } from "@/entityTypes/videoType"
@@ -16,12 +16,73 @@ import { VideoTranslateItem } from "@/entityTypes/videoType";
 import { TranslateProducer } from "@/modules/TranslateProducer"
 import { VideoDownloadTagEntity } from "@/entity/VideoDownloadTag.entity"
 import { CommonMessage } from "@/entityTypes/commonType"
+import {Usersearchdata} from "@/entityTypes/searchControlType"
+import {UserSearch} from "@/childprocess/userSearch"
+import {SearchDataRun} from "@/entityTypes/scrapeType"
 
 process.parentPort.on('message', async (e) => {
-    
+    //console.log(e.data)
     const pme = JSON.parse(e.data) as ProcessMessage<any>
     switch (pme.action) {
         //check action
+        case "searchscraper": {
+            const userSearchdata = pme.data as Usersearchdata;
+            if (!userSearchdata) {
+                console.log("data is empty")
+                return
+            }
+            const userSer=new UserSearch()
+            const res = await userSer.searchData(userSearchdata)
+            //console.log(res)
+            const message: ProcessMessage<SearchDataRun> = {
+                action: "saveres",
+                data: res
+            }
+            //console.log(port)
+            process.parentPort.postMessage(JSON.stringify(message))
+            //});
+            break;
+        }
+        case "sendEmail": {
+            const emailsendModel = new EmailSend()
+            if (!pme.data) {
+                console.error("data is null")
+                return
+            }
+            await emailsendModel.send(pme.data, (receiver, title, content) => {
+                const senddata: EmailSendResult = {
+                    receiver: receiver,
+                    status: true,
+                    title: title,
+                    content: content
+                }
+                const message: ProcessMessage<EmailSendResult> = {
+                    action: "EmailSendSuccess",
+                    data: senddata
+                }
+                process.parentPort.postMessage(JSON.stringify(message))
+            }, (receiver, info, title, content) => {
+                const senddata: EmailSendResult = {
+                    receiver: receiver,
+                    status: false,
+                    info: info,
+                    title: title,
+                    content: content
+                }
+                const message: ProcessMessage<EmailSendResult> = {
+                    action: "EmailSendFailure",
+                    data: senddata
+                }
+                process.parentPort.postMessage(JSON.stringify(message))
+            }).then(() => {
+                const message: ProcessMessage<null> = {
+                    action: "sendEmailEnd",
+
+                }
+                process.parentPort.postMessage(JSON.stringify(message))
+            })
+
+        }
         case "searchEmail": {
 
             const userEmaildata = pme.data as EmailsControldata;
@@ -50,7 +111,7 @@ process.parentPort.on('message', async (e) => {
             }
             await downloadVideo(param).catch((error) => {
                 if (error instanceof Error) {
-                   
+
 
                     const message: ProcessMessage<VideodownloadTaskMsg> = {
                         action: "videodownloadTaskMsg",
@@ -59,8 +120,8 @@ process.parentPort.on('message', async (e) => {
                         }
                     }
                     process.parentPort.postMessage(JSON.stringify(message))
-                
-            }
+
+                }
             })
             process.exit(0);
             break;
@@ -91,7 +152,7 @@ process.parentPort.on('message', async (e) => {
             await translateVideoinfo(pme.data as TransItemsParam<VideoTranslateItem>)
             break;
         }
-       
+
 
     }
 
@@ -217,16 +278,16 @@ async function downloadVideo(param: processVideoDownloadParam) {
 
             }).catch((error) => {
                 if (error instanceof Error) {
-                   
 
-                        const message: ProcessMessage<VideodownloadTaskMsg> = {
-                            action: "videodownloadTaskMsg",
-                            data: {
-                                msg: error.message
-                            }
+
+                    const message: ProcessMessage<VideodownloadTaskMsg> = {
+                        action: "videodownloadTaskMsg",
+                        data: {
+                            msg: error.message
                         }
-                        process.parentPort.postMessage(JSON.stringify(message))
-                    
+                    }
+                    process.parentPort.postMessage(JSON.stringify(message))
+
                 }
             })
 
