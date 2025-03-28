@@ -157,7 +157,7 @@ function initialize() {
        await appDataSource.connection.initialize()
       }
     }
-    registerCommunicationIpcHandlers(win);
+    // registerCommunicationIpcHandlers(win);
     
 
     if (isDevelopment && !process.env.IS_TEST) {

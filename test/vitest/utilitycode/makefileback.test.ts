@@ -29,7 +29,7 @@ test('make-file-back', async function () {
   //   consumer.destroy();
 
   // });
-await findOriginalPosition(absolutePath,72, 109840);
+await findOriginalPosition(absolutePath,72, 56990);
 },500000)
 
 
