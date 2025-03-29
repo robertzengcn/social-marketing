@@ -1,6 +1,6 @@
 {
   "name": "social-marketing",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "A module using puppeteer to do social marketing",
   "author": "Robert Zeng",
   "main": ".vite/build/background.js",
@@ -144,6 +144,7 @@
     "@types/electron-devtools-installer": "^2.2.0",
     "@types/expect": "^24.3.0",
     "@types/jquery": "^3.5.25",
+    "@types/lodash": "^4.17.16",
     "@types/mocha": "^10.0.6",
     "@types/node": "16",
     "@types/nodemailer": "^6.4.16",

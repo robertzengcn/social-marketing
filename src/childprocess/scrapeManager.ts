@@ -18,6 +18,8 @@ import {CustomConcurrency} from "@/modules/concurrency-implementation"
 import { searchEngineFactory } from "@/modules/searchEngineFactory"
 // import { Keyword } from "./keyword";
 import { pluggableType } from "@/entityTypes/scrapeType"
+import {ProxyServer} from "@/entityTypes/proxyType"
+
 // import {ProxyServer} from "@/entityTypes/proxyType"
 // import { app } from 'electron'
 // import * as path from 'path'
@@ -39,7 +41,7 @@ export class ScrapeManager {
   page: Page;
   numClusters: number;
   tmppath: string;
-  proxiesArr:Array<string>
+  proxiesArr:Array<ProxyServer|null>
   // runLogin: Function;
   // taskid?: number;
   // taskrunId?: number;
@@ -253,7 +255,7 @@ export class ScrapeManager {
         MAX_ALLOWED_BROWSERS
       );
 
-      this.proxiesArr = clone(this.config.proxies);
+      this.proxiesArr = clone(this.config.proxies) ;
 
       // Insert a first config without proxy if use_proxy_only is false
       // if (this.config.use_proxies_only === false) {
@@ -261,7 +263,7 @@ export class ScrapeManager {
       // }
     } else {
       this.numClusters = this.config.puppeteer_cluster_config.maxConcurrency;
-      this.proxiesArr = times(this.numClusters, null);
+      this.proxiesArr = times(this.numClusters, () => null);
     }
 
     this.logger.info(`Using ${this.numClusters} clusters.`);

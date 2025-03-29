@@ -419,6 +419,7 @@ export function getRandomValues(buf: Uint8Array): Uint8Array {
 }
 //convert proxy entity to url
 export function proxyEntityToUrl(proxyEntity: ProxyParseItem): string {
+  
   if (!proxyEntity.protocol) {
     throw new Error("protocol is required");
   }
@@ -443,6 +444,18 @@ export function proxyEntityToUrl(proxyEntity: ProxyParseItem): string {
     proxyUrl = `${proxyEntity.protocol}://${proxyEntity.host}:${proxyEntity.port}`;
   } else {
     throw new Error("protocol is not valid");
+  }
+  return proxyUrl;
+}
+export function convertProxyServertourl(proxyServer: ProxyServer): string {
+  if (!proxyServer.server) {
+    throw new Error("server is required");
+  }
+  let proxyUrl = "";
+  if (proxyServer.username && (proxyServer.username?.length > 0) && (proxyServer.password && (proxyServer.password?.length > 0))) {
+    proxyUrl = `${proxyServer.server}://${proxyServer.username}:${proxyServer.password}`;
+  } else {
+    proxyUrl = `${proxyServer.server}`;
   }
   return proxyUrl;
 }

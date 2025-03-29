@@ -5,6 +5,7 @@ import { CustomError } from "@/modules/customError"
 import { TimeoutError,InterceptResolutionAction } from 'puppeteer';
 //import { delay } from "@/modules/lib/function";
 import useProxy from "@lem0-packages/puppeteer-page-proxy"
+import {convertProxyServertourl} from "@/modules/lib/function"
 
 
 // export type googlePlaces = {
@@ -99,14 +100,14 @@ export class BingScraper extends SearchScrape {
                     const newPage = await browser.newPage();
                     try {
 
-                        if (this.proxyServer && this.proxyServer.length > 0) {
+                        if (this.proxyServer) {
                             await newPage.setRequestInterception(true);
                             newPage.on("request", async (interceptedRequest) => {
                                 if (interceptedRequest.interceptResolutionState().action === InterceptResolutionAction.AlreadyHandled) return;
                                 // if (interceptedRequest.resourceType() === "image") {
                                 //     interceptedRequest.abort();
                                 // } else {
-                                await useProxy(interceptedRequest, this.proxyServer!);
+                                await useProxy(interceptedRequest, convertProxyServertourl(this.proxyServer!));
                                 if (interceptedRequest.interceptResolutionState().action === InterceptResolutionAction.AlreadyHandled) return;
                                 interceptedRequest.continue();
                                 // }
