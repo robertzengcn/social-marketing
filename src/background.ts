@@ -152,12 +152,12 @@ function initialize() {
         dialog.showErrorBox('Configuration Error', 
           `Failed to create user data directory: ${errorMessage}`);
       }
-      const appDataSource=SqliteDb.getInstance(userdataPath)
-      if(!appDataSource.connection.isInitialized){
-       await appDataSource.connection.initialize()
-      }
+      // const appDataSource=SqliteDb.getInstance(userdataPath)
+      // if(!appDataSource.connection.isInitialized){
+      //  await appDataSource.connection.initialize()
+      // }
     }
-   registerCommunicationIpcHandlers(win);
+   //registerCommunicationIpcHandlers(win);
     
 
     if (isDevelopment && !process.env.IS_TEST) {
