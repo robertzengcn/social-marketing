@@ -3,7 +3,7 @@ export { };
 import { ProcessMessage } from "@/entityTypes/processMessage-type"
 import { EmailSearch } from "@/childprocess/emailSearch"
 import { EmailsControldata, EmailResult } from '@/entityTypes/emailextraction-type'
-import { Buckemailremotedata, EmailSendResult } from "@/entityTypes/emailmarketingType"
+import { EmailSendResult } from "@/entityTypes/emailmarketingType"
 import { EmailSend } from "@/childprocess/emailSend"
 import { Proxy } from "@/entityTypes/proxyType"
 import { VideoDownloadFactory } from "@/modules/videodownload/VideoDownloadFactory"

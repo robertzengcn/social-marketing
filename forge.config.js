@@ -8,6 +8,7 @@ const EXTERNAL_DEPENDENCIES = [
   'realm',
   'electron-squirrel-startup',
   'better-sqlite3',
+  'puppeteer-cluster'
 ];
 //import { ForgeConfig } from '@electron-forge/shared-types';
 // import { AutoUnpackNativesPlugin } from "@electron-forge/plugin-auto-unpack-natives";
