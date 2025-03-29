@@ -71,7 +71,9 @@ export class BuckemailController {
         const { port1, port2 } = new MessageChannelMain()
 
 
-        const child = utilityProcess.fork(childPath, [], { stdio: "pipe",env:{
+        const child = utilityProcess.fork(childPath, [], { stdio: "pipe",
+            execArgv:["puppeteer-cluster:*"],
+            env:{
             ...process.env,
             NODE_OPTIONS: ""  
         } })
