@@ -9,7 +9,8 @@ const EXTERNAL_DEPENDENCIES = [
   'electron-squirrel-startup',
   'better-sqlite3',
   'puppeteer-cluster',
-  'lodash'
+  'lodash',
+'winston'
 ];
 //import { ForgeConfig } from '@electron-forge/shared-types';
 // import { AutoUnpackNativesPlugin } from "@electron-forge/plugin-auto-unpack-natives";
