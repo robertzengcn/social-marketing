@@ -15,8 +15,9 @@ import { EmailMarketingSendLogEntity} from "@/model/emailMarketingSendLogdb"
  * buck send email ipc
  */
 export function registerBuckEmailIpcHandlers() {
-    const buckemailCon = new BuckemailController()
+    
     ipcMain.on(BUCKEMAILSEND, async (event, data) => {
+        const buckemailCon = new BuckemailController()
         const qdata = JSON.parse(data) as EmailMarketingsubdata;
         switch (qdata.sourceType) {
             case 1: {
@@ -83,6 +84,7 @@ export function registerBuckEmailIpcHandlers() {
         if (!Object.prototype.hasOwnProperty.call(qdata, "size")) {
             qdata.size = 100;
         }
+        const buckemailCon = new BuckemailController()
         const res = buckemailCon.getBuckEmailTaskList(qdata.page, qdata.size, qdata.sortby)
         const resp: CommonResponse<BuckEmailListType> = {
             status: true,
@@ -110,6 +112,7 @@ export function registerBuckEmailIpcHandlers() {
         if (!Object.prototype.hasOwnProperty.call(qdata, "size")) {
             qdata.size = 100;
         }
+        const buckemailCon = new BuckemailController()
         const res=buckemailCon.getBuckEmailSendLog(qdata.TaskId, qdata.page, qdata.size, qdata.where,qdata.sortby)
         const resp: CommonResponse<EmailMarketingSendLogListDisplay> = {
             status: true,

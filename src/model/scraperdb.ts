@@ -19,6 +19,10 @@ export class Scraperdb {
         // debug(dbpath) 
         // this.dbname = "scraper.db";
         //const dbpath = path.join(filepath, this.dbname)
+        if(!filepath||filepath.length==0){
+            console.log("no filepath")
+            return
+        }
         this.pathdb = this.getdbpath(filepath)
         console.log("path db is"+this.pathdb)
         // if (fs.existsSync(dbpath)) {
@@ -37,7 +41,7 @@ export class Scraperdb {
         return Scraperdb.instance;
     }
     init() {
-        this.createTables();
+        //this.createTables();
     }
     //get database
     getdb(){

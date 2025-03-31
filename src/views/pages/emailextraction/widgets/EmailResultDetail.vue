@@ -116,7 +116,7 @@ const search = ref('');
 const emailresulttaskdetailId=ref(0);
 const startAutoRefresh = () => {
     refreshInterval = setInterval(function(){
-        loadItems({ page: options.page, itemsPerPage: itemsPerPage.value, sortBy: "" });
+        loadItems({ page: options.page, itemsPerPage: options.itemsPerPage, sortBy: "" });
     }, 10000); // Refresh every 5 seconds
 }
 const stopAutoRefresh = () => {
@@ -129,6 +129,8 @@ const stopAutoRefresh = () => {
 function loadItems({ page=1, itemsPerPage=10, sortBy}) {
     options.page = page;
     loading.value = true
+    options.page = page;
+    options.itemsPerPage = itemsPerPage;
     console.log(sortBy)
     // console.log(page);
     const taskid=parseInt($route.params.id.toString())

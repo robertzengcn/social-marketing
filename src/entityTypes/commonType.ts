@@ -57,8 +57,8 @@ export interface CommonIdrequestType<Type> extends CommonIdrequest<Type>{
     type:string
 }
 export type Header = {
-    title: string | ReturnType<typeof computed>;
-    align?: string;
+    title: string
+    align?: "start" | "center" | "end" | undefined;
     sortable: boolean;
     key: string;
     width?: string;
@@ -90,4 +90,22 @@ export enum InputTypeEnum {
     RADIO = 'radio',
     CHECKBOX = 'checkbox'
   }
+export type LlmCongfig={
+    model:string,
+    url?:string,
+    apikey?:string,
+}  
+export type TraditionalTranslateCongfig={
+    url:string,
+    apikey:string,
+}  
+export type SettingGroup={
+    name:string,
+}
+export type LlmDatatype={
+     groupName:string,
+        modelName:string,
+        url:string,
+        apikey:string
+}
 

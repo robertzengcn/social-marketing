@@ -3,17 +3,18 @@ import { USERSDBPATH } from '@/config/usersetting';
 import {BuckEmailTaskdb,BuckemailEntity,BuckEmailType} from "@/model/buckEmailTaskdb"
 import {TaskStatus} from "@/entityTypes/commonType"
 import { SortBy } from "@/entityTypes/commonType"
-
-export class BuckEmailTaskModule {
-    private dbpath: string
+import { BaseModule } from "@/modules/baseModule";
+export class BuckEmailTaskModule extends BaseModule{
+    //private dbpath: string
     private buckemailtaskdb: BuckEmailTaskdb
     constructor() {
-    const tokenService = new Token()
-    const dbpath = tokenService.getValue(USERSDBPATH)
-    if (!dbpath) {
-        throw new Error("user path not exist")
-    }
-    this.dbpath = dbpath
+    // const tokenService = new Token()
+    // const dbpath = tokenService.getValue(USERSDBPATH)
+    // if (!dbpath) {
+    //     throw new Error("user path not exist")
+    // }
+    super();
+    // this.dbpath = dbpath
     this.buckemailtaskdb = new BuckEmailTaskdb(this.dbpath);
     }
     //create buck send email task

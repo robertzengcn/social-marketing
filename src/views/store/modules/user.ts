@@ -107,7 +107,7 @@ class User extends VuexModule implements IUserState {
       throw Error('Verification failed, please Login again.')
     }
     if(data.status==false){
-      throw Error("get user info status error")
+      throw Error(data.msg)
     }
     const { roles, name, email } = data.data
     // roles must be a non-empty array

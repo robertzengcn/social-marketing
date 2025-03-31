@@ -2,7 +2,7 @@ import { Video } from '@/modules/interface/Video';
 import { checkPipPackage } from "@/modules/lib/function"
 import { exec } from 'child_process';
 import { videoScraper, douyinAppYaml } from "@/entityTypes/videoType"
-import { writeYamlFile, randomFileName } from "@/modules/lib/function"
+// import { writeYamlFile, randomFileName } from "@/modules/lib/function"
 //import {ProxyController} from "@/controller/proxy-controller"
 import { app } from 'electron';
 import * as path from 'path'

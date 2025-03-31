@@ -2,9 +2,9 @@
 // import No from "../feedback/no.vue";
 // import { not } from "cheerio/lib/api/traversing";
 
-import { uninstallPipPackage } from "@/modules/lib/function";
-import install from "electron-devtools-installer";
-import { upgrade } from "undici";
+// import { uninstallPipPackage } from "@/modules/lib/function";
+// import install from "electron-devtools-installer";
+// import { upgrade } from "undici";
 
 export default {
     common:{
@@ -83,6 +83,9 @@ export default {
         emailextraction:"Email Extraction",
         emailextraction_subtitle:"Email Extraction",
         emailextraction_description:"Extract email from website",
+        account_manage:"Account Manage",
+        account_manage_subtitle:"Account Manage",
+        account_manage_description:"Manage account in system",
     },
     campaign:{
         campaignId:"Campaign ID", 
@@ -168,7 +171,20 @@ export default {
         item_not_found_local:"item not found in local",
         caption_files:"caption files",
         open_caption_file_error:"open caption file error",
+        translate_information:"translate information",
+        translate_video:"translate video",
+        source_language:"source language",
+        target_language:"target language",
+        select_language_error:"lanauge is empty, please select language",
+        translate_video_information:"translate video information",
+        translation_info:"translation info",
+        
     },
+    language:{
+        zh:"Chinese",
+        en:"English",
+    },
+
     account:{
         accountId:"Account ID",
         type:"Account Type",

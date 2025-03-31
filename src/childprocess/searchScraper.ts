@@ -5,7 +5,8 @@ import { evadeChromeHeadlessDetection } from "@/modules/lib/function"
 import { get_http_headers, get_ip_data } from "@/modules/metadata"
 import debug from 'debug';
 import useProxy from "@lem0-packages/puppeteer-page-proxy"
-
+import {ProxyServer} from "@/entityTypes/proxyType"
+import {convertProxyServertourl} from '@/modules/lib/function'
 
 // const logger = debug('SearchScrape');
 
@@ -30,7 +31,7 @@ export class SearchScrape implements searchEngineImpl {
     num_keywords: number;
     keyword: string;
     page_num: number;
-    proxyServer?:string
+    proxyServer?:ProxyServer|null
     constructor(options: ScrapeOptions) {
         if (options.page) {
             this.page = options.page;
@@ -119,7 +120,7 @@ export class SearchScrape implements searchEngineImpl {
                     // if (interceptedRequest.resourceType() === "image") {
                     //     interceptedRequest.abort();
                     // } else {
-                        await useProxy(interceptedRequest, data.data.proxyServer!);
+                        await useProxy(interceptedRequest, convertProxyServertourl(data.data.proxyServer!));
                         if (interceptedRequest.interceptResolutionState().action === InterceptResolutionAction.AlreadyHandled) return;
                         interceptedRequest.continue();
                    // }

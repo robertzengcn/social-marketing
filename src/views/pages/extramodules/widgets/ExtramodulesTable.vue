@@ -11,7 +11,7 @@
                 loading-text="{{$t('common.uninstalling')}}..." color="primary" size="small" class="ml-2 mr-2 mb-2">
                 {{ t('common.uninstall') }}
             </v-btn>
-            <v-btn v-if="item.upgradeAvailable" @click="openUpgradeDialog(item)" :loading="item.upgradeLoading"
+            <v-btn v-if="item.installed&&item.upgradeAvailable" @click="openUpgradeDialog(item)" :loading="item.upgradeLoading"
                 loading-text="{{$t('common.upgrading')}}..." color="secondary" size="small" class="ml-2 mr-2 mb-2">
                 {{ t('common.upgrade') }}
             </v-btn>
@@ -33,14 +33,14 @@
 
     <v-dialog v-model="dialog" persistent max-width="290">
         <v-card>
-            <v-card-title class="headline">{{ CapitalizeFirstLetter($t('common.confirmation')) }}</v-card-title>
+            <v-card-title class="headline">{{ CapitalizeFirstLetter(t('common.confirmation')) }}</v-card-title>
             <v-card-text>{{ dialogtext }}</v-card-text>
             <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn color="green darken-1"
-                    @click="dialog = false">{{ CapitalizeFirstLetter($t('common.cancel')) }}</v-btn>
+                    @click="dialog = false">{{ CapitalizeFirstLetter(t('common.cancel')) }}</v-btn>
                 <v-btn color="green darken-1"
-                    @click="confirmAction">{{ CapitalizeFirstLetter($t('common.confirm')) }}</v-btn>
+                    @click="confirmAction">{{ CapitalizeFirstLetter(t('common.confirm')) }}</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -89,37 +89,37 @@ const headers = ref<Array<Header>>([])
 const dialogAction = ref('')
 headers.value = [
     {
-        title: computed(_ => CapitalizeFirstLetter(t("extramodule.extramoduleName"))),
+        title: computed(_ => CapitalizeFirstLetter(t("extramodule.extramoduleName"))).toString(),
         align: 'start',
         sortable: false,
         key: 'packagenameTr',
     },
     {
-        title: computed(_ => CapitalizeFirstLetter(t("extramodule.extramoduleDescription"))),
+        title: computed(_ => CapitalizeFirstLetter(t("extramodule.extramoduleDescription"))).toString(),
         align: 'start',
         sortable: false,
         key: 'description',
     },
     {
-        title: computed(_ => CapitalizeFirstLetter(t("extramodule.installed_version"))),
+        title: computed(_ => CapitalizeFirstLetter(t("extramodule.installed_version"))).toString(),
         align: 'start',
         sortable: false,
         key: 'installVersion',
     },
     {
-        title: computed(_ => CapitalizeFirstLetter(t("extramodule.require_version"))),
+        title: computed(_ => CapitalizeFirstLetter(t("extramodule.require_version"))).toString(),
         align: 'start',
         sortable: false,
         key: 'version',
     },
     {
-        title: computed(_ => CapitalizeFirstLetter(t("extramodule.extramoduleStatus"))),
+        title: computed(_ => CapitalizeFirstLetter(t("extramodule.extramoduleStatus"))).toString(),
         align: 'start',
         sortable: false,
         key: 'installed',
     },
 
-    { title: computed(_ => CapitalizeFirstLetter(t("extramodule.actions"))), key: 'actions', sortable: false },
+    { title: computed(_ => CapitalizeFirstLetter(t("extramodule.actions"))).toString(), key: 'actions', sortable: false },
 
 ];
 const options = reactive({
@@ -227,9 +227,9 @@ const upgradeItem = (item: ExtraModuleItem) => {
     upgradeExtramodule(item.packagename)
 
 }
-const installItem = (item: ExtraModuleItem) => {
+const installItem = async (item: ExtraModuleItem) => {
     item.loading = true
-    installExtramodule(item.packagename)
+    await installExtramodule(item.packagename)
 
 }
 const props = defineProps({

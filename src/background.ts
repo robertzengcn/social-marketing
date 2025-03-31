@@ -1,12 +1,16 @@
 'use strict'
 import 'reflect-metadata';
 // import {ipcMain as ipc} from 'electron-better-ipc';
-import { app, protocol, BrowserWindow } from 'electron'
+import { app, protocol, BrowserWindow, dialog } from 'electron'
 // import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 import {registerCommunicationIpcHandlers} from "./main-process/communication/";
 import * as path from 'path';
-
+import { Token } from "@/modules/token"
+import {USERSDBPATH} from '@/config/usersetting';
+import {SqliteDb} from "@/modules/SqliteDb"
+import log from 'electron-log/main';
+import fs from 'fs';
 // import { createProtocol } from 'electron';
 const isDevelopment = process.env.NODE_ENV !== 'production'
 declare const MAIN_WINDOW_VITE_DEV_SERVER_URL: string;
@@ -17,6 +21,40 @@ declare const MAIN_WINDOW_VITE_NAME: string;
 // const { ipcMain } = require("electron");
 
 // Scheme must be registered before the app is ready
+// Configure log
+log.initialize();
+
+// Configure electron-log
+log.transports.file.level = 'debug';
+const logDir = path.join(app.getPath('userData'), 'logs');
+try {
+  if (!fs.existsSync(logDir)) {
+    fs.mkdirSync(logDir, { recursive: true });
+  }
+  log.info(`Log directory created/verified at: ${logDir}`);
+} catch (err) {
+  console.error('Failed to create log directory:', err);
+}
+log.transports.file.fileName = path.join(logDir, 'logs/main.log');
+
+//override console.log
+Object.assign(console, log.functions);
+log.info('Application starting...');
+// Handle uncaught exceptions
+process.on('uncaughtException', (error) => {
+  log.error('Uncaught Exception:', error);
+  
+  // Show error dialog if possible
+  if (app.isReady()) {
+    dialog.showErrorBox('Application Error', 
+      `An unexpected error occurred: ${error.message}\n\nDetails have been logged.`);
+  }
+});
+
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (reason) => {
+  log.error('Unhandled Promise Rejection:', reason);
+});
 
 let win;
 function initialize() {
@@ -99,7 +137,27 @@ function initialize() {
   // Some APIs can only be used after this event occurs.
   app.on('ready', async () => {
     createWindow();
-    registerCommunicationIpcHandlers(win);
+    const tokenService=new Token()
+    const userdataPath=tokenService.getValue(USERSDBPATH)
+    if(userdataPath&&userdataPath.length>0){
+      // Check if the user data path exists, create it if not
+      try {
+        if (!fs.existsSync(userdataPath)) {
+          fs.mkdirSync(userdataPath, { recursive: true });
+          log.info(`Created user data directory at: ${userdataPath}`);
+        }
+      } catch (err) {
+        log.error(`Failed to create user data path: ${err}`);
+        const errorMessage = err instanceof Error ? err.message : String(err);
+        dialog.showErrorBox('Configuration Error', 
+          `Failed to create user data directory: ${errorMessage}`);
+      }
+      const appDataSource=SqliteDb.getInstance(userdataPath)
+      if(!appDataSource.connection.isInitialized){
+       await appDataSource.connection.initialize()
+      }
+    }
+   registerCommunicationIpcHandlers(win);
     
 
     if (isDevelopment && !process.env.IS_TEST) {

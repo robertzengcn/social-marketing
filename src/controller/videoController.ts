@@ -1,5 +1,5 @@
 import { videoFactory } from "@/modules/video/videoFactory";
-import { downloadVideoparam, VideoDownloadTaskEntity, processVideoDownloadParam, CookiesProxy,VideoCompotionEntity,VideoCaptionGenerateParam,VideoCaptionDisplay } from "@/entityTypes/videoType";
+import { VideoDownloadTaskEntity, processVideoDownloadParam, CookiesProxy, VideoCompotionEntity, VideoCaptionGenerateParam, VideoCaptionDisplay, VideoTranslateItem } from "@/entityTypes/videoType";
 // import { VideoDownloadTaskdb } from "@/model/videoDownloadTaskdb";
 // import { VideoDownloaddb} from "@/model/videoDownloaddb"
 import { VideoDownloadModule } from "@/modules/VideoDownloadModule"
@@ -17,7 +17,8 @@ import { SocialAccountApi } from "@/api/socialAccountApi"
 import { ProcessMessage } from "@/entityTypes/processMessage-type"
 // import {VideodownloadMsg} from "@/entityTypes/videoType";
 import { ListData, TaskStatus } from "@/entityTypes/commonType"
-import { VideoDownloadEntity, VideoDownloadStatus, VideoDescriptionEntity, VideodownloadTaskMsg, VideoDownloadListDisplay, VideodownloadMsg, DownloadVideoControlparam, VideoDownloadTaskDetailEntity, DownloadType, CookiesType, VideoCaptionItem, VideoCaptionMsg, VideoCaptionEntity, VideoCaptionStatus, VideoCaptionGenerateParamWithIds } from "@/entityTypes/videoType"
+import { VideoDescriptionEntity } from "@/entity/VideoDescription.entity"
+import { VideoDownloadEntity, VideoDownloadStatus, VideodownloadTaskMsg, VideoDownloadListDisplay, VideodownloadMsg, DownloadVideoControlparam, VideoDownloadTaskDetailEntity, DownloadType, CookiesType, VideoCaptionItem, VideoCaptionMsg, VideoCaptionEntity, VideoCaptionStatus, VideoCaptionGenerateParamWithIds, VideoInformationTransParam } from "@/entityTypes/videoType"
 import { VideoDescriptionModule } from "@/modules/videoDescriptionModule"
 import { Video } from '@/modules/interface/Video';
 import { VideoDownloadTaskDetailModule } from '@/modules/VideoDownloadTaskDetailModule';
@@ -32,9 +33,17 @@ import { shell } from "electron"
 import { CustomError } from '@/modules/customError'
 import { VideoCaptionModule } from "@/modules/VideoCaptionModule"
 // import { LanguageEnum } from "@/config/generate"
-import {LanguageItem} from "@/entityTypes/commonType"
-import {ExtraModuleController} from "@/controller/extramoduleController"
-import {getLanaugebyid} from "@/modules/lib/function"
+// import {LanguageItem} from "@/entityTypes/commonType"
+import { ExtraModuleController } from "@/controller/extramoduleController"
+import { getLanaugebyid } from "@/modules/lib/function"
+import { VideoDownloadTagModule } from "@/modules/VideoDownloadTagModule"
+// import { Worker } from "worker_threads";
+import { TransItemsParam } from "@/entityTypes/translateType"
+import { TranslateProducer } from "@/modules/TranslateProducer"
+import { LlmCongfig, TraditionalTranslateCongfig, CommonMessage } from '@/entityTypes/commonType'
+import { TranslateController } from "@/controller/TranslateController"
+import { getLanaugebyCode } from "@/modules/lib/function"
+// import { VideoDownloadTagEntity } from "@/entity/VideoDownloadTag.entity"
 // import { param } from "jquery";
 //import {} from "@/entityTypes/proxyType"
 export class videoController {
@@ -48,6 +57,8 @@ export class videoController {
     private videoDownloadTaskUrlModule: VideoDownloadTaskUrlModule
     private videoDownloadTaskProxyModule: VideoDownloadTaskProxyModule
     private videoCaptionModule: VideoCaptionModule
+    private videoDownloadTagModule: VideoDownloadTagModule
+    // private videoDownloadTagModel:VideoDownloadTagModel
     constructor() {
         // const tokenService = new Token()
         // const dbpath = tokenService.getValue(USERSDBPATH)
@@ -63,6 +74,7 @@ export class videoController {
         this.videoDownloadTaskDetailModule = new VideoDownloadTaskDetailModule()
         this.videoDownloadTaskUrlModule = new VideoDownloadTaskUrlModule()
         this.videoCaptionModule = new VideoCaptionModule()
+        this.videoDownloadTagModule = new VideoDownloadTagModule()
     }
     //get video download tool
     public async getVideoDownloadTool(platform: string): Promise<Video | null> {
@@ -213,7 +225,10 @@ export class videoController {
             successlink: alreadlinks
         }
         console.log(childPath)
-        const child = utilityProcess.fork(childPath, [], { stdio: "pipe" })
+        const child = utilityProcess.fork(childPath, [], { stdio: "pipe",execArgv:["puppeteer-cluster:*"],env:{
+            ...process.env,
+            NODE_OPTIONS: ""  
+        } })
 
         child.on("spawn", () => {
 
@@ -253,7 +268,7 @@ export class videoController {
                 // this.emailSeachTaskModule.updateTaskStatus(taskId,EmailsearchTaskStatus.Complete)
             }
         })
-        child.on('message', (message) => {
+        child.on('message', async (message) => {
             console.log("get message from child")
             console.log('Message from child:', JSON.parse(message));
             const childdata = JSON.parse(message) as ProcessMessage<any>
@@ -271,27 +286,33 @@ export class videoController {
                         savepath: savepath,
                         task_id: Number(taskId),
                         status: VideoDownloadStatus.Finish,
-
+                        language: param.language_code
                     }
 
                     // this.emailSeachTaskModule.saveSearchResult(taskId,childdata.data)
                     const videoNum = this.videoDownloadModule.saveVideoDownload(videoDownloadEntity)
+                    const videoDescriptionEntity = new VideoDescriptionEntity()
+                    videoDescriptionEntity.video_id = videoNum
+                    videoDescriptionEntity.title = getData.title ? getData.title : ''
+                    videoDescriptionEntity.description = getData.description ? getData.description : ''
+                    videoDescriptionEntity.language = param.language_code
 
-                    const videoDescriptionEntity: VideoDescriptionEntity = {
-                        videoId: videoNum,
-                        title: getData.title ? getData.title : '',
-                        description: getData.description ? getData.description : '',
-                        language: "en-us"
-                    }
+                    // const videoDescriptionEntity: VideoDescriptionEntity = {
+                    //     video_id: videoNum,
+                    //     title: getData.title ? getData.title : '',
+                    //     description: getData.description ? getData.description : '',
+                    //     language: param.language_code
+
+                    // }
                     //save video Video Description
-                    this.videoDescriptionModule.saveVideoDescription(videoDescriptionEntity)
+                    await this.videoDescriptionModule.saveVideoDescription(videoDescriptionEntity)
                 } else if (getData && (!getData?.status)) {//failure
                     const videoDownloadEntity: VideoDownloadEntity = {
                         url: getData.link,
                         savepath: '',
                         task_id: Number(taskId),
                         status: VideoDownloadStatus.Error,
-                      
+                        language: param.language_code
                     }
                     const videoId = this.videoDownloadModule.saveVideoDownload(videoDownloadEntity)
                     if (getData.log) {
@@ -308,7 +329,7 @@ export class videoController {
 
 
     }
-    public async downloadVideo(param: downloadVideoparam, startCall?: () => void) {
+    public async downloadVideo(param: DownloadVideoControlparam, startCall?: () => void) {
         //get video tool
         const videoTool = await this.getVideoDownloadTool(param.platform)
         if (!videoTool) {
@@ -338,8 +359,8 @@ export class videoController {
             cookies_type: param.cookies_type == "browser cookies" ? CookiesType.USEBROWSER : CookiesType.ACCOUNTCOOKIES,
             browser_type: param.browserName ? param.browserName : '',
             proxy_override: param.ProxyOverride,
-            video_quality: param.videoQuality ? param.videoQuality : 0
-
+            video_quality: param.videoQuality ? param.videoQuality : 0,
+            language_code: param.language_code
         }
         //save video task detail
         this.videoDownloadTaskDetailModule.create(vdetd)
@@ -364,6 +385,7 @@ export class videoController {
                 this.videoDownloadTaskProxyModule.create({ task_id: taskId, proxy_id: value })
             })
         }
+        // param.language_code=param.videoLanguage.code
         //process download video
         await this.processDownloadVideo(param, videoTool, taskId, startCall)
     }
@@ -382,16 +404,12 @@ export class videoController {
     }
 
     //get video download list by task id
-    public videoDownloadlist(taskId: number, page: number, size: number): ListData<VideoDownloadListDisplay> {
-        // const tokenService=new Token()
-        // const dbpath=await tokenService.getValue(USERSDBPATH)
-        // if(!dbpath){
-        //     throw new Error("user db path not exist")
-        // }
-        // const videoDownloaddb=new VideoDownloaddb(dbpath)
+    public async videoDownloadlist(taskId: number, page: number, size: number): Promise<ListData<VideoDownloadListDisplay>> {
+
         const res: Array<VideoDownloadListDisplay> = []
         const list = this.videoDownloadModule.getVideoDownloadList(taskId, page, size)
-        list.forEach((element) => {
+        //list.forEach(async (element) => {
+        for (const element of list) {
             let vdld: VideoDownloadListDisplay = {
                 id: element.id,
                 url: element.url,
@@ -402,18 +420,19 @@ export class videoController {
                 title: '',
                 description: '',
                 error_log: element.error_log,
-                caption_status:element.caption_status
+                caption_status: element.caption_status,
+                language: element.language
             }
             if (element.id && element.status == VideoDownloadStatus.Finish) {
 
-                const videoDescription = this.videoDescriptionModule.getVideoDescription(element.id)
+                const videoDescription = await this.videoDescriptionModule.getVideoDescription(element.id, element.language)
                 if (videoDescription) {
                     vdld.title = videoDescription.title
                     vdld.description = videoDescription.description
                 }
             }
             res.push(vdld)
-        })
+        }
         const count = this.videoDownloadModule.countVideoDownloadList(taskId)
         return { records: res, num: count } as ListData<VideoDownloadListDisplay>
     }
@@ -483,6 +502,7 @@ export class videoController {
         }
 
         const data: DownloadVideoControlparam = {
+            taskName: taskInfo.taskName,
             accountId: accountIds,
             platform: taskInfo.platform,
             link: links,
@@ -492,7 +512,8 @@ export class videoController {
             ProxyOverride: taskDetail.proxy_override,
             cookies_type: taskDetail.cookies_type == CookiesType.ACCOUNTCOOKIES ? "account cookies" : "browser cookies",
             browserName: taskDetail.browser_type ? taskDetail.browser_type : "",
-            videoQuality: taskDetail.video_quality
+            videoQuality: taskDetail.video_quality,
+            language_code: taskDetail.language_code
         }
         return data
 
@@ -572,12 +593,12 @@ export class videoController {
         return content
     }
     //pass video id, and generate video caption
-    public async generateCaptionbyids(data: VideoCaptionGenerateParamWithIds<number>,errorCall?: (message: string) => void) {
+    public async generateCaptionbyids(data: VideoCaptionGenerateParamWithIds<number>, errorCall?: (message: string) => void) {
         const res = this.convertToVideoCaptionitem(data)
-        if(res.length<1){
-            throw new Error("video.item_not_found_local")
+        if (res.length < 1) {
+            throw new Error("video.item_less than one")
         }
-        await this.generateCaptionsPath(res,errorCall)
+        await this.generateCaptionsPath(res, errorCall)
     }
     public convertToVideoCaptionitem(data: VideoCaptionGenerateParamWithIds<number>): Array<VideoCaptionItem> {
         const res: Array<VideoCaptionItem> = []
@@ -602,10 +623,10 @@ export class videoController {
     }
     //generate caption for videos
     //throw error if video caption tool requirement check failed
-    public async generateCaptionsPath(params: Array<VideoCaptionItem>,errorCall?:(message:string)=>void): Promise<void> {
+    public async generateCaptionsPath(params: Array<VideoCaptionItem>, errorCall?: (message: string) => void): Promise<void> {
         //check requirement
         //const VFaction = new VideoCaptionFactory()
-        const emctrol=new ExtraModuleController()
+        const emctrol = new ExtraModuleController()
         const res = await emctrol.checkRequirement()
         if (!res) {
             throw new Error("video caption tool requirement check failed")
@@ -616,17 +637,22 @@ export class videoController {
         }
         const { port1, port2 } = new MessageChannelMain()
         console.log(params)
-        const child = utilityProcess.fork(childPath, [], { stdio: "pipe" })
+        const child = utilityProcess.fork(childPath, [], { stdio: "pipe",
+            execArgv:["puppeteer-cluster:*"],
+            env:{
+            ...process.env,
+            NODE_OPTIONS: ""  
+        } })
 
         child.on("spawn", () => {
 
-            const datas:VideoCaptionGenerateParam={
-                videos:params
+            const datas: VideoCaptionGenerateParam = {
+                videos: params
             }
             //update video caption status to start
-            params.forEach((value)=>{
-                if(value.videoId){
-                this.videoDownloadModule.updateVideoCaptionStatus(value.videoId,VideoCaptionStatus.Start)
+            params.forEach((value) => {
+                if (value.videoId) {
+                    this.videoDownloadModule.updateVideoCaptionStatus(value.videoId, VideoCaptionStatus.Start)
                 }
             })
             child.postMessage(JSON.stringify({ action: "generateCaption", data: datas } as ProcessMessage<VideoCaptionGenerateParam>), [port1])
@@ -657,7 +683,7 @@ export class videoController {
                 // this.videoDownloadTaskModule.updateVideoDownloadTaskStatus(taskId, TaskStatus.Error)
                 // this.emailSeachTaskModule.updateTaskStatus(taskId,EmailsearchTaskStatus.Error)
             } else {
-                console.log('Child process exited successfully');
+                console.log('Child pr`ocess exited succe`ssfully');
                 //this.videoDownloadTaskModule.updateVideoDownloadTaskStatus(taskId, TaskStatus.Complete)
                 // this.emailSeachTaskModule.updateTaskStatus(taskId,EmailsearchTaskStatus.Complete)
             }
@@ -681,7 +707,7 @@ export class videoController {
                         this.videoCaptionModule.create(vce)
                         this.videoDownloadModule.updateVideoCaptionStatus(getData.videoId, VideoCaptionStatus.Finish)
                     }
-                
+
                 } else {
                     //generate caption error
                     if (getData.videoId) {
@@ -689,7 +715,7 @@ export class videoController {
                         this.videoDownloadModule.saveVideoDownloadLog(getData.msg, getData.videoId)
                     }
                     //send system message
-                    if(errorCall){
+                    if (errorCall) {
                         errorCall(getData.msg)
                     }
                 }
@@ -700,49 +726,211 @@ export class videoController {
 
     }
     //get video info by id
-    public getVideoinfo(id:number):VideoCompotionEntity{
-       const videoDownEntity= this.videoDownloadModule.getVideoDownloaditem(id)
-         if(!videoDownEntity){
-              throw new Error("video download item not found")
-         }
-         //get video description
-        const videoDescription=this.videoDescriptionModule.getVideoDescription(id)
-         //get video caption
-         const videoCaption=this.videoCaptionModule.getCaptionByVid(id)
-         const captionDisplay:Array<VideoCaptionDisplay>=[]
-         if(videoCaption.length>0){
-                videoCaption.forEach((value)=>{
-                    const captionDisplayItem:VideoCaptionDisplay={
-                        id:value.id,
-                        videoId:value.videoId,
-                        language_id:value.language_id,
-                        language:getLanaugebyid(value.language_id),
-                        caption_path:value.caption_path,
-                        record_time:value.record_time,
-                    }
-                    captionDisplay.push(captionDisplayItem)
-
-         })
+    public async getVideoinfo(id: number): Promise<VideoCompotionEntity> {
+        const videoDownEntity = this.videoDownloadModule.getVideoDownloaditem(id)
+        if (!videoDownEntity) {
+            throw new Error("video download item not found")
         }
-         const res:VideoCompotionEntity={
-            detail:videoDownEntity,
-            description:videoDescription,
-            caption:captionDisplay
-         }
-         console.log(res)
-         return res
+        //get video description
+        const videoDescription = await this.videoDescriptionModule.getVideoDescription(id, videoDownEntity.language)
+        //get video caption
+        const videoCaption = this.videoCaptionModule.getCaptionByVid(id)
+        const captionDisplay: Array<VideoCaptionDisplay> = []
+        if (videoCaption.length > 0) {
+            videoCaption.forEach((value) => {
+                const captionDisplayItem: VideoCaptionDisplay = {
+                    id: value.id,
+                    videoId: value.videoId,
+                    language_id: value.language_id,
+                    language: getLanaugebyid(value.language_id),
+                    caption_path: value.caption_path,
+                    record_time: value.record_time,
+                }
+                captionDisplay.push(captionDisplayItem)
+
+            })
+        }
+        const transinfolist=await this.videoDescriptionModule.getVideoDescriptionOtherLanguage(id, videoDownEntity.language)
+        const res: VideoCompotionEntity = {
+            detail: videoDownEntity,
+            description: videoDescription,
+            caption: captionDisplay,
+            translateInfolist:transinfolist
+        }
+        console.log(res)
+        return res
     }
-    public async getVideoErrorlog(id:number):Promise<string>{
-        const content=await this.videoDownloadModule.getVideoErrorLog(id)
+    //get video translate info
+    // public async getVideoTranslateinfo(id: number) {
+    //     // const videoDownEntity = this.videoDownloadModule.getVideoDescriptionOtherLanguage(id)
+    //     // if (!videoDownEntity) {
+    //     //     throw new Error("video download item not found")
+    //     // }
+       
+    // } 
+    public async getVideoErrorlog(id: number): Promise<string> {
+        const content = await this.videoDownloadModule.getVideoErrorLog(id)
         return content
     }
-      //show file in explorer
-      public async showCaptionFileExplorer(id: number) {
+    //show file in explorer
+    public async showCaptionFileExplorer(id: number) {
         const videoCaptionInfo = this.videoCaptionModule.read(id)
         if (!videoCaptionInfo) {
             throw new Error("video info not found")
         }
         shell.showItemInFolder(videoCaptionInfo.caption_path);
     }
-   
+
+    //translate video information 
+    public async convertToVideoTranslateitem(data: VideoInformationTransParam<number>): Promise<Array<VideoTranslateItem>> {
+        const res: Array<VideoTranslateItem> = []
+        if (data.ids.length > 0) {
+            // data.ids.forEach(async (value) => {
+            for (const value of data.ids) {
+                const videoItem = this.videoDownloadModule.getVideoDownloaditem(value)
+                if (videoItem) {
+                    const vds = await this.videoDescriptionModule.getVideoDescription(value, videoItem.language)
+                    console.log("vds is following")
+                    console.log(vds)
+                    //get item tags by video id and language
+                    const tags = await this.videoDownloadTagModule.getVideoTag(value, videoItem.language)
+                    console.log(videoItem.language)
+                    console.log(videoItem)
+                    const languageItem = getLanaugebyCode(videoItem.language)
+                    if (!languageItem) {
+                        throw new Error("language not found,language code may error")
+                    }
+                    if (videoItem.language == data.target_language.code) {
+                        throw new Error("source language and target language can not be same")
+                    }
+
+                    const vti: VideoTranslateItem = {
+                        videoId: value,
+                        title: vds?.title ? vds.title : '',
+                        description: vds?.description ? vds.description : '',
+                        tags: tags,
+                        source_language: languageItem
+                        //   target_language:data.target_language
+                    }
+                    res.push(vti)
+                }
+
+
+            }
+        }
+        return res
+
+    }
+    public async tranVideoinfo(data: VideoInformationTransParam<number>) {
+        const videoItem: Array<VideoTranslateItem> = await this.convertToVideoTranslateitem(data)
+        if (videoItem.length < 1) {
+            throw new Error("video.translate_item_less_than_one")
+        }
+
+        let toolType: string | void = undefined
+        const translatePro = new TranslateProducer()
+        toolType = translatePro.checkTooltype(data.translate_tool)
+
+        const translateCon = new TranslateController()
+        let llmcon: LlmCongfig | undefined
+        let traditionalTranslateCongfig: TraditionalTranslateCongfig | undefined
+        if (toolType == "llm") {
+            const cres = await translateCon.getSystemConfigLLM(data.translate_tool)
+            if (cres) {
+                llmcon = cres
+            }
+            // console.log("llmcon",llmcon)
+        } else if (toolType == "api") {
+            const traditiona = await translateCon.getTranslateConfig(data.translate_tool)
+            if (traditiona) {
+                traditionalTranslateCongfig = traditiona
+            }
+        }else{
+            throw new Error("translate tool type not found")
+        }
+
+        const params: TransItemsParam<VideoTranslateItem> = {
+            items: videoItem,
+            target_language: data.target_language,
+            translate_tool: data.translate_tool,
+            llmConfig: llmcon,
+            traditionalTranslateConfig: traditionalTranslateCongfig
+        }
+        console.log(params)
+        const childPath = path.join(__dirname, 'taskCode.js')
+        if (!fs.existsSync(childPath)) {
+            throw new CustomError("child js path not exist for the path " + childPath);
+        }
+        const { port1, port2 } = new MessageChannelMain()
+        console.log(params)
+        const child = utilityProcess.fork(childPath, [], { stdio: "pipe",execArgv:["puppeteer-cluster:*"],env:{
+            ...process.env,
+            NODE_OPTIONS: ""  
+        } })
+
+        child.on("spawn", () => {
+
+
+            child.postMessage(JSON.stringify({ action: "translateVideoInfo", data: params } as ProcessMessage<TransItemsParam<VideoTranslateItem>>), [port1])
+
+        })
+
+        child.stdout?.on('data', (data) => {
+            console.log(`Received data chunk ${data}`)
+
+        })
+
+        child.stderr?.on('data', (data) => {
+            const ingoreStr = ["Debugger attached", "Waiting for the debugger to disconnect"]
+            if (!ingoreStr.some((value) => data.includes(value))) {
+
+                // seModel.saveTaskerrorlog(taskId,data)
+                console.log(`Received error chunk ${data}`)
+                //WriteLog(errorLogfile, data)
+
+            }
+
+        })
+        child.on('message', async (message) => {
+            const childdata = JSON.parse(message) as ProcessMessage<any>
+            if (childdata.action == "translateVideoInfoMsg") {
+                const getData = childdata.data as CommonMessage<VideoTranslateItem>
+                if (getData.status) {
+                    //save video description
+                    if (getData.data) {
+
+                        const vds = new VideoDescriptionEntity()
+                        vds.video_id = getData.data.videoId
+                        vds.title = getData.data.title
+                        vds.description = getData.data.description
+                        vds.language = data.target_language.code
+                        await this.videoDescriptionModule.saveVideoDescription(vds)
+                        //save video tags
+                        if (getData.data.tags && getData.data.tags.length > 0) {
+                            getData.data.tags.forEach(async (value) => {
+                                //save video taga
+                                this.videoDownloadTagModule.create(value)
+                            })
+                        }
+                    }
+                }
+            }
+        })
+
+        child.on("exit", (code) => {
+            if (code !== 0) {
+                console.error(`Child process exited with code ${code}`);
+
+            } else {
+                console.log('Child process exited succe`ssfully');
+
+            }
+        })
+
+
+
+    }
+
+
+
 }

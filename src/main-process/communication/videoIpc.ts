@@ -1,16 +1,17 @@
 import { ipcMain } from 'electron';
-import { VIDEODOWNLOAD, VIDEODOWNLOAD_MESSAGE, VIDEODOWNLOAD_TASK_LIST, VIDEODOWNLOAD_LIST, VIDEODOWNLOADTASK_RETRY, VIDEODOWNLOADITEM_RETRY, VIDEODOWNLOAD_ITEM_MESSAGE, VIDEODOWNLOADITEM_EXPLORER, VIDEODOWNLOADITEM_DELETE, VIDEODOWN_TASK_ERROR_LOG_QUERY, VIDEO_CAPTION_GENERATE, VIDEOTASKDOWNLOAD_RETRY_MESSAGE, VIDEODOWNLOAD_LOG_QUERY, SYSTEM_MESSAGE, VIDEODOWNLOAD_DETAIL_QUERY, VIDEODOWNLOAD_OPEN_CAPTIONFILE } from '@/config/channellist'
+import { VIDEODOWNLOAD, VIDEODOWNLOAD_MESSAGE, VIDEODOWNLOAD_TASK_LIST, VIDEODOWNLOAD_LIST, VIDEODOWNLOADTASK_RETRY, VIDEODOWNLOADITEM_RETRY, VIDEODOWNLOAD_ITEM_MESSAGE, VIDEODOWNLOADITEM_EXPLORER, VIDEODOWNLOADITEM_DELETE, VIDEODOWN_TASK_ERROR_LOG_QUERY, VIDEO_CAPTION_GENERATE, VIDEOTASKDOWNLOAD_RETRY_MESSAGE, VIDEODOWNLOAD_LOG_QUERY, SYSTEM_MESSAGE, VIDEODOWNLOAD_DETAIL_QUERY, VIDEODOWNLOAD_OPEN_CAPTIONFILE, VIDEO_VOICE_TRANSLATE, VIDEO_INFORMATION_TRANSLATE } from '@/config/channellist'
 import { videoController } from '@/controller/videoController';
 import { CommonDialogMsg, CommonResponse, CommonIdrequest, CommonMessage, CommonIdrequestType } from "@/entityTypes/commonType";
 import { CustomError } from '@/modules/customError';
-import { VideoDownloadTaskEntity, VideoDownloadQuery, VideoDownloadListDisplay, downloadVideoparam, VideoCaptionGenerateParamWithIds, VideoCompotionEntity } from "@/entityTypes/videoType";
+import { VideoDownloadTaskEntity, VideoDownloadQuery, VideoDownloadListDisplay, DownloadVideoControlparam, VideoCaptionGenerateParamWithIds, VideoCompotionEntity, VideoInformationTransParam } from "@/entityTypes/videoType";
 
 export function registerVideoIpcHandlers() {
     console.log("video download register")
-    const videoCtrl = new videoController()
+    
     ipcMain.on(VIDEODOWNLOAD, async (event, arg) => {
+        const videoCtrl = new videoController()
         // console.log("get video download message")
-        const qdata = JSON.parse(arg) as downloadVideoparam;
+        const qdata = JSON.parse(arg) as DownloadVideoControlparam;
         if (!("accountId" in qdata)) {
             // throw new Error("accountId not found");
             const comMsgs: CommonDialogMsg = {
@@ -140,6 +141,7 @@ export function registerVideoIpcHandlers() {
     })
     //get video download list by task id
     ipcMain.handle(VIDEODOWNLOAD_LIST, async (event, data) => {
+        const videoCtrl = new videoController()
         const qdata = JSON.parse(data) as VideoDownloadQuery;
         if (!("taskId" in qdata)) {
             throw new Error("taskId not found");
@@ -154,6 +156,7 @@ export function registerVideoIpcHandlers() {
         return resp
     })
     ipcMain.on(VIDEODOWNLOADTASK_RETRY, async (event, data) => {
+        const videoCtrl = new videoController()
         const qdata = JSON.parse(data) as VideoDownloadQuery;
         if (!("taskId" in qdata)) {
             throw new Error("taskId not found");
@@ -172,6 +175,7 @@ export function registerVideoIpcHandlers() {
     })
     //retry download video item by id
     ipcMain.on(VIDEODOWNLOADITEM_RETRY, async (event, data) => {
+        const videoCtrl = new videoController()
         const qdata = JSON.parse(data) as CommonIdrequest<number>
         if (!("id" in qdata)) {
             throw new Error("id not found");
@@ -192,6 +196,7 @@ export function registerVideoIpcHandlers() {
     })
     //open file in explorer
     ipcMain.on(VIDEODOWNLOADITEM_EXPLORER, async (event, data) => {
+        const videoCtrl = new videoController()
         const qdata = JSON.parse(data) as CommonIdrequest<number>
         if (!("id" in qdata)) {
             throw new Error("id not found");
@@ -201,6 +206,7 @@ export function registerVideoIpcHandlers() {
     })
 
     ipcMain.on(VIDEODOWNLOADITEM_DELETE, async (event, data) => {
+        const videoCtrl = new videoController()
         const qdata = JSON.parse(data) as CommonIdrequest<number>
         if (!("id" in qdata)) {
             throw new Error("id not found");
@@ -209,6 +215,7 @@ export function registerVideoIpcHandlers() {
 
     })
     ipcMain.handle(VIDEODOWN_TASK_ERROR_LOG_QUERY, async (event, data) => {
+        const videoCtrl = new videoController()
         // readTaskErrorlog
         const qdata = JSON.parse(data) as CommonIdrequestType<number>
         if (!("id" in qdata)) {
@@ -250,7 +257,9 @@ export function registerVideoIpcHandlers() {
             }
         }
         event.sender.send(SYSTEM_MESSAGE, startMsg)
+        const videoCtrl = new videoController()
         await videoCtrl.generateCaptionbyids(qdata, (errorMsg) => {
+            const videoCtrl = new videoController()
             const videoMsgs: CommonDialogMsg = {
                 status: false,
                 code: 20240513142039,
@@ -285,6 +294,7 @@ export function registerVideoIpcHandlers() {
             throw new Error("id not found");
         }
         try {
+            const videoCtrl = new videoController()
             const content = await videoCtrl.getVideoErrorlog(qdata.id)
             const videoMsgs: CommonMessage<string> = {
                 status: true,
@@ -314,11 +324,12 @@ export function registerVideoIpcHandlers() {
     })
     ipcMain.handle(VIDEODOWNLOAD_DETAIL_QUERY, async (event, data) => {
         try {
+            const videoCtrl = new videoController()
             const qdata = JSON.parse(data) as CommonIdrequest<number>
             if (!("id" in qdata)) {
                 throw new Error("id not found");
             }
-            const content: VideoCompotionEntity = videoCtrl.getVideoinfo(qdata.id)
+            const content: VideoCompotionEntity = await videoCtrl.getVideoinfo(qdata.id)
             console.log(content)
             const videoMsgs: CommonMessage<VideoCompotionEntity> = {
                 status: true,
@@ -344,6 +355,7 @@ export function registerVideoIpcHandlers() {
             if (!("id" in qdata)) {
                 throw new Error("id not found");
             }
+            const videoCtrl = new videoController()
             videoCtrl.showCaptionFileExplorer(qdata.id)
         } catch (error) {
             if (error instanceof Error) {
@@ -359,5 +371,55 @@ export function registerVideoIpcHandlers() {
                 return
             }
         }
+    })
+    //translate video information
+    ipcMain.on(VIDEO_INFORMATION_TRANSLATE, async (event, data) => {
+        const qdata = JSON.parse(data) as VideoInformationTransParam<number>
+        if (!("ids" in qdata)) {
+            throw new Error("ids not found");
+        }
+        if (!("target_language" in qdata)) {
+            throw new Error("target_language not found");
+        }
+        if(!("translate_tool" in qdata)){
+            throw new Error("translate_tool not found");
+        }
+        const videoCtrl = new videoController()
+        await videoCtrl.tranVideoinfo(qdata).catch((error) => {
+            if (error instanceof CustomError) {
+                const comMsgs: CommonDialogMsg = {
+                    status: false,
+                    code: error.code,
+                    data: {
+                        title: "video.translate_failed",
+                        content: error.message
+                    }
+                }
+                event.sender.send(SYSTEM_MESSAGE, comMsgs)
+                return
+
+            } else if (error instanceof Error) {
+                const comMsgs: CommonDialogMsg = {
+                    status: false,
+                    code: 202503131440391,
+                    data: {
+                        title: "video.translate_failed",
+                        content: error.message
+                    }
+                }
+                event.sender.send(SYSTEM_MESSAGE, comMsgs)
+                return
+            }
+        })
+    })
+    //translate video voice
+    ipcMain.on(VIDEO_VOICE_TRANSLATE, async (event, data) => {
+        const qdata = JSON.parse(data) as CommonIdrequest<number>
+        if (!("id" in qdata)) {
+            throw new Error("id not found");
+        }
+
+       
+
     })
 }

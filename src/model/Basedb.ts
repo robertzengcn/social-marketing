@@ -6,15 +6,20 @@ export abstract class BaseDb {
     // protected connectionString: string;
     protected sqliteDb:SqliteDb
      constructor(filepath:string) {
+        if(filepath){
         const scraperModel = Scraperdb.getInstance(filepath);
         this.db = scraperModel.getdb();
-        // this.sqliteDb = SqliteDb.getInstance(filepath)
+       this.sqliteDb = SqliteDb.getInstance(filepath)
+        }
     }
+    
 
     
 
     protected log(message: string): void {
         console.log(`[BaseDb]: ${message}`);
     }
+    
+
 }
 

@@ -140,14 +140,17 @@ export class SocialTask {
     }
 
     public async runsocialtask(entity: SocialTaskRunEntity,callback:Function|undefined|null) {
-        const childPath = path.join(__dirname, 'utilityCode.js')
+        const childPath = path.join(__dirname, 'taskCode.js')
         if (!fs.existsSync(childPath)) {
             throw new Error("child js path not exist for the path " + childPath);
         }
         const { port1, port2 } = new MessageChannelMain()
 
-        const child = utilityProcess.fork(path.join(__dirname, 'utilityCode.js'), ['-a','runtask','-t',entity.taskrun_num],{stdio:"pipe",execArgv:["puppeteer-cluster:*"]} )
-        console.log(path.join(__dirname, 'utilityCode.js'))
+        const child = utilityProcess.fork(childPath, ['-a','runtask','-t',entity.taskrun_num],{stdio:"pipe",execArgv:["puppeteer-cluster:*"],env:{
+            ...process.env,
+            NODE_OPTIONS: ""  
+        }} )
+        //console.log(path.join(__dirname, 'utilityCode.js'))
         
         // child.postMessage({ message: 'hello' }, [port1])
         child.on("spawn", () => {

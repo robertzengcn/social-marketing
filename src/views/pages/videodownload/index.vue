@@ -3,24 +3,24 @@
     <v-form ref="form" @submit.prevent="onSubmit">
       <v-row>
         <v-col cols="12" md="12">
-          <v-text-field v-model="taskName" :label="$t('video.task_name')" required :readonly="loading" :rules="[rules.required]"></v-text-field>
+          <v-text-field v-model="taskName" :label="t('video.task_name')" required :readonly="loading" :rules="[rules.required]"></v-text-field>
         </v-col>
       </v-row>
       <v-row>
         <v-col cols="12" md="12">
-      <v-select v-model="type" :items="typeitems" :label="$t('video.platform')" required :readonly="loading"
+      <v-select v-model="type" :items="typeitems" :label="t('video.platform')" required :readonly="loading"
         :rules="[rules.required]"></v-select>
         </v-col>
         </v-row>
         <v-row>
           <v-col cols="12" md="12">
-        <v-select v-model="chooseType" :items="downloadType" :label="$t('video.downloadtype')" required :readonly="loading"
+        <v-select v-model="chooseType" :items="downloadType" :label="t('video.downloadtype')" required :readonly="loading"
         :rules="[rules.required]"></v-select>
       </v-col>
     </v-row>
     <v-row>
       <v-col cols="12" md="12">
-    <v-select v-model="cookiesType" :items="cookieslistTypes" :label="$t('video.cookies_type')" required :readonly="loading"
+    <v-select v-model="cookiesType" :items="cookieslistTypes" :label="t('video.cookies_type')" required :readonly="loading"
     :rules="[rules.required]"></v-select>
   </v-col>
 </v-row>
@@ -28,7 +28,7 @@
     <v-container v-if="cookiesType=='browser cookies'">
       <v-row>
         <v-col cols="12" md="12">
-      <v-select v-model="browserType" :items="browserlist" :label="$t('video.choose_browser')" required :readonly="loading"
+      <v-select v-model="browserType" :items="browserlist" :label="t('video.choose_browser')" required :readonly="loading"
       :rules="[rules.required]"></v-select>
     </v-col>
   </v-row>
@@ -36,13 +36,13 @@
 <v-container v-if="cookiesType=='account cookies'">
     <v-row>
       <v-col cols="12" md="12">
-      <v-combobox v-model="accounts" multiple :items="accounts" :label="$t('account.select_account_hint')"
+      <v-combobox v-model="accounts" multiple :items="accounts" :label="t('account.select_account_hint')"
         item-title="user" return-object chips clearable @click="changeAccount"></v-combobox>
       </v-col>
     </v-row>
     <v-row>
       <v-col cols="12" md="12">
-      <v-btn color="primary" @click="showAccounttable">{{$t('account.change_account')}}</v-btn>
+      <v-btn color="primary" @click="showAccounttable">{{t('account.change_account')}}</v-btn>
     </v-col>
   </v-row>
   <v-row>
@@ -55,13 +55,28 @@
 </v-container>
   <v-row>
     <v-col cols="12" md="12">
-      <v-textarea :label="$t('video.video_url')" :hint="$t('video.input_video_url_hint')" variant="outlined" required
+      <v-textarea :label="t('video.video_url')" :hint="t('video.input_video_url_hint')" variant="outlined" required
         v-model="linkstr" class="mt-5"></v-textarea>
       </v-col>
     </v-row> 
     <v-row>
+      <v-col cols="12" md="12">
+        <v-label>{{ CapitalizeFirstLetter(t('video.source_language')) }}:</v-label>
+        <v-select
+        v-model="videolanguage"
+        :items="languagelist"
+          :label="t('video.select_language')"
+          item-title="name"
+          item-value="code"
+          return-object
+          class="mt-2"
+          :rules="[rules.required]"
+        ></v-select>
+      </v-col>
+      </v-row> 
+    <v-row>
       <v-col cols="12" md="12">      
-      <v-text-field :label="$t('video.saved_path')" :hint="$t('video.input_video_save_path')" persistent-hint required
+      <v-text-field :label="t('video.saved_path')" :hint="t('video.input_video_save_path')" persistent-hint required
         type="input" @click="selectPath" v-model="savePath" class="mt-2" :rules="[rules.required]" ></v-text-field>
       </v-col>
     </v-row> 
@@ -70,7 +85,7 @@
         <v-combobox
         v-model="proxyValue"
         :items="proxyValue"
-        :label="$t('select_proxy')"
+        :label="t('select_proxy')"
         item-title="host"
         multiple
         return-object
@@ -81,12 +96,12 @@
   </v-row> 
   <v-row>
     <v-col cols="6" md="6">  
-      <v-btn color="primary" @click="showProxytable">{{$t('change_proxy')}}</v-btn>
+      <v-btn color="primary" @click="showProxytable">{{t('change_proxy')}}</v-btn>
     </v-col>
     <v-col cols="6" md="6"> 
       <v-checkbox
         v-model="useProxyOverride"
-        :label="$t('video.use_proxy_override')"
+        :label="t('video.use_proxy_override')"
       ></v-checkbox>
     </v-col>
   </v-row> 
@@ -109,10 +124,10 @@
   <v-row class="mt-5">
         <v-btn-group class="mt-2">
         <v-btn color="primary" class="mr-2" @click="resetForm">{{
-      $t("common.reset")
+      t("common.reset")
     }}</v-btn>
         <v-btn color="secondary" class="mr-2" @click="onSubmit">{{
-      $t("common.submit")
+      t("common.submit")
     }}</v-btn>
       </v-btn-group>
   </v-row>
@@ -159,6 +174,9 @@ import { CommonDialogMsg } from "@/entityTypes/commonType";
 import router from '@/views/router';
 import ProxyTableselected from "@/views/pages/proxy/widgets/ProxySelectedTable.vue";
 import { ProxyListEntity, Proxy } from "@/entityTypes/proxyType";
+import {LanguageConfig} from "@/config/LanguageConfig"
+import {LanguageItem} from '@/entityTypes/commonType'
+import { CapitalizeFirstLetter } from "@/views/utils/function"
 //import ErrorDialog from "@/views/components/widgets/errorDialog.vue"
 const proxyValue = ref<Array<Proxy>>([]);
 const proxyValueshow = ref<Array<string>>([]);
@@ -185,6 +203,8 @@ const taskName=ref("")
 const alerttype = ref<"success" | "error" | "warning" | "info" | undefined>(
   "success"
 );
+const videolanguage=ref<LanguageItem>()
+const languagelist=ref<Array<LanguageItem>>(LanguageConfig)
 const videoQuality = ref(0);
 const linkstr = ref("");
 const rules = {
@@ -374,6 +394,10 @@ async function onSubmit() {
       }
     });
     const isPlaylist=chooseType.value=="playlist"?true:false
+    if(!videolanguage.value){
+      setAlert("video.select_language_error", "Error", "error");
+      return;
+    }
     const data: downloadVideoparam = {
       taskName: taskName.value,
       accountId: accountIds,
@@ -385,7 +409,8 @@ async function onSubmit() {
       ProxyOverride:useProxyOverride.value,
       cookies_type:cookiesType.value,
       browserName:browserType.value,
-      videoQuality:videoQuality.value
+      videoQuality:videoQuality.value,
+      videoLanguage:videolanguage.value
     };
     if (validUrls.length === 0) {
       setAlert("Please input valid url", "Error", "error");

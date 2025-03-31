@@ -8,5 +8,5 @@ CREATE TABLE IF NOT EXISTS video_download (
     caption_status INTEGER,
     -- strout TEXT NULL,
     error_log TEXT NULL,
-    status INTEGER 
+    status INTEGER
 )

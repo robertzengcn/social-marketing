@@ -7,7 +7,7 @@ import { checkFolderAndGetFiles, downloadFile, getUserPlatform } from "@/modules
 import { ListData } from "@/entityTypes/commonType"
 import { execSync, exec } from 'child_process';
 import { CustomError } from '@/modules/customError'
-import { uninstallPipPackage, removeFile } from "@/modules/lib/function"
+import { uninstallPipPackage, removeFile,compareVersions } from "@/modules/lib/function"
 //import log from 'electron-log/node';
 import { app } from 'electron';
 import * as path from 'path';
@@ -51,9 +51,10 @@ export class ExtraModuleController {
                     module.installVersion=instRes.version
                     if(module.version!==instRes.version){
                         //convert version to number to compare whether it can be upgrade
-                        const currentVersion = parseFloat(module.version.replace(/[^\d.]/g, ''));
-                        const installedVersion = parseFloat(instRes.version.replace(/[^\d.]/g, ''));
-                        if (currentVersion > installedVersion) {
+                        //const currentVersion = parseFloat(module.version.replace(/[^\d.]/g, ''));
+                        //const installedVersion = parseFloat(instRes.version.replace(/[^\d.]/g, ''));
+                        const comparisonResult = compareVersions(module.version, instRes.version);
+                        if (comparisonResult > 0) {
                             module.upgradeAvailable = true;
                         }else{
                             module.upgradeAvailable = false;

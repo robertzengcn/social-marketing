@@ -1,13 +1,13 @@
 import { defineConfig, loadEnv } from 'vite';
 import alias from "@rollup/plugin-alias";
 import * as path from 'path';
-import { nodePolyfills } from 'vite-plugin-node-polyfills'
+// import { nodePolyfills } from 'vite-plugin-node-polyfills'
 // import commonjs from 'vite-plugin-commonjs'
 import ClosePlugin from './vite-plugin-close.ts'
 // import { esbuildCommonjs } from '@originjs/vite-plugin-commonjs'
 import checker from 'vite-plugin-checker'
 //import { nodeResolve } from '@rollup/plugin-node-resolve';
-import requireTransform from 'vite-plugin-require-transform';
+//import requireTransform from 'vite-plugin-require-transform';
 import commonjs from '@rollup/plugin-commonjs';
 import copy from 'rollup-plugin-copy'
 import { nodeResolve } from '@rollup/plugin-node-resolve';
@@ -31,11 +31,8 @@ export default ({ mode }) => {
         //typescript(),
         commonjs({
             //strictRequires:true,
-            //dynamicRequireTargets: ['node_modules/@puppeteer/browsers/node_modules/yargs/build/*.cjs'],
              include: ['node_modules/@puppeteer/browsers/node_modules/yargs/build/*.cjs',
              ],
-            //include: 'node_modules/**',
-            // exclude: ['node_modules/@colors/colors/lib/colors.js','node_modules/winston/dist/winston/config/index.js'],
         }),
         //requireTransform({fileRegex:/.ts$|.tsx$|.js$|.cjs$/}),
         copy({

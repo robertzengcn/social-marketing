@@ -40,6 +40,8 @@
     ]
   },
   "include": [
+    "forge.config.js",
+    "*.ts",
     "src/**/*.ts",
     "src/**/*.tsx",
     "src/**/*.vue",

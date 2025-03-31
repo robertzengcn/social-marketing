@@ -2,6 +2,7 @@ export {};
 import {EmailClusterdata,EmailResult} from '@/entityTypes/emailextraction-type'
 import { Page,InterceptResolutionAction} from 'puppeteer';
 import useProxy from "@lem0-packages/puppeteer-page-proxy"
+import {convertProxyServertourl} from "@/modules/lib/function"
 
 export const extractLink = async (page: Page, val: EmailClusterdata ) => {
     const url = val.url;
@@ -26,7 +27,7 @@ export const extractLink = async (page: Page, val: EmailClusterdata ) => {
                 // if (interceptedRequest.resourceType() === "image") {
                 //     interceptedRequest.abort();
                 // } else {
-                    await useProxy(interceptedRequest, val.proxy!);
+                    await useProxy(interceptedRequest, convertProxyServertourl(val.proxy!));
                     if (interceptedRequest.interceptResolutionState().action === InterceptResolutionAction.AlreadyHandled) return;
                     interceptedRequest.continue();
                // }
@@ -97,7 +98,7 @@ export async function crawlSite ({ page, data }: { page: Page; data: EmailCluste
                 // if (interceptedRequest.resourceType() === "image") {
                 //     interceptedRequest.abort();
                 // } else {
-                    await useProxy(interceptedRequest, data.proxy!);
+                    await useProxy(interceptedRequest, convertProxyServertourl(data.proxy!));
                     if (interceptedRequest.interceptResolutionState().action === InterceptResolutionAction.AlreadyHandled) return;
                     interceptedRequest.continue();
                // }

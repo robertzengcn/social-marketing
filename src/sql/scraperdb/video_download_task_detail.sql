@@ -5,5 +5,6 @@ download_type INTEGER NULL,
 cookies_type INTEGER NULL,
 browser_type TEXT NULL,
 proxy_override INTEGER NULL,
+video_language TEXT NULL,
 video_quality INTEGER NULL
 )

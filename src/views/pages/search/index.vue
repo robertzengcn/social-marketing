@@ -22,7 +22,7 @@
         <ProxyTableselected @change="handleSelectedChanged" />
       </div>
 
-      <p class="mt-5">{{ capletter($t('search.show_in_Browser')) }}:</p>
+      <p class="mt-5">{{ capletter(t('search.show_in_Browser')) }}:</p>
       <v-btn-toggle v-model="showinbrwoser" mandatory class="mt-3">
         <v-btn :value="0" color="primary">No</v-btn>
         <v-btn :value="1" color="success">Yes</v-btn>

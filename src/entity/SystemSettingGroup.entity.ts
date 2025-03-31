@@ -1,6 +1,7 @@
 import "reflect-metadata"
-import { Entity, Column, PrimaryGeneratedColumn } from "typeorm"
+import { Entity, Column, PrimaryGeneratedColumn,OneToMany } from "typeorm"
 import AuditableEntity from "@/entity/Auditable.entity"
+import {SystemSettingEntity} from "@/entity/SystemSetting.entity"
 @Entity("system_setting_group")
 export class SystemSettingGroupEntity extends AuditableEntity{
     @PrimaryGeneratedColumn()
@@ -9,4 +10,6 @@ export class SystemSettingGroupEntity extends AuditableEntity{
     name: string;
     @Column("text")
     description: string;
+    @OneToMany(() => SystemSettingEntity, (systemSettingEntity) => systemSettingEntity.group)
+    settings: SystemSettingEntity[];
 }

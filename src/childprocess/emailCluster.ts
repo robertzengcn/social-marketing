@@ -18,6 +18,8 @@ import times from "lodash/times"
 import { crawlSite } from '@/childprocess/emailScraper'
 import { getDomain } from "@/modules/lib/function"
 import {CustomConcurrency} from "@/modules/concurrency-implementation"
+import {ProxyServer} from "@/entityTypes/proxyType"
+
 export class EmailCluster {
   cluster: Cluster<EmailClusterdata>;
   context: object;
@@ -28,7 +30,7 @@ export class EmailCluster {
   page: Page;
   numClusters: number;
   tmppath: string;
-  proxiesArr: Array<string>
+  proxiesArr: Array<ProxyServer|null>
   // runLogin: Function;
   // taskid?: number;
   // taskrunId?: number;
@@ -202,7 +204,7 @@ export class EmailCluster {
       this.proxiesArr = clone(this.config.proxies);
     } else {
       this.numClusters = this.config.puppeteer_cluster_config.maxConcurrency;
-      this.proxiesArr = times(this.numClusters, null);
+      this.proxiesArr = times(this.numClusters, () => null);
     }
 
     const perBrowserOptions = map(this.proxiesArr.slice(0, this.numClusters), (proxy) => {

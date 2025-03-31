@@ -6,7 +6,7 @@
         <v-navigation-drawer class="my-4 layout_navigation" :rail="navState.rail" expand-on-hover rail-width="77"
             @update:rail="navigationRail" :permanent="permanent" v-model="navState.menuVisible" style="position: fixed">
             <v-list class="py-4 mx-2 logo" nav>
-                <v-list-item :prepend-avatar="logo" class="mx-1">
+                <v-list-item :prepend-avatar="logo" class="mx-1" @click="gotodashborad()">
                     <v-list-item-title class="title">Material UI</v-list-item-title>
                     <v-list-item-subtitle>vue-material-admin</v-list-item-subtitle>
                 </v-list-item>
@@ -79,9 +79,9 @@
                     </v-btn>
                     <v-btn variant="text" append-icon="mdi-chevron-down" class="mr-2">
                         <v-avatar size="x-small" class="avatar mr-2">
-                            <v-img :src="wxtx" alt="陈咩啊"></v-img>
+                            <v-img :src="wxtx" alt="{{userName}}"></v-img>
                         </v-avatar>
-                        <span v-if="!mainStore.isMobile">陈咩咩啊</span>
+                        <span v-if="!mainStore.isMobile">{{userName}}</span>
                         <v-menu activator="parent">
                             <v-list nav class="h_a_menu">
                                 <v-menu :location="location">
@@ -96,8 +96,8 @@
                                         </v-list>
                                     
                                 </v-menu>
-                                <v-list-item :title="$t('layout.system_setting')" prepend-icon="mdi-cog" @click="gotoSystemsetting" />
-                                <v-list-item :title="$t('layout.login_out')" prepend-icon="mdi-login" @click="Usersignout" />
+                                <v-list-item :title="t('layout.system_setting')" prepend-icon="mdi-cog" @click="gotoSystemsetting" />
+                                <v-list-item :title="t('layout.login_out')" prepend-icon="mdi-login" @click="Usersignout" />
                             </v-list>
                         </v-menu>
                     </v-btn>
@@ -141,6 +141,7 @@ import { ref,onMounted } from 'vue'
 import {receiveSystemMessage} from '@/views/api/layout'
 import {CommonDialogMsg} from "@/entityTypes/commonType"
 import NoticeSnackbar from '@/views/components/widgets/noticeSnackbar.vue';
+import {GetloginUserInfo} from '@/views/api/users'
 
 
 // import {ref, watchEffect} from "vue";
@@ -148,6 +149,7 @@ type NoticeType = 'success' | 'error' | 'warning' | 'info';
 const dialogStatus=ref(false)
 const noticeMessage=ref('')
 const noticeType=ref<NoticeType>('info')
+const userName=ref('')
 const snaptimeout=ref<number>(10000)
 // const dialogTitle=ref('')
 // const dialogContent=ref('')
@@ -186,8 +188,12 @@ const switchLanguage = (lang: string) => {
     setLanguage(lang)
     // router.go(0)
 }
+
 const gotoSystemsetting=()=>{
     router.push('/systemsetting/index')
+}
+const gotodashborad=()=>{
+    router.push('/dashboard/home')
 }
 
 watch(permanent, () => {
@@ -209,7 +215,11 @@ const Usersignout = async () => {
     await Signout()
     router.push('/login')
 }
-onMounted(() => {
+onMounted(async () => {
+    await GetloginUserInfo().then(res=>{
+        console.log(res)
+        userName.value=res.name
+    })
     receiveSystemMessage((res:CommonDialogMsg)=>{
        
         //revice system message

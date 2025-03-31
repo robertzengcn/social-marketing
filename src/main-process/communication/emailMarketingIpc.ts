@@ -10,7 +10,7 @@ import { CommonResponse, CommonMessage, CommonIdrequest, CommonDialogMsg } from 
 import { EmailTemplateRespdata, EmailTemplatedata, EmailFilterdata, EmailServiceListdata, EmailServiceEntitydata, EmailSendParam } from "@/entityTypes/emailmarketingType"
 
 export function registerEmailMarketingIpcHandlers() {
-  const emailmarketCon = new EmailMarketingController()
+ 
   ipcMain.handle(EMAILMARKETINGTEMPLIST, async (event, arg) => {
     const qdata = JSON.parse(arg) as ItemSearchparam;
     if (!Object.prototype.hasOwnProperty.call(qdata, "page")) {
@@ -19,6 +19,7 @@ export function registerEmailMarketingIpcHandlers() {
     if (!Object.prototype.hasOwnProperty.call(qdata, "size")) {
       qdata.size = 100;
     }
+    const emailmarketCon = new EmailMarketingController()
     const res = await emailmarketCon.listEmailTemplate(qdata.page, qdata.size, qdata.search)
     if (res.status) {
       if (res.data) {
@@ -63,6 +64,7 @@ export function registerEmailMarketingIpcHandlers() {
       }
       return resp
     }
+    const emailmarketCon = new EmailMarketingController()
     const res = await emailmarketCon.removeEmailTemplate(Number(qdata.id))
     if (res.status) {
       const resp: CommonMessage<CommonIdrequest<number>> = {
@@ -90,6 +92,7 @@ export function registerEmailMarketingIpcHandlers() {
       }
       return resp
     }
+    const emailmarketCon = new EmailMarketingController()
     const res = await emailmarketCon.getEmailTemplateDetail(Number(qdata.id))
     if (res.status) {
       const resp: CommonMessage<EmailTemplateRespdata> = {
@@ -109,6 +112,7 @@ export function registerEmailMarketingIpcHandlers() {
   //update email template data
   ipcMain.handle(EMAILMARKETINGTEMPUPDATE, async (event, arg) => {
     const qdata = JSON.parse(arg) as EmailTemplatedata;
+    const emailmarketCon = new EmailMarketingController()
     const res = await emailmarketCon.updateEmailtemplate(qdata)
     if (res.status) {
       const resp: CommonMessage<CommonIdrequest<number>> = {
@@ -134,6 +138,7 @@ export function registerEmailMarketingIpcHandlers() {
     if (!Object.prototype.hasOwnProperty.call(qdata, "size")) {
       qdata.size = 100;
     }
+    const emailmarketCon = new EmailMarketingController()
     const res = await emailmarketCon.listEmailFilter(qdata.page, qdata.size, qdata.search)
     // console.log(res)
     if (res.status) {
@@ -179,6 +184,7 @@ export function registerEmailMarketingIpcHandlers() {
       }
       return resp
     }
+    const emailmarketCon = new EmailMarketingController()
     const resp = await emailmarketCon.getEmailFilterDetail(Number(qdata.id))
     if (resp.status) {
       const resdata: CommonMessage<EmailFilterdata> = {
@@ -199,6 +205,7 @@ export function registerEmailMarketingIpcHandlers() {
   //update email filter
   ipcMain.handle(EMAILMARKETFILTERUPDATE, async (event, arg) => {
     const qdata = JSON.parse(arg) as EmailFilterdata;
+    const emailmarketCon = new EmailMarketingController()
     const res = await emailmarketCon.updateEmailFilter(qdata)
     console.log(res)
     if (res.status) {
@@ -227,6 +234,7 @@ export function registerEmailMarketingIpcHandlers() {
       }
       return resp
     }
+    const emailmarketCon = new EmailMarketingController()
     const res = await emailmarketCon.deleteEmailFilter(Number(qdata.id))
     if (res.status) {
       const resp: CommonMessage<CommonIdrequest<number>> = {
@@ -255,6 +263,7 @@ export function registerEmailMarketingIpcHandlers() {
     if (!Object.prototype.hasOwnProperty.call(qdata, "size")) {
       qdata.size = 100;
     }
+    const emailmarketCon = new EmailMarketingController()
     const res = await emailmarketCon.getEmailServiceList(qdata.page, qdata.size, qdata.search)
     console.log(res)
     if (res.status) {
@@ -299,6 +308,7 @@ export function registerEmailMarketingIpcHandlers() {
       }
       return resp
     }
+    const emailmarketCon = new EmailMarketingController()
     const res = await emailmarketCon.getEmailServiceDetail(Number(qdata.id))
     if (res.status) {
       const resp: CommonMessage<EmailServiceEntitydata> = {
@@ -318,6 +328,7 @@ export function registerEmailMarketingIpcHandlers() {
   //create or update email service
   ipcMain.handle(EMAILSERVICEUPDATE, async (event, arg) => {
     const qdata = JSON.parse(arg) as EmailServiceEntitydata;
+    const emailmarketCon = new EmailMarketingController()
     const res = await emailmarketCon.createuEmailService(qdata)
     console.log(res)
     if (res.status) {
@@ -347,6 +358,7 @@ export function registerEmailMarketingIpcHandlers() {
       }
       return resp
     }
+    const emailmarketCon = new EmailMarketingController()
     const res = await emailmarketCon.deleteEmailService(Number(qdata.id))
     if (res.status) {
       const resp: CommonMessage<CommonIdrequest<number>> = {
@@ -372,6 +384,7 @@ export function registerEmailMarketingIpcHandlers() {
 
 
     // try {
+      const emailmarketCon = new EmailMarketingController()
     await emailmarketCon.sendEmail(qdata, (errorMessage: string) => {
       console.log(errorMessage)
       const resp: CommonDialogMsg = {

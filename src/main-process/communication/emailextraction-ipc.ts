@@ -11,8 +11,8 @@ import {ItemSearchparam} from "@/entityTypes/commonType"
 import { CommonResponse } from "@/entityTypes/commonType"
 
 export function registerEmailextractionIpcHandlers() {
-    const searchModel = new searhModel();
-    const emailCon = new EmailextractionController();
+    // const searchModel = new searhModel();
+    // const emailCon = new EmailextractionController();
     ipcMain.on(EMAILEXTRACTIONAPI, async (event, arg) => {
         let extraType: EmailExtractionTypes = EmailExtractionTypes.ManualInputUrl;
         //receive user submit form
@@ -69,6 +69,8 @@ export function registerEmailextractionIpcHandlers() {
                 event.sender.send(EMAILEXTRACTIONMESSAGE, JSON.stringify(comMsgs))
                 return
             }
+            const searchModel = new searhModel();
+
             //get result url from search task
             const taskresultNum = searchModel.countSearchResult(qdata.searchTaskId)
             const step = 100
@@ -116,6 +118,8 @@ export function registerEmailextractionIpcHandlers() {
             type: extraType,
             processTimeout:Number(qdata.processTimeout)
         }
+            
+    const emailCon = new EmailextractionController();
         emailCon.searchEmail(datas);
         const comMsgs: CommonDialogMsg = {
             status: true,
@@ -138,6 +142,8 @@ export function registerEmailextractionIpcHandlers() {
           if (!Object.prototype.hasOwnProperty.call(qdata, "size")) {
             qdata.size = 100;
           }
+             
+   const emailCon = new EmailextractionController();
           const res=await emailCon.listEmailSearchtasks(qdata.page,qdata.size,qdata.sortby)
 
           const resp: CommonResponse<EmailsearchTaskEntityDisplay> = {
@@ -177,6 +183,8 @@ export function registerEmailextractionIpcHandlers() {
           }
         console.log("task id is" + qdata.taskId)  
         //EmailsearchTaskquery
+           
+   const emailCon = new EmailextractionController();
         const res=await emailCon.Emailtaskresult(qdata.taskId,qdata.page,qdata.size)
         //count number
         const count=await emailCon.EmailtaskresultCount(qdata.taskId)
