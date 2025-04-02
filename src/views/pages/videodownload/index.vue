@@ -145,7 +145,7 @@ import { ref, onMounted, watch } from "vue";
 import { VideoDownloadlist, VideodownlodType, CookiesSelectType, BrowerList } from "@/config/videosetting";
 import { opendialog, downloadVideo } from "@/views/api/video";
 import { useI18n } from "vue-i18n";
-import { downloadVideoparam } from "@/entityTypes/videoType";
+import { DownloadVideoControlparam } from "@/entityTypes/videoType";
 import { receiveVideoDownloadMessage } from "@/views/api/video";
 import AccountSelectedTable from "@/views/pages/socialaccount/widgets/AccountSelectedTable.vue";
 import { SocialAccountListData } from '@/entityTypes/socialaccount-type'
@@ -359,7 +359,7 @@ async function onSubmit() {
       keywordArr = keywords.filter((line) => {
         return line.length > 0;
       });
-    } else if (chooseType.value == "playlist") {
+    } else if (chooseType.value == "playlist"|| chooseType.value == "singleplay") {
 
 
       // console.log(valid);
@@ -389,7 +389,7 @@ async function onSubmit() {
       setAlert("video.select_language_error", "Error", "error");
       return;
     }
-    const data: downloadVideoparam = {
+    const data: DownloadVideoControlparam = {
       taskName: taskName.value,
       accountId: accountIds,
       platform: type.value,
@@ -402,7 +402,8 @@ async function onSubmit() {
       cookies_type: cookiesType.value,
       browserName: browserType.value,
       videoQuality: videoQuality.value,
-      videoLanguage: videolanguage.value
+      language_code: videolanguage.value.code,
+      
     };
     if (validUrls.length === 0) {
       setAlert("Please input valid url", "Error", "error");

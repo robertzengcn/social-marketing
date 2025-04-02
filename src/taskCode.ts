@@ -20,6 +20,7 @@ import {Usersearchdata} from "@/entityTypes/searchControlType"
 import {UserSearch} from "@/childprocess/userSearch"
 import {SearchDataRun} from "@/entityTypes/scrapeType"
 
+
 process.parentPort.on('message', async (e) => {
     //console.log(e.data)
     const pme = JSON.parse(e.data) as ProcessMessage<any>
