@@ -55,16 +55,13 @@ export default ({ mode }) => {
         //     {globals: { global: true, process: true }}
         // ),
         nodeResolve(),
-<<<<<<< HEAD
         commonjs({}),
         // commonjs({
         //             //strictRequires:true,
         //             //  include: ['node_modules/@puppeteer/browsers/node_modules/yargs/build/*.cjs',
         //             //  ],
         //         }),
-=======
         emptyModulesPlugin(),
->>>>>>> ed579cb58f128cbf50bac0ea970395b92814d34d
         //typescript(),
         // commonjs({
         //     //strictRequires:true,
@@ -111,15 +108,9 @@ export default ({ mode }) => {
             },
             conditions: ['node'],
         },
-<<<<<<< HEAD
         optimizeDeps: {    
                 // disabled:false,
                 include: ['winston-transport','bufferutil', 'utf-8-validate','puppeteer-cluster']          
-=======
-        optimizeDeps: {
-            // disabled:false,
-            include: ['winston-transport', 'bufferutil', 'utf-8-validate']
->>>>>>> ed579cb58f128cbf50bac0ea970395b92814d34d
         },
         build: {
             rollupOptions: {
@@ -136,21 +127,7 @@ export default ({ mode }) => {
                 transformMixedEsModules: true,
                 // include:[]   
             },
-            // commonjsOptions: {
-            //     include: ["node_modules/@puppeteer/browsers/node_modules/yargs/build/index.cjs"],
-            //   },
-            // rollupOptions: {
-            //     plugins: [
-            //         alias({
-            //             entries: [
-            //               { find: '@', replacement: path.resolve(__dirname, 'src') }
-            //             ]
-            //           }),
-            //         // nodeResolve({
-            //         //     extensions: ['.js', '.jsx', '.ts', '.tsx', '.cjs']
-            //         //   }), 
-            //     ]
-            // },
+            
             external: [
                 'sqlite3'
             ]
