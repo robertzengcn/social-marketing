@@ -1,7 +1,7 @@
 import path from "path";
 import { execSync, exec } from 'child_process';
 import { Notification, app } from 'electron'
-import * as yaml from 'js-yaml';
+// import * as yaml from 'js-yaml';
 import * as fs from 'fs';
 // import { CommonDialogMsg } from "@/entityTypes/commonType";
 import { Page } from 'puppeteer';
@@ -186,14 +186,14 @@ export function uninstallPipPackage(packageName: string, errorcall?: (error: Err
   );
 }
 //write data to yaml file
-export function writeYamlFile(filepath: string, data: object) {
+// export function writeYamlFile(filepath: string, data: object) {
 
-  try {
-    fs.writeFileSync(filepath, yaml.dump(data));
-  } catch (e) {
-    console.log(e);
-  }
-}
+//   try {
+//     fs.writeFileSync(filepath, yaml.dump(data));
+//   } catch (e) {
+//     console.log(e);
+//   }
+// }
 //create random file name
 export function randomFileName(prefix: string, suffix: string): string {
   return prefix + '-' + Date.now() + '-' + Math.floor(Math.random() * 1000) + '.' + suffix
@@ -419,6 +419,7 @@ export function getRandomValues(buf: Uint8Array): Uint8Array {
 }
 //convert proxy entity to url
 export function proxyEntityToUrl(proxyEntity: ProxyParseItem): string {
+  
   if (!proxyEntity.protocol) {
     throw new Error("protocol is required");
   }
@@ -443,6 +444,18 @@ export function proxyEntityToUrl(proxyEntity: ProxyParseItem): string {
     proxyUrl = `${proxyEntity.protocol}://${proxyEntity.host}:${proxyEntity.port}`;
   } else {
     throw new Error("protocol is not valid");
+  }
+  return proxyUrl;
+}
+export function convertProxyServertourl(proxyServer: ProxyServer): string {
+  if (!proxyServer.server) {
+    throw new Error("server is required");
+  }
+  let proxyUrl = "";
+  if (proxyServer.username && (proxyServer.username?.length > 0) && (proxyServer.password && (proxyServer.password?.length > 0))) {
+    proxyUrl = `${proxyServer.server}://${proxyServer.username}:${proxyServer.password}`;
+  } else {
+    proxyUrl = `${proxyServer.server}`;
   }
   return proxyUrl;
 }
@@ -721,3 +734,19 @@ export function getLanaugebyCode(code:string):LanguageItem|undefined{
    })
    return res
  }
+ export function compareVersions(versionA: string, versionB: string): number {
+  // Split versions by decimal points
+  const partsA = versionA.split('.').map(part => parseInt(part, 10));
+  const partsB = versionB.split('.').map(part => parseInt(part, 10));
+  
+  // Compare each part numerically
+  for (let i = 0; i < Math.max(partsA.length, partsB.length); i++) {
+    const partA = i < partsA.length ? partsA[i] : 0;
+    const partB = i < partsB.length ? partsB[i] : 0;
+    
+    if (partA > partB) return 1;  // versionA is greater
+    if (partA < partB) return -1; // versionB is greater
+  }
+  
+  return 0; // Versions are equal
+}

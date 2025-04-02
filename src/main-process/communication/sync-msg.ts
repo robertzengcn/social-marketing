@@ -39,7 +39,7 @@ export default function SyncMsg(mainWindow: BrowserWindow) {
       if (err instanceof Error) {
         return {
           status: false,
-          msg: "login failure",
+          msg: err.message,
         } as userResponse;
       } else {
         return {

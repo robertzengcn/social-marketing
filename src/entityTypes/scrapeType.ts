@@ -145,7 +145,9 @@ export interface clusterData {
   page: Page
 }
 export interface ClusterSearchData {
-  proxyServer?:string
+  proxyServer?:ProxyServer|null
+//import {ProxyServer} from "@/entityTypes/proxyType"
+
   keywords: Array<string>
 }
 export type ClusterFunctionparam = {

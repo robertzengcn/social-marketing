@@ -6,9 +6,10 @@ import { CommonMessage } from "@/entityTypes/commonType";
 import { SystemSettingGroupDisplay,SetttingUpdate } from '@/entityTypes/systemsettingType';
 
 export function registerSystemSettingIpcHandlers() {
-    const systemSettingCtrl = new SystemSettingController()
+    
     ipcMain.handle(SYSTEM_SETTING_LIST, async (event, data) => {
         try {
+            const systemSettingCtrl = new SystemSettingController()
             const res = await systemSettingCtrl.selectAllSystemSettings();
             const result: CommonMessage<Array<SystemSettingGroupDisplay>> = {
                 status: true,
@@ -31,6 +32,7 @@ export function registerSystemSettingIpcHandlers() {
 
          const qdata = JSON.parse(arg) as SetttingUpdate;
             try {
+                const systemSettingCtrl = new SystemSettingController()
                 const res = await systemSettingCtrl.updateSystemSettings(qdata.id, qdata.value);
                 const result: CommonMessage<boolean> = {
                     status: res,

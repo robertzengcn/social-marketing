@@ -6,7 +6,7 @@ import ClosePlugin from './vite-plugin-close.js'
 
 import checker from 'vite-plugin-checker'
 
-//import commonjs from '@rollup/plugin-commonjs';
+import commonjs from '@rollup/plugin-commonjs';
 //import copy from 'rollup-plugin-copy'
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 //import typescript from 'rollup-plugin-typescript2'
@@ -26,6 +26,12 @@ export default ({ mode }) => {
         //     {globals: { global: true, process: true }}
         // ),
         nodeResolve(),
+        commonjs({}),
+        // commonjs({
+        //             //strictRequires:true,
+        //             //  include: ['node_modules/@puppeteer/browsers/node_modules/yargs/build/*.cjs',
+        //             //  ],
+        //         }),
         //typescript(),
         // commonjs({
         //     //strictRequires:true,
@@ -59,7 +65,7 @@ export default ({ mode }) => {
         },
         optimizeDeps: {    
                 // disabled:false,
-                include: ['winston-transport','bufferutil', 'utf-8-validate']          
+                include: ['winston-transport','bufferutil', 'utf-8-validate','puppeteer-cluster']          
         },
         build: {
             // target: 'es6',

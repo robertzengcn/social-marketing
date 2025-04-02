@@ -52,6 +52,10 @@
               mdi-information
             </v-icon>
     </template>
+    <template v-slot:[`item.url`]="{ item }">
+
+      {{ item.url.substring(0, 50) + '...'}}
+  </template>
   </v-data-table-server>
   <delete-dialog :dialog="showDeleteModal" @confirm-delete="handleDelete"
     @confirm-close="showDeleteModal = false"></delete-dialog>
@@ -212,44 +216,44 @@ const FakeAPI = {
 
 headers.value = [
   {
-    title: computed(_ => CapitalizeFirstLetter(t("common.id"))),
+    title: computed(_ => CapitalizeFirstLetter(t("common.id"))).value as string,
     align: 'start',
     sortable: false,
     key: 'id',
   },
   {
-    title: computed(_ => CapitalizeFirstLetter(t("video.url"))),
+    title: computed(_ => CapitalizeFirstLetter(t("video.url"))).value as string,
     align: 'start',
     sortable: false,
     key: 'url',
-    width: '60'
+    width: '60px'
   },
   {
-    title: computed(_ => CapitalizeFirstLetter(t("video.title"))),
+    title: computed(_ => CapitalizeFirstLetter(t("video.title"))).value as string,
     align: 'start',
     sortable: false,
     key: 'title',
   },
   {
-    title: computed(_ => CapitalizeFirstLetter(t("common.status"))),
+    title: computed(_ => CapitalizeFirstLetter(t("common.status"))).value as string,
     align: 'start',
     sortable: false,
     key: 'status',
   },
   {
-    title: computed(_ => CapitalizeFirstLetter(t("video.caption_status"))),
+    title: computed(_ => CapitalizeFirstLetter(t("video.caption_status"))).value as string,
     align: 'start',
     sortable: false,
     key: 'caption_status',
   },
   {
-    title: computed(_ => CapitalizeFirstLetter(t("common.record_time"))),
+    title: computed(_ => CapitalizeFirstLetter(t("common.record_time"))).value as string,
     align: 'start',
     sortable: false,
     key: 'record_time',
   },
   {
-    title: computed(_ => CapitalizeFirstLetter(t("common.actions"))),
+    title: computed(_ => CapitalizeFirstLetter(t("common.actions"))).value as string,
     align: 'start',
     key: 'actions',
     sortable: false,

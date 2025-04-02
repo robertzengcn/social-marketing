@@ -67,8 +67,9 @@ export class UserController {
                 try {
                 scraperModel.init()
                 const appDataSource = SqliteDb.getInstance(userdataPath)
-                
-                    await appDataSource.connection.initialize()
+                if(!appDataSource.connection.isInitialized){
+                await appDataSource.connection.initialize()
+                }
                 } catch (error) {
                     console.error('Failed to initialize database connection:', error)
 

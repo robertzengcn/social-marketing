@@ -3,26 +3,26 @@
     <v-form ref="form" @submit.prevent="onSubmit">
     
       
-      <v-select v-model="emailtype" :items="emailTypelist" :label="$t('emailextraction.extraction_type') as string" required
+      <v-select v-model="emailtype" :items="emailTypelist" :label="t('emailextraction.extraction_type') as string" required
         :readonly="loading" :rules="[rules.required]" class="mt-3"  
         item-title="name"
           item-value="key"
           return-object
           ></v-select>
-       <v-textarea class="mt-3" v-model="urls" :label="$t('emailextraction.input_urls_hint')" v-if="emailtype?.index==0"></v-textarea> 
+       <v-textarea class="mt-3" v-model="urls" :label="t('emailextraction.input_urls_hint')" v-if="emailtype?.index==0"></v-textarea> 
        
        <div v-if="emailtype?.index==1" class="mt-3">
         <SearchResultSelectTable @change="handleSearchtaskChanged" />
       </div>
 
 
-      <v-text-field v-model="page_length" :label="$t('emailextraction.page_length')" clearable class="mt-3"></v-text-field>
+      <v-text-field v-model="page_length" :label="t('emailextraction.page_length')" clearable class="mt-3"></v-text-field>
 
-      <v-text-field v-model="concurrent_quantity" :label="$t('search.concurrent_quantity')" clearable
+      <v-text-field v-model="concurrent_quantity" :label="t('search.concurrent_quantity')" clearable
         class="mt-3"></v-text-field>
       
         <v-number-input
-        :label="$t('emailextraction.process_timeout')"
+        :label="t('emailextraction.process_timeout')"
         control-variant="default"
         v-model="processTimeout"
         :max="20"
@@ -30,13 +30,13 @@
       ></v-number-input>
         <v-combobox v-model="proxyValue" :items="proxyValue" label="Select proxy" item-title="host" multiple return-object
         chips clearable></v-combobox>
-      <v-btn color="primary" @click="showProxytable">{{$t('search.choose_proxy')}}</v-btn>
+      <v-btn color="primary" @click="showProxytable">{{t('search.choose_proxy')}}</v-btn>
 
       <div v-if="proxytableshow" class="mt-3">
         <ProxyTableselected @change="handleSelectedChanged" />
       </div>
 
-      <p class="mt-5">{{ capletter($t('search.show_in_Browser')) }}:</p>
+      <p class="mt-5">{{ capletter(t('search.show_in_Browser')) }}:</p>
       <v-btn-toggle v-model="showinbrwoser" mandatory class="mt-3">
         <v-btn :value="0" color="primary">No</v-btn>
         <v-btn :value="1" color="success">Yes</v-btn>

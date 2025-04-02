@@ -275,4 +275,113 @@ export class YoutubeDownload implements VideoDownloadImpl {
         throw error
     }
     }
+    //add function download video by keywords
+    async downloadVideoByKeyword(keyword: string, savePath: string, useBrowserCookies?: string, cookiesProxy?: CookiesProxy | null, proxy?: Proxy | null, execPath?: string, videoQuality?: number, maxResults: number = 5, errorCall?: (link: string, errorMsg: string) => void, stroutCall?: (message: string) => void, successCall?: (param: VideodoanloadSuccessCall) => void) {
+        const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+        
+        try {
+          // Launch browser with appropriate options
+          const browser = await puppeteer.launch({
+            headless: false, // Use new headless mode
+            args: proxy ? [
+              `--proxy-server=${proxy.protocol}://${proxy.host}:${proxy.port}`
+            ] : []
+          });
+          
+          // Set up authentication for proxy if needed
+          if (proxy && proxy.username && proxy.password) {
+            const page = await browser.newPage();
+            await page.authenticate({
+              username: proxy.username,
+              password: proxy.password
+            });
+          }
+          
+          const page = await browser.newPage();
+          
+          // Set a reasonable viewport
+          await page.setViewport({ width: 1280, height: 800 });
+          
+          // Navigate to YouTube
+          await page.goto('https://www.youtube.com', { 
+            waitUntil: 'networkidle2',
+            timeout: 60000
+          });
+          
+          // Log progress if stroutCall is provided
+          if (stroutCall) stroutCall(`Searching YouTube for: ${keyword}`);
+          
+          // Wait for and click the accept cookies button if it appears
+          try {
+            const acceptButton = await page.waitForSelector('button[aria-label="Accept all"]', { timeout: 5000 });
+            if (acceptButton) await acceptButton.click();
+            await delay(1000);
+          } catch (e) {
+            // No cookies dialog or it has a different selector, we can continue
+          }
+          
+          // Find and click the search box
+          await page.waitForSelector('input#search');
+          await page.click('input#search');
+          
+          // Type the search keyword
+          await page.keyboard.type(keyword);
+          await page.keyboard.press('Enter');
+          
+          // Wait for search results to load
+          await page.waitForSelector('ytd-video-renderer, ytd-grid-video-renderer', { timeout: 10000 });
+          
+          // Additional wait to ensure all results load
+          await delay(2000);
+          
+          // Extract video URLs from search results
+          const videoUrls = await page.$$eval('a#video-title, a#thumbnail', (elements, maxResults) => {
+            return elements
+              .filter(el => el.href && el.href.includes('/watch?v='))
+              .map(el => el.href)
+              .filter((url, index, self) => self.indexOf(url) === index) // Remove duplicates
+              .slice(0, maxResults);
+          }, maxResults);
+          
+          // Close the browser
+          await browser.close();
+          
+          if (videoUrls && videoUrls.length > 0) {
+            if (stroutCall) stroutCall(`Found ${videoUrls.length} videos for keyword: ${keyword}`);
+            
+            // Download each video
+            for (const url of videoUrls) {
+              if (stroutCall) stroutCall(`Downloading video: ${url}`);
+              
+              await this.downloadVideo(
+                url, 
+                savePath,
+                useBrowserCookies,
+                cookiesProxy,
+                proxy,
+                execPath,
+                videoQuality,
+                errorCall,
+                stroutCall,
+                successCall
+              ).catch(error => {
+                if (errorCall) errorCall(url, error.message || 'Unknown error');
+              });
+              
+              // Add delay between downloads to avoid rate limiting
+              await delay(3000 + Math.floor(Math.random() * 2000));
+            }
+            
+            return videoUrls;
+          } else {
+            const errorMessage = `No videos found for keyword: ${keyword}`;
+            if (errorCall) errorCall(keyword, errorMessage);
+            throw new CustomError(errorMessage);
+          }
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+          if (errorCall) errorCall(keyword, errorMessage);
+          throw new CustomError(errorMessage);
+        }
+      }
 }

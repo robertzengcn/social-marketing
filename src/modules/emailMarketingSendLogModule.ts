@@ -1,17 +1,19 @@
-import { Token } from "@/modules/token"
-import { USERSDBPATH } from '@/config/usersetting';
+// import { Token } from "@/modules/token"
+// import { USERSDBPATH } from '@/config/usersetting';
 import {EmailMarketingSendLogEntity,EmailMarketingSendLogdb} from "@/model/emailMarketingSendLogdb"
 import { SortBy } from "@/entityTypes/commonType"
-export class EmailMarketingSendLogModule {
-    private dbpath: string
+import { BaseModule } from "@/modules/baseModule";
+export class EmailMarketingSendLogModule extends BaseModule{
+    //private dbpath: string
     private emailMarketingSendLogdb: EmailMarketingSendLogdb
     constructor() {
-    const tokenService = new Token()
-    const dbpath = tokenService.getValue(USERSDBPATH)
-    if (!dbpath) {
-        throw new Error("user path not exist")
-    }
-    this.dbpath = dbpath
+    // const tokenService = new Token()
+    // const dbpath = tokenService.getValue(USERSDBPATH)
+    // if (!dbpath) {
+    //     throw new Error("user path not exist")
+    // }
+    //this.dbpath = dbpath
+    super();
     this.emailMarketingSendLogdb = new EmailMarketingSendLogdb(this.dbpath);
     }
     //create buck send email log item

@@ -20,16 +20,20 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 20.18.3
-
+      - name: Create .env file
+        run: |
+          touch .env
+          echo "NODE_ENV=test" >> .env
+          cat .env    
       - name: Create .env.test file 
         run: |
-            touch .env.test
-            echo "NODE_ENV=test" >> .env.production     
-            echo VITE_REMOTEADD=${{ secrets.VITE_REMOTEADD_TEST }} >> .env
-            cat .env.test
-            
+          touch .env.test 
+          echo "VITE_REMOTEADD=${{ secrets.VITE_REMOTEADD_TEST }}" >> .env          
+          cat .env.test        
       - name: Install dependencies
         run: yarn install
+      - name: Rebuild electron
+        run: yarn electron-rebuild --force --types prod,dev,optional --module-dir .         
       - name: Rebuild sqlite3
         run: yarn rebuild-sqlite3
       - name: Rebuild better sqlite
@@ -58,7 +62,6 @@ jobs:
         run: |
           echo "CXXFLAGS=-std=c++20" >> $GITHUB_ENV
           echo "npm_config_cxxflags=-std=c++20" >> $GITHUB_ENV
-          echo "npm_config_nodedir=$HOME/.electron-gyp/35.0.3" >> $GITHUB_ENV
 
       # Make sure to use a recent Xcode version
       - name: List available Xcode versions
@@ -66,34 +69,41 @@ jobs:
     
       - name: Select available Xcode version
         run: sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
-      
       - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 20.18.3  
+          node-version: 20.18.3
+      - name: Create .env file
+        run: |
+            touch .env
+            echo "NODE_ENV=test" >> .env
+            cat .env               
       - name: Create .env.test file 
         run: |
-            touch .env.test
-            echo "NODE_ENV=test" >> .env.production     
+            touch .env.test   
             echo VITE_REMOTEADD=${{ secrets.VITE_REMOTEADD_TEST }} >> .env
             cat .env.test
-  
       - name: Install setuptools
         run: |
             brew install python-setuptools           
               
       - name: Install dependencies
         run: yarn install
-      
+      - name: Download Electron headers
+        run: |
+          npx electron-rebuild --force --types prod,dev,optional --module-dir .
+      - name: Rebuild native modules
+        run: |
+          npx electron-rebuild
       - name: Rebuild sqlite3
         run: yarn rebuild-sqlite3
-        
       - name: Rebuild better sqlite
-        run: yarn rebuild-better-sqlite     
-        
+        run: yarn rebuild-better-sqlite    
+      - name: yarn electron-rebuild
+        run: yarn electron-rebuild   
       - name: Build application
         run: yarn make-mac:test
   
@@ -101,4 +111,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: electron-app-macos
-          path: out/make-app-macos
+          path: out/make

@@ -31,7 +31,10 @@ export class EmailextractionController {
         const { port1, port2 } = new MessageChannelMain()
         const tokenService=new Token()
         
-        const child = utilityProcess.fork(childPath, [],{stdio:"pipe",execArgv:["DEBUG='puppeteer-cluster:*'"]} )
+        const child = utilityProcess.fork(childPath, [],{stdio:"pipe",execArgv:["DEBUG='puppeteer-cluster:*'"],env:{
+            ...process.env,
+            NODE_OPTIONS: ""  
+        }} )
         // console.log(path.join(__dirname, 'utilityCode.js'))
         let logpath=tokenService.getValue(USERLOGPATH)
         if(!logpath){

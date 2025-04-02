@@ -36,7 +36,7 @@ export class SqliteDb {
     private constructor(filepath:string) {
         if(filepath.length>0){
         this.connection =new DataSource({
-            type: "sqlite",
+            type: "better-sqlite3",
             database:path.join(filepath,'scraper.db'),
             entities: [AccountCookies,
                 BuckemailTask,
@@ -68,7 +68,7 @@ export class SqliteDb {
             synchronize: true, 
             migrations: [],
             subscribers: [],
-            logging: true, // use this for debugging
+            logging:  process.env.NODE_ENV !== 'production', /// use this for debugging
             // driver: {
             //     sqlite3: sqlite3
             // }

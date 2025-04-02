@@ -45,24 +45,24 @@ const homeCardlist: homecardEntity[] = [
         description: t('home.search_description'),
         link:'/search/form'
     },
-    {
-        title: t('home.yellowpage'),
-        subtitle: t('home.yellowpage_scraper'),
-        prependIcon: 'mdi-alarm',
-        description: t('home.yellowpage_description')
-    },
-    {
-        title: t('home.socialmedia'),
-        subtitle: t('home.socialmedia_scraper'),
-        prependIcon: 'mdi-alarm',
-        description: t('home.socialmedia_description')
-    },
-    {
-        title: t('home.socialshare'),
-        subtitle: t('home.socialshare_subtitle'),
-        prependIcon: 'mdi-alarm',
-        description: t('home.socialshare_description')
-    },
+    // {
+    //     title: t('home.yellowpage'),
+    //     subtitle: t('home.yellowpage_scraper'),
+    //     prependIcon: 'mdi-alarm',
+    //     description: t('home.yellowpage_description')
+    // },
+    // {
+    //     title: t('home.socialmedia'),
+    //     subtitle: t('home.socialmedia_scraper'),
+    //     prependIcon: 'mdi-alarm',
+    //     description: t('home.socialmedia_description')
+    // },
+    // {
+    //     title: t('home.socialshare'),
+    //     subtitle: t('home.socialshare_subtitle'),
+    //     prependIcon: 'mdi-alarm',
+    //     description: t('home.socialshare_description')
+    // },
     {
         title: t('home.emailextraction'),
         subtitle: t('home.emailextraction_subtitle'),
@@ -78,24 +78,32 @@ const homeCardlist: homecardEntity[] = [
         appendIcon: 'mdi-crown',
         description: t('home.emailmarketing_description'),
         link:'/emailextraction/form'
-    },{
-      title: t('home.tiktok_marketing_title'),
-        subtitle: t('home.tiktok_marketing_subtitle'),
-        prependIcon: 'mdi-alarm',
-        description: t('home.tiktok_marketing_description')
     },
-    {
-      title: t('home.youtube_marketing_title'),
-        subtitle: t('home.youtube_marketing_subtitle'),
-        prependIcon: 'mdi-alarm',
-        description: t('home.youtube_marketing_description')
-    },
-    {
-      title: t('home.video_translation_title'),
-        subtitle: t('home.video_translation_subtitle'),
-        prependIcon: 'mdi-alarm',
-        description: t('home.video_translation_description')
-    }
+    // {
+    //   title: t('home.tiktok_marketing_title'),
+    //     subtitle: t('home.tiktok_marketing_subtitle'),
+    //     prependIcon: 'mdi-alarm',
+    //     description: t('home.tiktok_marketing_description')
+    // },
+    // {
+    //   title: t('home.youtube_marketing_title'),
+    //     subtitle: t('home.youtube_marketing_subtitle'),
+    //     prependIcon: 'mdi-alarm',
+    //     description: t('home.youtube_marketing_description')
+    // },
+    // {
+    //   title: t('home.video_translation_title'),
+    //     subtitle: t('home.video_translation_subtitle'),
+    //     prependIcon: 'mdi-alarm',
+    //     description: t('home.video_translation_description')
+    // }
+    //     {
+    //   title: t('home.account_manage'),
+    //     subtitle: t('home.account_manage_subtitle'),
+    //     prependIcon: 'mdi-alarm',
+    //     description: t('home.account_manage_description'),
+    //     link:'/socialaccount/list'
+    // },
 ]
 </script>
 <style scoped>

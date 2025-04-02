@@ -5,8 +5,8 @@ export const MacExtraModuleConfig:ExtraModule[]=[
         name:"youtube-dl",
         // description:"video download is a module that can download video from tiktok, Instagram and other platforms",
         packagename:"yt-dlp_macos",
-        version:"2025.03.21",
-        link:"https://github.com/yt-dlp/yt-dlp/releases/download/2025.03.21/yt-dlp_macos",
+        version:"2025.03.26",
+        link:"https://github.com/yt-dlp/yt-dlp/releases/download/2025.03.26/yt-dlp_macos",
         requirePy:false,
         ispip:false,
         requireFfmpeg:false

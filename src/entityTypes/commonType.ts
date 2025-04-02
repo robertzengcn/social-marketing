@@ -57,8 +57,8 @@ export interface CommonIdrequestType<Type> extends CommonIdrequest<Type>{
     type:string
 }
 export type Header = {
-    title: string | ReturnType<typeof computed>;
-    align?: string;
+    title: string
+    align?: "start" | "center" | "end" | undefined;
     sortable: boolean;
     key: string;
     width?: string;

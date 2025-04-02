@@ -1,6 +1,8 @@
 import { ProxyEntity } from '@/entityTypes/proxyType'
 import { EmailExtractionTypes } from "@/config/emailextraction"
 import {ItemSearchparam} from "@/entityTypes/commonType"
+import {ProxyServer} from "@/entityTypes/proxyType"
+
 export type EmailscFormdata = {
   extratype: string,
   urls?: Array<string>,
@@ -14,7 +16,7 @@ export type EmailscFormdata = {
 }
 export type EmailClusterdata = {
   url: string,
-  proxy?: string,
+  proxy?: ProxyServer|null,
   domain: string,
   maxPageLevel: number,
   visited?: Set<string>,

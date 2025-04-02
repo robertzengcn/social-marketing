@@ -6,7 +6,7 @@ import sourceMap from 'source-map';
 import { expect, test } from 'vitest'
 
 test('make-file-back', async function () {
- const relativePath = '.vite/build/background-b6200fdc.js';
+ const relativePath = '.vite/build/background-CVfVftm1.js';
   // const writepath='./tmp/example.ts'
   const absolutePath = path.resolve(relativePath);
   // // console.log(absolutePath)
@@ -29,7 +29,7 @@ test('make-file-back', async function () {
   //   consumer.destroy();
 
   // });
-await findOriginalPosition(absolutePath, 332, 24549);
+await findOriginalPosition(absolutePath,72, 56990);
 },500000)
 
 
@@ -43,5 +43,25 @@ async function findOriginalPosition(minifiedFile, line, column) {
   });
 
   console.log(position);
+
+  let sourceContext = '';
+    if (position.source) {
+      const sourceIndex = consumer.sources.indexOf(position.source);
+      if (sourceIndex !== -1 && consumer.sourcesContent && consumer.sourcesContent[sourceIndex]) {
+        const sourceLines = consumer.sourcesContent[sourceIndex].split('\n');
+        if(position.line){
+        const startLine = Math.max(0, position.line - 3);
+        const endLine = Math.min(sourceLines.length, position.line + 3);
+        
+        sourceContext = sourceLines.slice(startLine, endLine).map((l, i) => {
+          const lineNumber = startLine + i + 1;
+          const isErrorLine = lineNumber === position.line;
+          return `${isErrorLine ? '>' : ' '} ${lineNumber}: ${l}`;
+        }).join('\n');
+      }
+      }
+      console.log(sourceContext);
+    }
+
   consumer.destroy();
 }

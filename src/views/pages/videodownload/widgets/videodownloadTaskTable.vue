@@ -7,7 +7,7 @@
             </div>
             <!-- <v-btn class="btn" variant="flat" prepend-icon="mdi-filter-variant"><span> More</span></v-btn> -->
             <v-btn class="btn ml-3" variant="flat" prepend-icon="mdi-plus" color="#5865f2" @click="createDownload()">
-                {{ $t('video.new_video_download') }}
+                {{ t('video.new_video_download') }}
             </v-btn>
 
         </div>
@@ -36,6 +36,7 @@
             </v-icon>
 
         </template>
+       
     </v-data-table-server>
     <LogDialog :dialogModel="logdiastatus" :logContent="logdiaContent" @dialogclose="logdiastatus = false" />
     <ErrorDialog :showDialog="showDialog" :alertext="alertext" :alertitle="alerttitle"
