@@ -73,7 +73,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: electron-app-windows
+          name: electron-app-windows-v${{ steps.calculate_version.outputs.version }}
           path: out/make
 
   build-macos:
@@ -153,5 +153,5 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: electron-app-macos
+          name: electron-app-macos-v${{ steps.calculate_version.outputs.version }}
           path: out/make
