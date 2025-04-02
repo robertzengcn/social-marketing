@@ -359,7 +359,7 @@ async function onSubmit() {
       keywordArr = keywords.filter((line) => {
         return line.length > 0;
       });
-    } else if (chooseType.value == "playlist") {
+    } else if (chooseType.value == "playlist"|| chooseType.value == "singleplay") {
 
 
       // console.log(valid);
