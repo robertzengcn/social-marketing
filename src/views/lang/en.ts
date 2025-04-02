@@ -178,6 +178,8 @@ export default {
         select_language_error:"lanauge is empty, please select language",
         translate_video_information:"translate video information",
         translation_info:"translation info",
+        select_language:"select language",
+        keyword:"video keyword",
         
     },
     language:{

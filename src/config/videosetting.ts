@@ -4,7 +4,7 @@ export const VideoDownloadlist=[
     'youtube'
 ]
 export const VideodownlodType=[
-    'singleplay','playlist'
+    'singleplay','playlist','keyword'
 ]
 export const CookiesSelectType=[
     'browser cookies','account cookies'

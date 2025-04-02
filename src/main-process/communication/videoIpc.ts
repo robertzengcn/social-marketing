@@ -38,19 +38,19 @@ export function registerVideoIpcHandlers() {
             event.sender.send(VIDEODOWNLOAD_MESSAGE, comMsgs)
             return
         }
-        if (!("link" in qdata)) {
-            // throw new Error("link not found");
-            const comMsgs: CommonDialogMsg = {
-                status: false,
-                code: 20240521105843,
-                data: {
-                    title: "video.download_failed",
-                    content: "video.link_not_found"
-                }
-            }
-            event.sender.send(VIDEODOWNLOAD_MESSAGE, comMsgs)
-            return
-        }
+        // if (!("link" in qdata)) {
+        //     // throw new Error("link not found");
+        //     const comMsgs: CommonDialogMsg = {
+        //         status: false,
+        //         code: 20240521105843,
+        //         data: {
+        //             title: "video.download_failed",
+        //             content: "video.link_not_found"
+        //         }
+        //     }
+        //     event.sender.send(VIDEODOWNLOAD_MESSAGE, comMsgs)
+        //     return
+        // }
         if (!("savePath" in qdata)) {
             // throw new Error("savePath not found");
             const comMsgs: CommonDialogMsg = {

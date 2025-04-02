@@ -330,6 +330,7 @@ export class videoController {
 
     }
     public async downloadVideo(param: DownloadVideoControlparam, startCall?: () => void) {
+        
         //get video tool
         const videoTool = await this.getVideoDownloadTool(param.platform)
         if (!videoTool) {
