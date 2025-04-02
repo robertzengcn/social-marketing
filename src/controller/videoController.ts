@@ -508,6 +508,7 @@ export class videoController {
             platform: taskInfo.platform,
             link: links,
             savePath: taskInfo.savepath,
+            keywords: [],
             isplaylist: taskDetail.download_type == DownloadType.MULTIVIDEO,
             proxy: proxys,
             ProxyOverride: taskDetail.proxy_override,

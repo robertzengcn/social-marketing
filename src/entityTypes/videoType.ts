@@ -160,6 +160,7 @@ export type DownloadVideoControlparam={
     accountId:Array<number>,
     platform:string,
     link:Array<string>,
+    keywords:Array<string>,
     savePath:string,
     isplaylist:boolean,
     proxy: Array<number>,
