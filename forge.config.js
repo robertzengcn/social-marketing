@@ -10,7 +10,8 @@ const EXTERNAL_DEPENDENCIES = [
   'better-sqlite3',
   'puppeteer-cluster',
   'lodash',
-'winston'
+'winston',
+'user-agents'
 ];
 //import { ForgeConfig } from '@electron-forge/shared-types';
 // import { AutoUnpackNativesPlugin } from "@electron-forge/plugin-auto-unpack-natives";
