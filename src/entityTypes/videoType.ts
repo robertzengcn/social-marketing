@@ -169,6 +169,7 @@ export type DownloadVideoControlparam={
     browserName?:string,
     videoQuality?:number,
     language_code:string,
+    maxnumber?:number,
 }
 export enum DownloadType {
     SINGLEVIDEO = 1,

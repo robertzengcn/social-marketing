@@ -43,6 +43,8 @@ import { TranslateProducer } from "@/modules/TranslateProducer"
 import { LlmCongfig, TraditionalTranslateCongfig, CommonMessage } from '@/entityTypes/commonType'
 import { TranslateController } from "@/controller/TranslateController"
 import { getLanaugebyCode } from "@/modules/lib/function"
+import { VideoDownloadTaskKeywordEntity } from "@/entity/VideoDownloadTaskKeyword.entity"
+import {VideoDownloadTaskKeywordModule} from "@/modules/VideoDownloadTaskKeywordModule"
 // import { VideoDownloadTagEntity } from "@/entity/VideoDownloadTag.entity"
 // import { param } from "jquery";
 //import {} from "@/entityTypes/proxyType"
@@ -58,6 +60,7 @@ export class videoController {
     private videoDownloadTaskProxyModule: VideoDownloadTaskProxyModule
     private videoCaptionModule: VideoCaptionModule
     private videoDownloadTagModule: VideoDownloadTagModule
+    private videoDownloadTaskKeywordModule:VideoDownloadTaskKeywordModule
     // private videoDownloadTagModel:VideoDownloadTagModel
     constructor() {
         // const tokenService = new Token()
@@ -75,6 +78,7 @@ export class videoController {
         this.videoDownloadTaskUrlModule = new VideoDownloadTaskUrlModule()
         this.videoCaptionModule = new VideoCaptionModule()
         this.videoDownloadTagModule = new VideoDownloadTagModule()
+        this.videoDownloadTaskKeywordModule=new VideoDownloadTaskKeywordModule()
     }
     //get video download tool
     public async getVideoDownloadTool(platform: string): Promise<Video | null> {
@@ -225,10 +229,12 @@ export class videoController {
             successlink: alreadlinks
         }
         console.log(childPath)
-        const child = utilityProcess.fork(childPath, [], { stdio: "pipe",execArgv:["puppeteer-cluster:*"],env:{
-            ...process.env,
-            NODE_OPTIONS: ""  
-        } })
+        const child = utilityProcess.fork(childPath, [], {
+            stdio: "pipe", execArgv: ["puppeteer-cluster:*"], env: {
+                ...process.env,
+                NODE_OPTIONS: ""
+            }
+        })
 
         child.on("spawn", () => {
 
@@ -330,7 +336,7 @@ export class videoController {
 
     }
     public async downloadVideo(param: DownloadVideoControlparam, startCall?: () => void) {
-        
+
         //get video tool
         const videoTool = await this.getVideoDownloadTool(param.platform)
         if (!videoTool) {
@@ -376,9 +382,14 @@ export class videoController {
                 this.videoDownloadTaskAccountsModule.create(taskAccount)
             }
         }
-        //save task url
-        for (const link of param.link) {
-            this.videoDownloadTaskUrlModule.create({ task_id: taskId, url: link })
+        if (param.link.length > 0) {
+            //save task url
+            for (const link of param.link) {
+                this.videoDownloadTaskUrlModule.create({ task_id: taskId, url: link })
+            }
+        }
+        if(param.keywords.length > 0){
+            this.videoDownloadTaskKeywordModule.saveKeywords(taskId,param.keywords)
         }
         //save proxy id
         if (param.proxy.length > 0) {
@@ -639,12 +650,14 @@ export class videoController {
         }
         const { port1, port2 } = new MessageChannelMain()
         console.log(params)
-        const child = utilityProcess.fork(childPath, [], { stdio: "pipe",
-            execArgv:["puppeteer-cluster:*"],
-            env:{
-            ...process.env,
-            NODE_OPTIONS: ""  
-        } })
+        const child = utilityProcess.fork(childPath, [], {
+            stdio: "pipe",
+            execArgv: ["puppeteer-cluster:*"],
+            env: {
+                ...process.env,
+                NODE_OPTIONS: ""
+            }
+        })
 
         child.on("spawn", () => {
 
@@ -752,12 +765,12 @@ export class videoController {
 
             })
         }
-        const transinfolist=await this.videoDescriptionModule.getVideoDescriptionOtherLanguage(id, videoDownEntity.language)
+        const transinfolist = await this.videoDescriptionModule.getVideoDescriptionOtherLanguage(id, videoDownEntity.language)
         const res: VideoCompotionEntity = {
             detail: videoDownEntity,
             description: videoDescription,
             caption: captionDisplay,
-            translateInfolist:transinfolist
+            translateInfolist: transinfolist
         }
         console.log(res)
         return res
@@ -768,7 +781,7 @@ export class videoController {
     //     // if (!videoDownEntity) {
     //     //     throw new Error("video download item not found")
     //     // }
-       
+
     // } 
     public async getVideoErrorlog(id: number): Promise<string> {
         const content = await this.videoDownloadModule.getVideoErrorLog(id)
@@ -847,7 +860,7 @@ export class videoController {
             if (traditiona) {
                 traditionalTranslateCongfig = traditiona
             }
-        }else{
+        } else {
             throw new Error("translate tool type not found")
         }
 
@@ -865,10 +878,12 @@ export class videoController {
         }
         const { port1, port2 } = new MessageChannelMain()
         console.log(params)
-        const child = utilityProcess.fork(childPath, [], { stdio: "pipe",execArgv:["puppeteer-cluster:*"],env:{
-            ...process.env,
-            NODE_OPTIONS: ""  
-        } })
+        const child = utilityProcess.fork(childPath, [], {
+            stdio: "pipe", execArgv: ["puppeteer-cluster:*"], env: {
+                ...process.env,
+                NODE_OPTIONS: ""
+            }
+        })
 
         child.on("spawn", () => {
 

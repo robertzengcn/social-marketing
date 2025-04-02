@@ -70,6 +70,20 @@
           </v-col>
         </v-row>
       </v-container>
+      <v-container v-if="chooseType == 'keyword'">
+        <v-row>
+          <v-col cols="12" md="12">
+            <v-text-field
+              v-model="maxnumber"
+              type="number"
+              :label="t('video.max_number')"
+              :hint="t('video.max_number_hint')"
+              min="1"
+              persistent-hint
+            ></v-text-field>
+          </v-col>
+        </v-row>
+      </v-container>
       <v-row>
         <v-col cols="12" md="12">
           <v-label>{{ CapitalizeFirstLetter(t('video.source_language')) }}:</v-label>
@@ -97,6 +111,7 @@
           <v-checkbox v-model="useProxyOverride" :label="t('video.use_proxy_override')"></v-checkbox>
         </v-col>
       </v-row>
+      
       <v-row v-if="proxytableshow">
         <v-col cols="12" md="12">
 
@@ -182,6 +197,7 @@ const taskName = ref("")
 const alerttype = ref<"success" | "error" | "warning" | "info" | undefined>(
   "success"
 );
+const maxnumber=ref<number>(10);
 const videolanguage = ref<LanguageItem>()
 const languagelist = ref<Array<LanguageItem>>(LanguageConfig)
 const videoQuality = ref(0);
