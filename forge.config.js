@@ -16,7 +16,9 @@ const EXTERNAL_DEPENDENCIES = [
 '@lem0-packages/puppeteer-page-proxy',
 'nodemailer',
 '@langchain/ollama',
-'decamelize'
+'decamelize',
+'camelcase',
+'p-retry'
 ];
 //import { ForgeConfig } from '@electron-forge/shared-types';
 // import { AutoUnpackNativesPlugin } from "@electron-forge/plugin-auto-unpack-natives";
