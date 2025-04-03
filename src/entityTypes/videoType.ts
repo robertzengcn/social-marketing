@@ -160,6 +160,7 @@ export type DownloadVideoControlparam={
     accountId:Array<number>,
     platform:string,
     link:Array<string>,
+    downloadType:"playlist"|"singleplay"|"keyword",
     keywords:Array<string>,
     savePath:string,
     isplaylist:boolean,

@@ -228,7 +228,7 @@ export class videoController {
             videoQuality: param.videoQuality,
             successlink: alreadlinks
         }
-        console.log(childPath)
+        //console.log(childPath)
         const child = utilityProcess.fork(childPath, [], {
             stdio: "pipe", execArgv: ["puppeteer-cluster:*"], env: {
                 ...process.env,
