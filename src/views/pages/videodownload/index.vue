@@ -182,7 +182,7 @@ const browserType = ref("");
 const useProxyOverride = ref(false);
 //const logs = ref("");
 const typeitems = ref<Array<string>>();
-const chooseType = ref("");
+const chooseType = ref<"playlist"|"singleplay"|"keyword">("singleplay");
 const downloadType = ref<Array<string>>();
 const cookieslistTypes = ref<Array<string>>(CookiesSelectType);
 const browserlist = ref<Array<string>>(BrowerList);
@@ -410,6 +410,7 @@ async function onSubmit() {
       accountId: accountIds,
       platform: type.value,
       link: validUrls,
+      downloadType: chooseType.value,
       keywords: keywordArr,
       savePath: savePath.value,
       isplaylist: isPlaylist,

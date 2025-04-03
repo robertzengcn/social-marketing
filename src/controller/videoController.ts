@@ -220,6 +220,7 @@ export class videoController {
             exePath: execFilepath,
             platform: param.platform,
             link: param.link,
+            downloadType:param.downloadType,
             isplaylist: param.isplaylist,
             cookiesProxy: cookiesProxies,
             savePath: param.savePath,

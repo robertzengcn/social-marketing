@@ -91,6 +91,7 @@ export type processVideoDownloadParam={
     exePath:string,
     savePath:string,
     platform:string,
+    downloadType:"playlist"|"singleplay"|"keyword",
     link:Array<string>,
     cookiesProxy?:Array<CookiesProxy>,
     isplaylist:boolean,
