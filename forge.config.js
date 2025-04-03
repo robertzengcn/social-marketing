@@ -17,7 +17,8 @@ const EXTERNAL_DEPENDENCIES = [
 'nodemailer',
 '@langchain/ollama',
 'decamelize',
-'camelcase'
+'camelcase',
+'p-retry'
 ];
 //import { ForgeConfig } from '@electron-forge/shared-types';
 // import { AutoUnpackNativesPlugin } from "@electron-forge/plugin-auto-unpack-natives";
