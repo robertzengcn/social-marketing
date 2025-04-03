@@ -6,7 +6,7 @@ import ClosePlugin from './vite-plugin-close.js'
 
 import checker from 'vite-plugin-checker'
 
-import commonjs from '@rollup/plugin-commonjs';
+//import commonjs from '@rollup/plugin-commonjs';
 //import copy from 'rollup-plugin-copy'
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 //import typescript from 'rollup-plugin-typescript2'
