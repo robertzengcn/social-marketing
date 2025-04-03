@@ -13,7 +13,8 @@ const EXTERNAL_DEPENDENCIES = [
 'winston',
 'user-agents',
 'puppeteer',
-'@lem0-packages/puppeteer-page-proxy'
+'@lem0-packages/puppeteer-page-proxy',
+'nodemailer',
 ];
 //import { ForgeConfig } from '@electron-forge/shared-types';
 // import { AutoUnpackNativesPlugin } from "@electron-forge/plugin-auto-unpack-natives";
