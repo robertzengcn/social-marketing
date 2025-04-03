@@ -108,16 +108,23 @@ export default ({ mode }) => {
             },
             conditions: ['node'],
         },
-        optimizeDeps: {    
-                // disabled:false,
-                include: ['winston-transport','bufferutil', 'utf-8-validate','puppeteer-cluster']          
+        optimizeDeps: {
+            // disabled:false,
+            include: ['winston-transport', 'bufferutil', 'utf-8-validate', 'puppeteer-cluster']
         },
         build: {
             rollupOptions: {
                 external: [
                     'sqlite3',  // Mark sqlite3 as external
                     'better-sqlite3',
-                    'bindings'
+                    'bindings',
+                    'realm',
+                    'puppeteer-cluster',
+                    'winston',
+                    'puppeteer',
+                    '@lem0-packages/puppeteer-page-proxy',
+                    'nodemailer',
+                    '@langchain/ollama',
                 ],
             },
             // target: 'es6',
@@ -127,7 +134,7 @@ export default ({ mode }) => {
                 transformMixedEsModules: true,
                 // include:[]   
             },
-            
+
             external: [
                 'sqlite3'
             ]
