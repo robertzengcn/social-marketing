@@ -208,7 +208,7 @@ const options = reactive({
 const startAutoRefresh = () => {
     refreshInterval = setInterval(function () {
         loadItems({ page: options.page, itemsPerPage: options.itemsPerPage, sortBy: "" });
-    }, 10000); // Refresh every 5 seconds
+    }, 20000); // Refresh every 5 seconds
 }
 const stopAutoRefresh = () => {
     if (refreshInterval) {

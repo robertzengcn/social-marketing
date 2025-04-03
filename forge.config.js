@@ -11,7 +11,10 @@ const EXTERNAL_DEPENDENCIES = [
   'puppeteer-cluster',
   'lodash',
 'winston',
-'user-agents'
+'user-agents',
+'puppeteer',
+'@lem0-packages/puppeteer-page-proxy',
+'nodemailer',
 ];
 //import { ForgeConfig } from '@electron-forge/shared-types';
 // import { AutoUnpackNativesPlugin } from "@electron-forge/plugin-auto-unpack-natives";

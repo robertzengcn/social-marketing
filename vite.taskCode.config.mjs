@@ -55,7 +55,7 @@ export default ({ mode }) => {
         //     {globals: { global: true, process: true }}
         // ),
         nodeResolve(),
-        commonjs({}),
+        // commonjs({}),
         // commonjs({
         //             //strictRequires:true,
         //             //  include: ['node_modules/@puppeteer/browsers/node_modules/yargs/build/*.cjs',
