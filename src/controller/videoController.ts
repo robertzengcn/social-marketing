@@ -220,6 +220,7 @@ export class videoController {
             exePath: execFilepath,
             platform: param.platform,
             link: param.link,
+            keywords: param.keywords,
             downloadType:param.downloadType,
             isplaylist: param.isplaylist,
             cookiesProxy: cookiesProxies,
@@ -353,7 +354,8 @@ export class videoController {
             taskName: param.taskName,
             platform: param.platform,
             savepath: param.savePath,
-            status: TaskStatus.Processing
+            status: TaskStatus.Processing,
+            downloadtype:param.downloadType,
         }
         const taskId = this.saveVdieoDownloadTask(videoTaskEntity)
         if (!taskId) {
@@ -513,10 +515,11 @@ export class videoController {
         if (taskUrls.length > 0) {
             links = taskUrls.map((value) => value.url)
         }
-
+        //reconstruct download type
         const data: DownloadVideoControlparam = {
             taskName: taskInfo.taskName,
             accountId: accountIds,
+            downloadType:taskInfo.downloadtype as "playlist" | "singleplay" | "keyword",
             platform: taskInfo.platform,
             link: links,
             savePath: taskInfo.savepath,

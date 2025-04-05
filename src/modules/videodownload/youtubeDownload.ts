@@ -276,9 +276,9 @@ export class YoutubeDownload implements VideoDownloadImpl {
     }
     }
     //add function download video by keywords
-    async downloadVideoByKeyword(keyword: string, savePath: string, useBrowserCookies?: string, cookiesProxy?: CookiesProxy | null, proxy?: Proxy | null, execPath?: string, videoQuality?: number, maxResults: number = 5, errorCall?: (link: string, errorMsg: string) => void, stroutCall?: (message: string) => void, successCall?: (param: VideodoanloadSuccessCall) => void) {
+    async downloadVideoByKeyword(keyword: Array<string>, savePath: string, useBrowserCookies?: string, cookiesProxy?: CookiesProxy | null, proxy?: Proxy | null, execPath?: string, videoQuality?: number,  errorCall?: (link: string, errorMsg: string) => void, stroutCall?: (message: string) => void, successCall?: (param: VideodoanloadSuccessCall) => void) {
         const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-        
+        //const keywordString = keyword.join(', ');
         try {
           // Launch browser with appropriate options
           const browser = await puppeteer.launch({
@@ -323,9 +323,11 @@ export class YoutubeDownload implements VideoDownloadImpl {
           // Find and click the search box
           await page.waitForSelector('input#search');
           await page.click('input#search');
-          
+          let finalVideourls:Array<string>=[]
+          //loop keyword and search
+          for(let i=0;i<keyword.length;i++){
           // Type the search keyword
-          await page.keyboard.type(keyword);
+          await page.keyboard.type(keyword[i]);
           await page.keyboard.press('Enter');
           
           // Wait for search results to load
@@ -335,22 +337,30 @@ export class YoutubeDownload implements VideoDownloadImpl {
           await delay(2000);
           
           // Extract video URLs from search results
-          const videoUrls = await page.$$eval('a#video-title, a#thumbnail', (elements, maxResults) => {
+          const videoUrls = await page.$$eval('a#video-title, a#thumbnail', (elements) => {
             return elements
               .filter(el => el.href && el.href.includes('/watch?v='))
               .map(el => el.href)
-              .filter((url, index, self) => self.indexOf(url) === index) // Remove duplicates
-              .slice(0, maxResults);
-          }, maxResults);
-          
+              .filter((url, index, self) => self.indexOf(url) === index); // Remove duplicates      
+          });
+          //loop video url push to finalVideourls
+            if(videoUrls){
+                for (const videoUrl of videoUrls) {
+                    if (videoUrl && !finalVideourls.includes(videoUrl)) {
+                        finalVideourls.push(videoUrl);
+                    }
+                }
+            }
+        }  
           // Close the browser
           await browser.close();
-          
-          if (videoUrls && videoUrls.length > 0) {
-            if (stroutCall) stroutCall(`Found ${videoUrls.length} videos for keyword: ${keyword}`);
+        // Remove duplicate URLs from finalVideourls
+        finalVideourls = Array.from(new Set(finalVideourls));
+          if (finalVideourls && finalVideourls.length > 0) {
+            if (stroutCall) stroutCall(`Found ${finalVideourls.length} videos for keyword: ${keyword}`);
             
             // Download each video
-            for (const url of videoUrls) {
+            for (const url of finalVideourls) {
               if (stroutCall) stroutCall(`Downloading video: ${url}`);
               
               await this.downloadVideo(
@@ -372,15 +382,17 @@ export class YoutubeDownload implements VideoDownloadImpl {
               await delay(3000 + Math.floor(Math.random() * 2000));
             }
             
-            return videoUrls;
+            return finalVideourls;
           } else {
             const errorMessage = `No videos found for keyword: ${keyword}`;
-            if (errorCall) errorCall(keyword, errorMessage);
+            
+            if (errorCall) errorCall("", errorMessage);
+            if (errorCall) errorCall("", errorMessage);
             throw new CustomError(errorMessage);
           }
         } catch (error) {
           const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-          if (errorCall) errorCall(keyword, errorMessage);
+          if (errorCall) errorCall("", errorMessage);
           throw new CustomError(errorMessage);
         }
       }

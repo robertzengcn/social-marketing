@@ -167,9 +167,17 @@ async function downloadVideo(param: processVideoDownloadParam) {
     // const videoDownloadFactory=new VideoDownloadFactory()
     const downloadTool = VideoDownloadFactory.getDownloader(param.platform)
 
+    if(param.downloadType=="keyword"){
+           await downloadTool.downloadVideoByKeyword(param.keywords, param.savePath, param.BrowserName, randCookiesproxy, itemProxy, param.exePath, param.videoQuality, (errorstring) => {}, (msg) => {}, (param: VideodoadloadSuccessCall) => {}).catch((error) => {}) 
+    }else{
+        //download by single video or playlist
+
+            
     // const youtubeDownload=new YoutubeDownload()
     // if(!param.isplaylist){//sigle video
     //param.link.forEach(async (element, index)=>{
+    
+    
     for (const element of param.link) {
         let randCookiesproxy: CookiesProxy | null = null;
         if (param.cookiesProxy) {
@@ -179,6 +187,10 @@ async function downloadVideo(param: processVideoDownloadParam) {
         if (param.proxy) {
             itemProxy = param.proxy[Math.floor(Math.random() * param.proxy.length)]
         }
+        // if(param.downloadType=="keyword"){
+        //    await downloadTool.downloadVideoByKeyword(element, param.savePath, param.BrowserName, randCookiesproxy, itemProxy, param.exePath, param.videoQuality, (errorstring) => {}, (msg) => {}, (param: VideodoadloadSuccessCall) => {}).catch((error) => {}) 
+        // }else{
+        
         if (!param.isplaylist) {//sigle video
             await downloadTool.downloadVideo(element, param.savePath, param.BrowserName, randCookiesproxy, itemProxy, param.exePath, param.videoQuality, (errorstring) => {
                 //error call
@@ -293,7 +305,7 @@ async function downloadVideo(param: processVideoDownloadParam) {
             })
 
         }
-
+    }//download by link end
     }
 }
 async function generateCaption(param: VideoCaptionGenerateParam) {
