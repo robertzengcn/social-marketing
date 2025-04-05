@@ -18,7 +18,8 @@ const EXTERNAL_DEPENDENCIES = [
 '@langchain/ollama',
 'decamelize',
 'camelcase',
-'p-retry'
+'p-retry',
+'langsmith/singletons/traceable'
 ];
 //import { ForgeConfig } from '@electron-forge/shared-types';
 // import { AutoUnpackNativesPlugin } from "@electron-forge/plugin-auto-unpack-natives";
