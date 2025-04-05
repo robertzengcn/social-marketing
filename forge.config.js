@@ -19,7 +19,7 @@ const EXTERNAL_DEPENDENCIES = [
 'decamelize',
 'camelcase',
 'p-retry',
-'langsmith/singletons/traceable'
+'langsmith'
 ];
 //import { ForgeConfig } from '@electron-forge/shared-types';
 // import { AutoUnpackNativesPlugin } from "@electron-forge/plugin-auto-unpack-natives";
