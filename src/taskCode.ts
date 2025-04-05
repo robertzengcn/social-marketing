@@ -175,7 +175,35 @@ async function downloadVideo(param: processVideoDownloadParam) {
         itemProxy = param.proxy[Math.floor(Math.random() * param.proxy.length)]
     }
     if (param.downloadType == "keyword") {
-        await downloadTool.downloadVideoByKeyword(param.keywords, param.savePath, param.BrowserName, randCookiesproxy, itemProxy, param.exePath, param.videoQuality, (errorstring) => { }, (msg) => { }, (param: VideodoadloadSuccessCall) => { }).catch((error) => { })
+        await downloadTool.downloadVideoByKeyword(param.keywords, param.savePath, param.BrowserName, randCookiesproxy, itemProxy, param.exePath, param.videoQuality, (link,errorstring) => {
+            const message: ProcessMessage<VideodownloadMsg> = {
+                action: "singlevideodownloadMsg",
+                data: {
+                    link: link,
+                    status: false,
+                    log: errorstring
+                }
+            }
+
+            process.parentPort.postMessage(JSON.stringify(message))
+         }, (msg) => {
+
+          }, (param: VideodoanloadSuccessCall) => { 
+            console.log("success call")
+                    const message: ProcessMessage<VideodownloadMsg> = {
+                        action: "singlevideodownloadMsg",
+                        data: {
+                            link: param.link,
+                            status: true,
+                            savepath: param.savepath,
+                            title: param.title,
+                            description: param.description,
+                            tags: param.tags,
+                            categories: param.categories
+                        }
+                    }
+                    process.parentPort.postMessage(JSON.stringify(message))
+         }).catch((error) => { })
     } else {
         //download by single video or playlist
 
