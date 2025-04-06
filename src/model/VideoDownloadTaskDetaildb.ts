@@ -16,8 +16,8 @@ export class VideoDownloadTaskDetaildb extends BaseDb{
         if(vdte.proxy_override){
             proxy_override=1
         }
-        const stmt = this.db.prepare("INSERT INTO "+this.table+" (task_id, download_type,cookies_type,browser_type,proxy_override,video_quality,video_language) VALUES (?,?,?,?,?,?,?)");
-        const res = stmt.run(vdte.task_id, vdte.download_type,vdte.cookies_type,vdte.browser_type,proxy_override,vdte.video_quality,vdte.language_code);
+        const stmt = this.db.prepare("INSERT INTO "+this.table+" (task_id, download_type,cookies_type,browser_type,proxy_override,video_quality,video_language,max_page_number) VALUES (?,?,?,?,?,?,?,?)");
+        const res = stmt.run(vdte.task_id, vdte.download_type,vdte.cookies_type,vdte.browser_type,proxy_override,vdte.video_quality,vdte.language_code,vdte.max_page_number);
         return res.lastInsertRowid as number;
     }
 

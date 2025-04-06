@@ -276,7 +276,7 @@ export class YoutubeDownload implements VideoDownloadImpl {
     }
     }
     //add function download video by keywords
-    async downloadVideoByKeyword(keyword: Array<string>, savePath: string, useBrowserCookies?: string, cookiesProxy?: CookiesProxy | null, proxy?: Proxy | null, execPath?: string, videoQuality?: number,  errorCall?: (link: string, errorMsg: string) => void, stroutCall?: (message: string) => void, successCall?: (param: VideodoanloadSuccessCall) => void) {
+    async downloadVideoByKeyword(keyword: Array<string>, savePath: string,maxPageNumber:number, useBrowserCookies?: string, cookiesProxy?: CookiesProxy | null, proxy?: Proxy | null, execPath?: string, videoQuality?: number,  errorCall?: (link: string, errorMsg: string) => void, stroutCall?: (message: string) => void, successCall?: (param: VideodoanloadSuccessCall) => void) {
         const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
         //const keywordString = keyword.join(', ');
         try {
@@ -326,16 +326,18 @@ export class YoutubeDownload implements VideoDownloadImpl {
           let finalVideourls:Array<string>=[]
           //loop keyword and search
           for(let i=0;i<keyword.length;i++){
+            let pageNumber=0  
           // Type the search keyword
           await page.keyboard.type(keyword[i]);
           await page.keyboard.press('Enter');
-          
+         
           // Wait for search results to load
           await page.waitForSelector('ytd-video-renderer, ytd-grid-video-renderer', { timeout: 10000 });
           
           // Additional wait to ensure all results load
           await delay(2000);
-          
+            //load more page
+         while(pageNumber<maxPageNumber){
           // Extract video URLs from search results
           const videoUrls = await page.$$eval('a#video-title, a#thumbnail', (elements) => {
             return elements
@@ -350,6 +352,27 @@ export class YoutubeDownload implements VideoDownloadImpl {
                         finalVideourls.push(videoUrl);
                     }
                 }
+            }
+           
+                // Scroll down to load more videos
+                await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+                await delay(2000); // Wait for new videos to load
+                pageNumber++
+                // Extract video URLs from search results
+                // const videoUrls = await page.$$eval('a#video-title, a#thumbnail', (elements) => {
+                //     return elements
+                //       .filter(el => el.href && el.href.includes('/watch?v='))
+                //       .map(el => el.href)
+                //       .filter((url, index, self) => self.indexOf(url) === index); // Remove duplicates      
+                //   });
+                //   //loop video url push to finalVideourls
+                //     if(videoUrls){
+                //         for (const videoUrl of videoUrls) {
+                //             if (videoUrl && !finalVideourls.includes(videoUrl)) {
+                //                 finalVideourls.push(videoUrl);
+                //             }
+                //         }
+                //     }
             }
         }  
           // Close the browser

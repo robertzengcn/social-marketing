@@ -101,6 +101,7 @@ export type processVideoDownloadParam={
     BrowserName?:string,
     videoQuality?:number,
     successlink?:Array<string>,
+    max_page_number?:number,
 }
 export type VideoDownloadParam={
     platform:string,
@@ -173,7 +174,7 @@ export type DownloadVideoControlparam={
     browserName?:string,
     videoQuality?:number,
     language_code:string,
-    maxnumber?:number,
+    maxpagenumber?:number,
 }
 export enum DownloadType {
     SINGLEVIDEO = 1,
@@ -192,6 +193,7 @@ export interface VideoDownloadTaskDetailEntity {
     proxy_override:boolean;
     video_quality:number;
     language_code:string
+    max_page_number:number
 }
 export interface VideoDownloadTaskAccountEntity {
     id?: number;

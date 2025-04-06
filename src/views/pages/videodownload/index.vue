@@ -74,10 +74,10 @@
         <v-row>
           <v-col cols="12" md="12">
             <v-text-field
-              v-model="maxnumber"
+              v-model="maxpagenumber"
               type="number"
-              :label="t('video.max_number')"
-              :hint="t('video.max_number_hint')"
+              :label="t('video.max_page_number')"
+              :hint="t('video.max_page_number_hint')"
               min="1"
               persistent-hint
             ></v-text-field>
@@ -197,7 +197,7 @@ const taskName = ref("")
 const alerttype = ref<"success" | "error" | "warning" | "info" | undefined>(
   "success"
 );
-const maxnumber=ref<number>(10);
+const maxpagenumber=ref<number>(10);
 const videolanguage = ref<LanguageItem>()
 const languagelist = ref<Array<LanguageItem>>(LanguageConfig)
 const videoQuality = ref(0);

@@ -228,7 +228,8 @@ export class videoController {
             proxy: proxyArr,
             BrowserName: param.browserName,
             videoQuality: param.videoQuality,
-            successlink: alreadlinks
+            successlink: alreadlinks,
+            max_page_number:param.maxpagenumber
         }
         //console.log(childPath)
         const child = utilityProcess.fork(childPath, [], {
@@ -370,7 +371,8 @@ export class videoController {
             browser_type: param.browserName ? param.browserName : '',
             proxy_override: param.ProxyOverride,
             video_quality: param.videoQuality ? param.videoQuality : 0,
-            language_code: param.language_code
+            language_code: param.language_code,
+            max_page_number:param.maxpagenumber?param.maxpagenumber:0,
         }
         //save video task detail
         this.videoDownloadTaskDetailModule.create(vdetd)
@@ -530,7 +532,8 @@ export class videoController {
             cookies_type: taskDetail.cookies_type == CookiesType.ACCOUNTCOOKIES ? "account cookies" : "browser cookies",
             browserName: taskDetail.browser_type ? taskDetail.browser_type : "",
             videoQuality: taskDetail.video_quality,
-            language_code: taskDetail.language_code
+            language_code: taskDetail.language_code,
+            maxpagenumber:taskDetail.max_page_number
         }
         return data
 

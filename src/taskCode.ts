@@ -175,7 +175,10 @@ async function downloadVideo(param: processVideoDownloadParam) {
         itemProxy = param.proxy[Math.floor(Math.random() * param.proxy.length)]
     }
     if (param.downloadType == "keyword") {
-        await downloadTool.downloadVideoByKeyword(param.keywords, param.savePath, param.BrowserName, randCookiesproxy, itemProxy, param.exePath, param.videoQuality, (link,errorstring) => {
+        if(!param.max_page_number){
+            param.max_page_number=10
+        }
+        await downloadTool.downloadVideoByKeyword(param.keywords, param.savePath, param.max_page_number,param.BrowserName, randCookiesproxy, itemProxy, param.exePath, param.videoQuality, (link,errorstring) => {
             const message: ProcessMessage<VideodownloadMsg> = {
                 action: "singlevideodownloadMsg",
                 data: {
