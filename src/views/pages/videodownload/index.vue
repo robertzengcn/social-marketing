@@ -66,7 +66,7 @@
         <v-row>
           <v-col cols="12" md="12">
             <v-textarea :label="t('video.keyword')" :hint="t('video.keyword')" variant="outlined" required
-              v-model="linkstr" class="mt-5"></v-textarea>
+              v-model="keywordstr" class="mt-5"></v-textarea>
           </v-col>
         </v-row>
       </v-container>
@@ -372,6 +372,7 @@ async function onSubmit() {
     let keywordArr: Array<string> = [];
     if (chooseType.value == "keyword") {
       const keywords = keywordstr.value.split("\n");
+      console.log(keywords);
       keywordArr = keywords.filter((line) => {
         return line.length > 0;
       });
@@ -422,8 +423,12 @@ async function onSubmit() {
       language_code: videolanguage.value.code,
       
     };
-    if (validUrls.length === 0) {
+    if ((chooseType.value=='playlist'||chooseType.value=='singleplay')&&(validUrls.length === 0)) {
       setAlert("Please input valid url", "Error", "error");
+      return;
+    }
+    if( chooseType.value == 'keyword' && (keywordArr.length === 0)) {
+      setAlert("Please input valid keyword", "Error", "error");
       return;
     }
     console.log(data);

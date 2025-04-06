@@ -319,17 +319,39 @@ export class YoutubeDownload implements VideoDownloadImpl {
           } catch (e) {
             // No cookies dialog or it has a different selector, we can continue
           }
+
+         
           
           // Find and click the search box
-          await page.waitForSelector('input#search');
-          await page.click('input#search');
+        //   await page.waitForSelector('input#search');
+        //   await page.click('input#search');
           let finalVideourls:Array<string>=[]
+          console.log("final video urls")
           //loop keyword and search
-          for(let i=0;i<keyword.length;i++){
+          //for(let i=0;i<keyword.length;i++){
+          for (const keyworditem of keyword) {
+          console.log("current keyword "+keyworditem)   
             let pageNumber=0  
           // Type the search keyword
-          await page.keyboard.type(keyword[i]);
-          await page.keyboard.press('Enter');
+          //await page.keyboard.type(keyword[i]);
+          //await page.keyboard.press('Enter');
+
+          const input = await page.$('input[name="search_query"]');
+          console.log(input)
+          if (input) {
+            await page.click('input[name="search_query"]');
+              await page.type('input[name="search_query"]', keyworditem);
+              // await this.page.waitForTimeout(50);
+              await page.evaluate(async () => {
+                  await new Promise(function (resolve) {
+                      setTimeout(resolve, 1000)
+                  });
+              });
+              await input.focus();
+              await page.keyboard.press("Enter");
+          } else {
+              throw new CustomError("input keyword button not found", 202405301120303)
+          }
          
           // Wait for search results to load
           await page.waitForSelector('ytd-video-renderer, ytd-grid-video-renderer', { timeout: 10000 });
