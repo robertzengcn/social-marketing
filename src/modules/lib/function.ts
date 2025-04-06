@@ -750,3 +750,55 @@ export function getLanaugebyCode(code:string):LanguageItem|undefined{
   
   return 0; // Versions are equal
 }
+/**
+ * Scrolls down an infinite scroll page until reaching bottom or max scrolls
+ */
+export async function scrollPageToBottom(page, maxScrolls = 10,cssclass='#spinnerContainer, button.yt-spec-button-shape-next') {
+  let lastHeight = 0;
+  let currentScrolls = 0;
+  
+  while (currentScrolls < maxScrolls) {
+    // Get current scroll height
+    const currentHeight = await page.evaluate('document.documentElement.scrollHeight');
+    
+    // If we haven't moved since last scroll, we might be at the bottom
+    if (currentHeight === lastHeight) {
+      // Try one more aggressive scroll to be sure
+      await page.evaluate('window.scrollTo(0, document.documentElement.scrollHeight * 1.5)');
+      await page.waitForTimeout(2000);
+      
+      const newHeight = await page.evaluate('document.documentElement.scrollHeight');
+      if (newHeight === currentHeight) {
+        // We're truly at the bottom
+        break;
+      }
+    }
+    
+    // Record current height and scroll down
+    lastHeight = currentHeight;
+    await page.evaluate('window.scrollTo(0, document.documentElement.scrollHeight)');
+    
+    // Wait for content to load
+    await page.waitForTimeout(2000);
+    
+    // Try to click "load more" or spinner if present
+    try {
+      const spinnerSelector = cssclass;
+      const hasSpinner = await page.$(spinnerSelector);
+      if (hasSpinner) {
+        await page.evaluate((selector) => {
+          const element = document.querySelector(selector);
+          if (element) element.click();
+        }, spinnerSelector);
+        await page.waitForTimeout(2000);
+      }
+    } catch (error) {
+      // Continue if spinner not found or not clickable
+      console.log('No spinner/button found or not clickable');
+    }
+    
+    currentScrolls++;
+  }
+  
+  return await page.evaluate('document.documentElement.scrollHeight');
+}

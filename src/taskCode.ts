@@ -178,6 +178,7 @@ async function downloadVideo(param: processVideoDownloadParam) {
         if(!param.max_page_number){
             param.max_page_number=10
         }
+        //console.log(param.keywords)
         await downloadTool.downloadVideoByKeyword(param.keywords, param.savePath, param.max_page_number,param.BrowserName, randCookiesproxy, itemProxy, param.exePath, param.videoQuality, (link,errorstring) => {
             const message: ProcessMessage<VideodownloadMsg> = {
                 action: "singlevideodownloadMsg",
@@ -190,7 +191,7 @@ async function downloadVideo(param: processVideoDownloadParam) {
 
             process.parentPort.postMessage(JSON.stringify(message))
          }, (msg) => {
-
+            console.log(msg)
           }, (param: VideodoanloadSuccessCall) => { 
             console.log("success call")
                     const message: ProcessMessage<VideodownloadMsg> = {

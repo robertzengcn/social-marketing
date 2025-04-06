@@ -421,7 +421,7 @@ async function onSubmit() {
       browserName: browserType.value,
       videoQuality: videoQuality.value,
       language_code: videolanguage.value.code,
-      
+      maxpagenumber: maxpagenumber.value,
     };
     if ((chooseType.value=='playlist'||chooseType.value=='singleplay')&&(validUrls.length === 0)) {
       setAlert("Please input valid url", "Error", "error");

@@ -4,7 +4,7 @@ import { exec } from "child_process";
 import { promisify } from "util";
 import { CookiesProxy,VideodoanloadSuccessCall,YoutubedlStrout } from "@/entityTypes/videoType"
 import { Proxy, ProxyParseItem } from "@/entityTypes/proxyType"
-import { convertCookiesToNetscapeFile, generateRandomUniqueString, proxyEntityToUrl,removeParamsAfterAmpersand } from "@/modules/lib/function"
+import { convertCookiesToNetscapeFile, generateRandomUniqueString, proxyEntityToUrl,removeParamsAfterAmpersand,scrollPageToBottom } from "@/modules/lib/function"
 import { CookiesType} from "@/entityTypes/cookiesType"
 import * as fs from 'fs';
 import puppeteer, { ElementHandle } from 'puppeteer';
@@ -326,11 +326,13 @@ export class YoutubeDownload implements VideoDownloadImpl {
         //   await page.waitForSelector('input#search');
         //   await page.click('input#search');
           let finalVideourls:Array<string>=[]
-          console.log("final video urls")
+        //   if(stroutCall){
+        //     stroutCall("final video urls")
+        //   }
           //loop keyword and search
           //for(let i=0;i<keyword.length;i++){
           for (const keyworditem of keyword) {
-          console.log("current keyword "+keyworditem)   
+          //console.log("current keyword "+keyworditem)   
             let pageNumber=0  
           // Type the search keyword
           //await page.keyboard.type(keyword[i]);
@@ -377,8 +379,16 @@ export class YoutubeDownload implements VideoDownloadImpl {
             }
            
                 // Scroll down to load more videos
-                await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-                await delay(2000); // Wait for new videos to load
+                //await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+            //     const targetElement = await page.$('#spinnerContainer')
+            // if (targetElement) {
+            //     await targetElement.scrollIntoView();
+            //     targetElement.click();
+            //     await delay(2000);
+            //     //return true
+            // }
+            scrollPageToBottom(page, 1000)
+                 // Wait for new videos to load
                 pageNumber++
                 // Extract video URLs from search results
                 // const videoUrls = await page.$$eval('a#video-title, a#thumbnail', (elements) => {
