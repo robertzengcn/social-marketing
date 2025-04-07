@@ -18,7 +18,9 @@ const EXTERNAL_DEPENDENCIES = [
 '@langchain/ollama',
 'decamelize',
 'camelcase',
-'js-tiktoken'
+'js-tiktoken',
+'p-retry',
+'langsmith',
 ];
 //import { ForgeConfig } from '@electron-forge/shared-types';
 // import { AutoUnpackNativesPlugin } from "@electron-forge/plugin-auto-unpack-natives";
