@@ -17,7 +17,8 @@ const EXTERNAL_DEPENDENCIES = [
 'nodemailer',
 '@langchain/ollama',
 'decamelize',
-'camelcase'
+'camelcase',
+'js-tiktoken'
 ];
 //import { ForgeConfig } from '@electron-forge/shared-types';
 // import { AutoUnpackNativesPlugin } from "@electron-forge/plugin-auto-unpack-natives";
