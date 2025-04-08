@@ -4,7 +4,7 @@ import { exec } from "child_process";
 import { promisify } from "util";
 import { CookiesProxy,VideodoanloadSuccessCall,YoutubedlStrout } from "@/entityTypes/videoType"
 import { Proxy, ProxyParseItem } from "@/entityTypes/proxyType"
-import { convertCookiesToNetscapeFile, generateRandomUniqueString, proxyEntityToUrl,removeParamsAfterAmpersand,scrollPageToBottom } from "@/modules/lib/function"
+import { convertCookiesToNetscapeFile, generateRandomUniqueString, proxyEntityToUrl,removeParamsAfterAmpersand,scrollPageToBottom,closePuppeteer } from "@/modules/lib/function"
 import { CookiesType} from "@/entityTypes/cookiesType"
 import * as fs from 'fs';
 import puppeteer, { ElementHandle } from 'puppeteer';
@@ -310,22 +310,25 @@ export class YoutubeDownload implements VideoDownloadImpl {
           
           // Log progress if stroutCall is provided
           if (stroutCall) stroutCall(`Searching YouTube for: ${keyword}`);
-          
+          let finalVideourls:Array<string>=[]
           // Wait for and click the accept cookies button if it appears
           try {
+            try{
             const acceptButton = await page.waitForSelector('button[aria-label="Accept all"]', { timeout: 5000 });
             if (acceptButton) await acceptButton.click();
             await delay(1000);
-          } catch (e) {
-            // No cookies dialog or it has a different selector, we can continue
-          }
+            }
+            catch(e){
+                console.log("accept button not found")
+            }
+          
 
          
           
           // Find and click the search box
         //   await page.waitForSelector('input#search');
         //   await page.click('input#search');
-          let finalVideourls:Array<string>=[]
+          
         //   if(stroutCall){
         //     stroutCall("final video urls")
         //   }
@@ -352,6 +355,10 @@ export class YoutubeDownload implements VideoDownloadImpl {
               await input.focus();
               await page.keyboard.press("Enter");
           } else {
+            //close page
+            // await page.close();
+            // //close browser
+            // await browser.close();
               throw new CustomError("input keyword button not found", 202405301120303)
           }
          
@@ -361,7 +368,10 @@ export class YoutubeDownload implements VideoDownloadImpl {
           // Additional wait to ensure all results load
           await delay(2000);
             //load more page
-         while(pageNumber<maxPageNumber){
+        console.log("load more page")
+        await scrollPageToBottom(page, maxPageNumber)
+        // while(pageNumber<maxPageNumber){
+            console.log("current page number "+pageNumber)
           // Extract video URLs from search results
           const videoUrls = await page.$$eval('a#video-title, a#thumbnail', (elements) => {
             return elements
@@ -387,9 +397,10 @@ export class YoutubeDownload implements VideoDownloadImpl {
             //     await delay(2000);
             //     //return true
             // }
-            scrollPageToBottom(page, 1000)
+            console.log("scroll page to bottom")
+            // 
                  // Wait for new videos to load
-                pageNumber++
+                // pageNumber++
                 // Extract video URLs from search results
                 // const videoUrls = await page.$$eval('a#video-title, a#thumbnail', (elements) => {
                 //     return elements
@@ -405,10 +416,28 @@ export class YoutubeDownload implements VideoDownloadImpl {
                 //             }
                 //         }
                 //     }
-            }
-        }  
+            // }
+        } 
+    } catch (e) {
+        await closePuppeteer(page,browser)
+        throw e
+        // No cookies dialog or it has a different selector, we can continue
+      } 
           // Close the browser
-          await browser.close();
+        // Check if page and browser variables are defined before closing them
+        try {
+            // Check if browser and page are still available
+            if (page && !page.isClosed()) {
+                await page.close().catch(e => console.error('Error closing page:', e.message));
+            }
+            
+            if (browser && browser.connected) {
+                await browser.close().catch(e => console.error('Error closing browser:', e.message));
+            }
+        } catch (error) {
+            console.error('Error during browser cleanup:', error instanceof Error ? error.message : 'Unknown error');
+        }
+        //   await browser.close();
         // Remove duplicate URLs from finalVideourls
         finalVideourls = Array.from(new Set(finalVideourls));
           if (finalVideourls && finalVideourls.length > 0) {
@@ -451,4 +480,5 @@ export class YoutubeDownload implements VideoDownloadImpl {
           throw new CustomError(errorMessage);
         }
       }
+
 }

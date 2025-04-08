@@ -4,7 +4,7 @@ import { Notification, app } from 'electron'
 // import * as yaml from 'js-yaml';
 import * as fs from 'fs';
 // import { CommonDialogMsg } from "@/entityTypes/commonType";
-import { Page } from 'puppeteer';
+import { Page,Browser } from 'puppeteer';
 import os from "os";
 import * as crypto from 'crypto';
 import { ProxyParseItem, ProxyServer } from "@/entityTypes/proxyType"
@@ -765,7 +765,7 @@ export async function scrollPageToBottom(page, maxScrolls = 10,cssclass='#spinne
     if (currentHeight === lastHeight) {
       // Try one more aggressive scroll to be sure
       await page.evaluate('window.scrollTo(0, document.documentElement.scrollHeight * 1.5)');
-      await page.waitForTimeout(2000);
+      await puppeteerDelay(2000);
       
       const newHeight = await page.evaluate('document.documentElement.scrollHeight');
       if (newHeight === currentHeight) {
@@ -779,7 +779,7 @@ export async function scrollPageToBottom(page, maxScrolls = 10,cssclass='#spinne
     await page.evaluate('window.scrollTo(0, document.documentElement.scrollHeight)');
     
     // Wait for content to load
-    await page.waitForTimeout(2000);
+    await puppeteerDelay(2000);
     
     // Try to click "load more" or spinner if present
     try {
@@ -790,7 +790,7 @@ export async function scrollPageToBottom(page, maxScrolls = 10,cssclass='#spinne
           const element = document.querySelector(selector);
           if (element) element.click();
         }, spinnerSelector);
-        await page.waitForTimeout(2000);
+        await puppeteerDelay(2000);
       }
     } catch (error) {
       // Continue if spinner not found or not clickable
@@ -802,3 +802,27 @@ export async function scrollPageToBottom(page, maxScrolls = 10,cssclass='#spinne
   
   return await page.evaluate('document.documentElement.scrollHeight');
 }
+export async function puppeteerDelay(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+    // Helper function to clean up puppeteer resources
+export async function closePuppeteer(page?: Page, browser?: Browser): Promise<void> {
+      try {
+          if (page && !page.isClosed()) {
+              await page.close();
+          }
+          
+          if (browser) {
+              const pages = await browser.pages();
+              await Promise.all(pages.map(async p => {
+                  if (!p.isClosed()) {
+                      await p.close().catch(() => {});
+                  }
+              }));
+              
+              await browser.close();
+          }
+      } catch (error) {
+          console.error('Error closing puppeteer resources:', error);
+      }
+  }
