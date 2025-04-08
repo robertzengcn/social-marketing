@@ -282,7 +282,7 @@ export class YoutubeDownload implements VideoDownloadImpl {
         try {
           // Launch browser with appropriate options
           const browser = await puppeteer.launch({
-            headless: false, // Use new headless mode
+            //headless: false, // Use new headless mode
             args: proxy ? [
               `--proxy-server=${proxy.protocol}://${proxy.host}:${proxy.port}`
             ] : []
