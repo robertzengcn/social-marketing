@@ -41,6 +41,7 @@ export type VideoDownloadTaskEntity={
     id?:number,
     platform:string,
     taskName:string,
+    downloadtype:string,
     // url:string,
     savepath:string,
     runtime_log?:string,
@@ -91,13 +92,16 @@ export type processVideoDownloadParam={
     exePath:string,
     savePath:string,
     platform:string,
+    downloadType:"playlist"|"singleplay"|"keyword",
     link:Array<string>,
+    keywords:Array<string>,
     cookiesProxy?:Array<CookiesProxy>,
     isplaylist:boolean,
     proxy?:Array<Proxy>,
     BrowserName?:string,
     videoQuality?:number,
     successlink?:Array<string>,
+    max_page_number?:number,
 }
 export type VideoDownloadParam={
     platform:string,
@@ -160,6 +164,7 @@ export type DownloadVideoControlparam={
     accountId:Array<number>,
     platform:string,
     link:Array<string>,
+    downloadType:"playlist"|"singleplay"|"keyword",
     keywords:Array<string>,
     savePath:string,
     isplaylist:boolean,
@@ -169,6 +174,7 @@ export type DownloadVideoControlparam={
     browserName?:string,
     videoQuality?:number,
     language_code:string,
+    maxpagenumber?:number,
 }
 export enum DownloadType {
     SINGLEVIDEO = 1,
@@ -187,6 +193,7 @@ export interface VideoDownloadTaskDetailEntity {
     proxy_override:boolean;
     video_quality:number;
     language_code:string
+    max_page_number:number
 }
 export interface VideoDownloadTaskAccountEntity {
     id?: number;

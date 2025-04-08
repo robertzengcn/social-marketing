@@ -4,7 +4,7 @@ import { exec } from "child_process";
 import { promisify } from "util";
 import { CookiesProxy,VideodoanloadSuccessCall,YoutubedlStrout } from "@/entityTypes/videoType"
 import { Proxy, ProxyParseItem } from "@/entityTypes/proxyType"
-import { convertCookiesToNetscapeFile, generateRandomUniqueString, proxyEntityToUrl,removeParamsAfterAmpersand } from "@/modules/lib/function"
+import { convertCookiesToNetscapeFile, generateRandomUniqueString, proxyEntityToUrl,removeParamsAfterAmpersand,scrollPageToBottom,closePuppeteer } from "@/modules/lib/function"
 import { CookiesType} from "@/entityTypes/cookiesType"
 import * as fs from 'fs';
 import puppeteer, { ElementHandle } from 'puppeteer';
@@ -276,9 +276,9 @@ export class YoutubeDownload implements VideoDownloadImpl {
     }
     }
     //add function download video by keywords
-    async downloadVideoByKeyword(keyword: string, savePath: string, useBrowserCookies?: string, cookiesProxy?: CookiesProxy | null, proxy?: Proxy | null, execPath?: string, videoQuality?: number, maxResults: number = 5, errorCall?: (link: string, errorMsg: string) => void, stroutCall?: (message: string) => void, successCall?: (param: VideodoanloadSuccessCall) => void) {
+    async downloadVideoByKeyword(keyword: Array<string>, savePath: string,maxPageNumber:number, useBrowserCookies?: string, cookiesProxy?: CookiesProxy | null, proxy?: Proxy | null, execPath?: string, videoQuality?: number,  errorCall?: (link: string, errorMsg: string) => void, stroutCall?: (message: string) => void, successCall?: (param: VideodoanloadSuccessCall) => void) {
         const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-        
+        //const keywordString = keyword.join(', ');
         try {
           // Launch browser with appropriate options
           const browser = await puppeteer.launch({
@@ -310,47 +310,141 @@ export class YoutubeDownload implements VideoDownloadImpl {
           
           // Log progress if stroutCall is provided
           if (stroutCall) stroutCall(`Searching YouTube for: ${keyword}`);
-          
+          let finalVideourls:Array<string>=[]
           // Wait for and click the accept cookies button if it appears
           try {
+            try{
             const acceptButton = await page.waitForSelector('button[aria-label="Accept all"]', { timeout: 5000 });
             if (acceptButton) await acceptButton.click();
             await delay(1000);
-          } catch (e) {
-            // No cookies dialog or it has a different selector, we can continue
-          }
+            }
+            catch(e){
+                console.log("accept button not found")
+            }
+          
+
+         
           
           // Find and click the search box
-          await page.waitForSelector('input#search');
-          await page.click('input#search');
+        //   await page.waitForSelector('input#search');
+        //   await page.click('input#search');
           
+        //   if(stroutCall){
+        //     stroutCall("final video urls")
+        //   }
+          //loop keyword and search
+          //for(let i=0;i<keyword.length;i++){
+          for (const keyworditem of keyword) {
+          //console.log("current keyword "+keyworditem)   
+            let pageNumber=0  
           // Type the search keyword
-          await page.keyboard.type(keyword);
-          await page.keyboard.press('Enter');
-          
+          //await page.keyboard.type(keyword[i]);
+          //await page.keyboard.press('Enter');
+
+          const input = await page.$('input[name="search_query"]');
+          console.log(input)
+          if (input) {
+            await page.click('input[name="search_query"]');
+              await page.type('input[name="search_query"]', keyworditem);
+              // await this.page.waitForTimeout(50);
+              await page.evaluate(async () => {
+                  await new Promise(function (resolve) {
+                      setTimeout(resolve, 1000)
+                  });
+              });
+              await input.focus();
+              await page.keyboard.press("Enter");
+          } else {
+            //close page
+            // await page.close();
+            // //close browser
+            // await browser.close();
+              throw new CustomError("input keyword button not found", 202405301120303)
+          }
+         
           // Wait for search results to load
           await page.waitForSelector('ytd-video-renderer, ytd-grid-video-renderer', { timeout: 10000 });
           
           // Additional wait to ensure all results load
           await delay(2000);
-          
+            //load more page
+        console.log("load more page")
+        await scrollPageToBottom(page, maxPageNumber)
+        // while(pageNumber<maxPageNumber){
+            console.log("current page number "+pageNumber)
           // Extract video URLs from search results
-          const videoUrls = await page.$$eval('a#video-title, a#thumbnail', (elements, maxResults) => {
+          const videoUrls = await page.$$eval('a#video-title, a#thumbnail', (elements) => {
             return elements
               .filter(el => el.href && el.href.includes('/watch?v='))
               .map(el => el.href)
-              .filter((url, index, self) => self.indexOf(url) === index) // Remove duplicates
-              .slice(0, maxResults);
-          }, maxResults);
-          
+              .filter((url, index, self) => self.indexOf(url) === index); // Remove duplicates      
+          });
+          //loop video url push to finalVideourls
+            if(videoUrls){
+                for (const videoUrl of videoUrls) {
+                    if (videoUrl && !finalVideourls.includes(videoUrl)) {
+                        finalVideourls.push(videoUrl);
+                    }
+                }
+            }
+           
+                // Scroll down to load more videos
+                //await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+            //     const targetElement = await page.$('#spinnerContainer')
+            // if (targetElement) {
+            //     await targetElement.scrollIntoView();
+            //     targetElement.click();
+            //     await delay(2000);
+            //     //return true
+            // }
+            console.log("scroll page to bottom")
+            // 
+                 // Wait for new videos to load
+                // pageNumber++
+                // Extract video URLs from search results
+                // const videoUrls = await page.$$eval('a#video-title, a#thumbnail', (elements) => {
+                //     return elements
+                //       .filter(el => el.href && el.href.includes('/watch?v='))
+                //       .map(el => el.href)
+                //       .filter((url, index, self) => self.indexOf(url) === index); // Remove duplicates      
+                //   });
+                //   //loop video url push to finalVideourls
+                //     if(videoUrls){
+                //         for (const videoUrl of videoUrls) {
+                //             if (videoUrl && !finalVideourls.includes(videoUrl)) {
+                //                 finalVideourls.push(videoUrl);
+                //             }
+                //         }
+                //     }
+            // }
+        } 
+    } catch (e) {
+        await closePuppeteer(page,browser)
+        throw e
+        // No cookies dialog or it has a different selector, we can continue
+      } 
           // Close the browser
-          await browser.close();
-          
-          if (videoUrls && videoUrls.length > 0) {
-            if (stroutCall) stroutCall(`Found ${videoUrls.length} videos for keyword: ${keyword}`);
+        // Check if page and browser variables are defined before closing them
+        try {
+            // Check if browser and page are still available
+            if (page && !page.isClosed()) {
+                await page.close().catch(e => console.error('Error closing page:', e.message));
+            }
+            
+            if (browser && browser.connected) {
+                await browser.close().catch(e => console.error('Error closing browser:', e.message));
+            }
+        } catch (error) {
+            console.error('Error during browser cleanup:', error instanceof Error ? error.message : 'Unknown error');
+        }
+        //   await browser.close();
+        // Remove duplicate URLs from finalVideourls
+        finalVideourls = Array.from(new Set(finalVideourls));
+          if (finalVideourls && finalVideourls.length > 0) {
+            if (stroutCall) stroutCall(`Found ${finalVideourls.length} videos for keyword: ${keyword}`);
             
             // Download each video
-            for (const url of videoUrls) {
+            for (const url of finalVideourls) {
               if (stroutCall) stroutCall(`Downloading video: ${url}`);
               
               await this.downloadVideo(
@@ -372,16 +466,19 @@ export class YoutubeDownload implements VideoDownloadImpl {
               await delay(3000 + Math.floor(Math.random() * 2000));
             }
             
-            return videoUrls;
+            return finalVideourls;
           } else {
             const errorMessage = `No videos found for keyword: ${keyword}`;
-            if (errorCall) errorCall(keyword, errorMessage);
+            
+            if (errorCall) errorCall("", errorMessage);
+            if (errorCall) errorCall("", errorMessage);
             throw new CustomError(errorMessage);
           }
         } catch (error) {
           const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-          if (errorCall) errorCall(keyword, errorMessage);
+          if (errorCall) errorCall("", errorMessage);
           throw new CustomError(errorMessage);
         }
       }
+
 }

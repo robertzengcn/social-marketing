@@ -66,7 +66,21 @@
         <v-row>
           <v-col cols="12" md="12">
             <v-textarea :label="t('video.keyword')" :hint="t('video.keyword')" variant="outlined" required
-              v-model="linkstr" class="mt-5"></v-textarea>
+              v-model="keywordstr" class="mt-5"></v-textarea>
+          </v-col>
+        </v-row>
+      </v-container>
+      <v-container v-if="chooseType == 'keyword'">
+        <v-row>
+          <v-col cols="12" md="12">
+            <v-text-field
+              v-model="maxpagenumber"
+              type="number"
+              :label="t('video.max_page_number')"
+              :hint="t('video.max_page_number_hint')"
+              min="1"
+              persistent-hint
+            ></v-text-field>
           </v-col>
         </v-row>
       </v-container>
@@ -97,6 +111,7 @@
           <v-checkbox v-model="useProxyOverride" :label="t('video.use_proxy_override')"></v-checkbox>
         </v-col>
       </v-row>
+      
       <v-row v-if="proxytableshow">
         <v-col cols="12" md="12">
 
@@ -167,7 +182,7 @@ const browserType = ref("");
 const useProxyOverride = ref(false);
 //const logs = ref("");
 const typeitems = ref<Array<string>>();
-const chooseType = ref("");
+const chooseType = ref<"playlist"|"singleplay"|"keyword">("singleplay");
 const downloadType = ref<Array<string>>();
 const cookieslistTypes = ref<Array<string>>(CookiesSelectType);
 const browserlist = ref<Array<string>>(BrowerList);
@@ -182,6 +197,7 @@ const taskName = ref("")
 const alerttype = ref<"success" | "error" | "warning" | "info" | undefined>(
   "success"
 );
+const maxpagenumber=ref<number>(10);
 const videolanguage = ref<LanguageItem>()
 const languagelist = ref<Array<LanguageItem>>(LanguageConfig)
 const videoQuality = ref(0);
@@ -356,6 +372,7 @@ async function onSubmit() {
     let keywordArr: Array<string> = [];
     if (chooseType.value == "keyword") {
       const keywords = keywordstr.value.split("\n");
+      console.log(keywords);
       keywordArr = keywords.filter((line) => {
         return line.length > 0;
       });
@@ -394,6 +411,7 @@ async function onSubmit() {
       accountId: accountIds,
       platform: type.value,
       link: validUrls,
+      downloadType: chooseType.value,
       keywords: keywordArr,
       savePath: savePath.value,
       isplaylist: isPlaylist,
@@ -403,10 +421,14 @@ async function onSubmit() {
       browserName: browserType.value,
       videoQuality: videoQuality.value,
       language_code: videolanguage.value.code,
-      
+      maxpagenumber: maxpagenumber.value,
     };
-    if (validUrls.length === 0) {
+    if ((chooseType.value=='playlist'||chooseType.value=='singleplay')&&(validUrls.length === 0)) {
       setAlert("Please input valid url", "Error", "error");
+      return;
+    }
+    if( chooseType.value == 'keyword' && (keywordArr.length === 0)) {
+      setAlert("Please input valid keyword", "Error", "error");
       return;
     }
     console.log(data);

@@ -16,9 +16,9 @@ import { VideoTranslateItem } from "@/entityTypes/videoType";
 import { TranslateProducer } from "@/modules/TranslateProducer"
 import { VideoDownloadTagEntity } from "@/entity/VideoDownloadTag.entity"
 import { CommonMessage } from "@/entityTypes/commonType"
-import {Usersearchdata} from "@/entityTypes/searchControlType"
-import {UserSearch} from "@/childprocess/userSearch"
-import {SearchDataRun} from "@/entityTypes/scrapeType"
+import { Usersearchdata } from "@/entityTypes/searchControlType"
+import { UserSearch } from "@/childprocess/userSearch"
+import { SearchDataRun } from "@/entityTypes/scrapeType"
 
 
 process.parentPort.on('message', async (e) => {
@@ -32,7 +32,7 @@ process.parentPort.on('message', async (e) => {
                 console.log("data is empty")
                 return
             }
-            const userSer=new UserSearch()
+            const userSer = new UserSearch()
             const res = await userSer.searchData(userSearchdata)
             //console.log(res)
             const message: ProcessMessage<SearchDataRun> = {
@@ -166,134 +166,178 @@ async function downloadVideo(param: processVideoDownloadParam) {
     }
     // const videoDownloadFactory=new VideoDownloadFactory()
     const downloadTool = VideoDownloadFactory.getDownloader(param.platform)
-
-    // const youtubeDownload=new YoutubeDownload()
-    // if(!param.isplaylist){//sigle video
-    //param.link.forEach(async (element, index)=>{
-    for (const element of param.link) {
-        let randCookiesproxy: CookiesProxy | null = null;
-        if (param.cookiesProxy) {
-            randCookiesproxy = param.cookiesProxy[Math.floor(Math.random() * param.cookiesProxy.length)]
+    let randCookiesproxy: CookiesProxy | null = null;
+    if (param.cookiesProxy) {
+        randCookiesproxy = param.cookiesProxy[Math.floor(Math.random() * param.cookiesProxy.length)]
+    }
+    let itemProxy: Proxy | null = null;
+    if (param.proxy) {
+        itemProxy = param.proxy[Math.floor(Math.random() * param.proxy.length)]
+    }
+    if (param.downloadType == "keyword") {
+        if(!param.max_page_number){
+            param.max_page_number=10
         }
-        let itemProxy: Proxy | null = null;
-        if (param.proxy) {
-            itemProxy = param.proxy[Math.floor(Math.random() * param.proxy.length)]
-        }
-        if (!param.isplaylist) {//sigle video
-            await downloadTool.downloadVideo(element, param.savePath, param.BrowserName, randCookiesproxy, itemProxy, param.exePath, param.videoQuality, (errorstring) => {
-                //error call
-                const message: ProcessMessage<VideodownloadMsg> = {
-                    action: "singlevideodownloadMsg",
-                    data: {
-                        link: element,
-                        status: false,
-                        log: errorstring
-                    }
+        //console.log(param.keywords)
+        await downloadTool.downloadVideoByKeyword(param.keywords, param.savePath, param.max_page_number,param.BrowserName, randCookiesproxy, itemProxy, param.exePath, param.videoQuality, (link,errorstring) => {
+            const message: ProcessMessage<VideodownloadMsg> = {
+                action: "singlevideodownloadMsg",
+                data: {
+                    link: link,
+                    status: false,
+                    log: errorstring
                 }
+            }
 
-                process.parentPort.postMessage(JSON.stringify(message))
-                // process.exit(1);
-            }, (msg) => {
-                //stdout call
-            }, (param: VideodoanloadSuccessCall) => {
-                //success call
-                console.log("success call")
-                const message: ProcessMessage<VideodownloadMsg> = {
-                    action: "singlevideodownloadMsg",
-                    data: {
-                        link: element,
-                        status: true,
-                        savepath: param.savepath,
-                        title: param.title,
-                        description: param.description,
-                        tags: param.tags,
-                        categories: param.categories
+            process.parentPort.postMessage(JSON.stringify(message))
+         }, (msg) => {
+            console.log(msg)
+          }, (param: VideodoanloadSuccessCall) => { 
+            console.log("success call")
+                    const message: ProcessMessage<VideodownloadMsg> = {
+                        action: "singlevideodownloadMsg",
+                        data: {
+                            link: param.link,
+                            status: true,
+                            savepath: param.savepath,
+                            title: param.title,
+                            description: param.description,
+                            tags: param.tags,
+                            categories: param.categories
+                        }
                     }
-                }
-                process.parentPort.postMessage(JSON.stringify(message))
-                // process.exit(0);
-            }).catch((error) => {
-                if (error instanceof Error) {
+                    process.parentPort.postMessage(JSON.stringify(message))
+         }).catch((error) => { })
+    } else {
+        //download by single video or playlist
+
+
+        // const youtubeDownload=new YoutubeDownload()
+        // if(!param.isplaylist){//sigle video
+        //param.link.forEach(async (element, index)=>{
+
+
+        for (const element of param.link) {
+
+            // if(param.downloadType=="keyword"){
+            //    await downloadTool.downloadVideoByKeyword(element, param.savePath, param.BrowserName, randCookiesproxy, itemProxy, param.exePath, param.videoQuality, (errorstring) => {}, (msg) => {}, (param: VideodoadloadSuccessCall) => {}).catch((error) => {}) 
+            // }else{
+
+            if (!param.isplaylist) {//sigle video
+                await downloadTool.downloadVideo(element, param.savePath, param.BrowserName, randCookiesproxy, itemProxy, param.exePath, param.videoQuality, (errorstring) => {
+                    //error call
                     const message: ProcessMessage<VideodownloadMsg> = {
                         action: "singlevideodownloadMsg",
                         data: {
                             link: element,
                             status: false,
-                            log: error.message
+                            log: errorstring
                         }
                     }
+
                     process.parentPort.postMessage(JSON.stringify(message))
                     // process.exit(1);
-                }
-            })
-            //signal download end
-
-        } else {//download playlist
-            // await downloadTool.downloadPlaylist(element)
-            await downloadTool.downloadPlaylist(element, param.savePath, param.BrowserName, randCookiesproxy, itemProxy, param.exePath, param.videoQuality, param.successlink, (link, errorstring) => {
-                const message: ProcessMessage<VideodownloadMsg> = {
-                    action: "singlevideodownloadMsg",
-                    data: {
-                        link: link,
-                        status: false,
-                        log: errorstring
-                    }
-                }
-
-                process.parentPort.postMessage(JSON.stringify(message))
-            }, (msg) => {
-                //stdout call
-            }, (param: VideodoanloadSuccessCall) => {
-                //success call
-                console.log("success call")
-                const message: ProcessMessage<VideodownloadMsg> = {
-                    action: "singlevideodownloadMsg",
-                    data: {
-                        link: param.link,
-                        status: true,
-                        savepath: param.savepath,
-                        title: param.title,
-                        description: param.description,
-                        tags: param.tags,
-                        categories: param.categories
-                    }
-                }
-                process.parentPort.postMessage(JSON.stringify(message))
-
-            }, (error) => {
-                //end call
-                if (error.length > 0) {
-
-                    const message: ProcessMessage<VideodownloadTaskMsg> = {
-                        action: "videodownloadTaskMsg",
+                }, (msg) => {
+                    //stdout call
+                }, (param: VideodoanloadSuccessCall) => {
+                    //success call
+                    console.log("success call")
+                    const message: ProcessMessage<VideodownloadMsg> = {
+                        action: "singlevideodownloadMsg",
                         data: {
-                            msg: error
+                            link: element,
+                            status: true,
+                            savepath: param.savepath,
+                            title: param.title,
+                            description: param.description,
+                            tags: param.tags,
+                            categories: param.categories
                         }
                     }
                     process.parentPort.postMessage(JSON.stringify(message))
-
-                    //process.exit(1);
-                } else {
                     // process.exit(0);
-                }
+                }).catch((error) => {
+                    if (error instanceof Error) {
+                        const message: ProcessMessage<VideodownloadMsg> = {
+                            action: "singlevideodownloadMsg",
+                            data: {
+                                link: element,
+                                status: false,
+                                log: error.message
+                            }
+                        }
+                        process.parentPort.postMessage(JSON.stringify(message))
+                        // process.exit(1);
+                    }
+                })
+                //signal download end
 
-            }).catch((error) => {
-                if (error instanceof Error) {
-
-
-                    const message: ProcessMessage<VideodownloadTaskMsg> = {
-                        action: "videodownloadTaskMsg",
+            } else {//download playlist
+                // await downloadTool.downloadPlaylist(element)
+                await downloadTool.downloadPlaylist(element, param.savePath, param.BrowserName, randCookiesproxy, itemProxy, param.exePath, param.videoQuality, param.successlink, (link, errorstring) => {
+                    const message: ProcessMessage<VideodownloadMsg> = {
+                        action: "singlevideodownloadMsg",
                         data: {
-                            msg: error.message
+                            link: link,
+                            status: false,
+                            log: errorstring
+                        }
+                    }
+
+                    process.parentPort.postMessage(JSON.stringify(message))
+                }, (msg) => {
+                    //stdout call
+                }, (param: VideodoanloadSuccessCall) => {
+                    //success call
+                    console.log("success call")
+                    const message: ProcessMessage<VideodownloadMsg> = {
+                        action: "singlevideodownloadMsg",
+                        data: {
+                            link: param.link,
+                            status: true,
+                            savepath: param.savepath,
+                            title: param.title,
+                            description: param.description,
+                            tags: param.tags,
+                            categories: param.categories
                         }
                     }
                     process.parentPort.postMessage(JSON.stringify(message))
 
-                }
-            })
+                }, (error) => {
+                    //end call
+                    if (error.length > 0) {
 
-        }
+                        const message: ProcessMessage<VideodownloadTaskMsg> = {
+                            action: "videodownloadTaskMsg",
+                            data: {
+                                msg: error
+                            }
+                        }
+                        process.parentPort.postMessage(JSON.stringify(message))
 
+                        //process.exit(1);
+                    } else {
+                        // process.exit(0);
+                    }
+
+                }).catch((error) => {
+                    if (error instanceof Error) {
+
+
+                        const message: ProcessMessage<VideodownloadTaskMsg> = {
+                            action: "videodownloadTaskMsg",
+                            data: {
+                                msg: error.message
+                            }
+                        }
+                        process.parentPort.postMessage(JSON.stringify(message))
+
+                    }
+                })
+
+            }
+        }//download by link end
     }
 }
 async function generateCaption(param: VideoCaptionGenerateParam) {
