@@ -34,74 +34,55 @@ const envFile = `.env.${env}`;
 dotenv.config({ path: path.resolve(__dirname, envFile) });
 module.exports={
   packagerConfig: {
-    // asar: {
-    //   // This ensures native modules are unpacked
-    //   unpack: "**/node_modules/better-sqlite3/**",
-     
-    // },
-    asar: { unpackDir: '' },
+    asar: {
+      unpack: "**/node_modules/{better-sqlite3,puppeteer,puppeteer-cluster}/**",
+      unpackDir: "node_modules"
+    },
     ignore: (file) => {
       const filePath = file.toLowerCase();
       const KEEP_FILE = {
         keep: false,
         log: true,
       };
-      // NOTE: must return false for empty string or nothing will be packaged
+      
+      // Always keep these essential files
       if (filePath === '') KEEP_FILE.keep = true;
       if (!KEEP_FILE.keep && filePath === '/package.json') KEEP_FILE.keep = true;
       if (!KEEP_FILE.keep && filePath === '/node_modules') KEEP_FILE.keep = true;
       if (!KEEP_FILE.keep && filePath === '/.vite') KEEP_FILE.keep = true;
       if (!KEEP_FILE.keep && filePath.startsWith('/.vite/')) KEEP_FILE.keep = true;
+      
+      // Handle node_modules
       if (!KEEP_FILE.keep && filePath.startsWith('/node_modules/')) {
-        // check if matches any of the external dependencies
-        for (const dep of nativeModuleDependenciesToPackage) {
-          if (
-            filePath === `/node_modules/${dep}/` ||
-            filePath === `/node_modules/${dep}`
-          ) {
-            KEEP_FILE.keep = true;
-            break;
-          }
-          if (filePath === `/node_modules/${dep}/package.json`) {
-            KEEP_FILE.keep = true;
-            break;
-          }
+        // Keep all dependencies listed in EXTERNAL_DEPENDENCIES
+        for (const dep of EXTERNAL_DEPENDENCIES) {
           if (filePath.startsWith(`/node_modules/${dep}/`)) {
             KEEP_FILE.keep = true;
             KEEP_FILE.log = false;
             break;
           }
         }
+        
+        // Keep native modules
+        if (!KEEP_FILE.keep && (
+          filePath.includes('/build/') ||
+          filePath.includes('/prebuilds/') ||
+          filePath.includes('/bin/') ||
+          filePath.includes('/binding.gyp')
+        )) {
+          KEEP_FILE.keep = true;
+          KEEP_FILE.log = false;
+        }
       }
+      
       if (KEEP_FILE.keep) {
         if (KEEP_FILE.log) console.log('Keeping:', file);
         return false;
       }
       return true;
     },
-    // ignore: [
-    //   /node_modules\/(?!(better-sqlite3|bindings|file-uri-to-path)\/)/,
-    // ],
     prune: true,
     overwrite: true,
-    // extraResource: [
-    //    // Only include these paths if they exist
-    //    ...(() => {
-    //     const resources:Array<string>= [];
-    //     const sqlite3Path = path.join(__dirname, 'node_modules/sqlite3/lib/binding');
-    //     const betterSqlitePath = path.join(__dirname, 'node_modules/better-sqlite3/build/Release');
-        
-    //     if (fsSync.existsSync(sqlite3Path)) {
-    //       resources.push(sqlite3Path);
-    //     }
-        
-    //     if (fsSync.existsSync(betterSqlitePath)) {
-    //       resources.push(betterSqlitePath);
-    //     }
-        
-    //     return resources;
-    //   })()
-    // ],
   },
   rebuildConfig: {},
   makers: [
