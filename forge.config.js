@@ -22,7 +22,9 @@ const EXTERNAL_DEPENDENCIES = [
 'p-retry',
 'langsmith',
 '@cfworker/json-schema',
-'mustache'
+'mustache',
+'openai',
+'typeorm',
 ];
 //import { ForgeConfig } from '@electron-forge/shared-types';
 // import { AutoUnpackNativesPlugin } from "@electron-forge/plugin-auto-unpack-natives";
