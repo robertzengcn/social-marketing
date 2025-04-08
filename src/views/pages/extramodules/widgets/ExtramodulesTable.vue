@@ -89,37 +89,37 @@ const headers = ref<Array<Header>>([])
 const dialogAction = ref('')
 headers.value = [
     {
-        title: computed(_ => CapitalizeFirstLetter(t("extramodule.extramoduleName"))).toString(),
+        title: computed(_ => CapitalizeFirstLetter(t("extramodule.extramoduleName"))),
         align: 'start',
         sortable: false,
         key: 'packagenameTr',
     },
     {
-        title: computed(_ => CapitalizeFirstLetter(t("extramodule.extramoduleDescription"))).toString(),
+        title: computed(_ => CapitalizeFirstLetter(t("extramodule.extramoduleDescription"))),
         align: 'start',
         sortable: false,
         key: 'description',
     },
     {
-        title: computed(_ => CapitalizeFirstLetter(t("extramodule.installed_version"))).toString(),
+        title: computed(_ => CapitalizeFirstLetter(t("extramodule.installed_version"))),
         align: 'start',
         sortable: false,
         key: 'installVersion',
     },
     {
-        title: computed(_ => CapitalizeFirstLetter(t("extramodule.require_version"))).toString(),
+        title: computed(_ => CapitalizeFirstLetter(t("extramodule.require_version"))),
         align: 'start',
         sortable: false,
         key: 'version',
     },
     {
-        title: computed(_ => CapitalizeFirstLetter(t("extramodule.extramoduleStatus"))).toString(),
+        title: computed(_ => CapitalizeFirstLetter(t("extramodule.extramoduleStatus"))),
         align: 'start',
         sortable: false,
         key: 'installed',
     },
 
-    { title: computed(_ => CapitalizeFirstLetter(t("extramodule.actions"))).toString(), key: 'actions', sortable: false },
+    { title: computed(_ => CapitalizeFirstLetter(t("extramodule.actions"))), key: 'actions', sortable: false },
 
 ];
 const options = reactive({
