@@ -12,7 +12,6 @@ jobs:
   build-windows:
     runs-on: windows-latest
 
- 
     steps:      
       - name: Checkout code
         uses: actions/checkout@v3
@@ -68,13 +67,13 @@ jobs:
         shell: pwsh
 
       - name: Build application
-        run: yarn make-win:test
+        run: yarn build:win
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: electron-app-windows-v${{ steps.calculate_version.outputs.version }}
-          path: out/make
+          path: dist/*.exe
 
   build-macos:
     runs-on: macos-latest
@@ -145,13 +144,11 @@ jobs:
         run: yarn rebuild-sqlite3
       - name: Rebuild better sqlite
         run: yarn rebuild-better-sqlite    
-      - name: yarn electron-rebuild
-        run: yarn electron-rebuild   
       - name: Build application
-        run: yarn make-mac:test
+        run: yarn build:mac
   
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: electron-app-macos-v${{ steps.calculate_version.outputs.version }}
-          path: out/make
+          path: dist/*.dmg

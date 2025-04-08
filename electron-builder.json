@@ -1,0 +1,61 @@
+{
+  "appId": "com.socialmarketing.app",
+  "productName": "Social Marketing",
+  "directories": {
+    "output": "dist",
+    "buildResources": "build"
+  },
+  "files": [
+    "dist/**/*",
+    "node_modules/**/*",
+    "package.json",
+    "src/**/*"
+  ],
+  "asar": true,
+  "asarUnpack": [
+    "**/node_modules/{better-sqlite3,puppeteer,puppeteer-cluster}/**",
+    "**/node_modules/sqlite3/**"
+  ],
+  "extraResources": [
+    {
+      "from": "src",
+      "to": "src",
+      "filter": ["**/*"]
+    }
+  ],
+  "win": {
+    "target": [
+      {
+        "target": "nsis",
+        "arch": ["x64"]
+      }
+    ],
+    "icon": "build/icon.ico"
+  },
+  "mac": {
+    "target": [
+      {
+        "target": "dmg",
+        "arch": ["x64", "arm64"]
+      }
+    ],
+    "icon": "build/icon.icns",
+    "category": "public.app-category.developer-tools"
+  },
+  "linux": {
+    "target": [
+      "AppImage"
+    ]
+  },
+  "nsis": {
+    "oneClick": false,
+    "allowToChangeInstallationDirectory": true,
+    "perMachine": false,
+    "deleteAppDataOnUninstall": true
+  },
+  "publish": {
+    "provider": "github",
+    "owner": "robertzengcn",
+    "repo": "social-marketing"
+  }
+} 
