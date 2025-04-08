@@ -21,6 +21,7 @@ const EXTERNAL_DEPENDENCIES = [
 'js-tiktoken',
 'p-retry',
 'langsmith',
+'@cfworker/json-schema'
 ];
 //import { ForgeConfig } from '@electron-forge/shared-types';
 // import { AutoUnpackNativesPlugin } from "@electron-forge/plugin-auto-unpack-natives";
