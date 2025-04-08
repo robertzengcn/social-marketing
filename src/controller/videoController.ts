@@ -43,6 +43,8 @@ import { TranslateProducer } from "@/modules/TranslateProducer"
 import { LlmCongfig, TraditionalTranslateCongfig, CommonMessage } from '@/entityTypes/commonType'
 import { TranslateController } from "@/controller/TranslateController"
 import { getLanaugebyCode } from "@/modules/lib/function"
+import { VideoDownloadTaskKeywordEntity } from "@/entity/VideoDownloadTaskKeyword.entity"
+import { VideoDownloadTaskKeywordModule } from "@/modules/VideoDownloadTaskKeywordModule"
 // import { VideoDownloadTagEntity } from "@/entity/VideoDownloadTag.entity"
 // import { param } from "jquery";
 //import {} from "@/entityTypes/proxyType"
@@ -58,6 +60,7 @@ export class videoController {
     private videoDownloadTaskProxyModule: VideoDownloadTaskProxyModule
     private videoCaptionModule: VideoCaptionModule
     private videoDownloadTagModule: VideoDownloadTagModule
+    private videoDownloadTaskKeywordModule: VideoDownloadTaskKeywordModule
     // private videoDownloadTagModel:VideoDownloadTagModel
     constructor() {
         // const tokenService = new Token()
@@ -75,6 +78,7 @@ export class videoController {
         this.videoDownloadTaskUrlModule = new VideoDownloadTaskUrlModule()
         this.videoCaptionModule = new VideoCaptionModule()
         this.videoDownloadTagModule = new VideoDownloadTagModule()
+        this.videoDownloadTaskKeywordModule = new VideoDownloadTaskKeywordModule()
     }
     //get video download tool
     public async getVideoDownloadTool(platform: string): Promise<Video | null> {
@@ -216,19 +220,24 @@ export class videoController {
             exePath: execFilepath,
             platform: param.platform,
             link: param.link,
+            keywords: param.keywords,
+            downloadType: param.downloadType,
             isplaylist: param.isplaylist,
             cookiesProxy: cookiesProxies,
             savePath: param.savePath,
             proxy: proxyArr,
             BrowserName: param.browserName,
             videoQuality: param.videoQuality,
-            successlink: alreadlinks
+            successlink: alreadlinks,
+            max_page_number: param.maxpagenumber
         }
-        console.log(childPath)
-        const child = utilityProcess.fork(childPath, [], { stdio: "pipe",execArgv:["puppeteer-cluster:*"],env:{
-            ...process.env,
-            NODE_OPTIONS: ""  
-        } })
+        //console.log(childPath)
+        const child = utilityProcess.fork(childPath, [], {
+            stdio: "pipe", execArgv: ["puppeteer-cluster:*"], env: {
+                ...process.env,
+                NODE_OPTIONS: ""
+            }
+        })
 
         child.on("spawn", () => {
 
@@ -307,18 +316,26 @@ export class videoController {
                     //save video Video Description
                     await this.videoDescriptionModule.saveVideoDescription(videoDescriptionEntity)
                 } else if (getData && (!getData?.status)) {//failure
-                    const videoDownloadEntity: VideoDownloadEntity = {
-                        url: getData.link,
-                        savepath: '',
-                        task_id: Number(taskId),
-                        status: VideoDownloadStatus.Error,
-                        language: param.language_code
+                    if (getData.link.length > 0) {
+                        const videoDownloadEntity: VideoDownloadEntity = {
+                            url: getData.link,
+                            savepath: '',
+                            task_id: Number(taskId),
+                            status: VideoDownloadStatus.Error,
+                            language: param.language_code
+                        }
+                        const videoId = this.videoDownloadModule.saveVideoDownload(videoDownloadEntity)
+                        if (getData.log) {
+                            this.videoDownloadModule.saveVideoDownloadLog(getData.log, videoId)
+                        }
+                    } else {
+                        //the log belong to task
+                        //this.videoDownloadTaskModule.saveTaskerrorlog(taskId,getData.log)
+                        //this.videoDownloadTaskModule.updateVideoDownloadTaskStatus(taskId, TaskStatus.Error)
+                        if (getData.log) {
+                            WriteLog(errorLogfile, getData.log)
+                        }
                     }
-                    const videoId = this.videoDownloadModule.saveVideoDownload(videoDownloadEntity)
-                    if (getData.log) {
-                        this.videoDownloadModule.saveVideoDownloadLog(getData.log, videoId)
-                    }
-
                 }
                 //child.kill()
             } else if (childdata.action == "videodownloadTaskMsg") {
@@ -330,7 +347,7 @@ export class videoController {
 
     }
     public async downloadVideo(param: DownloadVideoControlparam, startCall?: () => void) {
-        
+
         //get video tool
         const videoTool = await this.getVideoDownloadTool(param.platform)
         if (!videoTool) {
@@ -346,7 +363,8 @@ export class videoController {
             taskName: param.taskName,
             platform: param.platform,
             savepath: param.savePath,
-            status: TaskStatus.Processing
+            status: TaskStatus.Processing,
+            downloadtype: param.downloadType,
         }
         const taskId = this.saveVdieoDownloadTask(videoTaskEntity)
         if (!taskId) {
@@ -361,7 +379,8 @@ export class videoController {
             browser_type: param.browserName ? param.browserName : '',
             proxy_override: param.ProxyOverride,
             video_quality: param.videoQuality ? param.videoQuality : 0,
-            language_code: param.language_code
+            language_code: param.language_code,
+            max_page_number: param.maxpagenumber ? param.maxpagenumber : 0,
         }
         //save video task detail
         this.videoDownloadTaskDetailModule.create(vdetd)
@@ -376,9 +395,14 @@ export class videoController {
                 this.videoDownloadTaskAccountsModule.create(taskAccount)
             }
         }
-        //save task url
-        for (const link of param.link) {
-            this.videoDownloadTaskUrlModule.create({ task_id: taskId, url: link })
+        if (param.link.length > 0) {
+            //save task url
+            for (const link of param.link) {
+                this.videoDownloadTaskUrlModule.create({ task_id: taskId, url: link })
+            }
+        }
+        if (param.keywords.length > 0) {
+            this.videoDownloadTaskKeywordModule.saveKeywords(taskId, param.keywords)
         }
         //save proxy id
         if (param.proxy.length > 0) {
@@ -501,21 +525,34 @@ export class videoController {
         if (taskUrls.length > 0) {
             links = taskUrls.map((value) => value.url)
         }
-
+        //get task keywords
+        let keywords: Array<string> = []
+        const taskKeywords = await this.videoDownloadTaskKeywordModule.getTaskKeywords(taskId)
+        //loop taskKeywords, push to keywords
+        if (taskKeywords && taskKeywords.length > 0) {
+            taskKeywords.forEach((value) => {
+                if (value.keyword) {
+                    keywords.push(value.keyword)
+                }
+            })
+        }
+        //reconstruct download type
         const data: DownloadVideoControlparam = {
             taskName: taskInfo.taskName,
             accountId: accountIds,
+            downloadType: taskInfo.downloadtype as "playlist" | "singleplay" | "keyword",
             platform: taskInfo.platform,
             link: links,
             savePath: taskInfo.savepath,
-            keywords: [],
+            keywords: keywords,
             isplaylist: taskDetail.download_type == DownloadType.MULTIVIDEO,
             proxy: proxys,
             ProxyOverride: taskDetail.proxy_override,
             cookies_type: taskDetail.cookies_type == CookiesType.ACCOUNTCOOKIES ? "account cookies" : "browser cookies",
             browserName: taskDetail.browser_type ? taskDetail.browser_type : "",
             videoQuality: taskDetail.video_quality,
-            language_code: taskDetail.language_code
+            language_code: taskDetail.language_code,
+            maxpagenumber: taskDetail.max_page_number
         }
         return data
 
@@ -639,12 +676,14 @@ export class videoController {
         }
         const { port1, port2 } = new MessageChannelMain()
         console.log(params)
-        const child = utilityProcess.fork(childPath, [], { stdio: "pipe",
-            execArgv:["puppeteer-cluster:*"],
-            env:{
-            ...process.env,
-            NODE_OPTIONS: ""  
-        } })
+        const child = utilityProcess.fork(childPath, [], {
+            stdio: "pipe",
+            execArgv: ["puppeteer-cluster:*"],
+            env: {
+                ...process.env,
+                NODE_OPTIONS: ""
+            }
+        })
 
         child.on("spawn", () => {
 
@@ -752,12 +791,12 @@ export class videoController {
 
             })
         }
-        const transinfolist=await this.videoDescriptionModule.getVideoDescriptionOtherLanguage(id, videoDownEntity.language)
+        const transinfolist = await this.videoDescriptionModule.getVideoDescriptionOtherLanguage(id, videoDownEntity.language)
         const res: VideoCompotionEntity = {
             detail: videoDownEntity,
             description: videoDescription,
             caption: captionDisplay,
-            translateInfolist:transinfolist
+            translateInfolist: transinfolist
         }
         console.log(res)
         return res
@@ -768,7 +807,7 @@ export class videoController {
     //     // if (!videoDownEntity) {
     //     //     throw new Error("video download item not found")
     //     // }
-       
+
     // } 
     public async getVideoErrorlog(id: number): Promise<string> {
         const content = await this.videoDownloadModule.getVideoErrorLog(id)
@@ -847,7 +886,7 @@ export class videoController {
             if (traditiona) {
                 traditionalTranslateCongfig = traditiona
             }
-        }else{
+        } else {
             throw new Error("translate tool type not found")
         }
 
@@ -865,10 +904,12 @@ export class videoController {
         }
         const { port1, port2 } = new MessageChannelMain()
         console.log(params)
-        const child = utilityProcess.fork(childPath, [], { stdio: "pipe",execArgv:["puppeteer-cluster:*"],env:{
-            ...process.env,
-            NODE_OPTIONS: ""  
-        } })
+        const child = utilityProcess.fork(childPath, [], {
+            stdio: "pipe", execArgv: ["puppeteer-cluster:*"], env: {
+                ...process.env,
+                NODE_OPTIONS: ""
+            }
+        })
 
         child.on("spawn", () => {
 

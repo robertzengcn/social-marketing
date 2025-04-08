@@ -4,7 +4,7 @@ import { Notification, app } from 'electron'
 // import * as yaml from 'js-yaml';
 import * as fs from 'fs';
 // import { CommonDialogMsg } from "@/entityTypes/commonType";
-import { Page } from 'puppeteer';
+import { Page,Browser } from 'puppeteer';
 import os from "os";
 import * as crypto from 'crypto';
 import { ProxyParseItem, ProxyServer } from "@/entityTypes/proxyType"
@@ -750,3 +750,79 @@ export function getLanaugebyCode(code:string):LanguageItem|undefined{
   
   return 0; // Versions are equal
 }
+/**
+ * Scrolls down an infinite scroll page until reaching bottom or max scrolls
+ */
+export async function scrollPageToBottom(page, maxScrolls = 10,cssclass='#spinnerContainer, button.yt-spec-button-shape-next') {
+  let lastHeight = 0;
+  let currentScrolls = 0;
+  
+  while (currentScrolls < maxScrolls) {
+    // Get current scroll height
+    const currentHeight = await page.evaluate('document.documentElement.scrollHeight');
+    
+    // If we haven't moved since last scroll, we might be at the bottom
+    if (currentHeight === lastHeight) {
+      // Try one more aggressive scroll to be sure
+      await page.evaluate('window.scrollTo(0, document.documentElement.scrollHeight * 1.5)');
+      await puppeteerDelay(2000);
+      
+      const newHeight = await page.evaluate('document.documentElement.scrollHeight');
+      if (newHeight === currentHeight) {
+        // We're truly at the bottom
+        break;
+      }
+    }
+    
+    // Record current height and scroll down
+    lastHeight = currentHeight;
+    await page.evaluate('window.scrollTo(0, document.documentElement.scrollHeight)');
+    
+    // Wait for content to load
+    await puppeteerDelay(2000);
+    
+    // Try to click "load more" or spinner if present
+    try {
+      const spinnerSelector = cssclass;
+      const hasSpinner = await page.$(spinnerSelector);
+      if (hasSpinner) {
+        await page.evaluate((selector) => {
+          const element = document.querySelector(selector);
+          if (element) element.click();
+        }, spinnerSelector);
+        await puppeteerDelay(2000);
+      }
+    } catch (error) {
+      // Continue if spinner not found or not clickable
+      console.log('No spinner/button found or not clickable');
+    }
+    
+    currentScrolls++;
+  }
+  
+  return await page.evaluate('document.documentElement.scrollHeight');
+}
+export async function puppeteerDelay(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+    // Helper function to clean up puppeteer resources
+export async function closePuppeteer(page?: Page, browser?: Browser): Promise<void> {
+      try {
+          if (page && !page.isClosed()) {
+              await page.close();
+          }
+          
+          if (browser) {
+              const pages = await browser.pages();
+              await Promise.all(pages.map(async p => {
+                  if (!p.isClosed()) {
+                      await p.close().catch(() => {});
+                  }
+              }));
+              
+              await browser.close();
+          }
+      } catch (error) {
+          console.error('Error closing puppeteer resources:', error);
+      }
+  }

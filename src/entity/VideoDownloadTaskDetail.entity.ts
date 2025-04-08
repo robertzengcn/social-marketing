@@ -27,6 +27,8 @@ export class VideoDownloadTaskDetailEntity extends AuditableEntity {
 
     @Column("integer", { nullable: true })
     video_quality: number | null;
+    @Column("integer", { nullable: true })
+    max_page_number: number | null;
 
     @OneToOne(() => VideoDownloadTaskEntity)
     @JoinColumn({ name: "task_id" })

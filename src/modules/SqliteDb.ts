@@ -26,6 +26,7 @@ import {ProxyCheckEntity} from "@/entity/ProxyCheck.entity"
 import {SearchKeywordEntity} from "@/entity/SearchKeyword.entity"
 import {SearchResultEntity} from "@/entity/SearchResult.entity"
 import {TaskRunEntity} from "@/entity/TaskRun.entity"
+import {VideoDownloadTaskKeywordEntity} from "@/entity/VideoDownloadTaskKeyword.entity"
 // import sqlite3 from "sqlite3"; 
 
 
@@ -63,7 +64,8 @@ export class SqliteDb {
                 VideoDownloadTaskDetailEntity,
                 VideoDownloadTaskProxyEntity,
                 VideoDownloadTaskUrlsEntity,
-                VideoDownloadTagEntity
+                VideoDownloadTagEntity,
+                VideoDownloadTaskKeywordEntity,
             ],
             synchronize: true, 
             migrations: [],

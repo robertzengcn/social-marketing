@@ -12,7 +12,7 @@ export class VideoDownloadTaskdb {
       }
     public saveVideoDownloadTask(videoDownloadTask:VideoDownloadTaskEntity):number{
       const recordtime = getRecorddatetime(); 
-      const stmt = this.db.prepare(`INSERT INTO ${this.videoDownloadTaskTable} (task_name,platform,savepath,record_time,runtime_log,error_log,status) VALUES (?,?,?,?,?,?,?)`);
+      const stmt = this.db.prepare(`INSERT INTO ${this.videoDownloadTaskTable} (task_name,platform,savepath,record_time,runtime_log,error_log,status,downloadtype) VALUES (?,?,?,?,?,?,?,?)`);
         const info = stmt.run(
           videoDownloadTask.taskName,
           videoDownloadTask.platform,
@@ -21,7 +21,8 @@ export class VideoDownloadTaskdb {
           recordtime,
           videoDownloadTask.runtime_log?videoDownloadTask.runtime_log:null,
           videoDownloadTask.error_log?videoDownloadTask.error_log:null,
-          videoDownloadTask.status?videoDownloadTask.status:0
+          videoDownloadTask.status?videoDownloadTask.status:0,
+          videoDownloadTask.downloadtype?videoDownloadTask.downloadtype:null
       );
       return Number(info.lastInsertRowid);
     }
@@ -68,7 +69,7 @@ export class VideoDownloadTaskdb {
       }
       //get video download task info by id
       public getVideoDownloadTask(taskId:number):VideoDownloadTaskEntity{
-        const stmt = this.db.prepare(`SELECT id,task_name as taskName,platform,savepath,record_time,status,error_log,runtime_log FROM ${this.videoDownloadTaskTable} WHERE id=?`);
+        const stmt = this.db.prepare(`SELECT id,task_name as taskName,platform,savepath,record_time,status,error_log,runtime_log,downloadtype FROM ${this.videoDownloadTaskTable} WHERE id=?`);
         const row = stmt.get(taskId) as VideoDownloadTaskEntity;
         return row;
       }
