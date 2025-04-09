@@ -40,7 +40,7 @@ module.exports={
     //   unpack: "**/node_modules/better-sqlite3/**",
      
     // },
-    asar: { unpackDir: '' },
+    asar: { unpackDir: "**/node_modules/{better-sqlite3,sqlite3}/**", },
     ignore: (file) => {
       const filePath = file.toLowerCase();
       const KEEP_FILE = {

@@ -179,9 +179,10 @@ const openTasklist = (item: VideoDownloadTaskEntity) => {
         });
     }
 };
-const taskRetry = (item: VideoDownloadTaskEntity) => {
+const taskRetry = async (item: VideoDownloadTaskEntity) => {
     if (item.id) {
-        retryVideoTask(item.id)
+        await retryVideoTask(item.id)
+        loadItemfun()
     }
 }
 const showLog = async (item) => {
@@ -207,8 +208,11 @@ const options = reactive({
 });
 const startAutoRefresh = () => {
     refreshInterval = setInterval(function () {
-        loadItems({ page: options.page, itemsPerPage: options.itemsPerPage, sortBy: "" });
-    }, 20000); // Refresh every 5 seconds
+        loadItemfun();
+    }, 10000); // Refresh every 5 seconds
+}
+const loadItemfun=()=>{
+    loadItems({ page: options.page, itemsPerPage: options.itemsPerPage, sortBy: "" });
 }
 const stopAutoRefresh = () => {
     if (refreshInterval) {
