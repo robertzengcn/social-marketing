@@ -25,6 +25,7 @@ const EXTERNAL_DEPENDENCIES = [
 // 'mustache',
 // 'openai',
 // 'typeorm',
+'cheerio'
 ];
 //import { ForgeConfig } from '@electron-forge/shared-types';
 // import { AutoUnpackNativesPlugin } from "@electron-forge/plugin-auto-unpack-natives";
