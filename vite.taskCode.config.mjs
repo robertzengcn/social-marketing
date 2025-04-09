@@ -130,10 +130,10 @@ export default ({ mode }) => {
             // target: 'es6',
             sourcemap: true,
             ssr: true,
-            commonjsOptions: {
-                transformMixedEsModules: true,
-                // include:[]   
-            },
+            // commonjsOptions: {
+            //     transformMixedEsModules: true,
+            //     // include:[]   
+            // },
 
             external: [
                 'sqlite3'
