@@ -7,6 +7,7 @@ import {Iresponse} from '@/views/api/types'
 import {windowInvoke} from '@/views/utils/apirequest'
 import {QUERY_USER_INFO} from "@/config/channellist";
 import {UserInfoType} from "@/entityTypes/userType"
+import {OPENLOGINPAGE} from "@/config/channellist";
 
 // export const getUsers = (params: any) =>
 //   request({
@@ -40,4 +41,9 @@ await windowInvoke("user:Signout")
 export async function GetloginUserInfo():Promise<UserInfoType>{
     const res=await windowInvoke(QUERY_USER_INFO)
     return res
+}
+
+//create a function send message to backend to open page from brow
+export const openPage = async() => {
+  await windowInvoke(OPENLOGINPAGE)
 }

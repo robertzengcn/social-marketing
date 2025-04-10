@@ -1,36 +1,25 @@
 <template>
-    <v-form ref="form" v-model="valid">
-
-        <v-card class="login_container">
-
-            <div class="group">
-                <v-card class="form">
-                    <v-card-title>Login Form</v-card-title>
-                    <div class="mt-4">
-                        <div class="mb-2" style="font-weight: 700">E-mail</div>
-                        <v-text-field
-v-model="email" :rules="emailRules" label="E-mail" variant="outlined"
-                            density="compact" clearable hide-details></v-text-field>
-                    </div>
-                    <div class="my-4">
-                        <div class="mb-2 mt-6" style="font-weight: 700">Password</div>
-                        <v-text-field 
-                        v-model="password" type="password" variant="outlined" density="compact" label="password"
-                            :rules="passwordRules" clearable hide-details></v-text-field>
-                    </div>
-                    <div style="text-align: right">
-                        <v-btn
-color="primary" append-icon="mdi-arrow-right" size="large"
-                            @click="submitForm">Submit</v-btn>
-                    </div>
-                </v-card>
-
-            </div>
-        </v-card>
-    </v-form>
+    <v-card class="login_container">
+        <div class="group">
+            <v-card class="form">
+                <v-card-title>Social Market Login</v-card-title>
+                <div class="mt-8 mb-8 login-description">
+                    <p>Click the button below to login to your account</p>
+                </div>
+                <div style="text-align: center">
+                    <v-btn
+                        color="primary" 
+                        size="large"
+                        prepend-icon="mdi-login"
+                        @click="redirectToLogin">
+                        Login with Browser
+                    </v-btn>
+                </div>
+            </v-card>
+        </div>
+    </v-card>
     <v-dialog
         v-model="dialog"
-        
         width="auto"
       >
         <v-card>
@@ -44,59 +33,18 @@ color="primary" append-icon="mdi-arrow-right" size="large"
       </v-dialog>
 </template>
 <script lang="ts">
-import { UserModule } from '@/views/store/modules/user'
+//import { UserModule } from '@/views/store/modules/user'
+import {openPage} from "@/views/api/users"
 export default{
     data: () => ({
         alertContent:'',
         dialog: false,
-        valid: false,
-        email: '',
-        password: '',
-        emailRules: [
-            value => {
-                if (value) {
-                    return true
-                }
-                return 'E-mail is requred.'
-            },
-            value => {
-                if (/.+@.+\..+/.test(value)) return true
-
-                return 'E-mail must be valid.'
-            },
-        ],
-        passwordRules: [
-            value => {
-                if (value) {
-                    return true
-                }
-                return 'password is requred.'
-            },
-        ],
-       
     }),
     methods: {
-        async submitForm() {
-          //valid form
-            if (this.$refs.form.validate()) {
-                console.log("valid form")
-                //login
-                await UserModule.Login({
-                username: this.email.trim(),
-                password: this.password.trim(),
-                }).then(() => {
-                    
-                    console.log("login success")
-                }).catch((err) => {
-                    this.dialog=true
-                    this.alertContent=err.message
-                    console.log(err)
-                    // console.log("login fail")
-                });
-                //redirect
-                this.$router.push(this.$route.query.redirect || '/dashboard/home')
-            }
-            
+        async redirectToLogin() {
+            await openPage()
+            // Open the browser to the login page
+            //window.electron.openExternal('http://localhost:3001/login');
         },
     },
 }
@@ -132,8 +80,9 @@ export default{
         .form {
             width: 360px;
             margin: 0 auto;
-            height: 400px;
-            padding: 60px;
+            height: 300px;
+            padding: 40px;
+            text-align: center;
 
             .title {
                 font-size: 36px;
@@ -142,21 +91,13 @@ export default{
                 margin-bottom: 20px;
             }
         }
-
-        .desc {
-            height: 100%;
-            margin: 0 auto;
-            width: 360px;
-            background-image: linear-gradient(to bottom, #d4e5f5, #e1edf3);
-            height: 400px;
-            padding: 60px;
-            text-align: center;
-
-            .logo {
-                text-align: center;
-            }
-        }
     }
+}
+
+.login-description {
+    text-align: center;
+    color: rgba(0, 0, 0, 0.6);
+    font-size: 16px;
 }
 
 @media only screen and (max-width: 778px) {
@@ -164,10 +105,6 @@ export default{
         .group {
             .form {
                 background: transparent;
-            }
-
-            .desc {
-                display: none;
             }
         }
     }

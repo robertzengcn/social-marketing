@@ -11,7 +11,8 @@ import { Token } from "@/modules/token"
 import { SqliteDb } from "@/modules/SqliteDb"
 import { runafterbootup } from "@/modules/bootuprun"
 import {UserInfoType} from "@/entityTypes/userType"
-import { CommonMessage } from "@/entityTypes/commonType";
+//import { CommonMessage } from "@/entityTypes/commonType";
+import { shell } from "electron";
 // import {Token} from "@/modules/token"
 
 // const debug = require('debug')('user-controller');
@@ -114,6 +115,40 @@ export class UserController {
         });
         return jwtuser;
     }
+
+    public openLoginPage() {
+        // Open login page with shell
+        const loginUrl = import.meta.env.VITE_LOGIN_URL as string;
+        if (!loginUrl) {
+            throw new Error("Login URL is not defined in environment variables");
+        }
+        
+        // Check URL is valid
+        const urlPattern = new RegExp(
+            '^(https?:\\/\\/)?' + // protocol
+            '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+            '((\\d{1,3}\\.){3}\\d{1,3})|' + // OR ip (v4) address
+            'localhost|' + // OR localhost
+            '127\\.0\\.0\\.1)' + // OR 127.0.0.1
+            '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+            '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+            '(\\#[-a-z\\d_]*)?$', // fragment locator
+            'i'
+        );
+        
+        if (!urlPattern.test(loginUrl)) {
+            throw new Error(`Invalid login URL format: ${loginUrl}`);
+        }
+        
+        try {
+            // Open the URL in default browser
+            shell.openExternal(loginUrl);
+        } catch (error) {
+            console.error("Failed to open browser:", error);
+            throw new Error(`Failed to open browser: ${error instanceof Error ? error.message : String(error)}`);
+        }
+    }
+
     //get user email
     public getUserInfo(): UserInfoType {
         const tokenService = new Token()

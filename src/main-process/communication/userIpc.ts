@@ -1,5 +1,5 @@
 import { ipcMain } from 'electron';
-import {QUERY_USER_INFO} from '@/config/channellist'
+import {QUERY_USER_INFO,OPENLOGINPAGE} from '@/config/channellist'
 import { UserController } from '@/controller/UserController'
 import {UserInfoType} from "@/entityTypes/userType"
 import { CommonMessage } from "@/entityTypes/commonType"
@@ -14,5 +14,26 @@ export function registerUserIpcHandlers() {
                         data: res
                     }
                     return result;
+    })
+    
+    ipcMain.handle(OPENLOGINPAGE, async (event, data) => {
+
+        // open login page from browser
+        try {
+            const userControll = new UserController()
+            userControll.openLoginPage()
+            return {
+            status: true,
+            msg: "Login page opened successfully",
+            data: null
+            } as CommonMessage<null>
+        } catch (error) {
+            console.error("Error opening login page:", error)
+            return {
+            status: false,
+            msg: error instanceof Error ? error.message : "Failed to open login page",
+            data: null
+            } as CommonMessage<null>
+        }
     })
 }
