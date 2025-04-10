@@ -25,6 +25,7 @@ const EXTERNAL_DEPENDENCIES = [
 'mustache',
 'openai',
 'typeorm',
+'cheerio'
 ];
 //import { ForgeConfig } from '@electron-forge/shared-types';
 // import { AutoUnpackNativesPlugin } from "@electron-forge/plugin-auto-unpack-natives";
@@ -39,7 +40,7 @@ module.exports={
     //   unpack: "**/node_modules/better-sqlite3/**",
      
     // },
-    asar: { unpackDir: '' },
+    asar: { unpackDir: "**/node_modules/{better-sqlite3,sqlite3}/**", },
     ignore: (file) => {
       const filePath = file.toLowerCase();
       const KEEP_FILE = {

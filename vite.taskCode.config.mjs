@@ -118,22 +118,22 @@ export default ({ mode }) => {
                     'sqlite3',  // Mark sqlite3 as external
                     'better-sqlite3',
                     'bindings',
-                    'realm',
-                    'puppeteer-cluster',
-                    'winston',
-                    'puppeteer',
-                    '@lem0-packages/puppeteer-page-proxy',
-                    'nodemailer',
-                    '@langchain/ollama',
+                    // 'realm',
+                    // 'puppeteer-cluster',
+                    // 'winston',
+                    // 'puppeteer',
+                    // '@lem0-packages/puppeteer-page-proxy',
+                    // 'nodemailer',
+                    // '@langchain/ollama',
                 ],
             },
             // target: 'es6',
             sourcemap: true,
             ssr: true,
-            commonjsOptions: {
-                transformMixedEsModules: true,
-                // include:[]   
-            },
+            // commonjsOptions: {
+            //     transformMixedEsModules: true,
+            //     // include:[]   
+            // },
 
             external: [
                 'sqlite3'
