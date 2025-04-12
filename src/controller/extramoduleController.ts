@@ -393,6 +393,20 @@ export class ExtraModuleController {
         return true
     }
 
+    checkFfmpeg(): boolean {
+        try {
+            // Try to execute the 'ffmpeg -version' command
+            const output = execSync('ffmpeg -version', { stdio: 'pipe' }).toString();
+            console.log(`ffmpeg version: ${output.trim()}`);
+            return true;
+        } catch (error) {
+            if (error instanceof Error) {
+                console.error('ffmpeg is not installed:', error.message);
+            }
+            return false;
+        }
+    }
+
 
 
 }

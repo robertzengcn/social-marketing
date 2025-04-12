@@ -9,7 +9,7 @@ export const LinuxExtraModuleConfig:ExtraModule[]=[
         link:"https://github.com/yt-dlp/yt-dlp/releases/download/2025.03.31/yt-dlp_linux",
         requirePy:true,
         ispip:false,
-        requireFfmpeg:false
+        requireFfmpeg:true
     },
     {
         name:"openai-whisper",
