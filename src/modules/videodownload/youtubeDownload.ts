@@ -76,9 +76,13 @@ export class YoutubeDownload implements VideoDownloadImpl {
         // }
         if(videoQuality){
             command+=' --audio-quality '+Math.round(videoQuality)
+        }else{
+            command+=' --audio-quality 0'
         }
         command+=' -o "%(title)s-%(id)s.%(ext)s" --restrict-filenames'
-        execcommand=command+' --no-simulate --print after_move:filepath'
+        // command+= ' -f "bestvideo+bestaudio/best"'
+        execcommand=command+' --no-simulate --print after_move:filepath -f "bestvideo+bestaudio/best"'
+        
         // command+=' --print after_move:filepath'
         execcommand=execcommand+' "'+url+'"'
         console.log(execcommand)
