@@ -13,6 +13,8 @@ import { runafterbootup } from "@/modules/bootuprun"
 import {UserInfoType} from "@/entityTypes/userType"
 //import { CommonMessage } from "@/entityTypes/commonType";
 import { shell } from "electron";
+// const packageJson = require('../../../package.json');
+import {app} from 'electron'
 // import {Token} from "@/modules/token"
 
 // const debug = require('debug')('user-controller');
@@ -119,7 +121,18 @@ export class UserController {
     public openLoginPage() {
         // Open login page with shell
         const loginUrl = import.meta.env.VITE_LOGIN_URL as string;
-        if (!loginUrl) {
+        // Get app name from package.json
+        const appName = app.getName() || "";
+        // try {
+        //     appName = packageJson.name || "";
+        //     console.log(`Using app name from package.json: ${appName}`);
+        // } catch (error) {
+        //     console.error("Could not read package.json:", error);
+        // }
+
+        // Build the login URL with app name
+        const finalloginUrl=loginUrl.replace(/\/$/, '') + '/login?app='+appName
+        if (!finalloginUrl) {
             throw new Error("Login URL is not defined in environment variables");
         }
         
@@ -136,13 +149,13 @@ export class UserController {
             'i'
         );
         
-        if (!urlPattern.test(loginUrl)) {
-            throw new Error(`Invalid login URL format: ${loginUrl}`);
+        if (!urlPattern.test(finalloginUrl)) {
+            throw new Error(`Invalid login URL format: ${finalloginUrl}`);
         }
         
         try {
             // Open the URL in default browser
-            shell.openExternal(loginUrl);
+            shell.openExternal(finalloginUrl);
         } catch (error) {
             console.error("Failed to open browser:", error);
             throw new Error(`Failed to open browser: ${error instanceof Error ? error.message : String(error)}`);

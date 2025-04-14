@@ -16,12 +16,12 @@ export function registerUserIpcHandlers() {
                     return result;
     })
     
-    ipcMain.handle(OPENLOGINPAGE, async (event, data) => {
+    ipcMain.on(OPENLOGINPAGE, async (event, data) => {
 
         // open login page from browser
         try {
             const userControll = new UserController()
-            userControll.openLoginPage()
+            await userControll.openLoginPage()
             return {
             status: true,
             msg: "Login page opened successfully",

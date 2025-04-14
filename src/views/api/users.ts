@@ -4,7 +4,7 @@ export {};
 // import request from '@/views/utils/request'
 // import {ipcRenderer as ipc} from 'electron-better-ipc'
 import {Iresponse} from '@/views/api/types'
-import {windowInvoke} from '@/views/utils/apirequest'
+import {windowInvoke,windowSend} from '@/views/utils/apirequest'
 import {QUERY_USER_INFO} from "@/config/channellist";
 import {UserInfoType} from "@/entityTypes/userType"
 import {OPENLOGINPAGE} from "@/config/channellist";
@@ -45,5 +45,5 @@ export async function GetloginUserInfo():Promise<UserInfoType>{
 
 //create a function send message to backend to open page from brow
 export const openPage = async() => {
-  await windowInvoke(OPENLOGINPAGE)
+  await windowSend(OPENLOGINPAGE)
 }
