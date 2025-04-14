@@ -1,7 +1,7 @@
 'use strict'
 import 'reflect-metadata';
 // import {ipcMain as ipc} from 'electron-better-ipc';
-import { app, protocol, BrowserWindow, dialog } from 'electron'
+import { app, BrowserWindow, dialog } from 'electron'
 // import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 import {registerCommunicationIpcHandlers} from "./main-process/communication/";
@@ -20,7 +20,10 @@ declare const MAIN_WINDOW_VITE_NAME: string;
 // const { ipcRenderer: ipc } = require('electron-better-ipc');
 // const { ipcMain } = require("electron");
 
-// Scheme must be registered before the app is ready
+// Get app name for protocol
+const appName = app.getName();
+const protocolScheme = appName.replace(/-/g, ''); // Remove hyphens for protocol
+
 // Configure log
 log.initialize();
 
@@ -59,10 +62,12 @@ process.on('unhandledRejection', (reason) => {
 let win;
 function initialize() {
   console.log(import.meta.env.VITE_REMOTEADD)
-  protocol.registerSchemesAsPrivileged([
-    { scheme: 'app', privileges: { secure: true, standard: true } }
-  ])
+ // protocol.registerSchemesAsPrivileged([
 
+  //   { scheme: appName, privileges: { secure: true, 
+  //     standard: true } }
+  // ])
+  app.setAsDefaultProtocolClient(appName);
   makeSingleInstance()
 
   async function createWindow() {
@@ -89,6 +94,7 @@ function initialize() {
     win.webContents.setWindowOpenHandler(({ url }) => {
       // console.log(url)
       //if (url === '_blank') {
+
         return {
           action: 'allow',
           overrideBrowserWindowOptions: {
@@ -209,6 +215,21 @@ function makeSingleInstance() {
   })
 
 
+}
+
+function onOpenUrl(event: any, schemeData: string): void {
+  event.preventDefault();
+
+  if (this.window) {
+
+      // If we have a running window we can just forward the notification to it
+      this.handleDeepLink(schemeData);
+
+  } else {
+
+      // If this is a startup deep linking message we need to store it until after startup
+      this.ipcEvents.deepLinkStartupUrl = schemeData;
+  }
 }
 
 // makeSingleInstance()
