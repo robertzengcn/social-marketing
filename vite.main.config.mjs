@@ -63,11 +63,11 @@ export default ({ mode }) => {
             // commonjs({
             //     ignoreDynamicRequires: true
             // }),
-            // copy({
-            //     targets: [
-            //         { src: 'node_modules/better-sqlite3/build/Release/better_sqlite3.node', dest: 'build' },
-            //     ]
-            // })
+            copy({
+                targets: [
+                    { src: 'node_modules/better-sqlite3/build/Release/better_sqlite3.node', dest: 'build' },
+                ]
+            })
             // copy({
             //     targets: [
             //         { src: 'node_modules/better-sqlite3/build/Release/better_sqlite3.node', dest: 'build' },

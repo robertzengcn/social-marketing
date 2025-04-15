@@ -1,16 +1,17 @@
 'use strict'
 import 'reflect-metadata';
 // import {ipcMain as ipc} from 'electron-better-ipc';
-import { app, BrowserWindow, dialog } from 'electron'
+import { app, BrowserWindow, dialog, protocol } from 'electron'
 // import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
-import {registerCommunicationIpcHandlers} from "./main-process/communication/";
+import { registerCommunicationIpcHandlers } from "./main-process/communication/";
 import * as path from 'path';
 import { Token } from "@/modules/token"
-import {USERSDBPATH} from '@/config/usersetting';
-import {SqliteDb} from "@/modules/SqliteDb"
+import { USERSDBPATH } from '@/config/usersetting';
+import { SqliteDb } from "@/modules/SqliteDb"
 import log from 'electron-log/main';
 import fs from 'fs';
+import ProtocolRegistry from 'protocol-registry'
 // import { createProtocol } from 'electron';
 const isDevelopment = process.env.NODE_ENV !== 'production'
 declare const MAIN_WINDOW_VITE_DEV_SERVER_URL: string;
@@ -46,10 +47,10 @@ log.info('Application starting...');
 // Handle uncaught exceptions
 process.on('uncaughtException', (error) => {
   log.error('Uncaught Exception:', error);
-  
+
   // Show error dialog if possible
   if (app.isReady()) {
-    dialog.showErrorBox('Application Error', 
+    dialog.showErrorBox('Application Error',
       `An unexpected error occurred: ${error.message}\n\nDetails have been logged.`);
   }
 });
@@ -62,12 +63,28 @@ process.on('unhandledRejection', (reason) => {
 let win;
 function initialize() {
   console.log(import.meta.env.VITE_REMOTEADD)
- // protocol.registerSchemesAsPrivileged([
+  // protocol.registerSchemesAsPrivileged([
 
   //   { scheme: appName, privileges: { secure: true, 
   //     standard: true } }
   // ])
-  app.setAsDefaultProtocolClient(appName);
+  if (app.isPackaged) {
+    if (!app.isDefaultProtocolClient(protocolScheme)) {
+      const registres = app.setAsDefaultProtocolClient(protocolScheme);
+      console.log('registres:', registres)
+    }
+
+  } else {
+
+    ProtocolRegistry.register(protocolScheme, `"${process.execPath}" "${path.resolve(process.argv[1])}" "$_URL_"`,
+      {
+        override: true,
+        terminal: true,
+      }
+    ).then(() => console.log('Successfully registered'))
+      .catch(console.error);
+    // app.setAsDefaultProtocolClient(protocolScheme);
+  }
   makeSingleInstance()
 
   async function createWindow() {
@@ -82,7 +99,7 @@ function initialize() {
         // nodeIntegration: (process.env
         //   .ELECTRON_NODE_INTEGRATION as unknown) as boolean,
         //  contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
-        
+
         // contextIsolation:false,
         nodeIntegration: false,
         contextIsolation: true,
@@ -95,17 +112,31 @@ function initialize() {
       // console.log(url)
       //if (url === '_blank') {
 
-        return {
-          action: 'allow',
-          overrideBrowserWindowOptions: {
-            // frame: false,
-            // fullscreenable: false,
-            backgroundColor: 'black',
-            webPreferences: {
-              preload: path.join(__dirname + '/preload.js')
-            }
+      //   const url = new URL(req.url);
+      //   const filePath = url.pathname;
+
+      if (url.startsWith(`${protocolScheme}://`)) {   // Handle token data if it's in the URL
+        if (url.searchParams.has('token')) {
+          const tokenService = new Token()
+          const token = url.searchParams.get('token');
+          if (token) {
+            log.info('Token received, setting USERSDBPATH');
+            tokenService.setValue(USERSDBPATH, token);
           }
         }
+      }
+
+      return {
+        action: 'allow',
+        overrideBrowserWindowOptions: {
+          // frame: false,
+          // fullscreenable: false,
+          backgroundColor: 'black',
+          webPreferences: {
+            preload: path.join(__dirname + '/preload.js')
+          }
+        }
+      }
       // }
       // return { action: 'deny' }
     })
@@ -141,11 +172,33 @@ function initialize() {
   // This method will be called when Electron has finished
   // initialization and is ready to create browser windows.
   // Some APIs can only be used after this event occurs.
-  app.on('ready', async () => {
+  app.whenReady().then(async () => {
+    const tokenService = new Token()
+    // protocol.handle(protocolScheme, (req) => {
+    //   const url = new URL(req.url);
+    //   const filePath = url.pathname;
+
+    //   // Handle token data if it's in the URL
+    //   if (url.searchParams.has('token')) {
+    //     const token = url.searchParams.get('token');
+    //     if (token) {
+    //       log.info('Token received, setting USERSDBPATH');
+    //       tokenService.setValue(USERSDBPATH, token);
+    //     }
+    //   }
+    //   // If the URL is the root, redirect to the dashboard
+    //   // if (filePath === '/') {
+    //   //   return new Response(fs.createReadStream(path.normalize(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/dashboard.html`))));
+    //   // }
+
+    //   // Return the requested file
+    //  // return new Response(fs.createReadStream(path.normalize(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}${filePath}`))));
+    // })
+
     createWindow();
-    const tokenService=new Token()
-    const userdataPath=tokenService.getValue(USERSDBPATH)
-    if(userdataPath&&userdataPath.length>0){
+
+    const userdataPath = tokenService.getValue(USERSDBPATH)
+    if (userdataPath && userdataPath.length > 0) {
       // Check if the user data path exists, create it if not
       try {
         if (!fs.existsSync(userdataPath)) {
@@ -155,16 +208,16 @@ function initialize() {
       } catch (err) {
         log.error(`Failed to create user data path: ${err}`);
         const errorMessage = err instanceof Error ? err.message : String(err);
-        dialog.showErrorBox('Configuration Error', 
+        dialog.showErrorBox('Configuration Error',
           `Failed to create user data directory: ${errorMessage}`);
       }
-      const appDataSource=SqliteDb.getInstance(userdataPath)
-      if(!appDataSource.connection.isInitialized){
-       await appDataSource.connection.initialize()
+      const appDataSource = SqliteDb.getInstance(userdataPath)
+      if (!appDataSource.connection.isInitialized) {
+        await appDataSource.connection.initialize()
       }
     }
-   registerCommunicationIpcHandlers(win);
-    
+    registerCommunicationIpcHandlers(win);
+
 
     if (isDevelopment && !process.env.IS_TEST) {
       // Install Vue Devtools
@@ -192,7 +245,7 @@ function initialize() {
       })
     }
   }
-  
+
 
 }
 
@@ -222,13 +275,13 @@ function onOpenUrl(event: any, schemeData: string): void {
 
   if (this.window) {
 
-      // If we have a running window we can just forward the notification to it
-      this.handleDeepLink(schemeData);
+    // If we have a running window we can just forward the notification to it
+    this.handleDeepLink(schemeData);
 
   } else {
 
-      // If this is a startup deep linking message we need to store it until after startup
-      this.ipcEvents.deepLinkStartupUrl = schemeData;
+    // If this is a startup deep linking message we need to store it until after startup
+    this.ipcEvents.deepLinkStartupUrl = schemeData;
   }
 }
 

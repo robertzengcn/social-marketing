@@ -7,7 +7,9 @@
   "build": {
     "protocols": {
       "name": "socialmarketing",
-      "schemes": ["socialmarketing"]
+      "schemes": [
+        "socialmarketing"
+      ]
     }
   },
   "scripts": {
@@ -102,6 +104,7 @@
     "pg-hstore": "^2.3.4",
     "pinia": "^2.1.7",
     "progress-stream": "^2.0.0",
+    "protocol-registry": "^2.0.0",
     "puppeteer": "22.13.1",
     "puppeteer-cluster": "^0.23.0",
     "puppeteer-extra": "^3.3.6",
