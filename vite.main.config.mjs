@@ -7,6 +7,7 @@ import * as path from 'path';
 import ClosePlugin from './vite-plugin-close'
 import checker from 'vite-plugin-checker'
 import sourcemaps from 'rollup-plugin-sourcemaps';
+import {ViteEjsPlugin} from "vite-plugin-ejs";
 // import commonjs from '@rollup/plugin-commonjs';
 //import { nodeResolve } from '@rollup/plugin-node-resolve';
 
@@ -53,6 +54,7 @@ export default ({ mode }) => {
             //   }),
 
             alias(),
+            ViteEjsPlugin(),
             emptyModulesPlugin(),
             sourcemaps(),
             ClosePlugin(),
