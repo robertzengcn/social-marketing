@@ -1,13 +1,13 @@
 'use strict'
 import 'reflect-metadata';
 // import {ipcMain as ipc} from 'electron-better-ipc';
-import { app, BrowserWindow, dialog, protocol } from 'electron'
+import { app, BrowserWindow, dialog} from 'electron'
 // import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 import { registerCommunicationIpcHandlers } from "./main-process/communication/";
 import * as path from 'path';
 import { Token } from "@/modules/token"
-import { USERSDBPATH } from '@/config/usersetting';
+import { USERSDBPATH,USERTOKEN } from '@/config/usersetting';
 import { SqliteDb } from "@/modules/SqliteDb"
 import log from 'electron-log/main';
 import fs from 'fs';
@@ -85,7 +85,7 @@ function initialize() {
       .catch(console.error);
     // app.setAsDefaultProtocolClient(protocolScheme);
   }
-  makeSingleInstance()
+  // makeSingleInstance()
 
   async function createWindow() {
     // Create the browser window.
@@ -115,16 +115,16 @@ function initialize() {
       //   const url = new URL(req.url);
       //   const filePath = url.pathname;
 
-      if (url.startsWith(`${protocolScheme}://`)) {   // Handle token data if it's in the URL
-        if (url.searchParams.has('token')) {
-          const tokenService = new Token()
-          const token = url.searchParams.get('token');
-          if (token) {
-            log.info('Token received, setting USERSDBPATH');
-            tokenService.setValue(USERSDBPATH, token);
-          }
-        }
-      }
+      // if (url.startsWith(`${protocolScheme}://`)) {   // Handle token data if it's in the URL
+      //   if (url.searchParams.has('token')) {
+      //     const tokenService = new Token()
+      //     const token = url.searchParams.get('token');
+      //     if (token) {
+      //       log.info('Token received, setting USERSDBPATH');
+      //       tokenService.setValue(USERSDBPATH, token);
+      //     }
+      //   }
+      // }
 
       return {
         action: 'allow',
@@ -167,6 +167,23 @@ function initialize() {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
+  })
+
+  app.on('open-url', (event, url) => {
+    event.preventDefault();
+    console.log(`App opened with URL on mac: ${url}`);
+    
+  });
+  app.on('second-instance', (event, argv) => {
+    const url = argv.find(arg => arg.startsWith(`${protocolScheme}://`));
+    if (url) {
+      console.log(`App opened with URL on window: ${url}`);
+     
+    }
+    if (win) {
+      if (win.isMinimized()) win.restore();
+      win.focus();
+    }
   })
 
   // This method will be called when Electron has finished
@@ -270,18 +287,27 @@ function makeSingleInstance() {
 
 }
 
-function onOpenUrl(event: any, schemeData: string): void {
-  event.preventDefault();
+async function handleDeepLink(url: string) {
+  try {
+    const parsedUrl = new URL(url);
+    const token = parsedUrl.searchParams.get('token'); // Example: Extract a token from the URL
+    if (token) {
+      console.log(`Token received: ${token}`);
+      const tokenService = new Token();
+      tokenService.setValue(USERTOKEN, token);
+    }
 
-  if (this.window) {
-
-    // If we have a running window we can just forward the notification to it
-    this.handleDeepLink(schemeData);
-
-  } else {
-
-    // If this is a startup deep linking message we need to store it until after startup
-    this.ipcEvents.deepLinkStartupUrl = schemeData;
+    // Perform other actions based on the URL
+    if (win) {
+      //win.webContents.send('deep-link', url); // Forward the URL to the renderer process
+      if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
+        await win.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL)
+      }else{
+        await win.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`))
+      }
+    }
+  } catch (error) {
+    console.error('Failed to handle deep link:', error);
   }
 }
 
