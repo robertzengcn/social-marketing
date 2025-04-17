@@ -123,6 +123,7 @@ export class UserController {
         const loginUrl = import.meta.env.VITE_LOGIN_URL as string;
         // Get app name from package.json
         const appName = app.getName() || "";
+        const finalapp=appName.replace(/-/g, '');
         // try {
         //     appName = packageJson.name || "";
         //     console.log(`Using app name from package.json: ${appName}`);
@@ -131,7 +132,7 @@ export class UserController {
         // }
 
         // Build the login URL with app name
-        const finalloginUrl=loginUrl.replace(/\/$/, '') + '/login?app='+appName
+        const finalloginUrl=loginUrl.replace(/\/$/, '') + '/login?app='+finalapp
         if (!finalloginUrl) {
             throw new Error("Login URL is not defined in environment variables");
         }
@@ -176,7 +177,7 @@ export class UserController {
     }
     //check user login status
     public async checklogin(): Promise<jwtUser | null> {
-        const remoteSourmodel = new RemoteSource;
+        const remoteSourmodel = new RemoteSource();
         const userInfo = await remoteSourmodel.GetUserInfo().then(function (res) {
             console.log(res);
             return res;

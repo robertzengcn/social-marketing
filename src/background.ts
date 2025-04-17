@@ -1,17 +1,19 @@
 'use strict'
 import 'reflect-metadata';
 // import {ipcMain as ipc} from 'electron-better-ipc';
-import { app, BrowserWindow, dialog} from 'electron'
+import { app, BrowserWindow, dialog } from 'electron'
 // import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 import { registerCommunicationIpcHandlers } from "./main-process/communication/";
 import * as path from 'path';
 import { Token } from "@/modules/token"
-import { USERSDBPATH,USERTOKEN } from '@/config/usersetting';
+import { USERSDBPATH, USERTOKEN } from '@/config/usersetting';
 import { SqliteDb } from "@/modules/SqliteDb"
 import log from 'electron-log/main';
 import fs from 'fs';
 import ProtocolRegistry from 'protocol-registry'
+import { TOKENNAME } from '@/config/usersetting';
+import { RemoteSource } from '@/modules/remotesource'
 // import { createProtocol } from 'electron';
 const isDevelopment = process.env.NODE_ENV !== 'production'
 declare const MAIN_WINDOW_VITE_DEV_SERVER_URL: string;
@@ -60,7 +62,7 @@ process.on('unhandledRejection', (reason) => {
   log.error('Unhandled Promise Rejection:', reason);
 });
 
-let win;
+let win: BrowserWindow | null;
 function initialize() {
   console.log(import.meta.env.VITE_REMOTEADD)
   // protocol.registerSchemesAsPrivileged([
@@ -75,17 +77,21 @@ function initialize() {
     }
 
   } else {
-
+    // console.log('protocolScheme:', protocolScheme)
+    // console.log('process.execPath:', process.execPath)
+    // console.log('path.resolve(process.argv[1]):', path.resolve(process.argv[1]))
+    // console.log('path:', path.resolve(process.argv[1]))
     ProtocolRegistry.register(protocolScheme, `"${process.execPath}" "${path.resolve(process.argv[1])}" "$_URL_"`,
       {
         override: true,
+        appName: appName,
         terminal: true,
       }
     ).then(() => console.log('Successfully registered'))
       .catch(console.error);
     // app.setAsDefaultProtocolClient(protocolScheme);
   }
-  // makeSingleInstance()
+  makeSingleInstance()
 
   async function createWindow() {
     // Create the browser window.
@@ -170,47 +176,31 @@ function initialize() {
   })
 
   app.on('open-url', (event, url) => {
+
+    console.log("open url call")
     event.preventDefault();
     console.log(`App opened with URL on mac: ${url}`);
-    
+    handleDeepLink(url)
+
   });
-  app.on('second-instance', (event, argv) => {
-    const url = argv.find(arg => arg.startsWith(`${protocolScheme}://`));
-    if (url) {
-      console.log(`App opened with URL on window: ${url}`);
-     
-    }
-    if (win) {
-      if (win.isMinimized()) win.restore();
-      win.focus();
-    }
-  })
+  // app.on('second-instance', (event, argv) => {
+  //   console.log("second-instance call")
+  //   const url = argv.find(arg => arg.startsWith(`${protocolScheme}://`));
+  //   if (url) {
+  //     console.log(`App opened with URL on window: ${url}`);
+  //     handleDeepLink(url)
+  //   }
+  //   if (win) {
+  //     if (win.isMinimized()) win.restore();
+  //     win.focus();
+  //   }
+  // })
 
   // This method will be called when Electron has finished
   // initialization and is ready to create browser windows.
   // Some APIs can only be used after this event occurs.
   app.whenReady().then(async () => {
     const tokenService = new Token()
-    // protocol.handle(protocolScheme, (req) => {
-    //   const url = new URL(req.url);
-    //   const filePath = url.pathname;
-
-    //   // Handle token data if it's in the URL
-    //   if (url.searchParams.has('token')) {
-    //     const token = url.searchParams.get('token');
-    //     if (token) {
-    //       log.info('Token received, setting USERSDBPATH');
-    //       tokenService.setValue(USERSDBPATH, token);
-    //     }
-    //   }
-    //   // If the URL is the root, redirect to the dashboard
-    //   // if (filePath === '/') {
-    //   //   return new Response(fs.createReadStream(path.normalize(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/dashboard.html`))));
-    //   // }
-
-    //   // Return the requested file
-    //  // return new Response(fs.createReadStream(path.normalize(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}${filePath}`))));
-    // })
 
     createWindow();
 
@@ -233,8 +223,9 @@ function initialize() {
         await appDataSource.connection.initialize()
       }
     }
+    if(win){
     registerCommunicationIpcHandlers(win);
-
+    }
 
     if (isDevelopment && !process.env.IS_TEST) {
       // Install Vue Devtools
@@ -273,17 +264,31 @@ function initialize() {
 
 
 function makeSingleInstance() {
+
   if (process.mas) return
 
-  app.requestSingleInstanceLock()
+  const gotThelock = app.requestSingleInstanceLock()
+  if (!gotThelock) {
+    app.quit()
+  } else {
 
-  app.on('second-instance', () => {
-    if (win) {
-      if (win.isMinimized()) win.restore()
-      win.focus()
-    }
-  })
+    console.log('gotThelock:', gotThelock)
 
+    app.on('second-instance', (event, argv, workingDirectory) => {
+      if (win) {
+        if (win.isMinimized()) win.restore()
+        win.focus()
+      }
+
+      console.log("second-instance call")
+      const url = argv.find(arg => arg.startsWith(`${protocolScheme}://`));
+      if (url) {
+        console.log(`App opened with URL on window: ${url}`);
+        handleDeepLink(url)
+      }
+
+    })
+  }
 
 }
 
@@ -294,18 +299,24 @@ async function handleDeepLink(url: string) {
     if (token) {
       console.log(`Token received: ${token}`);
       const tokenService = new Token();
-      tokenService.setValue(USERTOKEN, token);
+      tokenService.setValue(TOKENNAME, token);
+      const remoteser = new RemoteSource()
+      const userInfo = await remoteser.GetUserInfo()
+      console.log('userInfo:', userInfo)
+      if (userInfo) {
+        if (win) {
+          win.webContents.send('navigate-to-dashboard');
+        }
+      }else{
+        log.error('Failed to get user info from remote source');
+        dialog.showErrorBox('User Info Error',
+          `Failed to get user info from remote source.`);
+      }
+
     }
 
     // Perform other actions based on the URL
-    if (win) {
-      //win.webContents.send('deep-link', url); // Forward the URL to the renderer process
-      if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-        await win.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL)
-      }else{
-        await win.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`))
-      }
-    }
+
   } catch (error) {
     console.error('Failed to handle deep link:', error);
   }
