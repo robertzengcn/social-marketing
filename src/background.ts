@@ -304,6 +304,9 @@ async function handleDeepLink(url: string) {
       const userInfo = await remoteser.GetUserInfo()
       console.log('userInfo:', userInfo)
       if (userInfo) {
+        //set user info into token service
+        
+
         if (win) {
           win.webContents.send('navigate-to-dashboard');
         }

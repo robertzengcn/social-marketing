@@ -189,4 +189,5 @@ export class UserController {
         });
         return userInfo;
     }
+    //update user info by token
 }
