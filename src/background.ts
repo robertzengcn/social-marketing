@@ -7,13 +7,16 @@ import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 import { registerCommunicationIpcHandlers } from "./main-process/communication/";
 import * as path from 'path';
 import { Token } from "@/modules/token"
-import { USERSDBPATH, USERTOKEN } from '@/config/usersetting';
+import { USERSDBPATH} from '@/config/usersetting';
 import { SqliteDb } from "@/modules/SqliteDb"
 import log from 'electron-log/main';
 import fs from 'fs';
 import ProtocolRegistry from 'protocol-registry'
 import { TOKENNAME } from '@/config/usersetting';
-import { RemoteSource } from '@/modules/remotesource'
+//import { RemoteSource } from '@/modules/remotesource'
+import { UserController } from '@/controller/UserController';
+import {NATIVATECOMMAND} from '@/config/channellist'
+import {NativateDatatype} from '@/entityTypes/commonType'
 // import { createProtocol } from 'electron';
 const isDevelopment = process.env.NODE_ENV !== 'production'
 declare const MAIN_WINDOW_VITE_DEV_SERVER_URL: string;
@@ -77,10 +80,10 @@ function initialize() {
     }
 
   } else {
-    // console.log('protocolScheme:', protocolScheme)
-    // console.log('process.execPath:', process.execPath)
-    // console.log('path.resolve(process.argv[1]):', path.resolve(process.argv[1]))
-    // console.log('path:', path.resolve(process.argv[1]))
+    console.log('protocolScheme:', protocolScheme)
+    console.log('process.execPath:', process.execPath)
+    console.log('path.resolve(process.argv[1]):', path.resolve(process.argv[1]))
+   // console.log('path:', path.resolve(process.argv[1]))
     ProtocolRegistry.register(protocolScheme, `"${process.execPath}" "${path.resolve(process.argv[1])}" "$_URL_"`,
       {
         override: true,
@@ -300,15 +303,16 @@ async function handleDeepLink(url: string) {
       console.log(`Token received: ${token}`);
       const tokenService = new Token();
       tokenService.setValue(TOKENNAME, token);
-      const remoteser = new RemoteSource()
-      const userInfo = await remoteser.GetUserInfo()
-      console.log('userInfo:', userInfo)
+      // const remoteser = new RemoteSource()
+      // const userInfo = await remoteser.GetUserInfo()
+      // console.log('userInfo:', userInfo)
+      const userController=new UserController()
+      const userInfo = await userController.updateUserInfo();
       if (userInfo) {
-        //set user info into token service
+        //login success
         
-
-        if (win) {
-          win.webContents.send('navigate-to-dashboard');
+        if (win&& !win.isDestroyed()) {
+          await win.webContents.send(NATIVATECOMMAND,{path:'Dashboard'} as NativateDatatype);
         }
       }else{
         log.error('Failed to get user info from remote source');

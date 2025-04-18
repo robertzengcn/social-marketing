@@ -8,6 +8,7 @@ import {windowInvoke,windowSend,windowReceive} from '@/views/utils/apirequest'
 import {QUERY_USER_INFO} from "@/config/channellist";
 import {UserInfoType} from "@/entityTypes/userType"
 import {OPENLOGINPAGE} from "@/config/channellist";
+import {NativateDatatype} from "@/entityTypes/commonType"
 
 // export const getUsers = (params: any) =>
 //   request({
@@ -48,7 +49,7 @@ export const openPage = async() => {
   await windowSend(OPENLOGINPAGE)
 }
 
-export function receiveRedirectevent(channel:string,cb:(data:any)=>void){
+export function receiveRedirectevent(channel:string,cb:(data:NativateDatatype)=>void){
    
   windowReceive(channel,cb)
 }

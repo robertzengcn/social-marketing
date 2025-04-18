@@ -75,5 +75,6 @@ export const VIDEO_VOICE_TRANSLATE='video:voice:translate'
 export const SYSTEM_SETTING_UPDATE='system_setting:update'
 export const QUERY_USER_INFO='user:info'
 export const OPENLOGINPAGE='open:page'
+export const NATIVATECOMMAND='navigate:command'
 
 

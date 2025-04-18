@@ -32,21 +32,51 @@
         </v-card>
       </v-dialog>
 </template>
-<script lang="ts">
+<script setup lang="ts">
 //import { UserModule } from '@/views/store/modules/user'
 import {openPage} from "@/views/api/users"
-export default{
-    data: () => ({
-        alertContent:'',
-        dialog: false,
-    }),
-    methods: {
-        async redirectToLogin() {
-            await openPage()
-            // Open the browser to the login page
-            //window.electron.openExternal('http://localhost:3001/login');
-        },
-    },
+import { onMounted, ref } from "vue";
+import {receiveRedirectevent} from "@/views/api/users"
+import router from '@/views/router';
+//import { defineComponent } from "vue";
+import {NATIVATECOMMAND} from "@/config/channellist"
+const alertContent=ref('');
+const dialog=ref(false);    
+// export default defineComponent({
+//     data: () => ({
+        //alertContent: '',
+        // dialog: false,
+    //}),
+//     methods: {
+//         async redirectToLogin() {
+//             await openPage();
+//             // Open the browser to the login page
+//             //window.electron.openExternal('http://localhost:3001/login');
+//         },
+//     },
+// });
+
+onMounted(() => {
+ 
+  receiveMsg()
+})
+const redirectToLogin = async () => {
+    // Open the browser to the login page
+    await openPage();
+    //window.electron.openExternal('http://localhost:3001/login');
+    //window.electron.ipcRenderer.send('open-external', 'http://localhost:3001/login');
+}
+
+const receiveMsg = () => {
+    receiveRedirectevent(NATIVATECOMMAND, function (data)  {
+        console.log("Received redirect event:", data);
+        if (data.path) {
+            router.push({
+        name: data.path
+    });
+        }
+      
+    });
 }
 
 </script>
