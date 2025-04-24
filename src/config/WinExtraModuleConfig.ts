@@ -9,7 +9,7 @@ export const WinExtraModuleConfig:ExtraModule[]=[
         link:"https://github.com/yt-dlp/yt-dlp/releases/download/2025.03.31/yt-dlp.exe",
         requirePy:false,
         ispip:false,
-        requireFfmpeg:false
+        requireFfmpeg:true
     },
     {
         name:"openai-whisper",

@@ -25,6 +25,13 @@ export class youtubeVideo implements Video {
                 throw new CustomError("download youtube video must install python",2024120511189)
             }
         }
+        if(dPackage.requireFfmpeg){
+            //check ffmpeg installed or not
+            const ffmpegRes = this.extraModule.checkFfmpeg();
+            if (!ffmpegRes) {
+                throw new CustomError("download youtube video must install ffmpeg", 2024121518110);
+            }
+        }
         // const extraModule=new ExtraModuleController()
         const res=await this.extraModule.checkModule(dPackage.packagename)
 
