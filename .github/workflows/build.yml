@@ -47,11 +47,12 @@ jobs:
           touch .env
           echo "NODE_ENV=test" >> .env
           cat .env    
-      - name: Create .env.test file 
+      - name: Create .env file 
         run: |
-          touch .env.test 
-          echo "VITE_REMOTEADD=${{ secrets.VITE_REMOTEADD_TEST }}" >> .env          
-          cat .env.test        
+          touch .env
+          echo "VITE_REMOTEADD=${{ secrets.VITE_REMOTEADD_TEST }}" >> .env 
+          echo "VITE_LOGIN_URL=${{ secrets.VITE_LOGIN_URL_TEST }}" >> .env         
+          cat .env       
       - name: Install dependencies
         run: yarn install
       - name: Rebuild electron
@@ -124,11 +125,12 @@ jobs:
             touch .env
             echo "NODE_ENV=test" >> .env
             cat .env               
-      - name: Create .env.test file 
+      - name: Create .env file 
         run: |
-            touch .env.test   
+            touch .env  
             echo VITE_REMOTEADD=${{ secrets.VITE_REMOTEADD_TEST }} >> .env
-            cat .env.test
+            echo "VITE_LOGIN_URL=${{ secrets.VITE_LOGIN_URL_TEST }}" >> .env
+            cat .env
       - name: Install setuptools
         run: |
             brew install python-setuptools           
