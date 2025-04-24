@@ -11,8 +11,10 @@
                         color="primary" 
                         size="large"
                         prepend-icon="mdi-login"
+                        :loading="isLoading"
+                        :disabled="isLoading"
                         @click="redirectToLogin">
-                        Login with Browser
+                        {{ isLoading ? 'Logging in...' : 'Login with Browser' }}
                     </v-btn>
                 </div>
             </v-card>
@@ -42,38 +44,33 @@ import router from '@/views/router';
 import {NATIVATECOMMAND} from "@/config/channellist"
 const alertContent=ref('');
 const dialog=ref(false);    
-// export default defineComponent({
-//     data: () => ({
-        //alertContent: '',
-        // dialog: false,
-    //}),
-//     methods: {
-//         async redirectToLogin() {
-//             await openPage();
-//             // Open the browser to the login page
-//             //window.electron.openExternal('http://localhost:3001/login');
-//         },
-//     },
-// });
+const isLoading = ref(false);
 
 onMounted(() => {
  
   receiveMsg()
 })
 const redirectToLogin = async () => {
-    // Open the browser to the login page
-    await openPage();
-    //window.electron.openExternal('http://localhost:3001/login');
-    //window.electron.ipcRenderer.send('open-external', 'http://localhost:3001/login');
+    try {
+        isLoading.value = true;
+        // Open the browser to the login page
+        await openPage();
+    } catch (error) {
+        console.error('Login failed:', error);
+        alertContent.value = 'Failed to open login page. Please try again.';
+        dialog.value = true;
+        isLoading.value = false; // Reset loading on error
+    }
 }
 
 const receiveMsg = () => {
     receiveRedirectevent(NATIVATECOMMAND, function (data)  {
         console.log("Received redirect event:", data);
+        isLoading.value = false; // Reset loading state when receiving response
         if (data.path) {
             router.push({
-        name: data.path
-    });
+                name: data.path
+            });
         }
       
     });
