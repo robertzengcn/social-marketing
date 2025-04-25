@@ -196,7 +196,7 @@ export class YoutubeDownload implements VideoDownloadImpl {
             //headless: false, 
         });
         const page = await browser.newPage();
-        await page.goto(url);
+        await page.goto(url, { timeout: 90000, waitUntil: 'networkidle2' });
         await page.setViewport({width: 1080, height: 1024});
         const resultUrls:Array<string>=[];
         if(url.includes(this.playerlisttype)){
