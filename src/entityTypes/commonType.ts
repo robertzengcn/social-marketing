@@ -108,4 +108,6 @@ export type LlmDatatype={
         url:string,
         apikey:string
 }
-
+export type NativateDatatype={
+    path:string
+}

@@ -48,7 +48,7 @@
 
         </template>
         <template v-slot:item.proxy="{ item }">
-            <span>{{ item.proxy ? CapitalizeFirstLetter(t('common.configured')) :
+            <span>{{ item.use_proxy ? CapitalizeFirstLetter(t('common.configured')) :
                 CapitalizeFirstLetter(t('common.not_configured')) }}</span>
         </template>
         <template v-slot:item.cookies="{ item }">

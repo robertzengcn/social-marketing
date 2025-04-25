@@ -167,6 +167,13 @@ export class ExtraModuleController {
                 strerr(error)
             }
         })
+       
+        await this.ensureExtraModuleDirectory().catch((error) => {
+            log.error(error)
+            if (strerr) {
+                strerr(error)
+            }
+        })
         const saveName = path.join(this.extraModulePth, packagename)
         //console.log(this.extraModulePth)
         //create folder if not exist

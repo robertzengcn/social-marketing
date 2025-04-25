@@ -4,9 +4,11 @@ export {};
 // import request from '@/views/utils/request'
 // import {ipcRenderer as ipc} from 'electron-better-ipc'
 import {Iresponse} from '@/views/api/types'
-import {windowInvoke} from '@/views/utils/apirequest'
+import {windowInvoke,windowSend,windowReceive} from '@/views/utils/apirequest'
 import {QUERY_USER_INFO} from "@/config/channellist";
 import {UserInfoType} from "@/entityTypes/userType"
+import {OPENLOGINPAGE} from "@/config/channellist";
+import {NativateDatatype} from "@/entityTypes/commonType"
 
 // export const getUsers = (params: any) =>
 //   request({
@@ -40,4 +42,14 @@ await windowInvoke("user:Signout")
 export async function GetloginUserInfo():Promise<UserInfoType>{
     const res=await windowInvoke(QUERY_USER_INFO)
     return res
+}
+
+//create a function send message to backend to open page from brow
+export const openPage = async() => {
+  await windowSend(OPENLOGINPAGE)
+}
+
+export function receiveRedirectevent(channel:string,cb:(data:NativateDatatype)=>void){
+   
+  windowReceive(channel,cb)
 }
