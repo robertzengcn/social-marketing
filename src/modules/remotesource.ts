@@ -53,7 +53,7 @@ type keywordItem = {
   UsedTime: number,
 }
 export type jwtUser = {
-  account_id:number
+  // account_id:number
   name: string,
   email: string,
   // token:string
@@ -301,7 +301,7 @@ export class RemoteSource {
       }
       //decode jwt token
       const decoded = thisobj.ValidateToken(res.data.Token);
-      if (decoded.account_id > 0) {
+      if (decoded.name&&decoded.name.length>0) {
         const tokenModel = new Token()
         tokenModel.setValue(thisobj.tokenname, res.data.Token)
       }
@@ -357,7 +357,7 @@ export class RemoteSource {
     const decoded = jwt_decode(token) as jwtTokenUser;
     //console.log(decoded)
     const jwtuser: jwtUser = {
-      account_id: decoded.AccountId,
+      // account_id: decoded.AccountId,
       email: decoded.Email,
       name:decoded.Name,
       // token:token,

@@ -48,7 +48,9 @@
     "test/**/*.ts",
     "tests/**/*.ts",
     "tests/**/*.tsx",
-    "typings/*"],
+    "typings/*",
+    "**/*.ejs"
+  ],
   "exclude": [
     "node_modules"
   ]

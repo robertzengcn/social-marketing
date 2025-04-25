@@ -167,6 +167,13 @@ export class ExtraModuleController {
                 strerr(error)
             }
         })
+       
+        await this.ensureExtraModuleDirectory().catch((error) => {
+            log.error(error)
+            if (strerr) {
+                strerr(error)
+            }
+        })
         const saveName = path.join(this.extraModulePth, packagename)
         //console.log(this.extraModulePth)
         //create folder if not exist
@@ -391,6 +398,20 @@ export class ExtraModuleController {
             throw new CustomError("generate capation must install " + toolName, 2024120511189)
         }
         return true
+    }
+
+    checkFfmpeg(): boolean {
+        try {
+            // Try to execute the 'ffmpeg -version' command
+            const output = execSync('ffmpeg -version', { stdio: 'pipe' }).toString();
+            console.log(`ffmpeg version: ${output.trim()}`);
+            return true;
+        } catch (error) {
+            if (error instanceof Error) {
+                console.error('ffmpeg is not installed:', error.message);
+            }
+            return false;
+        }
     }
 
 
