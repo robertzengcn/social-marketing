@@ -2,11 +2,13 @@
 import { defineConfig, loadEnv } from 'vite';
 import alias from "@rollup/plugin-alias";
 import * as path from 'path';
-// import copy from 'rollup-plugin-copy'
+import copy from 'rollup-plugin-copy'
 // import { viteStaticCopy } from 'vite-plugin-static-copy'
 import ClosePlugin from './vite-plugin-close'
 import checker from 'vite-plugin-checker'
 import sourcemaps from 'rollup-plugin-sourcemaps';
+// import { compile } from "ejs";
+// import {ViteEjsPlugin} from "vite-plugin-ejs";
 // import commonjs from '@rollup/plugin-commonjs';
 //import { nodeResolve } from '@rollup/plugin-node-resolve';
 
@@ -53,6 +55,7 @@ export default ({ mode }) => {
             //   }),
 
             alias(),
+            // ViteEjsPlugin(),
             emptyModulesPlugin(),
             sourcemaps(),
             ClosePlugin(),
@@ -60,20 +63,21 @@ export default ({ mode }) => {
                 // e.g. use TypeScript check
                 typescript: true,
             }),
-            // commonjs({
-            //     ignoreDynamicRequires: true
-            // }),
-            // copy({
-            //     targets: [
-            //         { src: 'node_modules/better-sqlite3/build/Release/better_sqlite3.node', dest: 'build' },
-            //     ]
-            // })
-            // copy({
-            //     targets: [
-            //         { src: 'node_modules/better-sqlite3/build/Release/better_sqlite3.node', dest: 'build' },
-            //     ]
-            // })
-           
+            copy({
+                targets: [
+                    { 
+                        src: 'node_modules/protocol-registry/src/linux/templates/desktop.ejs',
+                        dest: '.vite/build/templates/'
+                    },
+                    { 
+                        src: process.platform === 'linux' 
+                            ? 'node_modules/protocol-registry/src/linux/templates/script.ejs' 
+                            : 'node_modules/protocol-registry/src/macos/templates/script.ejs', 
+                        dest: '.vite/build/templates/' 
+                    },
+                ]
+            }),
+                
         ],
         resolve: {
             alias: {

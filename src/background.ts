@@ -1,16 +1,22 @@
 'use strict'
 import 'reflect-metadata';
 // import {ipcMain as ipc} from 'electron-better-ipc';
-import { app, protocol, BrowserWindow, dialog } from 'electron'
+import { app, BrowserWindow, dialog } from 'electron'
 // import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
-import {registerCommunicationIpcHandlers} from "./main-process/communication/";
+import { registerCommunicationIpcHandlers } from "./main-process/communication/";
 import * as path from 'path';
 import { Token } from "@/modules/token"
-import {USERSDBPATH} from '@/config/usersetting';
-import {SqliteDb} from "@/modules/SqliteDb"
+import { USERSDBPATH} from '@/config/usersetting';
+import { SqliteDb } from "@/modules/SqliteDb"
 import log from 'electron-log/main';
 import fs from 'fs';
+import ProtocolRegistry from 'protocol-registry'
+import { TOKENNAME } from '@/config/usersetting';
+//import { RemoteSource } from '@/modules/remotesource'
+import { UserController } from '@/controller/UserController';
+import {NATIVATECOMMAND} from '@/config/channellist'
+import {NativateDatatype} from '@/entityTypes/commonType'
 // import { createProtocol } from 'electron';
 const isDevelopment = process.env.NODE_ENV !== 'production'
 declare const MAIN_WINDOW_VITE_DEV_SERVER_URL: string;
@@ -20,7 +26,10 @@ declare const MAIN_WINDOW_VITE_NAME: string;
 // const { ipcRenderer: ipc } = require('electron-better-ipc');
 // const { ipcMain } = require("electron");
 
-// Scheme must be registered before the app is ready
+// Get app name for protocol
+const appName = app.getName();
+const protocolScheme = appName.replace(/-/g, ''); // Remove hyphens for protocol
+
 // Configure log
 log.initialize();
 
@@ -43,10 +52,10 @@ log.info('Application starting...');
 // Handle uncaught exceptions
 process.on('uncaughtException', (error) => {
   log.error('Uncaught Exception:', error);
-  
+
   // Show error dialog if possible
   if (app.isReady()) {
-    dialog.showErrorBox('Application Error', 
+    dialog.showErrorBox('Application Error',
       `An unexpected error occurred: ${error.message}\n\nDetails have been logged.`);
   }
 });
@@ -56,13 +65,35 @@ process.on('unhandledRejection', (reason) => {
   log.error('Unhandled Promise Rejection:', reason);
 });
 
-let win;
+let win: BrowserWindow | null;
 function initialize() {
   console.log(import.meta.env.VITE_REMOTEADD)
-  protocol.registerSchemesAsPrivileged([
-    { scheme: 'app', privileges: { secure: true, standard: true } }
-  ])
+  // protocol.registerSchemesAsPrivileged([
 
+  //   { scheme: appName, privileges: { secure: true, 
+  //     standard: true } }
+  // ])
+  if (app.isPackaged) {
+    if (!app.isDefaultProtocolClient(protocolScheme)) {
+      const registres = app.setAsDefaultProtocolClient(protocolScheme);
+      console.log('registres:', registres)
+    }
+
+  } else {
+    console.log('protocolScheme:', protocolScheme)
+    console.log('process.execPath:', process.execPath)
+    console.log('path.resolve(process.argv[1]):', path.resolve(process.argv[1]))
+   // console.log('path:', path.resolve(process.argv[1]))
+    ProtocolRegistry.register(protocolScheme, `"${process.execPath}" "${path.resolve(process.argv[1])}" "$_URL_"`,
+      {
+        override: true,
+        appName: appName,
+        terminal: true,
+      }
+    ).then(() => console.log('Successfully registered'))
+      .catch(console.error);
+    // app.setAsDefaultProtocolClient(protocolScheme);
+  }
   makeSingleInstance()
 
   async function createWindow() {
@@ -77,7 +108,7 @@ function initialize() {
         // nodeIntegration: (process.env
         //   .ELECTRON_NODE_INTEGRATION as unknown) as boolean,
         //  contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
-        
+
         // contextIsolation:false,
         nodeIntegration: false,
         contextIsolation: true,
@@ -89,17 +120,32 @@ function initialize() {
     win.webContents.setWindowOpenHandler(({ url }) => {
       // console.log(url)
       //if (url === '_blank') {
-        return {
-          action: 'allow',
-          overrideBrowserWindowOptions: {
-            // frame: false,
-            // fullscreenable: false,
-            backgroundColor: 'black',
-            webPreferences: {
-              preload: path.join(__dirname + '/preload.js')
-            }
+
+      //   const url = new URL(req.url);
+      //   const filePath = url.pathname;
+
+      // if (url.startsWith(`${protocolScheme}://`)) {   // Handle token data if it's in the URL
+      //   if (url.searchParams.has('token')) {
+      //     const tokenService = new Token()
+      //     const token = url.searchParams.get('token');
+      //     if (token) {
+      //       log.info('Token received, setting USERSDBPATH');
+      //       tokenService.setValue(USERSDBPATH, token);
+      //     }
+      //   }
+      // }
+
+      return {
+        action: 'allow',
+        overrideBrowserWindowOptions: {
+          // frame: false,
+          // fullscreenable: false,
+          backgroundColor: 'black',
+          webPreferences: {
+            preload: path.join(__dirname + '/preload.js')
           }
         }
+      }
       // }
       // return { action: 'deny' }
     })
@@ -132,14 +178,37 @@ function initialize() {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
 
+  app.on('open-url', (event, url) => {
+
+    console.log("open url call")
+    event.preventDefault();
+    console.log(`App opened with URL on mac: ${url}`);
+    handleDeepLink(url)
+
+  });
+  // app.on('second-instance', (event, argv) => {
+  //   console.log("second-instance call")
+  //   const url = argv.find(arg => arg.startsWith(`${protocolScheme}://`));
+  //   if (url) {
+  //     console.log(`App opened with URL on window: ${url}`);
+  //     handleDeepLink(url)
+  //   }
+  //   if (win) {
+  //     if (win.isMinimized()) win.restore();
+  //     win.focus();
+  //   }
+  // })
+
   // This method will be called when Electron has finished
   // initialization and is ready to create browser windows.
   // Some APIs can only be used after this event occurs.
-  app.on('ready', async () => {
+  app.whenReady().then(async () => {
+    const tokenService = new Token()
+
     createWindow();
-    const tokenService=new Token()
-    const userdataPath=tokenService.getValue(USERSDBPATH)
-    if(userdataPath&&userdataPath.length>0){
+
+    const userdataPath = tokenService.getValue(USERSDBPATH)
+    if (userdataPath && userdataPath.length > 0) {
       // Check if the user data path exists, create it if not
       try {
         if (!fs.existsSync(userdataPath)) {
@@ -149,16 +218,17 @@ function initialize() {
       } catch (err) {
         log.error(`Failed to create user data path: ${err}`);
         const errorMessage = err instanceof Error ? err.message : String(err);
-        dialog.showErrorBox('Configuration Error', 
+        dialog.showErrorBox('Configuration Error',
           `Failed to create user data directory: ${errorMessage}`);
       }
-      const appDataSource=SqliteDb.getInstance(userdataPath)
-      if(!appDataSource.connection.isInitialized){
-       await appDataSource.connection.initialize()
+      const appDataSource = SqliteDb.getInstance(userdataPath)
+      if (!appDataSource.connection.isInitialized) {
+        await appDataSource.connection.initialize()
       }
     }
-   registerCommunicationIpcHandlers(win);
-    
+    if(win){
+    registerCommunicationIpcHandlers(win);
+    }
 
     if (isDevelopment && !process.env.IS_TEST) {
       // Install Vue Devtools
@@ -186,7 +256,7 @@ function initialize() {
       })
     }
   }
-  
+
 
 }
 
@@ -197,18 +267,66 @@ function initialize() {
 
 
 function makeSingleInstance() {
+
   if (process.mas) return
 
-  app.requestSingleInstanceLock()
+  const gotThelock = app.requestSingleInstanceLock()
+  if (!gotThelock) {
+    app.quit()
+  } else {
 
-  app.on('second-instance', () => {
-    if (win) {
-      if (win.isMinimized()) win.restore()
-      win.focus()
+    console.log('gotThelock:', gotThelock)
+
+    app.on('second-instance', (event, argv, workingDirectory) => {
+      if (win) {
+        if (win.isMinimized()) win.restore()
+        win.focus()
+      }
+
+      console.log("second-instance call")
+      const url = argv.find(arg => arg.startsWith(`${protocolScheme}://`));
+      if (url) {
+        console.log(`App opened with URL on window: ${url}`);
+        handleDeepLink(url)
+      }
+
+    })
+  }
+
+}
+
+async function handleDeepLink(url: string) {
+  try {
+    const parsedUrl = new URL(url);
+    const token = parsedUrl.searchParams.get('token'); // Example: Extract a token from the URL
+    if (token) {
+      console.log(`Token received: ${token}`);
+      const tokenService = new Token();
+      tokenService.setValue(TOKENNAME, token);
+      // const remoteser = new RemoteSource()
+      // const userInfo = await remoteser.GetUserInfo()
+      // console.log('userInfo:', userInfo)
+      const userController=new UserController()
+      const userInfo = await userController.updateUserInfo();
+      if (userInfo) {
+        //login success
+        
+        if (win&& !win.isDestroyed()) {
+          await win.webContents.send(NATIVATECOMMAND,{path:'Dashboard'} as NativateDatatype);
+        }
+      }else{
+        log.error('Failed to get user info from remote source');
+        dialog.showErrorBox('User Info Error',
+          `Failed to get user info from remote source.`);
+      }
+
     }
-  })
 
+    // Perform other actions based on the URL
 
+  } catch (error) {
+    console.error('Failed to handle deep link:', error);
+  }
 }
 
 // makeSingleInstance()
