@@ -53,6 +53,14 @@ onMounted(() => {
 const redirectToLogin = async () => {
     try {
         isLoading.value = true;
+        
+        setTimeout(() => {
+            if (isLoading.value) {
+                isLoading.value = false;
+                alertContent.value = 'Login attempt timed out. Please try again.';
+                dialog.value = true;
+            }
+        }, 20000); 
         // Open the browser to the login page
         await openPage();
     } catch (error) {
