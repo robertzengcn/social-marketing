@@ -15,7 +15,7 @@ import { Token } from "@/modules/token"
 // import {USERSDBPATH} from '@/config/usersetting';
 import {SearchDataParam,SearchResEntityDisplay,SearchResEntityRecord} from "@/entityTypes/scrapeType"
 // import {SEARCHEVENT} from "@/config/channellist"
-import { SearchTaskStatus } from "@/model/searchTaskdb"
+import { SearchTaskStatus } from "@/model/SearchTask.model"
 // import { SearchKeyworddb } from "@/model/searchKeyworddb";
 import { CustomError } from "@/modules/customError";
 import {USERLOGPATH,USEREMAIL} from '@/config/usersetting';
@@ -140,10 +140,10 @@ export class SearchController {
         });
     }
     //return search result
-    public listSearchresult(page:number,size:number,sortBy?:SortBy):SearchtaskEntityNum{
+    public async listSearchresult(page:number,size:number,sortBy?:SortBy):Promise<SearchtaskEntityNum>{
         // const seModel=new searhModel()
         // await seModel.init();
-        const res=this.searhModel.listSearchtask(page,size, sortBy)
+        const res=await this.searhModel.listSearchtask(page,size, sortBy)
         return res;
     }   
     //list task search result
@@ -180,9 +180,9 @@ export class SearchController {
         }
         return data
     }
-    public getTaskErrorlog(taskId:number):string{
+    public async getTaskErrorlog(taskId:number):Promise<string>{
         // const seModel=new searhModel()
-        const log=this.searhModel.getTaskErrorLog(taskId)
+        const log=await this.searhModel.getTaskErrorLog(taskId)
         return log
     }
 

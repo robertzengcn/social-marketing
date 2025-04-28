@@ -1,5 +1,5 @@
 import { SearchDataParam } from "@/entityTypes/scrapeType"
-import { SearchTaskdb, SearchTaskStatus } from "@/model/searchTaskdb"
+import { SearchTaskModel, SearchTaskStatus } from "@/model/SearchTask.model"
 import { Token } from "@/modules/token"
 import { USERSDBPATH } from '@/config/usersetting';
 import { SearhEnginer } from "@/config/searchSetting"
@@ -16,7 +16,7 @@ import {SortBy} from "@/entityTypes/commonType";
 import { BaseModule } from "@/modules/baseModule";
 export class searhModel extends BaseModule {
    // private dbpath: string
-    private taskdbModel: SearchTaskdb
+    private taskdbModel: SearchTaskModel
     private serResultModel: SearchResultdb
     private serKeyworddb: SearchKeyworddb
     constructor() {
@@ -27,7 +27,7 @@ export class searhModel extends BaseModule {
         // }
         // this.dbpath = dbpath
         super()
-        this.taskdbModel = new SearchTaskdb(this.dbpath)
+        this.taskdbModel = new SearchTaskModel(this.dbpath)
         this.serResultModel = new SearchResultdb(this.dbpath)
         this.serKeyworddb = new SearchKeyworddb(this.dbpath)
     }
@@ -142,17 +142,17 @@ export class searhModel extends BaseModule {
         //     throw new Error("user path not exist")
         // }
         //const taskdbModel=new SearchTaskdb(this.dbpath)
-        this.taskdbModel.updatetasklog(taskId, errorLog)
+        this.taskdbModel.updateTaskLog(taskId, errorLog)
     }
     //return data for search list 
-    public listSearchtask(page:number,size:number, sortBy?:SortBy): SearchtaskEntityNum {
+    public async listSearchtask(page:number,size:number, sortBy?:SortBy): Promise<SearchtaskEntityNum> {
         // const tokenService = new Token()
         // const dbpath = await tokenService.getValue(USERSDBPATH)
         // if (!dbpath) {
         //     throw new Error("user path not exist")
         // }
         //const taskdbModel=new SearchTaskdb(this.dbpath)
-        const tasklist = this.taskdbModel.listTask(page,size,sortBy)
+        const tasklist = await this.taskdbModel.listTask(page,size,sortBy)
         // const searchKeydb=new SearchKeyworddb(this.dbpath)
         const taskdata: Array<SearchtaskItem> = []
 
@@ -173,7 +173,7 @@ export class searhModel extends BaseModule {
             taskdata.push(data)
         });
         //check number
-        const number = this.taskdbModel.getTaskTotal()
+        const number = await this.taskdbModel.getTaskTotal()
         const data: SearchtaskEntityNum = {
             total: number,
             records: taskdata
@@ -181,8 +181,8 @@ export class searhModel extends BaseModule {
         return data
     }
     //upate task status
-    public updateTaskStatus(taskId: number, status: SearchTaskStatus) {
-        this.taskdbModel.updatetaskstatus(taskId, status)
+    public async updateTaskStatus(taskId: number, status: SearchTaskStatus) {
+        await this.taskdbModel.updateTaskStatus(taskId, status)
     }
 
     //get search result list by task id
@@ -207,17 +207,17 @@ export class searhModel extends BaseModule {
         return res
     }
     //update task runtime log and error log path
-    public updateTaskLog(taskId: number, runtimeLog: string, errorLog: string) {
+    public async updateTaskLog(taskId: number, runtimeLog: string, errorLog: string) {
         if(runtimeLog){
-        this.taskdbModel.updateruntimelog(taskId, runtimeLog)
+        await this.taskdbModel.updateRuntimeLog(taskId, runtimeLog)
         }
         if(errorLog){
-        this.taskdbModel.updatetasklog(taskId, errorLog)
+            await this.taskdbModel.updateTaskLog(taskId, errorLog)
         }
     }
     //get task log by task id
-    public getTaskErrorLog(taskId: number): string  {
-        const task = this.taskdbModel.getTaskEntity(taskId)
+    public async getTaskErrorLog(taskId: number): Promise<string>  {
+        const task = await this.taskdbModel.getTaskEntity(taskId)
         if(!task){
             throw new Error("task not exist")
         }
