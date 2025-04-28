@@ -37,7 +37,7 @@ export function registerBuckEmailIpcHandlers() {
                 //get email address in search result
                 // const emailList:Array<EmailItem>=[]
                 const emailsearModuel = new EmailSearchTaskModule()
-                const emailList = emailsearModuel.getAllEmails(qdata.emailtaskentityId)
+                const emailList = await emailsearModuel.getAllEmails(qdata.emailtaskentityId)
                 if (emailList.length == 0) {
                     const comMsgs: CommonDialogMsg = {
                         status: false,

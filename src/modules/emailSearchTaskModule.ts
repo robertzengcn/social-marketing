@@ -3,17 +3,19 @@ import { USERSDBPATH } from '@/config/usersetting';
 import { EmailsearchTaskdb, EmailsearchTaskEntity, EmailsearchTaskStatus } from '@/model/emailsearchTaskdb'
 import { EmailsearchUrldb, EmailsearchUrlEntity } from '@/model/emailsearchUrldb'
 import { EmailResult, EmailResultDisplay } from "@/entityTypes/emailextraction-type"
-import { EmailsearchResultdb, EmailsearchResultEntity } from "@/model/emailsearchResultdb"
+import { EmailsearchResultModel } from "@/model/EmailsearchResult.model"
 import { EmailsearchResultDetailEntity, EmailsearchResultDetaildb } from "@/model/emailsearchResultDetaildb"
 import { EmailExtractionTypes } from "@/config/emailextraction"
 import { SortBy } from "@/entityTypes/commonType"
 import {EmailItem} from '@/entityTypes/emailmarketingType'
 import { BaseModule } from "@/modules/baseModule";
+import { EmailSearchResultEntity } from "@/entity/EmailSearchResult.entity";
+
 export class EmailSearchTaskModule extends BaseModule{
     //private dbpath: string
     private emailsearchTaskdb: EmailsearchTaskdb
     private emailsearchUrldb: EmailsearchUrldb
-    private emailsearchresultdb: EmailsearchResultdb
+    private emailsearchresultdb: EmailsearchResultModel
     private emailsearchResultDetaildb: EmailsearchResultDetaildb
     constructor() {
         // const tokenService = new Token()
@@ -25,7 +27,7 @@ export class EmailSearchTaskModule extends BaseModule{
         // this.dbpath = dbpath
         this.emailsearchTaskdb = new EmailsearchTaskdb(this.dbpath);
         this.emailsearchUrldb = new EmailsearchUrldb(this.dbpath)
-        this.emailsearchresultdb = new EmailsearchResultdb(this.dbpath)
+        this.emailsearchresultdb = new EmailsearchResultModel(this.dbpath)
         this.emailsearchResultDetaildb = new EmailsearchResultDetaildb(this.dbpath)
     }
     //save search task, call it when user start search email
@@ -69,16 +71,20 @@ export class EmailSearchTaskModule extends BaseModule{
         this.emailsearchTaskdb.updateTaskStatus(taskId, status)
     }
     //save search result
-    public saveSearchResult(taskId: number, res: EmailResult) {
+    public async saveSearchResult(taskId: number, res: EmailResult) {
         //convert url to domain
         const url = new URL(res.url);
         const domain = url.hostname;
-        const data: EmailsearchResultEntity = {
-            task_id: taskId,
-            url: domain,
-            title: res.pageTitle,
-        }
-        const resultId = this.emailsearchresultdb.create(data)
+        // const data: EmailSearchResultEntity = {
+        //     task_id: taskId,
+        //     url: domain,
+        //     title: res.pageTitle,
+        // }
+        const data = new EmailSearchResultEntity()
+        data.task_id = taskId
+        data.url = domain
+        data.title = res.pageTitle
+        const resultId = await this.emailsearchresultdb.create(data)
         if (!resultId) {
             throw new Error("save search result failed")
         }
@@ -113,9 +119,9 @@ export class EmailSearchTaskModule extends BaseModule{
         return urls
     }
     //get task result
-    public getTaskResult(taskId: number, page: number, size: number): EmailResultDisplay[] {
+    public async getTaskResult(taskId: number, page: number, size: number): Promise<EmailResultDisplay[]> {
         console.log("get task result,task id is" + taskId)
-        const res = this.emailsearchresultdb.getTaskResult(taskId, page, size)
+        const res = await this.emailsearchresultdb.getTaskResult(taskId, page, size)
         const result: EmailResultDisplay[] = []
         res.forEach((value) => {
             if (!value.id) {
@@ -146,16 +152,16 @@ export class EmailSearchTaskModule extends BaseModule{
         return result
     }
     //get task detail count
-    public getTaskResultCount(taskId: number): number {
-        return this.emailsearchresultdb.getTaskResultCount(taskId)
+    public async getTaskResultCount(taskId: number): Promise<number> {
+        return await this.emailsearchresultdb.getTaskResultCount(taskId)
     }
     //get all email in email search task
-    public getAllEmails(taskId: number): EmailItem[] {
-        const res = this.emailsearchresultdb.getTaskResultCount(taskId)
+    public async getAllEmails(taskId: number): Promise<EmailItem[]> {
+        const res = await this.emailsearchresultdb.getTaskResultCount(taskId)
         const emails: EmailItem[] = []
-        const loopNum=100
-        for (let i = 0; i < res; i=i+loopNum) {
-            const result = this.emailsearchresultdb.getTaskResult(taskId, i, loopNum)
+        const loopNum = 100
+        for (let i = 0; i < res; i = i + loopNum) {
+            const result = await this.emailsearchresultdb.getTaskResult(taskId, i, loopNum)
             result.forEach((value) => {
                 if(value.id){
                 const emailsArr = this.emailsearchResultDetaildb.getItemsByResultId(value.id)
