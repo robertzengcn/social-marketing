@@ -85,7 +85,7 @@ export function registerBuckEmailIpcHandlers() {
             qdata.size = 100;
         }
         const buckemailCon = new BuckemailController()
-        const res = buckemailCon.getBuckEmailTaskList(qdata.page, qdata.size, qdata.sortby)
+        const res = await buckemailCon.getBuckEmailTaskList(qdata.page, qdata.size, qdata.sortby)
         const resp: CommonResponse<BuckEmailListType> = {
             status: true,
             msg: "",
@@ -113,7 +113,7 @@ export function registerBuckEmailIpcHandlers() {
             qdata.size = 100;
         }
         const buckemailCon = new BuckemailController()
-        const res=buckemailCon.getBuckEmailSendLog(qdata.TaskId, qdata.page, qdata.size, qdata.where,qdata.sortby)
+        const res=await buckemailCon.getBuckEmailSendLog(qdata.TaskId, qdata.page, qdata.size, qdata.where,qdata.sortby)
         const resp: CommonResponse<EmailMarketingSendLogListDisplay> = {
             status: true,
             msg: "",

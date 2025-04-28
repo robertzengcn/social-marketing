@@ -46,7 +46,7 @@ export class BuckEmailTaskModel extends BaseDb {
 
         entity.type = task.type;
         entity.record_time = task.record_time || getRecorddatetime();
-        entity.status = task.status;
+        entity.status = task.status || TaskStatus.Processing;
         entity.log_file = task.log_file;
         entity.error_file = task.error_file;
 
