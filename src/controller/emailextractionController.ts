@@ -97,12 +97,12 @@ export class EmailextractionController {
     public async listEmailSearchtasks(page:number,size:number,sortby?:SortBy): Promise<{records:EmailsearchTaskEntityDisplay[],total:number}> {
         const res = await this.emailSeachTaskModule.listSearchtask(page, size, sortby)
        const displayRes:EmailsearchTaskEntityDisplay[]=[]
-        res.records.forEach((value)=>{
+        res.records.forEach(async (value)=>{
             if(value.id){
 
             const taskStatus=this.emailSeachTaskModule.taskstatusConvert(value.status)
             const taskType=this.emailSeachTaskModule.taskTypeconvert(value.type_id)
-            const urls=this.emailSeachTaskModule.getTaskurls(value.id,0,10)
+            const urls=await this.emailSeachTaskModule.getTaskurls(value.id,0,10)
             const displayValue:EmailsearchTaskEntityDisplay={
                 id:value.id,
                 record_time:value.record_time,

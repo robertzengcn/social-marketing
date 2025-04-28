@@ -1,22 +1,25 @@
 import { Token } from "@/modules/token"
 import { USERSDBPATH } from '@/config/usersetting';
-import { EmailsearchTaskdb, EmailsearchTaskEntity, EmailsearchTaskStatus } from '@/model/emailsearchTaskdb'
-import { EmailsearchUrldb, EmailsearchUrlEntity } from '@/model/emailsearchUrldb'
+import { EmailsearchTaskModel } from '@/model/EmailsearchTask.model'
+import { EmailsearchUrlModel } from '@/model/EmailsearchUrl.model'
 import { EmailResult, EmailResultDisplay } from "@/entityTypes/emailextraction-type"
 import { EmailsearchResultModel } from "@/model/EmailsearchResult.model"
-import { EmailsearchResultDetailEntity, EmailsearchResultDetaildb } from "@/model/emailsearchResultDetaildb"
+import { EmailsearchResultDetailModel } from "@/model/EmailsearchResultDetail.model"
 import { EmailExtractionTypes } from "@/config/emailextraction"
 import { SortBy } from "@/entityTypes/commonType"
 import {EmailItem} from '@/entityTypes/emailmarketingType'
 import { BaseModule } from "@/modules/baseModule";
 import { EmailSearchResultEntity } from "@/entity/EmailSearchResult.entity";
+import { EmailSearchResultDetailEntity } from "@/entity/EmailSearchResultDetail.entity";
+import { EmailsearchTaskEntity, EmailsearchTaskStatus } from "@/model/emailsearchTaskdb";
+import { EmailsearchUrlEntity } from "@/model/emailsearchUrldb";
 
 export class EmailSearchTaskModule extends BaseModule{
     //private dbpath: string
-    private emailsearchTaskdb: EmailsearchTaskdb
-    private emailsearchUrldb: EmailsearchUrldb
+    private emailsearchTaskdb: EmailsearchTaskModel
+    private emailsearchUrldb: EmailsearchUrlModel
     private emailsearchresultdb: EmailsearchResultModel
-    private emailsearchResultDetaildb: EmailsearchResultDetaildb
+    private emailsearchResultDetaildb: EmailsearchResultDetailModel
     constructor() {
         // const tokenService = new Token()
         // const dbpath = tokenService.getValue(USERSDBPATH)
@@ -25,10 +28,10 @@ export class EmailSearchTaskModule extends BaseModule{
         // }
         super();
         // this.dbpath = dbpath
-        this.emailsearchTaskdb = new EmailsearchTaskdb(this.dbpath);
-        this.emailsearchUrldb = new EmailsearchUrldb(this.dbpath)
+        this.emailsearchTaskdb = new EmailsearchTaskModel(this.dbpath);
+        this.emailsearchUrldb = new EmailsearchUrlModel(this.dbpath)
         this.emailsearchresultdb = new EmailsearchResultModel(this.dbpath)
-        this.emailsearchResultDetaildb = new EmailsearchResultDetaildb(this.dbpath)
+        this.emailsearchResultDetaildb = new EmailsearchResultDetailModel(this.dbpath)
     }
     //save search task, call it when user start search email
     public async saveSearchtask(typeId: EmailExtractionTypes, urls: string[]): Promise<number> {
@@ -37,7 +40,7 @@ export class EmailSearchTaskModule extends BaseModule{
             status: EmailsearchTaskStatus.Processing,
             type_id: typeId
         }
-        const taskId = this.emailsearchTaskdb.createTask(task)
+        const taskId = await this.emailsearchTaskdb.createTask(task)
         //console.log("task id is" + taskId)
         for (let i = 0; i < urls.length; i++) {
             // console.log("url is" + urls[i])
@@ -45,7 +48,7 @@ export class EmailSearchTaskModule extends BaseModule{
                 task_id: taskId,
                 url: urls[i],
             }
-            this.emailsearchUrldb.create(urltask)
+            await this.emailsearchUrldb.create(urltask)
         }
         // urls.forEach((url: string) => {
         //     const urltask: EmailsearchUrlEntity = {
@@ -58,28 +61,23 @@ export class EmailSearchTaskModule extends BaseModule{
     }
 
     //update task runtime log and error log path
-    public updateTaskLog(taskId: number, runtimeLog: string, errorLog: string) {
+    public async updateTaskLog(taskId: number, runtimeLog: string, errorLog: string) {
         if (runtimeLog) {
-            this.emailsearchTaskdb.updateruntimelog(taskId, runtimeLog)
+            await this.emailsearchTaskdb.updateruntimelog(taskId, runtimeLog)
         }
         if (errorLog) {
-            this.emailsearchTaskdb.updatetasklog(taskId, errorLog)
+            await this.emailsearchTaskdb.updatetasklog(taskId, errorLog)
         }
     }
     //upate task status
-    public updateTaskStatus(taskId: number, status: EmailsearchTaskStatus) {
-        this.emailsearchTaskdb.updateTaskStatus(taskId, status)
+    public async updateTaskStatus(taskId: number, status: EmailsearchTaskStatus) {
+        await this.emailsearchTaskdb.updateTaskStatus(taskId, status)
     }
     //save search result
     public async saveSearchResult(taskId: number, res: EmailResult) {
         //convert url to domain
         const url = new URL(res.url);
         const domain = url.hostname;
-        // const data: EmailSearchResultEntity = {
-        //     task_id: taskId,
-        //     url: domain,
-        //     title: res.pageTitle,
-        // }
         const data = new EmailSearchResultEntity()
         data.task_id = taskId
         data.url = domain
@@ -89,18 +87,16 @@ export class EmailSearchTaskModule extends BaseModule{
             throw new Error("save search result failed")
         }
         //save email result detail
-        res.emails.forEach((email: string) => {
-            const emailData: EmailsearchResultDetailEntity = {
-                result_id: resultId,
-                email: email
-            }
-            this.emailsearchResultDetaildb.create(emailData)
-        })
+        for (const email of res.emails) {
+            const emailData = new EmailSearchResultDetailEntity();
+            emailData.result_id = resultId;
+            emailData.email = email;
+            await this.emailsearchResultDetaildb.create(emailData);
+        }
     }
     //list email search task
-    public listSearchtask(page: number, size: number, sortby?: SortBy): { records: EmailsearchTaskEntity[], total: number } {
-        const res = this.emailsearchTaskdb.listSearchtask(page, size, sortby)
-        return res
+    public async listSearchtask(page: number, size: number, sortby?: SortBy): Promise<{ records: EmailsearchTaskEntity[], total: number }> {
+        return await this.emailsearchTaskdb.listSearchtask(page, size, sortby)
     }
     //convert task status to string
     public taskstatusConvert(status: EmailsearchTaskStatus): string {
@@ -110,12 +106,12 @@ export class EmailSearchTaskModule extends BaseModule{
         return this.emailsearchTaskdb.convertType(typeId)
     }
     //get task urls
-    public getTaskurls(taskId: number, page: number, size: number): string[] {
-        const res = this.emailsearchUrldb.getUrls(taskId, page, size)
+    public async getTaskurls(taskId: number, page: number, size: number): Promise<string[]> {
+        const res = await this.emailsearchUrldb.getUrls(taskId, page, size)
         const urls: string[] = []
-        res.forEach((value) => {
+        for (const value of res) {
             urls.push(value.url)
-        })
+        }
         return urls
     }
     //get task result
@@ -123,15 +119,15 @@ export class EmailSearchTaskModule extends BaseModule{
         console.log("get task result,task id is" + taskId)
         const res = await this.emailsearchresultdb.getTaskResult(taskId, page, size)
         const result: EmailResultDisplay[] = []
-        res.forEach((value) => {
+        for (const value of res) {
             if (!value.id) {
                 value.id = 0
             }
-            const emails = this.emailsearchResultDetaildb.getItemsByResultId(value.id)
+            const emails = await this.emailsearchResultDetaildb.getItemsByResultId(value.id)
             const emailsArr: string[] = []
-            emails.forEach((email) => {
+            for (const email of emails) {
                 emailsArr.push(email.email)
-            })
+            }
             if (!value.title) {
                 value.title = ""
             }
@@ -147,7 +143,7 @@ export class EmailSearchTaskModule extends BaseModule{
                 recordTime: value.record_time
             }
             result.push(item)
-        })
+        }
 
         return result
     }
@@ -162,19 +158,19 @@ export class EmailSearchTaskModule extends BaseModule{
         const loopNum = 100
         for (let i = 0; i < res; i = i + loopNum) {
             const result = await this.emailsearchresultdb.getTaskResult(taskId, i, loopNum)
-            result.forEach((value) => {
+            for (const value of result) {
                 if(value.id){
-                const emailsArr = this.emailsearchResultDetaildb.getItemsByResultId(value.id)
-                emailsArr.forEach((email) => {
-                    const emailItem: EmailItem = {
-                        title: value.title,
-                        address: email.email,
-                        source: value.url
+                    const emailsArr = await this.emailsearchResultDetaildb.getItemsByResultId(value.id)
+                    for (const email of emailsArr) {
+                        const emailItem: EmailItem = {
+                            title: value.title,
+                            address: email.email,
+                            source: value.url
+                        }
+                        emails.push(emailItem)
                     }
-                    emails.push(emailItem)
-                })
                 }
-            })
+            }
         }
         return emails
     }

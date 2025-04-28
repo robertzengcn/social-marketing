@@ -9,6 +9,9 @@ export class EmailSearchResultDetailEntity extends AuditableEntity {
     @Column("integer")
     result_id: number;
     
+    @Column("text")
+    email: string;
+    
     @Column("text", { nullable: true })
     company: string;
     
