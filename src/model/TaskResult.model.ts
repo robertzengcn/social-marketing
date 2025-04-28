@@ -2,7 +2,7 @@ import { BaseDb } from "@/model/Basedb";
 import { Repository } from "typeorm";
 import { TaskResultEntity } from "@/entity/TaskResult.entity";
 import { getRecorddatetime } from "@/modules/lib/function";
-import en from "@/views/lang/en";
+//import en from "@/views/lang/en";
 
 export interface TaskResultData {
   id?: number;
