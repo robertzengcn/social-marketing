@@ -17,7 +17,9 @@ import { TaskStatus } from "@/entityTypes/commonType"
 import { ProcessMessage } from "@/entityTypes/processMessage-type"
 import { EmailSendResult } from "@/entityTypes/emailmarketingType"
 import { EmailMarketingSendLogModule } from "@/modules/emailMarketingSendLogModule";
-import { EmailMarketingSendLogEntity,SendStatus } from "@/model/emailMarketingSendLogdb"
+// import { EmailMarketingSendLogEntity,SendStatus } from "@/model/emailMarketingSendLogdb"
+import { EmailMarketingSendLogEntity } from "@/entity/EmailMarketingSendLog.entity"
+import {SendStatus} from "@/model/emailMarketingSendLog.model"
 import { SortBy } from "@/entityTypes/commonType"
 import { BuckEmailListType,EmailMarketingSendLogListDisplay } from "@/entityTypes/buckemailType"
 import {getStatusName} from "@/modules/lib/function"
@@ -120,26 +122,40 @@ export class BuckemailController {
             const childdata = JSON.parse(message) as ProcessMessage<EmailSendResult>
             switch (childdata.action) {
                 case 'EmailSendSuccess': {
-                    const emailMarketLog: EmailMarketingSendLogEntity = {
-                        task_id: taskId,
-                        status: SendStatus.Success,
-                        receiver: message.data.receiver,
-                        title: message.data.title,
-                        content: message.data.content,
-                    }
+                    // const emailMarketLog: EmailMarketingSendLogEntity = {
+                    //     task_id: taskId,
+                    //     status: SendStatus.Success,
+                    //     receiver: message.data.receiver,
+                    //     title: message.data.title,
+                    //     content: message.data.content,
+                    // }
+                    const emailMarketLog = new EmailMarketingSendLogEntity()
+                    emailMarketLog.task_id = taskId
+                    emailMarketLog.status = SendStatus.Success
+                    emailMarketLog.receiver = message.data.receiver
+                    emailMarketLog.title = message.data.title
+                    emailMarketLog.content = message.data.content
+                    emailMarketLog.log = message.data.info?message.data.info:""
                     //update send log
                     this.emailMarketingSendlogModule.createItem(emailMarketLog)
                 }
                     break;
                 case 'EmailSendFailure': {
-                    const emailMarketLog: EmailMarketingSendLogEntity = {
-                        task_id: taskId,
-                        status: SendStatus.Failure,
-                        receiver: message.data.receiver,
-                        title: message.data.title,
-                        content: message.data.content,
-                        log: message.data.info
-                    }
+                    // const emailMarketLog: EmailMarketingSendLogEntity = {
+                    //     task_id: taskId,
+                    //     status: SendStatus.Failure,
+                    //     receiver: message.data.receiver,
+                    //     title: message.data.title,
+                    //     content: message.data.content,
+                    //     log: message.data.info
+                    // }
+                    const emailMarketLog = new EmailMarketingSendLogEntity()
+                    emailMarketLog.task_id = taskId
+                    emailMarketLog.status = SendStatus.Failure
+                    emailMarketLog.receiver = message.data.receiver
+                    emailMarketLog.title = message.data.title
+                    emailMarketLog.content = message.data.content
+                    emailMarketLog.log = message.data.info?message.data.info:""
                     //update send log
                     this.emailMarketingSendlogModule.createItem(emailMarketLog)
                 }
