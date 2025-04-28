@@ -1,10 +1,13 @@
 // import { Token } from "@/modules/token"
 // import { USERSDBPATH } from '@/config/usersetting';
-import { AccountCookiesdb, AccountCookiesEntity } from "@/model/accountCookiesdb"
+import { AccountCookiesModel } from "@/model/AccountCookies.model"
+import { AccountCookiesEntity } from "@/entity/AccountCookies.entity"
 import { BaseModule } from "@/modules/baseModule";
-export class AccountCookiesModule extends BaseModule{
+
+export class AccountCookiesModule extends BaseModule {
     // private dbpath: string
-    private accountCookiesdb: AccountCookiesdb
+    private accountCookiesModel: AccountCookiesModel
+
     constructor() {
         // const tokenService = new Token()
         // const dbpath = tokenService.getValue(USERSDBPATH)
@@ -13,27 +16,27 @@ export class AccountCookiesModule extends BaseModule{
         // }
         // this.dbpath = dbpath
         super()
-        this.accountCookiesdb = new AccountCookiesdb(this.dbpath);
+        this.accountCookiesModel = new AccountCookiesModel(this.dbpath);
     }
 
-    public getAccountCookies(
+    public async getAccountCookies(
         accountid: number
-    ): AccountCookiesEntity {
-        return this.accountCookiesdb.getAccountCookies(accountid)
+    ): Promise<AccountCookiesEntity | null> {
+        return this.accountCookiesModel.getAccountCookies(accountid);
     }
 
-    public saveAccountCookies(
+    public async saveAccountCookies(
         accountcookies: AccountCookiesEntity
-    ):number {
-        return Number(this.accountCookiesdb.saveAccountCookies(accountcookies))
+    ): Promise<number> {
+        return await this.accountCookiesModel.saveAccountCookies(accountcookies);
     }
+
     //generate partition_path for cookies
-    public genPartitionPath():string{
-        return "persist:path/" + Date.now() + '-' + Math.random().toString(36).slice(2, 9)
+    public genPartitionPath(): string {
+        return "persist:path/" + Date.now() + '-' + Math.random().toString(36).slice(2, 9);
     }
 
-    public deleteCookies(accountid:number):void{
-        this.accountCookiesdb.deleteAccountCookies(accountid)
+    public async deleteCookies(accountid: number): Promise<number> {
+        return await this.accountCookiesModel.deleteAccountCookies(accountid);
     }
-
 }

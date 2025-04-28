@@ -1,6 +1,6 @@
 import { SocialAccount } from "@/modules/socialaccount";
 import { BrowserWindow, session } from 'electron'
-import { AccountCookiesEntity } from "@/model/accountCookiesdb";
+import { AccountCookiesEntity } from "@/entity/AccountCookies.entity";
 import { AccountCookiesModule } from "@/modules/accountCookiesModule"
 //import { ProxyController } from "./proxy-controller";
 import { ProxyParseItem } from "@/entityTypes/proxyType";
@@ -25,7 +25,7 @@ export class SocialAccountController {
     public async showSocialaccountMsg(id: number, platform: string, gmsgCallback?: () => void, omsgCallback?: () => void,closeFun?:()=>void): Promise<void> {
         //get account cookies
         // const accoutndb = new AccountCookiesdb(dbpath)
-        const cookies = this.accountCookiesModule.getAccountCookies(id)
+        const cookies = await this.accountCookiesModule.getAccountCookies(id)
         //let partition_path = "persist:path/" + Date.now() + '-' + Math.random().toString(36).slice(2, 9)
         // let partition_path =this.accountCookiesModule.genPartitionPath()
 
@@ -91,7 +91,10 @@ export class SocialAccountController {
         //         partition_path = cookies.partition_path
         //     }
         // }else{
-            cookies = this.accountCookiesModule.getAccountCookies(id)
+            const cookiesres = await this.accountCookiesModule.getAccountCookies(id)
+            if(cookiesres){
+                cookies = cookiesres
+            }
         }
         const ses = session.fromPartition(partition_path)
         //set title for window
@@ -219,11 +222,15 @@ export class SocialAccountController {
             console.log(cookiescontent)
             const cookiesstr = JSON.stringify(cookiescontent)
             if (accinfo.data.id) {
-                const ace: AccountCookiesEntity = {
-                    account_id: accinfo.data.id,
-                    cookies: cookiesstr,
-                    partition_path: partition_path
-                }
+                // const ace: AccountCookiesEntity = {
+                //     account_id: accinfo.data.id,
+                //     cookies: cookiesstr,
+                //     partition_path: partition_path
+                // }
+                const ace = new AccountCookiesEntity()
+                ace.account_id = accinfo.data.id
+                ace.cookies = cookiesstr
+                ace.partition_path = partition_path
                 // const tokenService=new Token()
                 // const dbpath=await tokenService.getValue(USERSDBPATH)
                 // if(!dbpath){
@@ -240,16 +247,20 @@ export class SocialAccountController {
 
      
     }
-    public handleCookiesfile(filePath: string, accountId: number): number {
+    public async handleCookiesfile(filePath: string, accountId: number): Promise<number> {
         const cookiesArr = convertNetscapeCookiesToJson(filePath)
         const partition_path = this.accountCookiesModule.genPartitionPath()
         const cookiesstr = JSON.stringify(cookiesArr)
-        const accountCookiesEntity: AccountCookiesEntity = {
-            account_id: accountId,
-            cookies: cookiesstr,
-            partition_path: partition_path,
-        }
-        return this.accountCookiesModule.saveAccountCookies(accountCookiesEntity)
+        // const accountCookiesEntity: AccountCookiesEntity = {
+        //     account_id: accountId,
+        //     cookies: cookiesstr,
+        //     partition_path: partition_path,
+        // }
+        const accountCookiesEntity = new AccountCookiesEntity()
+        accountCookiesEntity.account_id = accountId
+        accountCookiesEntity.cookies = cookiesstr
+        accountCookiesEntity.partition_path = partition_path
+        return await this.accountCookiesModule.saveAccountCookies(accountCookiesEntity)
     }
 
     public cleanCookies(accountId: number): void {

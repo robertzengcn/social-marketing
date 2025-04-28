@@ -3,7 +3,7 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 import AuditableEntity from "@/entity/Auditable.entity"
 @Entity('account_cookies')
-export class AccountCookies extends AuditableEntity{
+export class AccountCookiesEntity extends AuditableEntity{
   @PrimaryGeneratedColumn()
   id: number;
 

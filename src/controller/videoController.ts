@@ -173,7 +173,7 @@ export class videoController {
         // const cookies:Array<string>=[]
         //loop account id to get cookies
         for (const accountid of param.accountId) {
-            const accountEntity = this.accountCookiesModule.getAccountCookies(accountid)
+            const accountEntity = await this.accountCookiesModule.getAccountCookies(accountid)
             if (accountEntity && accountEntity.cookies) {
                 // cookies.push(accountEntity.cookies)
                 const cookiesproxy: CookiesProxy = {

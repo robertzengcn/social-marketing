@@ -67,7 +67,7 @@ export class SocialAccount {
       //loop social list data, add cookies
       for (const social of sociallistres.data.records) {
         social.cookies = false
-        const cookisEntity = this.accountCookiesModule.getAccountCookies(social.id)
+        const cookisEntity = await this.accountCookiesModule.getAccountCookies(social.id)
         if (cookisEntity && cookisEntity.cookies) {
           const cEntity = JSON.parse(cookisEntity.cookies)
           if (cEntity && cEntity.length > 0) {
