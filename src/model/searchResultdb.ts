@@ -2,6 +2,8 @@ import { Database } from 'better-sqlite3';
 import { getRecorddatetime } from "@/modules/lib/function";
 import { Scraperdb } from "@/model/scraperdb";
 import {SearchResEntity} from "@/entityTypes/scrapeType"
+//import { SearchResultModel } from "./SearchResult.model";
+
 export class SearchResultdb {
     db: Database;
     searchResultTable = "search_result";

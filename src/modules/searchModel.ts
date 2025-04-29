@@ -5,7 +5,7 @@ import { USERSDBPATH } from '@/config/usersetting';
 import { SearhEnginer } from "@/config/searchSetting"
 // import { ToArray } from "@/modules/lib/function"
 import { SearchKeywordModel } from "@/model/SearchKeyword.model"
-import { SearchResultdb } from "@/model/searchResultdb"
+import { SearchResultModel } from "@/model/SearchResult.model"
 import { SearchResEntity, SearchDataRun } from "@/entityTypes/scrapeType"
 //import {SearchTaskdb} from "@/model/searchTaskdb"
 import { SearchtaskEntityNum, SearchtaskItem } from "@/entityTypes/searchControlType"
@@ -17,7 +17,7 @@ import { BaseModule } from "@/modules/baseModule";
 export class searhModel extends BaseModule {
    // private dbpath: string
     private taskdbModel: SearchTaskModel
-    private serResultModel: SearchResultdb
+    private serResultModel: SearchResultModel
     private serKeywordModel: SearchKeywordModel
     constructor() {
         // const tokenService = new Token()
@@ -28,7 +28,7 @@ export class searhModel extends BaseModule {
         // this.dbpath = dbpath
         super()
         this.taskdbModel = new SearchTaskModel(this.dbpath)
-        this.serResultModel = new SearchResultdb(this.dbpath)
+        this.serResultModel = new SearchResultModel(this.dbpath)
         this.serKeywordModel = new SearchKeywordModel(this.dbpath)
     }
 
@@ -78,60 +78,38 @@ export class searhModel extends BaseModule {
     }
     //save search result
     public async saveSearchResult(data: SearchDataRun, taskId: number) {
-        // const tokenService = new Token()
-        // const dbpath = await tokenService.getValue(USERSDBPATH)
-        // if (!dbpath) {
-        //     throw new Error("user path not exist")
-        // }
-        //const serkeydb = new SearchKeyworddb(this.dbpath)
         console.log("save search result")
-        //loop map of SearchDataRun and save it to db
-        // Ensure data.results is a Map
         const resultsMap = new Map(Object.entries(data.results));
         console.log(resultsMap);
-        //const serResultModel = new SearchResultdb(this.dbpath)
+        
         for (const [key, value] of resultsMap) {
-            //console.log(key)
-            //get keyword id by task and string
             const keywordId = await this.serKeywordModel.getKeywordId(key, taskId)
             console.log(value)
             const resval = new Map(Object.entries(value));
             const linkearr: Array<string> = []
             for (const [rvkey, rvvalue] of resval) {
                 console.log(rvkey)
-                // console.log(rvvalue)
                 console.log(rvvalue.value)
-                //defined an link array, for remove duplicate item
                 if(rvvalue.value){
-                rvvalue.value.forEach((item) => {
-                    console.log(item)
-                    if (item.link) {
-                        //check link exist in array
-                        if (!linkearr.includes(item.link)) {
-                            const reEntity: SearchResEntity = {
-                                keyword_id: Number(keywordId),
-                                link: item.link,
-                                title: item.title,
-                                snippet: item.snippet,
-                                visible_link: item.visible_link,
+                    for (const item of rvvalue.value) {
+                        console.log(item)
+                        if (item.link) {
+                            if (!linkearr.includes(item.link)) {
+                                const reEntity: SearchResEntity = {
+                                    keyword_id: Number(keywordId),
+                                    link: item.link,
+                                    title: item.title,
+                                    snippet: item.snippet,
+                                    visible_link: item.visible_link,
+                                }
+                                await this.serResultModel.saveResult(reEntity)
+                                linkearr.push(item.link)
                             }
-                            this.serResultModel.saveResult(reEntity)
-                            linkearr.push(item.link)
                         }
                     }
-
-                })
+                }
             }
-                // for (const [itemkey,itemvalue] of rvvalue){
-                //     console.log(itemkey)
-                //     console.log(itemvalue)
-                // }
-
-                // serResultModel.saveResult()
-            }
-            // Save each key-value pair to the database
             console.log(`Saving result for key: ${key}, value: ${value}`);
-            // Add your database save logic here
         }
     }
 
@@ -189,12 +167,12 @@ export class searhModel extends BaseModule {
     //get search result list by task id
     public async listSearchResult(taskId: number, page: number, size: number): Promise<Array<SearchResEntity>> {
         const keyarr = await this.getKeywrodsbyTask(taskId)
-        return this.serResultModel.listSearchresult(keyarr, page, size)
+        return await this.serResultModel.listSearchresult(keyarr, page, size)
     }
 
     public async countSearchResult(taskId: number): Promise<number> {
         const keyarr = await this.getKeywrodsbyTask(taskId)
-        return this.serResultModel.countSearchResult(keyarr)
+        return await this.serResultModel.countSearchResult(keyarr)
     }
 
     //get keywords id by task id
