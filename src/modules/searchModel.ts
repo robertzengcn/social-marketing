@@ -4,7 +4,7 @@ import { Token } from "@/modules/token"
 import { USERSDBPATH } from '@/config/usersetting';
 import { SearhEnginer } from "@/config/searchSetting"
 // import { ToArray } from "@/modules/lib/function"
-import { SearchKeyworddb } from "@/model/searchKeyworddb"
+import { SearchKeywordModel } from "@/model/SearchKeyword.model"
 import { SearchResultdb } from "@/model/searchResultdb"
 import { SearchResEntity, SearchDataRun } from "@/entityTypes/scrapeType"
 //import {SearchTaskdb} from "@/model/searchTaskdb"
@@ -18,7 +18,7 @@ export class searhModel extends BaseModule {
    // private dbpath: string
     private taskdbModel: SearchTaskModel
     private serResultModel: SearchResultdb
-    private serKeyworddb: SearchKeyworddb
+    private serKeywordModel: SearchKeywordModel
     constructor() {
         // const tokenService = new Token()
         // const dbpath = tokenService.getValue(USERSDBPATH)
@@ -29,7 +29,7 @@ export class searhModel extends BaseModule {
         super()
         this.taskdbModel = new SearchTaskModel(this.dbpath)
         this.serResultModel = new SearchResultdb(this.dbpath)
-        this.serKeyworddb = new SearchKeyworddb(this.dbpath)
+        this.serKeywordModel = new SearchKeywordModel(this.dbpath)
     }
 
     //save search task, call it when user start search keyword
@@ -45,11 +45,11 @@ export class searhModel extends BaseModule {
         if (!enginId) {
             throw new Error("enginerId empty")
         }
-        const taskId = this.taskdbModel.saveSearchTask(enginId)
+        const taskId = await this.taskdbModel.saveSearchTask(enginId)
         //const searshdb = new SearchKeyworddb(this.dbpath)
-        data.keywords.forEach(async (keyword) => {
-            this.serKeyworddb.saveSearchKeyword(keyword, Number(taskId))
-        })
+        for (const keyword of data.keywords) {
+            await this.serKeywordModel.saveSearchKeyword(keyword, Number(taskId))
+        }
         return Number(taskId)
     }
     //convert search enginer name to number
@@ -93,7 +93,7 @@ export class searhModel extends BaseModule {
         for (const [key, value] of resultsMap) {
             //console.log(key)
             //get keyword id by task and string
-            const keywordId = this.serKeyworddb.getKeywordId(key, taskId)//error
+            const keywordId = await this.serKeywordModel.getKeywordId(key, taskId)
             console.log(value)
             const resval = new Map(Object.entries(value));
             const linkearr: Array<string> = []
@@ -158,20 +158,21 @@ export class searhModel extends BaseModule {
 
         //convert task list to search item list
 
-        tasklist.forEach((item) => {
+        for (const item of tasklist) {
             //console.log("item is follow")
             //console.log(item)
+            const keywords = await this.serKeywordModel.getKeywordsByTask(item.id)
             const data: SearchtaskItem = {
                 id: item.id,
                 enginer_name: this.convertNumtoSE(Math.round(item.enginer_id)),
                 status: this.taskdbModel.taskStatusToString(item.status),
-                keywords: this.serKeyworddb.getkeywrodsbyTask(item.id),
+                keywords: keywords,
                 record_time: item.record_time
             }
             data.keywordline = data.keywords.join(',')
 
             taskdata.push(data)
-        });
+        }
         //check number
         const number = await this.taskdbModel.getTaskTotal()
         const data: SearchtaskEntityNum = {
@@ -186,25 +187,20 @@ export class searhModel extends BaseModule {
     }
 
     //get search result list by task id
-    public listSearchResult(taskId: number, page: number, size: number): Array<SearchResEntity> {
-        //console.log(taskId)
-        const keyarr = this.getKeywrodsbyTask(taskId)
-        const res = this.serResultModel.listSearchresult(keyarr, page, size)
-
-        return res
+    public async listSearchResult(taskId: number, page: number, size: number): Promise<Array<SearchResEntity>> {
+        const keyarr = await this.getKeywrodsbyTask(taskId)
+        return this.serResultModel.listSearchresult(keyarr, page, size)
     }
-    public countSearchResult(taskId: number): number {
-        const keyarr = this.getKeywrodsbyTask(taskId)
+
+    public async countSearchResult(taskId: number): Promise<number> {
+        const keyarr = await this.getKeywrodsbyTask(taskId)
         return this.serResultModel.countSearchResult(keyarr)
     }
+
     //get keywords id by task id
-    public getKeywrodsbyTask(taskId: number): Array<number> {
-        const keywordEnArr = this.serKeyworddb.getkeywrodsEntitybyTask(taskId)
-        const res: Array<number> = []
-        keywordEnArr.forEach((item) => {
-            res.push(item.id)
-        })
-        return res
+    public async getKeywrodsbyTask(taskId: number): Promise<Array<number>> {
+        const keywordEnArr = await this.serKeywordModel.getKeywordsEntityByTask(taskId)
+        return keywordEnArr.map(item => item.id)
     }
     //update task runtime log and error log path
     public async updateTaskLog(taskId: number, runtimeLog: string, errorLog: string) {
@@ -234,8 +230,8 @@ export class searhModel extends BaseModule {
 
     }
     //get search task entity by id
-    public getkeywrodsEntitybyId(keywordId: number) {
-        return this.serKeyworddb.getkeywrodsEntitybyId(keywordId)
+    public async getkeywrodsEntitybyId(keywordId: number) {
+        return await this.serKeywordModel.getKeywordsEntityById(keywordId)
     }
 
 

@@ -117,7 +117,7 @@ export function registerSearchIpcHandlers() {
         }
 
         const searchControl = new SearchController()
-        const res = searchControl.listtaskSearchResult(qdata.taskId, qdata.page, qdata.itemsPerPage)
+        const res = await searchControl.listtaskSearchResult(qdata.taskId, qdata.page, qdata.itemsPerPage)
         const resp: CommonResponse<SearchResEntity> = {
             status: true,
             msg: "",

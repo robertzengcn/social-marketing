@@ -147,17 +147,17 @@ export class SearchController {
         return res;
     }   
     //list task search result
-    public listtaskSearchResult(taskId:number,page:number,size:number):SearchResEntityRecord{
+    public async listtaskSearchResult(taskId:number,page:number,size:number):Promise<SearchResEntityRecord>{
         // const seModel=new searhModel()
-        const res=this.searhModel.listSearchResult(taskId,page,size)
+        const res=await this.searhModel.listSearchResult(taskId,page,size)
 
         const datas: Array<SearchResEntityDisplay> = []
         //const SearchKeyDb=new SearchKeyworddb(this.dbpath)
 
-        res.forEach((item) => {
+        res.forEach(async (item) => {
             console.log(item)
             console.log(item.keyword_id)
-            const keyEntity = this.searhModel.getkeywrodsEntitybyId(item.keyword_id)
+            const keyEntity = await this.searhModel.getkeywrodsEntitybyId(item.keyword_id)
             console.log(keyEntity)
             const data: SearchResEntityDisplay = {
                 id: item.id,
@@ -167,13 +167,13 @@ export class SearchController {
                 snippet: item.snippet,
                 record_time: item.record_time,
                 visible_link: item.visible_link,
-                keyword: keyEntity.keyword
+                keyword: keyEntity?.keyword??""
             }
             datas.push(data)
         })
         //return datas
 
-        const total=this.searhModel.countSearchResult(taskId)
+        const total=await this.searhModel.countSearchResult(taskId)
         const data:SearchResEntityRecord={
             total:total,
             record:datas

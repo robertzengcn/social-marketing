@@ -72,10 +72,10 @@ export function registerEmailextractionIpcHandlers() {
             const searchModel = new searhModel();
 
             //get result url from search task
-            const taskresultNum = searchModel.countSearchResult(qdata.searchTaskId)
+            const taskresultNum = await searchModel.countSearchResult(qdata.searchTaskId)
             const step = 100
             for (let i = 0; i < taskresultNum; i = i + step) {
-                const taskresult = searchModel.listSearchResult(qdata.searchTaskId, i, step)
+                const taskresult = await searchModel.listSearchResult(qdata.searchTaskId, i, step)
                 if (taskresult.length > 0) {
                     taskresult.map((item) => {
                         validUrls.push(item.link)
