@@ -1,5 +1,5 @@
 import { videoFactory } from "@/modules/video/videoFactory";
-import { VideoDownloadTaskEntity, processVideoDownloadParam, CookiesProxy, VideoCompotionEntity, VideoCaptionGenerateParam, VideoCaptionDisplay, VideoTranslateItem } from "@/entityTypes/videoType";
+import { VideoDownloadTaskEntityType, processVideoDownloadParam, CookiesProxy, VideoCompotionEntity, VideoCaptionGenerateParam, VideoCaptionDisplay, VideoTranslateItem } from "@/entityTypes/videoType";
 // import { VideoDownloadTaskdb } from "@/model/videoDownloadTaskdb";
 // import { VideoDownloaddb} from "@/model/videoDownloaddb"
 import { VideoDownloadModule } from "@/modules/VideoDownloadModule"
@@ -43,9 +43,12 @@ import { TranslateProducer } from "@/modules/TranslateProducer"
 import { LlmCongfig, TraditionalTranslateCongfig, CommonMessage } from '@/entityTypes/commonType'
 import { TranslateController } from "@/controller/TranslateController"
 import { getLanaugebyCode } from "@/modules/lib/function"
-import { VideoDownloadTaskKeywordEntity } from "@/entity/VideoDownloadTaskKeyword.entity"
+//import { VideoDownloadTaskKeywordEntity } from "@/entity/VideoDownloadTaskKeyword.entity"
 import { VideoDownloadTaskKeywordModule } from "@/modules/VideoDownloadTaskKeywordModule"
 import { VideoDownloadEntity } from "@/entity/VideoDownload.entity";
+import { VideoDownloadTaskAccountsEntity } from "@/entity/VideoDownloadTaskAccounts.entity";
+import { VideoDownloadTaskEntity } from "@/entity/VideoDownloadTask.entity"
+
 // import { VideoDownloadTagEntity } from "@/entity/VideoDownloadTag.entity"
 // import { param } from "jquery";
 //import {} from "@/entityTypes/proxyType"
@@ -82,6 +85,8 @@ export class videoController {
         this.videoCaptionModule = new VideoCaptionModule()
         this.videoDownloadTagModule = new VideoDownloadTagModule()
         this.videoDownloadTaskKeywordModule = new VideoDownloadTaskKeywordModule()
+        this.videoDownloadTaskAccountsModule = new VideoDownloadTaskAccountsModule()  
+        this.videoDownloadTaskProxyModule = new VideoDownloadTaskProxyModule()
     }
     //get video download tool
     public async getVideoDownloadTool(platform: string): Promise<Video | null> {
@@ -94,8 +99,14 @@ export class videoController {
         return await videoTool.checkRequirement()
     }
     //save video task, get task id
-    public saveVdieoDownloadTask(vdte: VideoDownloadTaskEntity): number {
-        return this.videoDownloadTaskModule.saveVideoDownloadTask(vdte)
+    public async saveVdieoDownloadTask(vdte: VideoDownloadTaskEntityType): Promise<number> {
+        const vdteEntity = new VideoDownloadTaskEntity()
+        vdteEntity.task_name = vdte.taskName
+        vdteEntity.platform = vdte.platform
+        vdteEntity.savepath = vdte.savepath
+        vdteEntity.status = vdte.status || 0
+        vdteEntity.downloadtype = vdte.downloadtype
+        return await this.videoDownloadTaskModule.saveVideoDownloadTask(vdteEntity)
     }
     public async processDownloadVideo(param: DownloadVideoControlparam, videoTool: Video, taskId: number, startCall?: () => void) {
         // const videoFactoryInstance = new videoFactory()
@@ -169,8 +180,8 @@ export class videoController {
         const errorLogfile = path.join(logpath, 'downloadVideo', taskId.toString() + '_' + uuid + '.error.log')
         const runLogfile = path.join(logpath, 'downloadVideo', taskId.toString() + '_' + uuid + '.runtime.log')
 
-        this.videoDownloadTaskModule.updateTasklog(taskId, runLogfile)
-        this.videoDownloadTaskModule.updateTaskErrorlog(taskId, errorLogfile)
+        await this.videoDownloadTaskModule.updateTasklog(taskId, runLogfile)
+        await this.videoDownloadTaskModule.updateTaskErrorlog(taskId, errorLogfile)
         const cookiesProxies: CookiesProxy[] = []
 
         // const cookies:Array<string>=[]
@@ -242,10 +253,10 @@ export class videoController {
             }
         })
 
-        child.on("spawn", () => {
+        child.on("spawn", async () => {
 
             console.log("child process satart, pid is " + child.pid)
-            this.videoDownloadTaskModule.updateVideoDownloadTaskStatus(taskId, TaskStatus.Processing)
+            await this.videoDownloadTaskModule.updateVideoDownloadTaskStatus(taskId, TaskStatus.Processing)
             child.postMessage(JSON.stringify({ action: "downloadVideo", data: paramData }), [port1])
 
         })
@@ -269,14 +280,14 @@ export class videoController {
 
         })
 
-        child.on("exit", (code) => {
+        child.on("exit", async(code) => {
             if (code !== 0) {
                 console.error(`Child process exited with code ${code}`);
-                this.videoDownloadTaskModule.updateVideoDownloadTaskStatus(taskId, TaskStatus.Error)
+                await this.videoDownloadTaskModule.updateVideoDownloadTaskStatus(taskId, TaskStatus.Error)
                 // this.emailSeachTaskModule.updateTaskStatus(taskId,EmailsearchTaskStatus.Error)
             } else {
                 console.log('Child process exited successfully');
-                this.videoDownloadTaskModule.updateVideoDownloadTaskStatus(taskId, TaskStatus.Complete)
+                await this.videoDownloadTaskModule.updateVideoDownloadTaskStatus(taskId, TaskStatus.Complete)
                 // this.emailSeachTaskModule.updateTaskStatus(taskId,EmailsearchTaskStatus.Complete)
             }
         })
@@ -380,14 +391,13 @@ export class videoController {
             throw new Error("video tool requirement check failed")
         }
         //save video task
-        const videoTaskEntity: VideoDownloadTaskEntity = {
-            taskName: param.taskName,
-            platform: param.platform,
-            savepath: param.savePath,
-            status: TaskStatus.Processing,
-            downloadtype: param.downloadType,
-        }
-        const taskId = this.saveVdieoDownloadTask(videoTaskEntity)
+        const videoTaskEntity = new VideoDownloadTaskEntity()
+        videoTaskEntity.task_name = param.taskName
+        videoTaskEntity.platform = param.platform
+        videoTaskEntity.savepath = param.savePath
+        videoTaskEntity.status = TaskStatus.Processing
+        videoTaskEntity.downloadtype = param.downloadType
+        const taskId = await this.videoDownloadTaskModule.saveVideoDownloadTask(videoTaskEntity)
         if (!taskId) {
             throw new Error("video task save failed")
         }
@@ -409,10 +419,13 @@ export class videoController {
         if (param.accountId.length > 0) {
 
             for (const accid of param.accountId) {
-                const taskAccount: VideoDownloadTaskAccountEntity = {
-                    task_id: taskId,
-                    account_id: accid
-                }
+                // const taskAccount: VideoDownloadTaskAccountEntity = {
+                //     task_id: taskId,
+                //     account_id: accid
+                // }
+                const taskAccount=new VideoDownloadTaskAccountsEntity()
+                taskAccount.task_id=taskId
+                taskAccount.account_id=accid
                 this.videoDownloadTaskAccountsModule.create(taskAccount)
             }
         }
@@ -436,17 +449,17 @@ export class videoController {
         await this.processDownloadVideo(param, videoTool, taskId, startCall)
     }
     //get video download list
-    public videoDownloadtasklist(page: number, size: number): ListData<VideoDownloadTaskEntity> {
-        // const tokenService=new Token()
-        // const dbpath=await tokenService.getValue(USERSDBPATH)
-        // if(!dbpath){
-        //     throw new Error("user db path not exist")
-        // }
-        // const videoDownloaddb=new VideoDownloaddb(dbpath)
-        const list = this.videoDownloadTaskModule.getVideoDownloadTaskList(page, size)
-        const count = this.videoDownloadTaskModule.countVideoDownloadTaskList()
-        return { records: list, num: count } as ListData<VideoDownloadTaskEntity>
-
+    public async videoDownloadtasklist(page: number, size: number): Promise<ListData<VideoDownloadTaskEntityType>> {
+        const list = await this.videoDownloadTaskModule.getVideoDownloadTaskList(page, size)
+        const count = await this.videoDownloadTaskModule.countVideoDownloadTaskList()
+        const records = list.map(item => ({
+            taskName: item.task_name || '',
+            platform: item.platform || '',
+            savepath: item.savepath || '',
+            status: item.status || 0,
+            downloadtype: item.downloadtype || ''
+        }))
+        return { records, num: count }
     }
 
     //get video download list by task id
@@ -496,7 +509,7 @@ export class videoController {
     }
     public async getVideoDownloadTaskInfo(taskId: number): Promise<DownloadVideoControlparam> {
         //get task info
-        const taskInfo = this.videoDownloadTaskModule.getVideoDownloadTask(taskId)
+        const taskInfo = await this.videoDownloadTaskModule.getVideoDownloadTask(taskId)
         if (!taskInfo) {
             throw new Error("task info not found")
         }
@@ -507,7 +520,11 @@ export class videoController {
         }
 
         //get video tool
+        if(!taskInfo.platform){
+            throw new Error("task platform not found")
+        }
         const videoTool = await this.getVideoDownloadTool(taskInfo.platform)
+        
         if (!videoTool) {
             throw new Error("video tool not found")
         }
@@ -519,7 +536,7 @@ export class videoController {
         let accountIds: Array<number> = []
         if (taskDetail.cookies_type == CookiesType.ACCOUNTCOOKIES) {
             //get account id
-            const taskAccounts = this.videoDownloadTaskAccountsModule.getAccountByTaskId(taskId)
+            const taskAccounts = await this.videoDownloadTaskAccountsModule.getAccountByTaskId(taskId)
             if (taskAccounts.length > 0) {
                 accountIds = taskAccounts.map((value) => value.account_id)
                 //process download video
@@ -559,12 +576,12 @@ export class videoController {
         }
         //reconstruct download type
         const data: DownloadVideoControlparam = {
-            taskName: taskInfo.taskName,
+            taskName: taskInfo.task_name || '',
             accountId: accountIds,
             downloadType: taskInfo.downloadtype as "playlist" | "singleplay" | "keyword",
-            platform: taskInfo.platform,
+            platform: taskInfo.platform || '',
             link: links,
-            savePath: taskInfo.savepath,
+            savePath: taskInfo.savepath || '',
             keywords: keywords,
             isplaylist: taskDetail.download_type == DownloadType.MULTIVIDEO,
             proxy: proxys,

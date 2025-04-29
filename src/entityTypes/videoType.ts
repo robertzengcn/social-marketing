@@ -37,7 +37,7 @@ export type douyinEntity={
     naming:string,
     timeout: number,
 }
-export type VideoDownloadTaskEntity={
+export type VideoDownloadTaskEntityType={
     id?:number,
     platform:string,
     taskName:string,

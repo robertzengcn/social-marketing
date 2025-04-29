@@ -48,7 +48,7 @@ import { useI18n } from "vue-i18n";
 import { ref, computed, reactive, onMounted, onUnmounted } from 'vue'
 import { SearchResult } from '@/views/api/types'
 import { getVideoTasklist, retryVideoTask, queryVideoTaskErrorlog, receiveVideoTaskDownloadRetryMessage } from "@/views/api/video";
-import { VideoDownloadTaskEntity } from "@/entityTypes/videoType";
+import { VideoDownloadTaskEntityType } from "@/entityTypes/videoType";
 import router from '@/views/router';
 const { t } = useI18n({ inheritLocale: true });
 import { CapitalizeFirstLetter } from "@/views/utils/function"
@@ -67,7 +67,7 @@ type Fetchparam = {
 }
 
 const FakeAPI = {
-    async fetch(fetchparam: Fetchparam): Promise<SearchResult<VideoDownloadTaskEntity>> {
+    async fetch(fetchparam: Fetchparam): Promise<SearchResult<VideoDownloadTaskEntityType>> {
         // console.log(fetchparam.search)
         const fpage = (fetchparam.page - 1) * fetchparam.itemsPerPage
         const res = await getVideoTasklist({ page: fpage, size: fetchparam.itemsPerPage, sortby: fetchparam.sortBy, search: fetchparam.search })
@@ -124,7 +124,7 @@ const headers: Array<any> = [
 
 ];
 const itemsPerPage = ref(10);
-const serverItems = ref<Array<VideoDownloadTaskEntity>>([]);
+const serverItems = ref<Array<VideoDownloadTaskEntityType>>([]);
 const loading = ref(false);
 const totalItems = ref(0);
 const search = ref('');
@@ -172,14 +172,14 @@ const createDownload = () => {
     });
 }
 
-const openTasklist = (item: VideoDownloadTaskEntity) => {
+const openTasklist = (item: VideoDownloadTaskEntityType) => {
     if (item.id) {
         router.push({
             name: "VideoList", params: { taskid: item.id }
         });
     }
 };
-const taskRetry = async (item: VideoDownloadTaskEntity) => {
+const taskRetry = async (item: VideoDownloadTaskEntityType) => {
     if (item.id) {
         await retryVideoTask(item.id)
         loadItemfun()
