@@ -1,6 +1,6 @@
 //import { Database } from 'better-sqlite3';
 //import { Scraperdb } from "@/model/scraperdb";
-import { VideoDownloadEntity, VideoDownloadStatus,VideoCaptionStatus } from "@/entityTypes/videoType"
+import { VideoDownloadEntityType, VideoDownloadStatus,VideoCaptionStatus } from "@/entityTypes/videoType"
 import { getRecorddatetime,getLogPath } from "@/modules/lib/function";
 import { BaseDb } from "@/model/Basedb";
 
@@ -14,7 +14,7 @@ export class VideoDownloaddb extends BaseDb {
     // const scraperModel = Scraperdb.getInstance(filepath);
     // this.db = scraperModel.getdb();
   }
-  public saveVideoDownload(videoDownload: VideoDownloadEntity): number {
+  public saveVideoDownload(videoDownload: VideoDownloadEntityType): number {
     //find video item by url first
     const itemres = this.getVideobyUrl(videoDownload.url)
     if (itemres&&itemres.id) {
@@ -54,7 +54,7 @@ export class VideoDownloaddb extends BaseDb {
     return info.changes;
   }
   //get video download list
-  public getVideoDownloadList(taskId: number, page: number, size: number, status?: VideoDownloadStatus): Array<VideoDownloadEntity> {
+  public getVideoDownloadList(taskId: number, page: number, size: number, status?: VideoDownloadStatus): Array<VideoDownloadEntityType> {
     let query = `SELECT * FROM ${this.videoDownloadTable} WHERE task_id=@taskId`
     if (status) {
       query += ` AND status=@status`
@@ -62,7 +62,7 @@ export class VideoDownloaddb extends BaseDb {
     query += ` ORDER BY id desc LIMIT @page,@size`
     const stmt = this.db.prepare(query);
     //const rows = stmt.all(taskId,page,size) as Array<VideoDownloadEntity>;
-    const rows = stmt.all({ taskId: taskId, page: page, size: size, status: status }) as Array<VideoDownloadEntity>;
+    const rows = stmt.all({ taskId: taskId, page: page, size: size, status: status }) as Array<VideoDownloadEntityType>;
     return rows;
   }
   //count video download list
@@ -77,22 +77,22 @@ export class VideoDownloaddb extends BaseDb {
     return row.total;
   }
   //get video download item detail
-  public getVideoDownloaditem(id: number): VideoDownloadEntity {
+  public getVideoDownloaditem(id: number): VideoDownloadEntityType {
     const stmt = this.db.prepare(
       `SELECT * FROM ` + this.videoDownloadTable + ` WHERE id = ?`);
-    const res = stmt.get(id) as VideoDownloadEntity;
+    const res = stmt.get(id) as VideoDownloadEntityType;
     return res
   }
   //get video download item info by url
-  public getVideobyUrl(url: string): VideoDownloadEntity {
+  public getVideobyUrl(url: string): VideoDownloadEntityType {
     const stmt = this.db.prepare(
       `SELECT * FROM ` + this.videoDownloadTable + ` WHERE url = ?`);
-    const res = stmt.get(url) as VideoDownloadEntity;
+    const res = stmt.get(url) as VideoDownloadEntityType;
     return res
   }
 
   //update video download item
-  public updateVideoDownloadItem(id: number, videoDownload: Omit<VideoDownloadEntity,"error_log">): number {
+  public updateVideoDownloadItem(id: number, videoDownload: Omit<VideoDownloadEntityType,"error_log">): number {
     if(!videoDownload.record_time){
       videoDownload.record_time=getRecorddatetime()
     }

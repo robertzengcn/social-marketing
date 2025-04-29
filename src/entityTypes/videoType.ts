@@ -62,7 +62,7 @@ export enum VideoDownloadStatus {
     Finish = 2,
     Error=3
   }
-export type VideoDownloadEntity={
+export type VideoDownloadEntityType={
     id?:number,
     url:string,
     savepath:string,
@@ -76,7 +76,7 @@ export type VideoDownloadEntity={
 }
 export type videoDownloadList={
     total: number,
-    records?:Array<VideoDownloadEntity>
+    records?:Array<VideoDownloadEntityType>
 }
 
 export type videoDownloadListResp={
@@ -153,7 +153,7 @@ export interface VideoDownloadQuery extends ItemSearchparam {
     taskId: number,
 }
 
-export interface VideoDownloadListDisplay extends VideoDownloadEntity {
+export interface VideoDownloadListDisplay extends VideoDownloadEntityType {
     title?:string
     description?:string
    
@@ -251,7 +251,7 @@ isEnglish:boolean
 savePath:string
 }
 export type VideoCompotionEntity={
-    detail:VideoDownloadEntity,
+    detail:VideoDownloadEntityType,
     description:VideoDescriptionEntity|null,
     caption:Array<VideoCaptionDisplay>|null,
     translateInfo?:Array<VideoTranslateInfo>|null,
