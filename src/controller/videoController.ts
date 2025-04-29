@@ -775,7 +775,7 @@ export class videoController {
         //get video description
         const videoDescription = await this.videoDescriptionModule.getVideoDescription(id, videoDownEntity.language)
         //get video caption
-        const videoCaption = this.videoCaptionModule.getCaptionByVid(id)
+        const videoCaption = await this.videoCaptionModule.getCaptionByVid(id)
         const captionDisplay: Array<VideoCaptionDisplay> = []
         if (videoCaption.length > 0) {
             videoCaption.forEach((value) => {
@@ -815,7 +815,7 @@ export class videoController {
     }
     //show file in explorer
     public async showCaptionFileExplorer(id: number) {
-        const videoCaptionInfo = this.videoCaptionModule.read(id)
+        const videoCaptionInfo = await this.videoCaptionModule.read(id)
         if (!videoCaptionInfo) {
             throw new Error("video info not found")
         }

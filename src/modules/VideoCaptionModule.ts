@@ -1,31 +1,37 @@
 import { BaseModule } from "@/modules/baseModule";
-import { VideoCaptiondb } from "@/model/VideoCaptiondb";
+import { VideoCaptionModel } from "@/model/VideoCaption.model";
 import { VideoCaptionEntity } from "@/entityTypes/videoType";
+
+
 export class VideoCaptionModule extends BaseModule {
-    private videoCaptiondb: VideoCaptiondb
+    private videoCaptionModel: VideoCaptionModel;
+
     constructor() {
-        super()
-        this.videoCaptiondb = new VideoCaptiondb(this.dbpath)
-    }
-    create(videoCaption: VideoCaptionEntity): number {
-        return this.videoCaptiondb.create(videoCaption);
+        super();
+        this.videoCaptionModel = new VideoCaptionModel(this.dbpath);
     }
 
-    read(id: number): VideoCaptionEntity | null {
-       return this.videoCaptiondb.read(id);
+    async create(videoCaption: VideoCaptionEntity): Promise<number> {
+        return await this.videoCaptionModel.create(videoCaption);
     }
 
-    update(id: number, videoCaption: VideoCaptionEntity) {
-        return this.videoCaptiondb.update(id, videoCaption);
+    async read(id: number): Promise<VideoCaptionEntity | null> {
+        return await this.videoCaptionModel.read(id);
     }
 
-    delete(id: number): void {
-       this.videoCaptiondb.delete(id);
+    async update(id: number, videoCaption: VideoCaptionEntity): Promise<void> {
+        await this.videoCaptionModel.update(id, videoCaption);
     }
-    getCaptionByVid(vid: number): Array<VideoCaptionEntity> {
-        return this.videoCaptiondb.getCaptionByVid(vid);
+
+    async delete(id: number): Promise<void> {
+        await this.videoCaptionModel.delete(id);
     }
-    
 
+    async getCaptionByVid(vid: number): Promise<Array<VideoCaptionEntity>> {
+        return await this.videoCaptionModel.getCaptionByVid(vid);
+    }
 
+    async getCaptionByVidLid(videoId: number, languageId: number): Promise<VideoCaptionEntity | null> {
+        return await this.videoCaptionModel.getCaptionByVidLid(videoId, languageId);
+    }
 }
