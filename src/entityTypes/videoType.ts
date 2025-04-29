@@ -205,7 +205,7 @@ export interface VideoDownloadTaskUrlEntity {
     task_id: number;
     url: string;
 }
-export interface VideoDownloadTaskProxyEntity {
+export interface VideoDownloadTaskProxyEntityType {
     id?: number;
     task_id: number;
     proxy_id: number;

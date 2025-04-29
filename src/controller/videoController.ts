@@ -54,6 +54,7 @@ import { VideoDownloadTaskEntity } from "@/entity/VideoDownloadTask.entity"
 //import {} from "@/entityTypes/proxyType"
 //import { VideoDownloadModel } from "@/model/VideoDownload.model";
 import {VideoDownloadEntityType} from "@/entityTypes/videoType"
+import { VideoDownloadTaskUrlsEntity } from "@/entity/VideoDownloadTaskUrls.entity";
 export class videoController {
     private videoDownloadModule: VideoDownloadModule
     private videoDownloadTaskModule: VideoDownloadTaskModule
@@ -432,7 +433,11 @@ export class videoController {
         if (param.link.length > 0) {
             //save task url
             for (const link of param.link) {
-                this.videoDownloadTaskUrlModule.create({ task_id: taskId, url: link })
+                const videodownloadtaskurl=new VideoDownloadTaskUrlsEntity()
+                videodownloadtaskurl.task_id=taskId
+                videodownloadtaskurl.url=link
+                await this.videoDownloadTaskUrlModule.create(videodownloadtaskurl)
+                // this.videoDownloadTaskUrlModule.create({ task_id: taskId, url: link })
             }
         }
         if (param.keywords.length > 0) {
@@ -546,12 +551,12 @@ export class videoController {
         }
 
         //get task url
-        const taskUrls = this.videoDownloadTaskUrlModule.getItemsByTaskId(taskId)
+        const taskUrls = await this.videoDownloadTaskUrlModule.getItemsByTaskId(taskId)
 
         let proxys: Array<number> = []
 
         //get proxy lists
-        const proxylists = this.videoDownloadTaskUrlModule.getItemsByTaskId(taskId)
+        const proxylists = await this.videoDownloadTaskUrlModule.getItemsByTaskId(taskId)
         if (proxylists.length > 0) {
             proxylists.forEach((value) => {
                 if (value.id) {
@@ -561,7 +566,7 @@ export class videoController {
         }
         let links: Array<string> = []
         if (taskUrls.length > 0) {
-            links = taskUrls.map((value) => value.url)
+            links = taskUrls.map((value) => value.url ?? "")
         }
         //get task keywords
         let keywords: Array<string> = []
