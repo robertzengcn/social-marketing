@@ -18,20 +18,20 @@
         :items-length="totalItems" :items="serverItems" :loading="loading" item-value="name"
         @update:options="loadItems">
         <template v-slot:item.status="{ item }">
-            <v-chip color="grey" v-if="item.status == '0'">{{ CapitalizeFirstLetter(t('common.not_start')) }}</v-chip>
-            <v-chip color="blue" v-if="item.status == '1'">{{ CapitalizeFirstLetter(t('common.processing')) }}</v-chip>
-            <v-chip color="green" v-if="item.status == '2'">{{ CapitalizeFirstLetter(t('common.complete')) }}</v-chip>
-            <v-chip color="red" v-if="item.status == '3'">{{ CapitalizeFirstLetter(t('common.error')) }}</v-chip>
+            <v-chip color="grey" v-if="item.status === TaskStatus.Notstart">{{ CapitalizeFirstLetter(t('common.not_start')) }}</v-chip>
+            <v-chip color="blue" v-if="item.status === TaskStatus.Processing">{{ CapitalizeFirstLetter(t('common.processing')) }}</v-chip>
+            <v-chip color="green" v-if="item.status === TaskStatus.Complete">{{ CapitalizeFirstLetter(t('common.complete')) }}</v-chip>
+            <v-chip color="red" v-if="item.status === TaskStatus.Error">{{ CapitalizeFirstLetter(t('common.error')) }}</v-chip>
         </template>
         <template v-slot:[`item.actions`]="{ item }">
 
             <v-icon size="small" class="me-2" @click="openTasklist(item)">
                 mdi-login
             </v-icon>
-            <v-icon size="small" class="me-2" @click="taskRetry(item)" v-if="item.status != '1'">
+            <v-icon size="small" class="me-2" @click="taskRetry(item)" v-if="item.status !== TaskStatus.Processing">
                 mdi-play
             </v-icon>
-            <v-icon size="small" class="me-2" @click="showLog(item)" v-if="item.status == '3'">
+            <v-icon size="small" class="me-2" @click="showLog(item)" v-if="item.status === TaskStatus.Error">
                 mdi-file-document
             </v-icon>
 
@@ -49,6 +49,7 @@ import { ref, computed, reactive, onMounted, onUnmounted } from 'vue'
 import { SearchResult } from '@/views/api/types'
 import { getVideoTasklist, retryVideoTask, queryVideoTaskErrorlog, receiveVideoTaskDownloadRetryMessage } from "@/views/api/video";
 import { VideoDownloadTaskEntityType } from "@/entityTypes/videoType";
+import { TaskStatus } from "@/entityTypes/commonType";
 import router from '@/views/router';
 const { t } = useI18n({ inheritLocale: true });
 import { CapitalizeFirstLetter } from "@/views/utils/function"

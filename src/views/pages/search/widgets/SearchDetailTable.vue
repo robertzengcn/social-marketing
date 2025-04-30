@@ -5,7 +5,7 @@
                 <v-text-field rounded class="elevation-0" density="compact" variant="solo" label="Search sample"
                     append-inner-icon="mdi-magnify" single-line hide-details></v-text-field>
             </div>
-            <v-btn class="btn" variant="flat" prepend-icon="mdi-filter-variant"><span> {{$t('common.more')}}</span></v-btn>
+            <v-btn class="btn" variant="flat" prepend-icon="mdi-filter-variant"><span> {{t('common.more')}}</span></v-btn>
         </div>     
     </div>
     <v-data-table-server v-model:items-per-page="itemsPerPage" :search="search" :headers="headers" 

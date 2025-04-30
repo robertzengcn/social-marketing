@@ -10,14 +10,14 @@
           >
             mdi-folder
           </v-icon>
-          <v-icon 
+          <!-- <v-icon 
           size="small"
           class="me-2"
           v-if="item.status=='Error'" 
           @click="downloadErrorlog(item)"
           >
           mdi-download
-          </v-icon>
+          </v-icon> -->
 
         </template>
         <template v-slot:expanded-row="{ columns, item }">

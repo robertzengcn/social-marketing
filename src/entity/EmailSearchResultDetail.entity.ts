@@ -9,7 +9,7 @@ export class EmailSearchResultDetailEntity extends AuditableEntity {
     @Column("integer")
     result_id: number;
     
-    @Column("text")
+    @Column("text",{ nullable: true })
     email: string;
     
     @Column("text", { nullable: true })

@@ -24,7 +24,7 @@
                     Submit
                 </v-btn>
 
-                <v-btn color="error" class="mt-4" block @click="$router.go(-1)">
+                <v-btn color="error" class="mt-4" block @click="router.go(-1)">
                     Return
                 </v-btn>
             </div>
@@ -32,17 +32,17 @@
     </v-sheet>
 </template>
 <script setup lang="ts">
-// import router from '@/views/router';
 import { ref, onMounted } from "vue";
 import {
     getSocialtaskinfo,
     getSocialtasktype,
     getTaglist,
 } from "@/views/api/socialtask";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { SocialTaskEntity } from "@/entityTypes/socialtask-type";
 import { saveSocialTask } from "@/views/api/socialtask";
 const $route = useRoute();
+const router = useRouter();
 const FakeAPI = {
     async fetch(id: number): Promise<SocialTaskEntity> {
         return await getSocialtaskinfo({ id: id });

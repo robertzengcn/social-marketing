@@ -1,22 +1,21 @@
 <template>
   <v-sheet class="mx-auto" rounded>
     <v-form ref="form" @submit.prevent="onSubmit">
-      <h3>{{ $t('search.use_hint') }}</h3>
-      <v-textarea class="mt-3" v-model="keywords" :label="$t('search.input_keywords_hint')"></v-textarea>
-      <v-select v-model="enginer" :items="searchplatform" :label="$t('search.search_enginer_name') as string" required
+      <h3>{{ t('search.use_hint') }}</h3>
+      <v-textarea class="mt-3" v-model="keywords" :label="t('search.input_keywords_hint')"></v-textarea>
+      <v-select v-model="enginer" :items="searchplatform" :label="t('search.search_enginer_name')" required
         :readonly="loading" :rules="[rules.required]" class="mt-3"  
         item-title="name"
-          item-value="key"
-          ></v-select>
+        item-value="key"></v-select>
 
 
-      <v-text-field v-model="page_number" :label="$t('search.page_number')" clearable class="mt-3"></v-text-field>
+      <v-text-field v-model="page_number" :label="t('search.page_number')" clearable class="mt-3"></v-text-field>
 
-      <v-text-field v-model="concurrent_quantity" :label="$t('search.concurrent_quantity')" clearable
+      <v-text-field v-model="concurrent_quantity" :label="t('search.concurrent_quantity')" clearable
         class="mt-3"></v-text-field>
       <v-combobox v-model="proxyValue" :items="proxyValue" label="Select proxy" item-title="host" multiple return-object
         chips clearable></v-combobox>
-      <v-btn color="primary" @click="showProxytable">{{$t('search.choose_proxy')}}</v-btn>
+      <v-btn color="primary" @click="showProxytable">{{t('search.choose_proxy')}}</v-btn>
 
       <div v-if="proxytableshow" class="mt-3">
         <ProxyTableselected @change="handleSelectedChanged" />
@@ -34,7 +33,7 @@
           Submit
         </v-btn>
 
-        <v-btn color="error" class="mt-4" block @click="$router.go(-1)">
+        <v-btn color="error" class="mt-4" block @click="router.go(-1)">
           Return
         </v-btn>
       </div>
@@ -57,6 +56,7 @@
   </div>
 </template>
 <script setup lang="ts">
+import { useRoute, useRouter } from "vue-router";
 type SearchOption = {
   key: string;
   name: string;
@@ -64,7 +64,7 @@ type SearchOption = {
 };
 import { ref, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
-import router from '@/views/router';
+//import router from '@/views/router';
 import { SearhEnginer } from "@/config/searchSetting"
 import { ToArray, CapitalizeFirstLetter } from "@/views/utils/function"
 import { submitScraper, receiveSearchevent } from "@/views/api/search"
@@ -94,6 +94,8 @@ const page_number = ref(1);
 const concurrent_quantity = ref(1);
 const proxyValue = ref<Array<ProxyEntity>>([]);
 const proxytableshow = ref(false);
+const $route = useRoute();
+const router = useRouter();
 const initialize = () => {
   //searchplatform.value = ToArray(SearhEnginer);
   const seArr:string[]=ToArray(SearhEnginer);
