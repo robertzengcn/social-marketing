@@ -1,8 +1,8 @@
 <template>
   <v-stepper alt-labels v-model="thisstep" show-actions>
     <v-stepper-header>
-      <v-stepper-item v-for="(step, n) in vslotheaders" :title="step.title" :value="step.step"
-        :rules="[value => !!step.valid]"
+      <v-stepper-item v-for="(step, n) in computedHeaders" :title="step.title" :value="step.step"
+        :rules="[() => step.valid]"
          :complete="stepComplete(n+1)"
         >
 
@@ -17,7 +17,7 @@
         <h4>{{ t("common.single_choose") }}</h4>
         <v-sheet class="mx-auto" rounded>
           <v-select v-model="useemailsource" :items="marketTypeOption" item-title="tranme" item-value="key"
-            :label="$t('emailmarketing.use_email_source') as string" required :readonly="loading"
+            :label="t('emailmarketing.use_email_source')" required :readonly="loading"
             :rules="[rules.required]" class="mt-3" return-object></v-select>
           <div v-if="useemailsource?.key == 1">
             <EmailresultTable :isSelectedtable="true" @change="handleEmailsourceChanged" />
@@ -25,7 +25,7 @@
           <v-container fluid>
             <v-checkbox
       v-model="notduplicate"
-      :label="CapitalizeFirstLetter($t('buckemailsend.avoid_duplicate')) as string"></v-checkbox>
+      :label="CapitalizeFirstLetter(t('buckemailsend.avoid_duplicate'))"></v-checkbox>
           </v-container> 
         </v-sheet>
       </v-stepper-window-item>
@@ -54,7 +54,7 @@
       </v-stepper-window-item>
     </v-stepper-window>
     <div class="button-container mb-5 mr-5 ml-5">
-      <v-btn text v-if="thisstep > 1" @click="backStep(thisstep)">Back</v-btn>
+      <v-btn v-if="thisstep > 1" @click="backStep(thisstep)">Back</v-btn>
       <div class="spacer"></div>
       <v-btn v-if="thisstep < totalstep" color="primary" @click="validstep(thisstep)">Continue</v-btn>
       <v-btn v-else color="success" @click="validstep(thisstep)">Done</v-btn>
@@ -73,19 +73,27 @@ import { EmailsearchTaskEntityDisplay } from '@/entityTypes/emailextraction-type
 import Emailtemplateselect from "@/views/pages/emailmarketing/template/widgets/TemplateTable.vue"
 import EmailFilterTable from "@/views/pages/emailfilter/widgets/EmailFilterTable.vue"
 import EmailServiceTable from "@/views/pages/emailservice/widgets/EmailServiceTable.vue"
-import { VslotHeader } from '@/entityTypes/commonType'
 import { CapitalizeFirstLetter } from "@/views/utils/function"
 import ErrorDialog from "@/views/components/widgets/errorDialog.vue"
-const vslotheaders = ref<Array<VslotHeader>>([]);
+import { EmailTemplateRespdata, EmailFilterdata, EmailServiceListdata, EmailMarketingsubdata } from "@/entityTypes/emailmarketingType"
+import { buckEmailsend, receiveBuckEmailevent } from "@/views/api/buckemail"
+import { BUCKEMAILSENDMESSAGE } from "@/config/channellist"
+import { VslotHeader } from "@/entityTypes/commonType";
+
 const { t } = useI18n({ inheritLocale: true });
-import { EmailTemplateRespdata, EmailFilterdata, EmailServiceListdata,EmailMarketingsubdata } from "@/entityTypes/emailmarketingType"
-import {buckEmailsend,receiveBuckEmailevent} from "@/views/api/buckemail"
-import {BUCKEMAILSENDMESSAGE} from "@/config/channellist"
+
 type marketType = {
   key: number;
   name: string;
   tranme: string;
 }
+
+const vslotheaders = ref<VslotHeader[]>([
+  { step: 1, title: CapitalizeFirstLetter(t("buckemailsend.email_source")), valid: true },
+  { step: 2, title: CapitalizeFirstLetter(t("buckemailsend.email_template")), valid: true },
+  { step: 3, title: CapitalizeFirstLetter(t("buckemailsend.email_filter")), valid: true },
+  { step: 4, title: CapitalizeFirstLetter(t("buckemailsend.email_service")), valid: true },
+]);
 const emailsourcesdata = ref<EmailsearchTaskEntityDisplay>();
 const emailtemplateresdata = ref<Array<EmailTemplateRespdata>>();
 const emailfilterdatas = ref<Array<EmailFilterdata>>([]);
@@ -96,13 +104,7 @@ const notduplicate=ref<boolean>(true)
 // const step2Rules = [requiredRule];
 // const step3Rules = [requiredRule];
 
-vslotheaders.value = [
-  { step: 1, title: computed(_ => CapitalizeFirstLetter(t("buckemailsend.email_source"))), valid: true },
-  { step: 2, title: computed(_ => CapitalizeFirstLetter(t("buckemailsend.email_template"))), valid: true },
-  { step: 3, title: computed(_ => CapitalizeFirstLetter(t("buckemailsend.email_filter"))), valid: true },
-  { step: 4, title: computed(_ => CapitalizeFirstLetter(t("buckemailsend.email_service"))), valid: true },
-];
-const thisstep = ref(1);
+const thisstep = ref<number>(1);
 const totalstep = ref<number>(4)
 const loading = ref<boolean>(false);
 const showDialog = ref<boolean>(false);
@@ -118,6 +120,15 @@ onMounted(() => {
   initialize();
 
 })
+
+const computedHeaders = computed(() => {
+  // if (props.isSelectedtable) {
+  //   return headers.value.filter(value => value.key !== 'actions');
+  // } else {
+  //   return headers.value;
+  // }
+  return vslotheaders.value
+});
 const validstep = (n: number) => {
   console.log(n)
   //valid item

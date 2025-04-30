@@ -1,32 +1,36 @@
-import { VideoDownloadTaskProxydb } from "@/model/VideoDownloadTaskProxydb";
+import { VideoDownloadTaskProxyModel } from "@/model/VideoDownloadTaskProxy.model";
 import { BaseModule } from "@/modules/baseModule";
 // import { VideoDownloadTaskUrlEntity } from "@/entityTypes/videoType"
-import {VideoDownloadTaskProxyEntity} from "@/entityTypes/videoType"
+import {VideoDownloadTaskProxyEntityType} from "@/entityTypes/videoType"
+import { VideoDownloadTaskProxyEntity } from "@/entity/VideoDownloadTaskProxy.entity";
 export class VideoDownloadTaskProxyModule extends BaseModule {
-    private videoDownloadTaskProxydb: VideoDownloadTaskProxydb
+    private videoDownloadTaskProxydb: VideoDownloadTaskProxyModel
     constructor() {
         super()
-        this.videoDownloadTaskProxydb = new VideoDownloadTaskProxydb(this.dbpath)
+        this.videoDownloadTaskProxydb = new VideoDownloadTaskProxyModel(this.dbpath)
     }
-    create(vdte: VideoDownloadTaskProxyEntity): number {
-
-        return this.videoDownloadTaskProxydb.create(vdte);
-    }
-
-    read(id: number): VideoDownloadTaskProxyEntity {
-        return this.videoDownloadTaskProxydb.read(id);
-    }
-
-    update(id: number, vdte: VideoDownloadTaskProxyEntity): void {
-        this.videoDownloadTaskProxydb.update(id, vdte);
+    async create(vdte: VideoDownloadTaskProxyEntityType): Promise<number> {
+        const vdteEntity = new VideoDownloadTaskProxyEntity();
+        vdteEntity.task_id = vdte.task_id;
+        vdteEntity.proxy_id = vdte.proxy_id;
+        
+        return await this.videoDownloadTaskProxydb.create(vdteEntity);
     }
 
-    delete(id: number): void {
-        this.videoDownloadTaskProxydb.delete(id);
+    async read(id: number): Promise<VideoDownloadTaskProxyEntity | null> {
+        return await this.videoDownloadTaskProxydb.read(id);
+    }
+
+    async update(id: number, vdte: VideoDownloadTaskProxyEntity): Promise<void> {
+        await this.videoDownloadTaskProxydb.update(id, vdte);
+    }
+
+    async delete(id: number): Promise<void> {
+        await this.videoDownloadTaskProxydb.delete(id);
     }
 
     //query items id by task id
-    public getItemsByTaskId(taskId: number): Array<VideoDownloadTaskProxyEntity> {
-        return this.videoDownloadTaskProxydb.getItemsByTaskId(taskId);
+    public async getItemsByTaskId(taskId: number): Promise<Array<VideoDownloadTaskProxyEntity>> {
+        return await this.videoDownloadTaskProxydb.getItemsByTaskId(taskId);
     }
 }

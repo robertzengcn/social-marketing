@@ -2,7 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 import AuditableEntity from "@/entity/Auditable.entity"
 
 @Entity('buckemail_task')
-export class BuckemailTask extends AuditableEntity {
+export class BuckemailTaskEntity extends AuditableEntity {
   @PrimaryGeneratedColumn()
   id: number;
 

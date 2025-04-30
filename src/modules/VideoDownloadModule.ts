@@ -1,15 +1,16 @@
 // import { Token } from "@/modules/token"
 // import { USERSDBPATH } from '@/config/usersetting';
-import {VideoDownloaddb} from "@/model/videoDownloaddb"
-import {VideoDownloadEntity,VideoDownloadStatus,VideoCaptionStatus} from "@/entityTypes/videoType"
+import { VideoDownloadModel } from "@/model/VideoDownload.model";
+import {VideoDownloadStatus,VideoCaptionStatus} from "@/entityTypes/videoType"
 import { BaseModule } from "@/modules/baseModule";
 import { WriteLog,getLogPath } from "@/modules/lib/function";
 import * as fs from 'fs';
 import { readLogFile } from "@/modules/lib/function"
+import { VideoDownloadEntity } from "@/entity/VideoDownload.entity";
 
 export class VideoDownloadModule extends BaseModule{
     // private dbpath: string
-    private videoDownloaddb:VideoDownloaddb
+    private videoDownloaddb:VideoDownloadModel
     constructor() {
       super()
         // const tokenService = new Token()
@@ -18,19 +19,19 @@ export class VideoDownloadModule extends BaseModule{
         //     throw new Error("user path not exist")
         // }
         // this.dbpath = dbpath
-        this.videoDownloaddb=new VideoDownloaddb(this.dbpath)
+        this.videoDownloaddb=new VideoDownloadModel(this.dbpath)
     }
 
-      public saveVideoDownload(videoDownload:VideoDownloadEntity):number{
-        return this.videoDownloaddb.saveVideoDownload(videoDownload)
+      public async saveVideoDownload(videoDownload:VideoDownloadEntity):Promise<number>{
+        return await this.videoDownloaddb.saveVideoDownload(videoDownload)
       } 
-      public updateVideoDownload(videoId:number,videoDownload:Omit<VideoDownloadEntity,"error_log">):number{
-        return this.videoDownloaddb.updateVideoDownloadItem(videoId,videoDownload)
+      public async updateVideoDownload(videoId:number,videoDownload:Omit<VideoDownloadEntity,"error_log">):Promise<number>{
+        return await this.videoDownloaddb.updateVideoDownloadItem(videoId,videoDownload)
       } 
       //save log for video download
-      public saveVideoDownloadLog(log:string,downloadId:number){
+      public async saveVideoDownloadLog(log:string,downloadId:number){
         //get error log file path
-        const res=this.videoDownloaddb.getVideoDownloaditem(downloadId)
+        const res=await this.videoDownloaddb.getVideoDownloaditem(downloadId)
         if(!res){
           throw new Error("video download item not exist")
         }
@@ -48,41 +49,41 @@ export class VideoDownloadModule extends BaseModule{
       } 
 
       //update download status
-      public updateVideoDownloadStatus(status:VideoDownloadStatus,downloadId:number):number{
-       return this.videoDownloaddb.updateVideoDownloadStatus(status,downloadId)
+      public async updateVideoDownloadStatus(status:VideoDownloadStatus,downloadId:number):Promise<number>{
+       return await this.videoDownloaddb.updateVideoDownloadStatus(status,downloadId)
       }
       //get video download list
-      public getVideoDownloadList(taskId:number,page:number,size:number,status?:VideoDownloadStatus):Array<VideoDownloadEntity>{
-        return this.videoDownloaddb.getVideoDownloadList(taskId,page,size,status)
+      public async getVideoDownloadList(taskId:number,page:number,size:number,status?:VideoDownloadStatus):Promise<Array<VideoDownloadEntity>>{
+        return await this.videoDownloaddb.getVideoDownloadList(taskId,page,size,status)
       }
       //count video download list
-      public countVideoDownloadList(taskId:number,status?:VideoDownloadStatus):number{
-        return this.videoDownloaddb.countVideoDownloadList(taskId,status)
+      public async countVideoDownloadList(taskId:number,status?:VideoDownloadStatus):Promise<number>{
+        return await this.videoDownloaddb.countVideoDownloadList(taskId,status)
       }
       //get all video download info list by task id
-      public getAllvideoDownloadlist(taskId:number,status?:VideoDownloadStatus):Array<VideoDownloadEntity>{
+      public async getAllvideoDownloadlist(taskId:number,status?:VideoDownloadStatus):Promise<Array<VideoDownloadEntity>>{
         //count video number by task id
-        const count=this.countVideoDownloadList(taskId)
+        const count=await this.countVideoDownloadList(taskId)
         const res:Array<VideoDownloadEntity>=[]
         for(let i=0;i<count;i=i+100){
-          const list=this.getVideoDownloadList(taskId,i,100,status)
+          const list=await this.getVideoDownloadList(taskId,i,100,status)
           res.push(...list)
         }
         return res
       }
       //get video download item info by id
-      public getVideoDownloaditem(id:number):VideoDownloadEntity{
-        return this.videoDownloaddb.getVideoDownloaditem(id)
+      public async getVideoDownloaditem(id:number):Promise<VideoDownloadEntity|null>{
+        return await this.videoDownloaddb.getVideoDownloaditem(id)
       }
-      public deleteVideoDownloadItem(id:number):number{
-        return this.videoDownloaddb.deleteVideoDownloadItem(id)
+      public async deleteVideoDownloadItem(id:number):Promise<number>{
+        return await this.videoDownloaddb.deleteVideoDownloadItem(id)
       }
-      public updateVideoCaptionStatus(id: number,status: VideoCaptionStatus ): number {
-        return this.videoDownloaddb.updateVideoCaptionStatus( id,status);
+      public async updateVideoCaptionStatus(id: number,status: VideoCaptionStatus ): Promise<number> {
+        return await this.videoDownloaddb.updateVideoCaptionStatus( id,status);
     }
     //get video item log
     public async getVideoErrorLog(id:number): Promise<string> {
-        const videodownEntity=this.getVideoDownloaditem(id)
+        const videodownEntity=await this.getVideoDownloaditem(id)
         if(!videodownEntity){
           throw new Error("video download item not exist")
         }

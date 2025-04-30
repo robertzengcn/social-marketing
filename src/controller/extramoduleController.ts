@@ -3,7 +3,7 @@ import { WinExtraModuleConfig } from "@/config/WinExtraModuleConfig"
 import { MacExtraModuleConfig } from "@/config/MacExtraModuleConfig"
 import { LinuxExtraModuleConfig } from "@/config/LinuxExtraModuleConfig"
 import { ExtraModule } from "@/entityTypes/extramoduleType"
-import { checkFolderAndGetFiles, downloadFile, getUserPlatform } from "@/modules/lib/function"
+import { checkFolderAndGetFiles, downloadFile, getUserPlatform, getRecorddatetime } from "@/modules/lib/function"
 import { ListData } from "@/entityTypes/commonType"
 import { execSync, exec } from 'child_process';
 import { CustomError } from '@/modules/customError'
@@ -13,6 +13,7 @@ import { app } from 'electron';
 import * as path from 'path';
 import * as fs from 'fs';
 import { ExtraModulesModule } from "@/modules/ExtraModulesModule"
+import { ExtraModuleEntity } from "@/entity/ExtraModule.entity"
 import log from 'electron-log/main';
 // import { s } from "vitest/dist/reporters-1evA5lom"
 export class ExtraModuleController {
@@ -47,7 +48,7 @@ export class ExtraModuleController {
                 }
             }
             if (module.installed) {//check installed version
-                const instRes = this.extraModulesModule.getExtraModuleByName(module.name)
+                const instRes = await this.extraModulesModule.getExtraModuleByName(module.name)
                 if (instRes) {
                     module.installVersion = instRes.version
                     if (module.version !== instRes.version) {
@@ -100,9 +101,12 @@ export class ExtraModuleController {
         }
         if (valid.ispip) {//install pip package
             await this.installPipPackage(valid.packagename, valid.version).then(() => {
-                this.extraModulesModule.create({ name: valid.name, version: valid.version })
+                const module = new ExtraModuleEntity();
+                module.name = valid.name;
+                module.version = valid.version;
+                module.record_time = getRecorddatetime();
+                this.extraModulesModule.create(module)
                 if (success) {
-
                     success()
                 }
             }).catch((error) => {
@@ -114,9 +118,12 @@ export class ExtraModuleController {
         } else {
 
             await this.downloadInstallPackage(valid.packagename, valid.link, () => {
-                this.extraModulesModule.create({ name: valid.name, version: valid.version })
+                const module = new ExtraModuleEntity();
+                module.name = valid.name;
+                module.version = valid.version;
+                module.record_time = getRecorddatetime();
+                this.extraModulesModule.create(module)
                 if (success) {
-
                     success()
                 }
             }, strerr)
@@ -355,7 +362,11 @@ export class ExtraModuleController {
         }
         if (valid.ispip) {
             await this.installPipPackage(valid.packagename, valid.version)
-            this.extraModulesModule.create({ name: valid.name, version: valid.version })
+            const module = new ExtraModuleEntity();
+            module.name = valid.name;
+            module.version = valid.version;
+            module.record_time = getRecorddatetime();
+            this.extraModulesModule.create(module)
             if (successcall) {
                 successcall()
             }
@@ -363,7 +374,11 @@ export class ExtraModuleController {
             const modulePath = path.join(this.extraModulePth, valid.packagename);
             removeFile(modulePath, () => {
                 this.downloadInstallPackage(valid.packagename, valid.link, () => {
-                    this.extraModulesModule.create({ name: valid.name, version: valid.version })
+                    const module = new ExtraModuleEntity();
+                    module.name = valid.name;
+                    module.version = valid.version;
+                    module.record_time = getRecorddatetime();
+                    this.extraModulesModule.create(module)
                     if (successcall) {
                         successcall()
                     }

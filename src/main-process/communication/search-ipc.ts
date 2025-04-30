@@ -92,7 +92,7 @@ export function registerSearchIpcHandlers() {
 
         //console.log("handle campaign:list")
         const searchControl = new SearchController()
-        const res = searchControl.listSearchresult(qdata.page, qdata.size, qdata.sortby)
+        const res = await searchControl.listSearchresult(qdata.page, qdata.size, qdata.sortby)
         const resp: CommonResponse<SearchtaskItem> = {
             status: true,
             msg: "",
@@ -117,7 +117,7 @@ export function registerSearchIpcHandlers() {
         }
 
         const searchControl = new SearchController()
-        const res = searchControl.listtaskSearchResult(qdata.taskId, qdata.page, qdata.itemsPerPage)
+        const res = await searchControl.listtaskSearchResult(qdata.taskId, qdata.page, qdata.itemsPerPage)
         const resp: CommonResponse<SearchResEntity> = {
             status: true,
             msg: "",
@@ -141,7 +141,7 @@ export function registerSearchIpcHandlers() {
             // console.log(qdata.id)
             if (qdata.id) {
                 const searchControl = new SearchController()
-                const content = searchControl.getTaskErrorlog(qdata.id)
+                const content = await searchControl.getTaskErrorlog(qdata.id)
                 fs.writeFileSync(filePath, content, 'utf-8');
                 return filePath;
             }

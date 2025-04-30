@@ -8,7 +8,7 @@
            
             <div class="ml-auto">
             <v-btn class="btn" variant="flat" prepend-icon="mdi-plus" color="#5865f2" @click="createTask()">
-                {{CapitalizeFirstLetter($t('buckemailtask.create_task'))}}
+                {{CapitalizeFirstLetter(t('buckemailtask.create_task'))}}
             </v-btn>
         </div>
         </div>
@@ -74,35 +74,37 @@ const FakeAPI = {
     }
 }
 
-const headers = ref<Array<Header>>([])
-headers.value = [
+const headers = computed<Array<Header>>(() => [
     {
-        title: computed(_ => CapitalizeFirstLetter(t("buckemailtask.taskId"))),
+        title: CapitalizeFirstLetter(t("buckemailtask.taskId")),
         align: 'center',
         sortable: false,
         key: 'TaskId',
     },
     {
-        title: computed(_ => CapitalizeFirstLetter(t("buckemailtask.type"))),
+        title: CapitalizeFirstLetter(t("buckemailtask.type")),
         align: 'start',
         sortable: false,
         key: 'Type',
     },
     {
-        title: computed(_ => CapitalizeFirstLetter(t("buckemailtask.status"))),
+        title: CapitalizeFirstLetter(t("buckemailtask.status")),
         align: 'start',
         sortable: false,
         key: 'Status',
     },
     {
-        title: computed(_ => CapitalizeFirstLetter(t("common.record_time"))),
+        title: CapitalizeFirstLetter(t("common.record_time")),
         align: 'start',
         sortable: false,
         key: 'RecordTime',
     },
-    { title: computed(_ => CapitalizeFirstLetter(t("common.actions"))), key: 'actions', sortable: false },
-
-];
+    { 
+        title: CapitalizeFirstLetter(t("common.actions")), 
+        key: 'actions', 
+        sortable: false 
+    },
+]);
 const itemsPerPage = ref(10);
 const serverItems = ref<Array<BuckEmailListType>>([]);
 const loading = ref(false);

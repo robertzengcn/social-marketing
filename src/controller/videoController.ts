@@ -1,5 +1,5 @@
 import { videoFactory } from "@/modules/video/videoFactory";
-import { VideoDownloadTaskEntity, processVideoDownloadParam, CookiesProxy, VideoCompotionEntity, VideoCaptionGenerateParam, VideoCaptionDisplay, VideoTranslateItem } from "@/entityTypes/videoType";
+import { VideoDownloadTaskEntityType, processVideoDownloadParam, CookiesProxy, VideoCompotionEntity, VideoCaptionGenerateParam, VideoCaptionDisplay, VideoTranslateItem } from "@/entityTypes/videoType";
 // import { VideoDownloadTaskdb } from "@/model/videoDownloadTaskdb";
 // import { VideoDownloaddb} from "@/model/videoDownloaddb"
 import { VideoDownloadModule } from "@/modules/VideoDownloadModule"
@@ -18,7 +18,7 @@ import { ProcessMessage } from "@/entityTypes/processMessage-type"
 // import {VideodownloadMsg} from "@/entityTypes/videoType";
 import { ListData, TaskStatus } from "@/entityTypes/commonType"
 import { VideoDescriptionEntity } from "@/entity/VideoDescription.entity"
-import { VideoDownloadEntity, VideoDownloadStatus, VideodownloadTaskMsg, VideoDownloadListDisplay, VideodownloadMsg, DownloadVideoControlparam, VideoDownloadTaskDetailEntity, DownloadType, CookiesType, VideoCaptionItem, VideoCaptionMsg, VideoCaptionEntity, VideoCaptionStatus, VideoCaptionGenerateParamWithIds, VideoInformationTransParam } from "@/entityTypes/videoType"
+import { VideoDownloadStatus, VideodownloadTaskMsg, VideoDownloadListDisplay, VideodownloadMsg, DownloadVideoControlparam, VideoDownloadTaskDetailEntity, DownloadType, CookiesType, VideoCaptionItem, VideoCaptionMsg, VideoCaptionEntity, VideoCaptionStatus, VideoCaptionGenerateParamWithIds, VideoInformationTransParam } from "@/entityTypes/videoType"
 import { VideoDescriptionModule } from "@/modules/videoDescriptionModule"
 import { Video } from '@/modules/interface/Video';
 import { VideoDownloadTaskDetailModule } from '@/modules/VideoDownloadTaskDetailModule';
@@ -43,11 +43,18 @@ import { TranslateProducer } from "@/modules/TranslateProducer"
 import { LlmCongfig, TraditionalTranslateCongfig, CommonMessage } from '@/entityTypes/commonType'
 import { TranslateController } from "@/controller/TranslateController"
 import { getLanaugebyCode } from "@/modules/lib/function"
-import { VideoDownloadTaskKeywordEntity } from "@/entity/VideoDownloadTaskKeyword.entity"
+//import { VideoDownloadTaskKeywordEntity } from "@/entity/VideoDownloadTaskKeyword.entity"
 import { VideoDownloadTaskKeywordModule } from "@/modules/VideoDownloadTaskKeywordModule"
+import { VideoDownloadEntity } from "@/entity/VideoDownload.entity";
+import { VideoDownloadTaskAccountsEntity } from "@/entity/VideoDownloadTaskAccounts.entity";
+import { VideoDownloadTaskEntity } from "@/entity/VideoDownloadTask.entity"
+
 // import { VideoDownloadTagEntity } from "@/entity/VideoDownloadTag.entity"
 // import { param } from "jquery";
 //import {} from "@/entityTypes/proxyType"
+//import { VideoDownloadModel } from "@/model/VideoDownload.model";
+import {VideoDownloadEntityType} from "@/entityTypes/videoType"
+import { VideoDownloadTaskUrlsEntity } from "@/entity/VideoDownloadTaskUrls.entity";
 export class videoController {
     private videoDownloadModule: VideoDownloadModule
     private videoDownloadTaskModule: VideoDownloadTaskModule
@@ -79,6 +86,8 @@ export class videoController {
         this.videoCaptionModule = new VideoCaptionModule()
         this.videoDownloadTagModule = new VideoDownloadTagModule()
         this.videoDownloadTaskKeywordModule = new VideoDownloadTaskKeywordModule()
+        this.videoDownloadTaskAccountsModule = new VideoDownloadTaskAccountsModule()  
+        this.videoDownloadTaskProxyModule = new VideoDownloadTaskProxyModule()
     }
     //get video download tool
     public async getVideoDownloadTool(platform: string): Promise<Video | null> {
@@ -91,8 +100,14 @@ export class videoController {
         return await videoTool.checkRequirement()
     }
     //save video task, get task id
-    public saveVdieoDownloadTask(vdte: VideoDownloadTaskEntity): number {
-        return this.videoDownloadTaskModule.saveVideoDownloadTask(vdte)
+    public async saveVdieoDownloadTask(vdte: VideoDownloadTaskEntityType): Promise<number> {
+        const vdteEntity = new VideoDownloadTaskEntity()
+        vdteEntity.task_name = vdte.taskName
+        vdteEntity.platform = vdte.platform
+        vdteEntity.savepath = vdte.savepath
+        vdteEntity.status = vdte.status || 0
+        vdteEntity.downloadtype = vdte.downloadtype
+        return await this.videoDownloadTaskModule.saveVideoDownloadTask(vdteEntity)
     }
     public async processDownloadVideo(param: DownloadVideoControlparam, videoTool: Video, taskId: number, startCall?: () => void) {
         // const videoFactoryInstance = new videoFactory()
@@ -166,14 +181,14 @@ export class videoController {
         const errorLogfile = path.join(logpath, 'downloadVideo', taskId.toString() + '_' + uuid + '.error.log')
         const runLogfile = path.join(logpath, 'downloadVideo', taskId.toString() + '_' + uuid + '.runtime.log')
 
-        this.videoDownloadTaskModule.updateTasklog(taskId, runLogfile)
-        this.videoDownloadTaskModule.updateTaskErrorlog(taskId, errorLogfile)
+        await this.videoDownloadTaskModule.updateTasklog(taskId, runLogfile)
+        await this.videoDownloadTaskModule.updateTaskErrorlog(taskId, errorLogfile)
         const cookiesProxies: CookiesProxy[] = []
 
         // const cookies:Array<string>=[]
         //loop account id to get cookies
         for (const accountid of param.accountId) {
-            const accountEntity = this.accountCookiesModule.getAccountCookies(accountid)
+            const accountEntity = await this.accountCookiesModule.getAccountCookies(accountid)
             if (accountEntity && accountEntity.cookies) {
                 // cookies.push(accountEntity.cookies)
                 const cookiesproxy: CookiesProxy = {
@@ -213,8 +228,8 @@ export class videoController {
             startCall()
         }
         //get the video lnk that already download in the task
-        const alreadsucess = this.videoDownloadModule.getAllvideoDownloadlist(taskId, VideoDownloadStatus.Finish)
-        const alreadlinks = alreadsucess.map((value) => removeParamsAfterAmpersand(value.url))
+        const alreadsucess = await this.videoDownloadModule.getAllvideoDownloadlist(taskId, VideoDownloadStatus.Finish)
+        const alreadlinks = alreadsucess.map((value) => removeParamsAfterAmpersand(value.url ?? ""))
         //console.log(alreadlinks)
         const paramData: processVideoDownloadParam = {
             exePath: execFilepath,
@@ -239,10 +254,10 @@ export class videoController {
             }
         })
 
-        child.on("spawn", () => {
+        child.on("spawn", async () => {
 
             console.log("child process satart, pid is " + child.pid)
-            this.videoDownloadTaskModule.updateVideoDownloadTaskStatus(taskId, TaskStatus.Processing)
+            await this.videoDownloadTaskModule.updateVideoDownloadTaskStatus(taskId, TaskStatus.Processing)
             child.postMessage(JSON.stringify({ action: "downloadVideo", data: paramData }), [port1])
 
         })
@@ -266,14 +281,14 @@ export class videoController {
 
         })
 
-        child.on("exit", (code) => {
+        child.on("exit", async(code) => {
             if (code !== 0) {
                 console.error(`Child process exited with code ${code}`);
-                this.videoDownloadTaskModule.updateVideoDownloadTaskStatus(taskId, TaskStatus.Error)
+                await this.videoDownloadTaskModule.updateVideoDownloadTaskStatus(taskId, TaskStatus.Error)
                 // this.emailSeachTaskModule.updateTaskStatus(taskId,EmailsearchTaskStatus.Error)
             } else {
                 console.log('Child process exited successfully');
-                this.videoDownloadTaskModule.updateVideoDownloadTaskStatus(taskId, TaskStatus.Complete)
+                await this.videoDownloadTaskModule.updateVideoDownloadTaskStatus(taskId, TaskStatus.Complete)
                 // this.emailSeachTaskModule.updateTaskStatus(taskId,EmailsearchTaskStatus.Complete)
             }
         })
@@ -290,16 +305,27 @@ export class videoController {
                     if (getData.savepath) {
                         savepath = getData.savepath
                     }
-                    const videoDownloadEntity: VideoDownloadEntity = {
-                        url: getData.link,
-                        savepath: savepath,
-                        task_id: Number(taskId),
-                        status: VideoDownloadStatus.Finish,
-                        language: param.language_code
-                    }
-
+                    // const videoDownloadEntity: VideoDownloadEntity = {
+                    //     url: getData.link,
+                    //     savepath: savepath,
+                    //     task_id: Number(taskId),
+                    //     status: VideoDownloadStatus.Finish,
+                    //     language: param.language_code
+                    // }
+                    const videoDownloadEntity=new VideoDownloadEntity()
+                    videoDownloadEntity.url=getData.link
+                    videoDownloadEntity.savepath=savepath
+                    videoDownloadEntity.task_id=Number(taskId)
+                    videoDownloadEntity.status=VideoDownloadStatus.Finish
+                    videoDownloadEntity.language=param.language_code
+                    //     url: getData.link,
+                    //     savepath: savepath,
+                    //     task_id: Number(taskId),
+                    //     status: VideoDownloadStatus.Finish,
+                    //     language: param.language_code
+                    // }
                     // this.emailSeachTaskModule.saveSearchResult(taskId,childdata.data)
-                    const videoNum = this.videoDownloadModule.saveVideoDownload(videoDownloadEntity)
+                    const videoNum = await this.videoDownloadModule.saveVideoDownload(videoDownloadEntity)
                     const videoDescriptionEntity = new VideoDescriptionEntity()
                     videoDescriptionEntity.video_id = videoNum
                     videoDescriptionEntity.title = getData.title ? getData.title : ''
@@ -317,14 +343,21 @@ export class videoController {
                     await this.videoDescriptionModule.saveVideoDescription(videoDescriptionEntity)
                 } else if (getData && (!getData?.status)) {//failure
                     if (getData.link.length > 0) {
-                        const videoDownloadEntity: VideoDownloadEntity = {
-                            url: getData.link,
-                            savepath: '',
-                            task_id: Number(taskId),
-                            status: VideoDownloadStatus.Error,
-                            language: param.language_code
-                        }
-                        const videoId = this.videoDownloadModule.saveVideoDownload(videoDownloadEntity)
+                        // const videoDownloadEntity: VideoDownloadEntity = {
+                        //     url: getData.link,
+                        //     savepath: '',
+                        //     task_id: Number(taskId),
+                        //     status: VideoDownloadStatus.Error,
+                        //     language: param.language_code
+                        // }
+                        const videoDownloadEntity=new VideoDownloadEntity()
+                        videoDownloadEntity.url=getData.link
+                        videoDownloadEntity.savepath=''
+                        videoDownloadEntity.task_id=Number(taskId)
+                        videoDownloadEntity.status=VideoDownloadStatus.Error
+                        videoDownloadEntity.language=param.language_code
+                        // const videoId = this.videoDownloadModule.saveVideoDownload(videoDownloadEntity)
+                        const videoId=await this.videoDownloadModule.saveVideoDownload(videoDownloadEntity)
                         if (getData.log) {
                             this.videoDownloadModule.saveVideoDownloadLog(getData.log, videoId)
                         }
@@ -359,14 +392,13 @@ export class videoController {
             throw new Error("video tool requirement check failed")
         }
         //save video task
-        const videoTaskEntity: VideoDownloadTaskEntity = {
-            taskName: param.taskName,
-            platform: param.platform,
-            savepath: param.savePath,
-            status: TaskStatus.Processing,
-            downloadtype: param.downloadType,
-        }
-        const taskId = this.saveVdieoDownloadTask(videoTaskEntity)
+        const videoTaskEntity = new VideoDownloadTaskEntity()
+        videoTaskEntity.task_name = param.taskName
+        videoTaskEntity.platform = param.platform
+        videoTaskEntity.savepath = param.savePath
+        videoTaskEntity.status = TaskStatus.Processing
+        videoTaskEntity.downloadtype = param.downloadType
+        const taskId = await this.videoDownloadTaskModule.saveVideoDownloadTask(videoTaskEntity)
         if (!taskId) {
             throw new Error("video task save failed")
         }
@@ -388,17 +420,24 @@ export class videoController {
         if (param.accountId.length > 0) {
 
             for (const accid of param.accountId) {
-                const taskAccount: VideoDownloadTaskAccountEntity = {
-                    task_id: taskId,
-                    account_id: accid
-                }
+                // const taskAccount: VideoDownloadTaskAccountEntity = {
+                //     task_id: taskId,
+                //     account_id: accid
+                // }
+                const taskAccount=new VideoDownloadTaskAccountsEntity()
+                taskAccount.task_id=taskId
+                taskAccount.account_id=accid
                 this.videoDownloadTaskAccountsModule.create(taskAccount)
             }
         }
         if (param.link.length > 0) {
             //save task url
             for (const link of param.link) {
-                this.videoDownloadTaskUrlModule.create({ task_id: taskId, url: link })
+                const videodownloadtaskurl=new VideoDownloadTaskUrlsEntity()
+                videodownloadtaskurl.task_id=taskId
+                videodownloadtaskurl.url=link
+                await this.videoDownloadTaskUrlModule.create(videodownloadtaskurl)
+                // this.videoDownloadTaskUrlModule.create({ task_id: taskId, url: link })
             }
         }
         if (param.keywords.length > 0) {
@@ -415,36 +454,36 @@ export class videoController {
         await this.processDownloadVideo(param, videoTool, taskId, startCall)
     }
     //get video download list
-    public videoDownloadtasklist(page: number, size: number): ListData<VideoDownloadTaskEntity> {
-        // const tokenService=new Token()
-        // const dbpath=await tokenService.getValue(USERSDBPATH)
-        // if(!dbpath){
-        //     throw new Error("user db path not exist")
-        // }
-        // const videoDownloaddb=new VideoDownloaddb(dbpath)
-        const list = this.videoDownloadTaskModule.getVideoDownloadTaskList(page, size)
-        const count = this.videoDownloadTaskModule.countVideoDownloadTaskList()
-        return { records: list, num: count } as ListData<VideoDownloadTaskEntity>
-
+    public async videoDownloadtasklist(page: number, size: number): Promise<ListData<VideoDownloadTaskEntityType>> {
+        const list = await this.videoDownloadTaskModule.getVideoDownloadTaskList(page, size)
+        const count = await this.videoDownloadTaskModule.countVideoDownloadTaskList()
+        const records = list.map(item => ({
+            taskName: item.task_name || '',
+            platform: item.platform || '',
+            savepath: item.savepath || '',
+            status: item.status || 0,
+            downloadtype: item.downloadtype || ''
+        }))
+        return { records, num: count }
     }
 
     //get video download list by task id
     public async videoDownloadlist(taskId: number, page: number, size: number): Promise<ListData<VideoDownloadListDisplay>> {
 
         const res: Array<VideoDownloadListDisplay> = []
-        const list = this.videoDownloadModule.getVideoDownloadList(taskId, page, size)
+        const list = await this.videoDownloadModule.getVideoDownloadList(taskId, page, size)
         //list.forEach(async (element) => {
         for (const element of list) {
             let vdld: VideoDownloadListDisplay = {
                 id: element.id,
-                url: element.url,
-                savepath: element.savepath,
-                record_time: element.record_time,
+                url: element.url ?? "",
+                savepath: element.savepath ?? "",
+                record_time: element.record_time ?? "",
                 task_id: element.task_id,
                 status: element.status,
                 title: '',
                 description: '',
-                error_log: element.error_log,
+                error_log: element.error_log ?? "",
                 caption_status: element.caption_status,
                 language: element.language
             }
@@ -458,7 +497,7 @@ export class videoController {
             }
             res.push(vdld)
         }
-        const count = this.videoDownloadModule.countVideoDownloadList(taskId)
+        const count = await this.videoDownloadModule.countVideoDownloadList(taskId)
         return { records: res, num: count } as ListData<VideoDownloadListDisplay>
     }
     public async retryDownloadvideo(taskId: number, startCall: () => void) {
@@ -475,7 +514,7 @@ export class videoController {
     }
     public async getVideoDownloadTaskInfo(taskId: number): Promise<DownloadVideoControlparam> {
         //get task info
-        const taskInfo = this.videoDownloadTaskModule.getVideoDownloadTask(taskId)
+        const taskInfo = await this.videoDownloadTaskModule.getVideoDownloadTask(taskId)
         if (!taskInfo) {
             throw new Error("task info not found")
         }
@@ -486,7 +525,11 @@ export class videoController {
         }
 
         //get video tool
+        if(!taskInfo.platform){
+            throw new Error("task platform not found")
+        }
         const videoTool = await this.getVideoDownloadTool(taskInfo.platform)
+        
         if (!videoTool) {
             throw new Error("video tool not found")
         }
@@ -498,7 +541,7 @@ export class videoController {
         let accountIds: Array<number> = []
         if (taskDetail.cookies_type == CookiesType.ACCOUNTCOOKIES) {
             //get account id
-            const taskAccounts = this.videoDownloadTaskAccountsModule.getAccountByTaskId(taskId)
+            const taskAccounts = await this.videoDownloadTaskAccountsModule.getAccountByTaskId(taskId)
             if (taskAccounts.length > 0) {
                 accountIds = taskAccounts.map((value) => value.account_id)
                 //process download video
@@ -508,12 +551,12 @@ export class videoController {
         }
 
         //get task url
-        const taskUrls = this.videoDownloadTaskUrlModule.getItemsByTaskId(taskId)
+        const taskUrls = await this.videoDownloadTaskUrlModule.getItemsByTaskId(taskId)
 
         let proxys: Array<number> = []
 
         //get proxy lists
-        const proxylists = this.videoDownloadTaskUrlModule.getItemsByTaskId(taskId)
+        const proxylists = await this.videoDownloadTaskUrlModule.getItemsByTaskId(taskId)
         if (proxylists.length > 0) {
             proxylists.forEach((value) => {
                 if (value.id) {
@@ -523,7 +566,7 @@ export class videoController {
         }
         let links: Array<string> = []
         if (taskUrls.length > 0) {
-            links = taskUrls.map((value) => value.url)
+            links = taskUrls.map((value) => value.url ?? "")
         }
         //get task keywords
         let keywords: Array<string> = []
@@ -538,12 +581,12 @@ export class videoController {
         }
         //reconstruct download type
         const data: DownloadVideoControlparam = {
-            taskName: taskInfo.taskName,
+            taskName: taskInfo.task_name || '',
             accountId: accountIds,
             downloadType: taskInfo.downloadtype as "playlist" | "singleplay" | "keyword",
-            platform: taskInfo.platform,
+            platform: taskInfo.platform || '',
             link: links,
-            savePath: taskInfo.savepath,
+            savePath: taskInfo.savepath || '',
             keywords: keywords,
             isplaylist: taskDetail.download_type == DownloadType.MULTIVIDEO,
             proxy: proxys,
@@ -560,7 +603,7 @@ export class videoController {
     //try to redownload video by video id
     public async redownloadItembyId(Videoid: number, startCall: () => void) {
 
-        const videoInfo = this.videoDownloadModule.getVideoDownloaditem(Videoid)
+        const videoInfo = await this.videoDownloadModule.getVideoDownloaditem(Videoid)
         if (!videoInfo) {
             throw new Error("video info not found")
         }
@@ -569,7 +612,9 @@ export class videoController {
         const data = await this.getVideoDownloadTaskInfo(videoInfo.task_id)
         let links: Array<string> = []
         if (data.link.length > 0) {
+            if(videoInfo.url){
             links.push(videoInfo.url)
+            }
         } else {
             throw new Error("video item url not found")
         }
@@ -586,16 +631,20 @@ export class videoController {
     }
     //show file in explorer
     public async showFileExplorer(id: number) {
-        const videoInfo = this.videoDownloadModule.getVideoDownloaditem(id)
+        const videoInfo = await this.videoDownloadModule.getVideoDownloaditem(id)
         if (!videoInfo) {
             throw new Error("video info not found")
         }
-        shell.showItemInFolder(videoInfo.savepath);
+        if(videoInfo.savepath){
+            shell.showItemInFolder(videoInfo.savepath);
+        }else{
+            throw new Error("video save path not found")
+        }
     }
 
     public async deleteVideoDownloadItem(id: number) {
         //get video info
-        const videoInfo = this.videoDownloadModule.getVideoDownloaditem(id)
+        const videoInfo = await this.videoDownloadModule.getVideoDownloaditem(id)
         if (!videoInfo) {
             throw new Error("video info not found")
         }
@@ -607,9 +656,9 @@ export class videoController {
             }
         }
         //delete video description
-        this.videoDescriptionModule.deleteVideoDescription(id)
+        await this.videoDescriptionModule.deleteVideoDescription(id)
         //delete video download item
-        this.videoDownloadModule.deleteVideoDownloadItem(id)
+        await this.videoDownloadModule.deleteVideoDownloadItem(id)
 
     }
     public async readTaskErrorlog(taskId: number): Promise<string> {
@@ -633,17 +682,17 @@ export class videoController {
     }
     //pass video id, and generate video caption
     public async generateCaptionbyids(data: VideoCaptionGenerateParamWithIds<number>, errorCall?: (message: string) => void) {
-        const res = this.convertToVideoCaptionitem(data)
+        const res = await this.convertToVideoCaptionitem(data)
         if (res.length < 1) {
             throw new Error("video.item_less than one")
         }
         await this.generateCaptionsPath(res, errorCall)
     }
-    public convertToVideoCaptionitem(data: VideoCaptionGenerateParamWithIds<number>): Array<VideoCaptionItem> {
+    public async convertToVideoCaptionitem(data: VideoCaptionGenerateParamWithIds<number>): Promise<Array<VideoCaptionItem>> {
         const res: Array<VideoCaptionItem> = []
         if (data.ids.length > 0) {
-            data.ids.forEach((value) => {
-                const videoItem = this.videoDownloadModule.getVideoDownloaditem(value)
+            data.ids.forEach(async (value) => {
+                const videoItem = await this.videoDownloadModule.getVideoDownloaditem(value)
                 if (videoItem) {
                     if (videoItem.savepath) {
                         const item: VideoCaptionItem = {
@@ -768,14 +817,14 @@ export class videoController {
     }
     //get video info by id
     public async getVideoinfo(id: number): Promise<VideoCompotionEntity> {
-        const videoDownEntity = this.videoDownloadModule.getVideoDownloaditem(id)
+        const videoDownEntity = await this.videoDownloadModule.getVideoDownloaditem(id)
         if (!videoDownEntity) {
             throw new Error("video download item not found")
         }
         //get video description
         const videoDescription = await this.videoDescriptionModule.getVideoDescription(id, videoDownEntity.language)
         //get video caption
-        const videoCaption = this.videoCaptionModule.getCaptionByVid(id)
+        const videoCaption = await this.videoCaptionModule.getCaptionByVid(id)
         const captionDisplay: Array<VideoCaptionDisplay> = []
         if (videoCaption.length > 0) {
             videoCaption.forEach((value) => {
@@ -792,8 +841,17 @@ export class videoController {
             })
         }
         const transinfolist = await this.videoDescriptionModule.getVideoDescriptionOtherLanguage(id, videoDownEntity.language)
+        const videoDownEntityType:VideoDownloadEntityType={
+            id:videoDownEntity.id,
+            url:videoDownEntity.url ?? "",
+            savepath:videoDownEntity.savepath ?? "",
+            record_time:videoDownEntity.record_time ?? "",
+            task_id:videoDownEntity.task_id,
+            language:videoDownEntity.language,
+            status:videoDownEntity.status,
+        }
         const res: VideoCompotionEntity = {
-            detail: videoDownEntity,
+            detail: videoDownEntityType,
             description: videoDescription,
             caption: captionDisplay,
             translateInfolist: transinfolist
@@ -815,7 +873,7 @@ export class videoController {
     }
     //show file in explorer
     public async showCaptionFileExplorer(id: number) {
-        const videoCaptionInfo = this.videoCaptionModule.read(id)
+        const videoCaptionInfo = await this.videoCaptionModule.read(id)
         if (!videoCaptionInfo) {
             throw new Error("video info not found")
         }
@@ -828,7 +886,7 @@ export class videoController {
         if (data.ids.length > 0) {
             // data.ids.forEach(async (value) => {
             for (const value of data.ids) {
-                const videoItem = this.videoDownloadModule.getVideoDownloaditem(value)
+                const videoItem = await this.videoDownloadModule.getVideoDownloaditem(value)
                 if (videoItem) {
                     const vds = await this.videoDescriptionModule.getVideoDescription(value, videoItem.language)
                     console.log("vds is following")

@@ -3,8 +3,8 @@ import { DataSource } from "typeorm";
 import { SystemSettingGroupEntity } from "@/entity/SystemSettingGroup.entity";
 import {SystemSettingEntity} from "@/entity/SystemSetting.entity"
 import {SystemSettingOptionEntity} from "@/entity/SystemSettingOption.entity"
-import {AccountCookies} from "@/entity/AccountCookies.entity"
-import {BuckemailTask} from "@/entity/BuckemailTask.entity"
+import {AccountCookiesEntity} from "@/entity/AccountCookies.entity"
+import {BuckemailTaskEntity} from "@/entity/BuckemailTask.entity"
 import {VideoCaptionEntity} from "@/entity/VideoCaption.entity"
 import {VideoDescriptionEntity} from "@/entity/VideoDescription.entity"
 import {VideoDownloadEntity} from "@/entity/VideoDownload.entity"
@@ -39,8 +39,8 @@ export class SqliteDb {
         this.connection =new DataSource({
             type: "better-sqlite3",
             database:path.join(filepath,'scraper.db'),
-            entities: [AccountCookies,
-                BuckemailTask,
+            entities: [AccountCookiesEntity,
+                BuckemailTaskEntity,
                 EmailMarketingSendLogEntity,
                 EmailMarketingTaskDetailEntity,
                 EmailSearchResultEntity,

@@ -72,7 +72,7 @@
           Submit
         </v-btn>
 
-        <v-btn color="error" class="mt-4" block @click="$router.go(-1)">
+        <v-btn color="error" class="mt-4" block @click="router.go(-1)">
           Return
         </v-btn>
       </div>
@@ -80,16 +80,16 @@
   </v-sheet>
 </template>
 <script setup lang="ts">
-// import router from '@/views/router';
 import { ref, onMounted } from "vue";
 import {
   getProxy,saveProxy
 } from "@/views/api/proxy";
 
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import {ProxyEntity} from "@/entityTypes/proxyType";
 // import { saveSocialTask } from "@/views/api/socialtask";
 const $route = useRoute();
+const router = useRouter();
 const FakeAPI = {
   async fetch(id: number): Promise<ProxyEntity> {
     return await getProxy(id);

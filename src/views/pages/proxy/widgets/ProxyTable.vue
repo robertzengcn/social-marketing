@@ -7,7 +7,7 @@
             </div>
             <!-- <v-btn class="btn" variant="flat" prepend-icon="mdi-filter-variant"><span> More</span></v-btn> -->
             <v-btn class="btn ml-3" variant="flat" prepend-icon="mdi-plus" color="#5865f2" @click="createProxy()">
-               {{$t('proxy.add_proxy')}}
+               {{t('proxy.add_proxy')}}
             </v-btn>
             <v-btn class="btn ml-3" 
             variant="flat" 
@@ -21,7 +21,7 @@
             prepend-icon="mdi-delete" color="red" 
             :loading="checkloading"
             @click="removefailure()">
-            {{$t('proxy.remove_failure')}}
+            {{t('proxy.remove_failure')}}
             </v-btn>
             
         </div>

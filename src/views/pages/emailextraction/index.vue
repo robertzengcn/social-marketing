@@ -50,7 +50,7 @@
           Submit
         </v-btn>
 
-        <v-btn color="error" class="mt-4" block @click="$router.go(-1)">
+        <v-btn color="error" class="mt-4" block @click="router.go(-1)">
           Return
         </v-btn>
       </div>
@@ -76,7 +76,7 @@
 
 import { ref, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
-import router from '@/views/router';
+import { useRouter } from 'vue-router';
 import {EmailExtractionTypes} from "@/config/emailextraction";
 import { ToArray, CapitalizeFirstLetter } from "@/views/utils/function"
 import { submitScraper,receiveSearchEmailevent } from "@/views/api/emailextraction"
@@ -119,6 +119,7 @@ const concurrent_quantity = ref(1);
 const proxyValue = ref<Array<ProxyEntity>>([]);
 const proxytableshow = ref(false);
 const searchtaskId=ref<number>(0);
+const router = useRouter();
 const initialize = () => {
   //searchplatform.value = ToArray(SearhEnginer);
   const seArr:string[]=ToArray(EmailExtractionTypes);

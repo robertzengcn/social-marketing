@@ -1,31 +1,32 @@
-import { VideoDownloadTaskUrldb } from "@/model/VideoDownloadTaskUrldb";
+import { VideoDownloadTaskUrlModel } from "@/model/VideoDownloadTaskUrl.model";
 import { BaseModule } from "@/modules/baseModule";
-import { VideoDownloadTaskUrlEntity } from "@/entityTypes/videoType"
+import { VideoDownloadTaskUrlsEntity } from "@/entity/VideoDownloadTaskUrls.entity";
+
 export class VideoDownloadTaskUrlModule extends BaseModule {
-    private videoDownloadTaskUrldb: VideoDownloadTaskUrldb
+    private videoDownloadTaskUrldb: VideoDownloadTaskUrlModel;
     constructor() {
-        super()
-        this.videoDownloadTaskUrldb = new VideoDownloadTaskUrldb(this.dbpath)
-    }
-    create(vdte: VideoDownloadTaskUrlEntity): number {
-
-        return this.videoDownloadTaskUrldb.create(vdte);
+        super();
+        this.videoDownloadTaskUrldb = new VideoDownloadTaskUrlModel(this.dbpath);
     }
 
-    read(id: number): VideoDownloadTaskUrlEntity {
-        return this.videoDownloadTaskUrldb.read(id);
+    async create(vdte: VideoDownloadTaskUrlsEntity): Promise<number> {
+        return await this.videoDownloadTaskUrldb.create(vdte);
     }
 
-    update(id: number, vdte: VideoDownloadTaskUrlEntity): void {
-        this.videoDownloadTaskUrldb.update(id, vdte);
+    async read(id: number): Promise<VideoDownloadTaskUrlsEntity | null> {
+        return await this.videoDownloadTaskUrldb.read(id);
     }
 
-    delete(id: number): void {
-        this.videoDownloadTaskUrldb.delete(id);
+    async update(id: number, vdte: VideoDownloadTaskUrlsEntity): Promise<void> {
+        await this.videoDownloadTaskUrldb.update(id, vdte);
+    }
+
+    async delete(id: number): Promise<void> {
+        await this.videoDownloadTaskUrldb.delete(id);
     }
 
     //query items id by task id
-    public getItemsByTaskId(taskId: number): Array<VideoDownloadTaskUrlEntity> {
-        return this.videoDownloadTaskUrldb.getItemsByTaskId(taskId);
+    async getItemsByTaskId(taskId: number): Promise<VideoDownloadTaskUrlsEntity[]> {
+        return await this.videoDownloadTaskUrldb.getItemsByTaskId(taskId);
     }
 }
