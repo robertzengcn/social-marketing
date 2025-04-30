@@ -174,6 +174,7 @@ const createDownload = () => {
 }
 
 const openTasklist = (item: VideoDownloadTaskEntityType) => {
+    console.log(item)
     if (item.id) {
         router.push({
             name: "VideoList", params: { taskid: item.id }

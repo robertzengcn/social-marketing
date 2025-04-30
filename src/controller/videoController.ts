@@ -458,6 +458,8 @@ export class videoController {
         const list = await this.videoDownloadTaskModule.getVideoDownloadTaskList(page, size)
         const count = await this.videoDownloadTaskModule.countVideoDownloadTaskList()
         const records = list.map(item => ({
+            id: item.id,
+            record_time: item.record_time || '',
             taskName: item.task_name || '',
             platform: item.platform || '',
             savepath: item.savepath || '',
