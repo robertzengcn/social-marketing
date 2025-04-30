@@ -58,7 +58,8 @@
     "tsc": "tsc --noEmit --watch",
     "rebuild-better-sqlite": "electron-rebuild -f -w better-sqlite3",
     "prepackage": "npm run rebuild-sqlite3",
-    "rebuild-sqlite3": "electron-rebuild -f -w sqlite3"
+    "rebuild-sqlite3": "electron-rebuild -f -w sqlite3",
+     "type-check": "vue-tsc --noEmit"
   },
   "dependencies": {
     "@langchain/core": "^0.3.42",

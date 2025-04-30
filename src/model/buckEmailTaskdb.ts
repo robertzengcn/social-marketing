@@ -21,7 +21,7 @@ export class BuckEmailTaskdb {
     buckemailTaskTable = "buckemail_task";
     constructor(filepath: string) {
         const scraperModel = Scraperdb.getInstance(filepath);
-        this.db = scraperModel.getdb();
+        //this.db = scraperModel.getdb();
     }
     create(task: BuckemailEntity): number {
         const stmt = this.db.prepare(`
