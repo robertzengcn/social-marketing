@@ -9,44 +9,44 @@
 
       <v-row>
         <v-col cols="12" md="12">
-          <v-text-field v-model="name" :label="$t('emailservice.name')" type="input"
-            :hint="$t('emailservice.name_hint')" :readonly="loading" clearable required
+          <v-text-field v-model="name" :label="t('emailservice.name')" type="input"
+            :hint="t('emailservice.name_hint')" :readonly="loading" clearable required
             :rules="[rules.required]"></v-text-field>
         </v-col>
       </v-row>
       <v-row>
         <v-col cols="12" md="12">
-          <v-text-field v-model="from" :label="$t('emailservice.from')" type="email"
-            :hint="$t('emailservice.from_hint')" :readonly="loading" clearable required
+          <v-text-field v-model="from" :label="t('emailservice.from')" type="email"
+            :hint="t('emailservice.from_hint')" :readonly="loading" clearable required
             :rules="[rules.email]"></v-text-field>
         </v-col>
       </v-row>
       <v-row>
         <v-col cols="12" md="12">
-          <v-text-field v-model="password" :label="$t('emailservice.password')" :type="show ? 'text' : 'password'"
-            @click:append="show = !show" :hint="$t('emailservice.password')" :readonly="loading" clearable required
+          <v-text-field v-model="password" :label="t('emailservice.password')" :type="show ? 'text' : 'password'"
+            @click:append="show = !show" :hint="t('emailservice.password')" :readonly="loading" clearable required
             :append-icon="show ? 'mdi-eye' : 'mdi-eye-off'"></v-text-field>
         </v-col>
       </v-row>
       <v-row>
         <v-col cols="12" md="12">
-          <v-text-field v-model="host" :label="$t('emailservice.host')" type="input"
-            :hint="$t('emailservice.host_hint')" :readonly="loading" clearable required></v-text-field>
+          <v-text-field v-model="host" :label="t('emailservice.host')" type="input"
+            :hint="t('emailservice.host_hint')" :readonly="loading" clearable required></v-text-field>
         </v-col>
       </v-row>
       <v-row>
         <v-col cols="12" md="12">
-          <v-number-input :reverse="false" controlVariant="default" label="port" :hint="$t('emailservice.port_hint')"
+          <v-number-input :reverse="false" controlVariant="default" label="port" :hint="t('emailservice.port_hint')"
             :min="1" :max="65535" v-model="port" :readonly="loading" clearable></v-number-input>
 
         </v-col>
       </v-row>
       <v-row>
         <v-col cols="12" md="12">
-          <p><b>{{ $t('emailservice.ssl') }}:</b></p>
+          <p><b>{{ t('emailservice.ssl') }}:</b></p>
           <v-btn-toggle v-model="ssl" mandatory>
-            <v-btn :value="1" color="primary"> {{ $t('common.yes') }}</v-btn>
-            <v-btn :value="0" color="success">{{ $t('common.no') }}</v-btn>
+            <v-btn :value="1" color="primary"> {{ t('common.yes') }}</v-btn>
+            <v-btn :value="0" color="success">{{ t('common.no') }}</v-btn>
           </v-btn-toggle>
         </v-col>
       </v-row>
@@ -55,18 +55,18 @@
         <v-row>
 
           <v-col cols="4" md="4">
-            <v-btn color="error" block @click="$router.go(-1)">
-              {{ $t('common.return') }}
+            <v-btn color="error" block @click="router.go(-1)">
+              {{ t('common.return') }}
             </v-btn>
           </v-col>
           <v-col cols="4" md="4">
             <v-btn color="blue" block @click="showtestdialog = true">
-              {{ $t('common.test') }}
+              {{ t('common.test') }}
             </v-btn>
           </v-col>
           <v-col cols="4" md="4">
             <v-btn color="success" type="submit" :loading="loading">
-              {{ $t('common.submit') }}
+              {{ t('common.submit') }}
             </v-btn>
           </v-col>
 
@@ -87,20 +87,20 @@
           <v-container fluid>
             <v-row>
               <v-col cols="12" md="12">
-                <v-text-field v-model="testemailReceiver" :label="$t('emailservice.test_email_receiver')" type="input"
-                  :hint="$t('emailservice.test_email_receiver_hint')" :readonly="loading" clearable required
+                <v-text-field v-model="testemailReceiver" :label="t('emailservice.test_email_receiver')" type="input"
+                  :hint="t('emailservice.test_email_receiver_hint')" :readonly="loading" clearable required
                   :rules="[rules.required, rules.email]"></v-text-field>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="12" md="12">
-                <v-text-field v-model="testemailTitle" :label="$t('emailservice.test_email_title')" type="input"
-                  :hint="$t('emailservice.test_email_title_hint')" :readonly="loading" clearable required
+                <v-text-field v-model="testemailTitle" :label="t('emailservice.test_email_title')" type="input"
+                  :hint="t('emailservice.test_email_title_hint')" :readonly="loading" clearable required
                   :rules="[rules.required]"></v-text-field>
               </v-col>
             </v-row>
             <v-row>
-              <v-textarea :label="$t('emailservice.test_email_content_hint')" v-model="testemailContent"
+              <v-textarea :label="t('emailservice.test_email_content_hint')" v-model="testemailContent"
                 name="input-7-1" variant="filled" auto-grow :rules="[rules.required]"></v-textarea>
             </v-row>
           </v-container>
@@ -114,7 +114,7 @@
 
           <v-btn text="Close" variant="plain" @click="showtestdialog = false"></v-btn>
 
-          <v-btn color="primary" :text="$t('common.send')" variant="tonal" type="submit"></v-btn>
+          <v-btn color="primary" :text="t('common.send')" variant="tonal" type="submit"></v-btn>
         </v-card-actions>
 
       </v-card>
@@ -125,16 +125,11 @@
   <LoadingDialog :loadDialogshow="loadDialogshow" :loadingtitle="CapitalizeFirstLetter(t('common.loading'))" />
 </template>
 <script setup lang="ts">
-// import router from '@/views/router';
 import { ref, onMounted, watch } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { getEmailServiceDetail, createupdateEmailService, sendTestemail, receiveEmailsendevent } from "@/views/api/emailservice";
 import { EmailServiceEntitydata, EmailSendParam, EmailRequestData } from "@/entityTypes/emailmarketingType"
-// import { convertVariableInTemplate } from "@/views/utils/function"
-// import { VueEditor } from "vue2-editor";
-// import { CommonIdrequest } from "@/entityTypes/commonType"
-import router from "@/views/router";
 import { CapitalizeFirstLetter } from "@/views/utils/function"
 import { CommonDialogMsg } from "@/entityTypes/commonType"
 import ErrorDialog from "@/views/components/widgets/errorDialog.vue"
@@ -155,17 +150,6 @@ watch(loadDialogshow, (newValue) => {
   }
   setTimeout(() => (loadDialogshow.value = false), 10000)
 });
-// const emailRules = [
-//   (v: string) => {
-//     if (v) return true
-//     return 'Email is required'
-//   },
-//   (v: string) => {
-//     if (/.+@.+\..+/.test(v)) return true
-
-//     return 'E-mail must be valid.'
-//   },
-// ];
 
 const rules = {
   required: (value) => {
@@ -179,18 +163,16 @@ const rules = {
   },
 };
 const $route = useRoute();
+const router = useRouter();
 const FakeAPI = {
   async fetch(id: number): Promise<EmailServiceEntitydata> {
-    // const data: CommonIdrequest<number> = {
-    //   id: id
-    // }
     return await getEmailServiceDetail(id);
   },
 };
-//defined the value in page
+
 const form = ref<HTMLFormElement>();
 const testform = ref<HTMLFormElement>();
-const from = ref<string>(""); //template title
+const from = ref<string>("");
 const password = ref<string>("");
 const host = ref<string>("");
 const port = ref<string>("");
@@ -208,25 +190,15 @@ const testemailReceiver = ref<string>("")
 const testemailTitle = ref<string>("")
 const testemailContent = ref<string>("")
 
-// import { RefSymbol } from "@vue/reactivity";
-// const selectedProxy = ref<ProxyListEntity>();
-
-// const rules = {
-//   required: (value) => !!value || "Field is required",
-// };
-
-
 const initialize = async () => {
   if ($route.params.id) {
     Id.value = parseInt($route.params.id.toString());
   }
 
   if (Id.value > 0) {
-    //edit
     isEdit.value = true;
     FakeAPI.fetch(parseInt(Id.value.toString())).then((res) => {
       console.log(res)
-      //set value
       if (res) {
 
         from.value = res.from;
@@ -239,7 +211,6 @@ const initialize = async () => {
       }
     });
   } else {
-    //add new item
     isEdit.value = false;
 
   }
@@ -264,7 +235,6 @@ async function onSubmit() {
     loading.value = false;
     return
   } else {
-    // console.log(port.value.length)
     if (port.value.length > 5) {
 
       alert.value = true;
@@ -323,16 +293,13 @@ async function onSubmit() {
   }
   loading.value = false;
 }
-//test email setting by send out test email 
+
 const submitTestemail = async () => {
   if (!testform.value) return;
   const { valid } = await testform.value.validate();
   console.log(valid)
-  // console.log(valid);
-  //loading.value = true;
   if (!valid) {
 
-    // console.log(testvalid)
     console.log("test form is not valid");
     return
 
@@ -369,7 +336,6 @@ const receiveMsg = () => {
       return
     }
     showtestdialog.value = false
-    // }else{
     showDialog.value = true
     if (obj.data) {
       if (obj.status) {
@@ -384,7 +350,6 @@ const receiveMsg = () => {
       alertdiatitle.value = t("common.unkonw_error")
     }
 
-    // }
   })
 }
 

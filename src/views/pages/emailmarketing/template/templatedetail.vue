@@ -4,16 +4,16 @@
     <v-form ref="form" @submit.prevent="onSubmit">
       <v-row>
         <v-col cols="12" md="8">
-          <v-text-field ref="inputs" v-model="tplTitle" :label="$t('emailmarketing.title')" type="input"
-            :hint="$t('emailmarketing.title_hint')" :readonly="loading" clearable
+          <v-text-field ref="inputs" v-model="tplTitle" :label="t('emailmarketing.title')" type="input"
+            :hint="t('emailmarketing.title_hint')" :readonly="loading" clearable
             required></v-text-field>
           <!-- <v-text-field v-model="tplcontent" :label="$t('emailmarketing.content')" type="input"
             :hint="$t('emailmarketing.title_content')" :rules="[rules.required]" required :readonly="loading"
             clearable></v-text-field> -->
           <!-- https://www.vue2editor.com/examples/#basic-setup -->
           <!-- <vue-editor v-model="tplcontent" /> -->
-          <v-textarea ref="textarea" v-model="tplcontent" :label="$t('emailmarketing.content')"
-            :hint="$t('emailmarketing.content_hint')" :rules="[rules.required]" :readonly="loading" clearable rows="10"
+          <v-textarea ref="textarea" v-model="tplcontent" :label="t('emailmarketing.content')"
+            :hint="t('emailmarketing.content_hint')" :rules="[rules.required]" :readonly="loading" clearable rows="10"
             required auto-grow></v-textarea>
         </v-col>
         <v-col cols="12" md="3">
@@ -43,17 +43,17 @@
         <v-row>
           <v-col cols="12" md="4">
             <v-btn color="blue" class="mt-4" block @click="submitpreview" :loading="loading">
-              {{ $t('emailmarketing.preview') }}
+              {{ t('emailmarketing.preview') }}
             </v-btn>
           </v-col>
           <v-col cols="12" md="4">
             <v-btn color="success" class="mt-4" block type="submit" :loading="loading">
-              {{ $t('common.submit') }}
+              {{ t('common.submit') }}
             </v-btn>
           </v-col>
           <v-col cols="12" md="4">
-            <v-btn color="error" class="mt-4" block @click="$router.go(-1)">
-              {{ $t('common.return') }}
+            <v-btn color="error" class="mt-4" block @click="router.go(-1)">
+              {{ t('common.return') }}
             </v-btn>
           </v-col>
         </v-row>
@@ -87,11 +87,11 @@
         </v-row>
 
         <v-row dense>
-          <v-text-field v-model="EmailTitlepreview" :label="$t('emailmarketing.title')" type="input"
+          <v-text-field v-model="EmailTitlepreview" :label="t('emailmarketing.title')" type="input"
             readonly></v-text-field>
         </v-row>
         <v-row dense>
-          <v-textarea v-model="EmailContentpreview" :label="$t('emailmarketing.content')" readonly rows="10" required
+          <v-textarea v-model="EmailContentpreview" :label="t('emailmarketing.content')" readonly rows="10" required
             auto-grow></v-textarea>
         </v-row>
       </v-card-text>
@@ -106,7 +106,7 @@
 <script setup lang="ts">
 // import router from '@/views/router';
 import { ref, onMounted, watch,onBeforeUnmount } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { getEmailtemplatebyid, updateEmailtemplate } from "@/views/api/emailmarketing"
 import { EmailTemplateRespdata, EmailTemplatePreviewdata } from "@/entityTypes/emailmarketingType"
@@ -117,6 +117,7 @@ const templateId = ref<number>(0);
 
 
 const $route = useRoute();
+const router = useRouter();
 const FakeAPI = {
   async fetch(id: number): Promise<EmailTemplateRespdata> {
     return await getEmailtemplatebyid(id.toString());
@@ -141,7 +142,6 @@ const EmailTitlepreview = ref<string>("");
 const EmailContentpreview = ref<string>("");
 const Sourcevar= ref<string>("");
 let lastFocusedElement: HTMLTextAreaElement | HTMLInputElement | null = null;
-import router from "@/views/router";
 // import { RefSymbol } from "@vue/reactivity";
 // const selectedProxy = ref<ProxyListEntity>();
 

@@ -8,8 +8,8 @@
       </v-alert>
       <v-row>
         <v-col cols="12" md="12">
-          <v-text-field ref="inputs" v-model="filteName" :label="$t('emailfilter.name')" type="input"
-            :hint="$t('emailfilter.inputname_hint')" :readonly="loading" clearable required></v-text-field>
+          <v-text-field ref="inputs" v-model="filteName" :label="t('emailfilter.name')" type="input"
+            :hint="t('emailfilter.inputname_hint')" :readonly="loading" clearable required></v-text-field>
           <!-- <v-text-field v-model="tplcontent" :label="$t('emailmarketing.content')" type="input"
             :hint="$t('emailmarketing.title_content')" :rules="[rules.required]" required :readonly="loading"
             clearable></v-text-field> -->
@@ -19,16 +19,16 @@
       </v-row>
       <v-row>
         <v-col cols="12" md="12">
-          <v-text-field v-model="description" :label="$t('emailfilter.description')" type="input"
-            :hint="$t('emailfilter.description_hint')" :readonly="loading" clearable required></v-text-field>
+          <v-text-field v-model="description" :label="t('emailfilter.description')" type="input"
+            :hint="t('emailfilter.description_hint')" :readonly="loading" clearable required></v-text-field>
         </v-col>
       </v-row>
       <v-row>
         <v-col v-for="(filter, index) in filterDetailArr" :key="index" cols="12" md="12">
           <v-row>
             <v-col cols="8" md="8">
-              <v-text-field v-model="filter.content" :label="$t('emailfilter.filtercontent')"
-                :hint="$t('emailfilter.filtercontent_hint')" :readonly="loading" clearable required></v-text-field>
+                <v-text-field v-model="filter.content" :label="t('emailfilter.filtercontent')"
+                :hint="t('emailfilter.filtercontent_hint')" :readonly="loading" clearable required></v-text-field>
             </v-col>
             <v-col cols="4" md="4">
               <!--if item is last one in filterDetailArr-->
@@ -48,7 +48,7 @@
         <v-row>
           <v-col cols="12" md="4">
             <v-btn color="success" class="mt-4 mb-4" type="submit" :loading="loading">
-              {{ $t('common.submit') }}
+              {{ t('common.submit') }}
             </v-btn>
           </v-col>
         </v-row>

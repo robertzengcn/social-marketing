@@ -7,7 +7,7 @@
       <v-icon size="small" class="me-2" @click="openfolder(item)">
         mdi-folder
       </v-icon>
-      <v-icon size="small" class="me-2" v-if="item.status == 'Error'" @click="downloadErrorlog(item)">
+      <v-icon size="small" class="me-2" v-if="item.statusName == 'Error'" @click="downloadErrorlog(item)">
         mdi-download
       </v-icon>
 
@@ -89,14 +89,14 @@ let refreshInterval: ReturnType<typeof setInterval> | undefined;
 
 headers.value = [
   {
-    title: computed(_ => CapitalizeFirstLetter(t("emailextraction.id"))),
+    title: CapitalizeFirstLetter(t("emailextraction.id")),
     align: 'center',
     sortable: true,
     key: 'id',
     width: '5%'
   },
   {
-    title: computed(_ => CapitalizeFirstLetter(t("emailextraction.type"))),
+    title: CapitalizeFirstLetter(t("emailextraction.type")),
     align: 'center',
     sortable: false,
     key: 'typeName',
@@ -110,14 +110,14 @@ headers.value = [
   //     // value: computed(value => value.join(', '))
   // },
   {
-    title: computed(_ => CapitalizeFirstLetter(t("searchresult.status"))),
+    title: CapitalizeFirstLetter(t("searchresult.status")),
     align: 'start',
     sortable: false,
     key: 'statusName',
     width: '10%'
   },
   {
-    title: computed(_ => CapitalizeFirstLetter(t("searchresult.record_time"))),
+    title: CapitalizeFirstLetter(t("searchresult.record_time")),
     align: 'start',
     sortable: false,
     key: 'record_time',
