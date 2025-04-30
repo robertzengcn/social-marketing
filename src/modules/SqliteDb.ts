@@ -27,6 +27,8 @@ import {SearchKeywordEntity} from "@/entity/SearchKeyword.entity"
 import {SearchResultEntity} from "@/entity/SearchResult.entity"
 import {TaskRunEntity} from "@/entity/TaskRun.entity"
 import {VideoDownloadTaskKeywordEntity} from "@/entity/VideoDownloadTaskKeyword.entity"
+import { SearchTaskEntity } from "@/entity/SearchTask.entity";
+
 // import sqlite3 from "sqlite3"; 
 
 
@@ -40,6 +42,7 @@ export class SqliteDb {
             type: "better-sqlite3",
             database:path.join(filepath,'scraper.db'),
             entities: [AccountCookiesEntity,
+                SearchTaskEntity,
                 BuckemailTaskEntity,
                 EmailMarketingSendLogEntity,
                 EmailMarketingTaskDetailEntity,
