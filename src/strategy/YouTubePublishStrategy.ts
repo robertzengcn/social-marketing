@@ -13,6 +13,10 @@ export class YouTubePublishStrategy extends BaseVideoPublishStrategy {
         record.status = PublishStatus.PENDING;
 
         try {
+            if (!video.savepath) {
+                throw new Error('Video savepath is required');
+            }
+
             await this.initializePage();
             
             // Navigate to YouTube upload page
@@ -20,7 +24,9 @@ export class YouTubePublishStrategy extends BaseVideoPublishStrategy {
             
             // Wait for the file input to be available
             const fileInput = await this.page.waitForSelector('input[type="file"]');
-            
+            if (!fileInput) {
+                throw new Error('File input not found');
+            }
             // Upload the video file
             await fileInput.uploadFile(video.savepath);
             
@@ -48,14 +54,21 @@ export class YouTubePublishStrategy extends BaseVideoPublishStrategy {
             // Wait for the video URL to be available
             const videoUrl = await this.page.waitForSelector('.video-url', { timeout: 30000 });
             const url = await videoUrl.evaluate(el => el.textContent);
+            if (!url) {
+                throw new Error('Video URL is empty');
+            }
             
             record.platform_video_url = url;
-            record.platform_video_id = this.extractVideoId(url);
+            const videoId = this.extractVideoId(url);
+            if (!videoId) {
+                throw new Error('Could not extract video ID from URL');
+            }
+            record.platform_video_id = videoId;
             record.status = PublishStatus.PUBLISHED;
             
-        } catch (error) {
+        } catch (error: unknown) {
             record.status = PublishStatus.FAILED;
-            record.error_message = error.message;
+            record.error_message = error instanceof Error ? error.message : 'Unknown error occurred';
         } finally {
             await this.cleanup();
         }
@@ -85,7 +98,7 @@ export class YouTubePublishStrategy extends BaseVideoPublishStrategy {
         ];
     }
 
-    private extractVideoId(url: string): string {
+    private extractVideoId(url: string): string | null {
         const match = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
         return match ? match[1] : null;
     }

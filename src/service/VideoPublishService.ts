@@ -1,6 +1,6 @@
 import { Browser } from 'puppeteer';
 import { PublishPlatform } from '@/entity/VideoPublishRecord.entity';
-import { VideoPublishStrategyFactory } from '@/strategy/VideoPublishStrategyFactory';
+//import { VideoPublishStrategyFactory } from '@/strategy/VideoPublishStrategyFactory';
 import { VideoDownloadEntity } from '@/entity/VideoDownload.entity';
 import { PublishOptions } from '@/strategy/VideoPublishStrategy';
 import { VideoPublishRecordEntity } from '@/entity/VideoPublishRecord.entity';
