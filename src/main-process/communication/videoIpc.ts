@@ -1,5 +1,5 @@
 import { ipcMain } from 'electron';
-import { VIDEODOWNLOAD, VIDEODOWNLOAD_MESSAGE, VIDEODOWNLOAD_TASK_LIST, VIDEODOWNLOAD_LIST, VIDEODOWNLOADTASK_RETRY, VIDEODOWNLOADITEM_RETRY, VIDEODOWNLOAD_ITEM_MESSAGE, VIDEODOWNLOADITEM_EXPLORER, VIDEODOWNLOADITEM_DELETE, VIDEODOWN_TASK_ERROR_LOG_QUERY, VIDEO_CAPTION_GENERATE, VIDEOTASKDOWNLOAD_RETRY_MESSAGE, VIDEODOWNLOAD_LOG_QUERY, SYSTEM_MESSAGE, VIDEODOWNLOAD_DETAIL_QUERY, VIDEODOWNLOAD_OPEN_CAPTIONFILE, VIDEO_VOICE_TRANSLATE, VIDEO_INFORMATION_TRANSLATE } from '@/config/channellist'
+import { VIDEODOWNLOAD, VIDEODOWNLOAD_MESSAGE, VIDEODOWNLOAD_TASK_LIST, VIDEODOWNLOAD_LIST, VIDEODOWNLOADTASK_RETRY, VIDEODOWNLOADITEM_RETRY, VIDEODOWNLOAD_ITEM_MESSAGE, VIDEODOWNLOADITEM_EXPLORER, VIDEODOWNLOADITEM_DELETE, VIDEODOWN_TASK_ERROR_LOG_QUERY, VIDEO_CAPTION_GENERATE, VIDEOTASKDOWNLOAD_RETRY_MESSAGE, VIDEODOWNLOAD_LOG_QUERY, SYSTEM_MESSAGE, VIDEODOWNLOAD_DETAIL_QUERY, VIDEODOWNLOAD_OPEN_CAPTIONFILE, VIDEO_VOICE_TRANSLATE, VIDEO_INFORMATION_TRANSLATE, VIDEO_PUBLISH, VIDEO_PUBLISH_MESSAGE } from '@/config/channellist'
 import { videoController } from '@/controller/videoController';
 import { CommonDialogMsg, CommonResponse, CommonIdrequest, CommonMessage, CommonIdrequestType } from "@/entityTypes/commonType";
 import { CustomError } from '@/modules/customError';
@@ -422,4 +422,43 @@ export function registerVideoIpcHandlers() {
        
 
     })
+    //publish video
+    ipcMain.on(VIDEO_PUBLISH, async (event, data) => {
+        try {
+            const qdata = JSON.parse(data);
+            if (!("videoId" in qdata)) {
+                throw new Error("videoId not found");
+            }
+            if (!("platform" in qdata)) {
+                throw new Error("platform not found");
+            }
+            if (!("options" in qdata)) {
+                throw new Error("options not found");
+            }
+
+            const videoCtrl = new videoController();
+            await videoCtrl.publishVideo(qdata.videoId, qdata.platform);
+            
+            const successMsg: CommonDialogMsg = {
+                status: true,
+                code: 200,
+                data: {
+                    title: "video.publish_success",
+                    content: "video.publish_success_message"
+                }
+            };
+            event.sender.send(VIDEO_PUBLISH_MESSAGE, successMsg);
+        } catch (error) {
+            console.error("Video publish error:", error);
+            const errorMsg: CommonDialogMsg = {
+                status: false,
+                code: error instanceof CustomError ? error.code : 20240521105843,
+                data: {
+                    title: "video.publish_failed",
+                    content: error instanceof Error ? error.message : "Unknown error occurred"
+                }
+            };
+            event.sender.send(VIDEO_PUBLISH_MESSAGE, errorMsg);
+        }
+    });
 }

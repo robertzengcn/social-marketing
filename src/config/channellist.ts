@@ -76,5 +76,7 @@ export const SYSTEM_SETTING_UPDATE='system_setting:update'
 export const QUERY_USER_INFO='user:info'
 export const OPENLOGINPAGE='open:page'
 export const NATIVATECOMMAND='navigate:command'
+export const VIDEO_PUBLISH='video:publish'
+export const VIDEO_PUBLISH_MESSAGE='video:publish:message'
 
 
