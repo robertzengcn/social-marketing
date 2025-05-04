@@ -2,52 +2,82 @@ import { BaseVideoPublishStrategy, PublishOptions } from './VideoPublishStrategy
 import { VideoDownloadEntity } from '@/entity/VideoDownload.entity';
 import {VideoPublishResultType} from "@/entityTypes/videoPublishType"
 import {PublishPlatform,PublishStatus} from "@/entityTypes/videoPublishType"
-import { Page } from 'puppeteer';
+//import { Page } from 'puppeteer';
 
-export class YouTubePublishStrategy extends BaseVideoPublishStrategy {
-    private readonly YOUTUBE_UPLOAD_URL = 'https://studio.youtube.com/channel/me/videos/upload';
+export class BaiduVideoPublishStrategy extends BaseVideoPublishStrategy {
+    private readonly BAIDU_UPLOAD_URL = 'https://haokan.baidu.com/videoui/page/publish';
 
     private async checkLoginStatus(): Promise<boolean> {
         try {
-            // Wait for either the upload button or the sign-in button to appear
-            await this.page.waitForSelector('#upload-button, #sign-in-button', { timeout: 5000 });
+            // Wait for either the login button or the upload button to appear
+            await this.page.waitForSelector('.upload-btn, .login-btn', { timeout: 5000 });
             
-            // Check if sign-in button exists (which means user is not logged in)
-            const signInButton = await this.page.$('#sign-in-button');
-            return !signInButton;
+            // Check if login button exists (which means user is not logged in)
+            const loginButton = await this.page.$('.login-btn');
+            return !loginButton;
         } catch (error) {
             return false;
         }
     }
 
     async uploadVideo(videoPath: string): Promise<void> {
-        // Click the upload button
-        const uploadButton = await this.page.waitForSelector('#upload-button');
-        if (!uploadButton) {
-            throw new Error('Upload button not found');
-        }
-        await uploadButton.click();
-
-        // Wait for the file input to be available
-        const fileInput = await this.page.waitForSelector('input[type="file"]');
-        if (!fileInput) {
-            throw new Error('File input not found');
+        // Wait for the upload wrapper to be available
+        const uploadWrapper = await this.page.waitForSelector('.upload-wrp');
+        if (!uploadWrapper) {
+            throw new Error('Upload wrapper not found');
         }
 
-        // Upload the video file
-        await fileInput.uploadFile(videoPath);
+        // Get the bounding box of the upload wrapper
+        const box = await uploadWrapper.boundingBox();
+        if (!box) {
+            throw new Error('Could not get upload wrapper position');
+        }
 
-        // Wait for the upload to complete and processing to start
-        await this.page.waitForSelector('#upload-status', { timeout: 300000 });
-        
-        // Wait for processing to complete
-        await this.page.waitForSelector('#processing-status', { timeout: 900000 });
+        // Calculate the center point of the upload wrapper
+        const centerX = box.x + box.width / 2;
+        const centerY = box.y + box.height / 2;
+
+        // Create and dispatch the drag and drop events
+        await this.page.evaluate(async (centerX, centerY, filePath) => {
+            const uploadWrapper = document.querySelector('.upload-wrp');
+            if (!uploadWrapper) return;
+
+            // Read the file data
+            const response = await fetch(filePath);
+            const blob = await response.blob();
+            
+            // Create the file object
+            const file = new File([blob], 'video.mp4', { type: 'video/mp4' });
+            
+            // Create the drag event
+            const dragEvent = new DragEvent('dragenter', {
+                bubbles: true,
+                cancelable: true,
+                dataTransfer: new DataTransfer()
+            });
+            dragEvent.dataTransfer?.items.add(file);
+            
+            // Create the drop event
+            const dropEvent = new DragEvent('drop', {
+                bubbles: true,
+                cancelable: true,
+                dataTransfer: new DataTransfer()
+            });
+            dropEvent.dataTransfer?.items.add(file);
+
+            // Dispatch the events
+            uploadWrapper.dispatchEvent(dragEvent);
+            uploadWrapper.dispatchEvent(dropEvent);
+        }, centerX, centerY, videoPath);
+
+        // Wait for the upload to complete
+        await this.page.waitForSelector('.upload-status', { timeout: 300000 });
     }
 
     async publish(video: VideoDownloadEntity, options: PublishOptions): Promise<VideoPublishResultType> {
         const result:VideoPublishResultType={
             publishStatus:PublishStatus.PENDING,
-            publishPlatform:PublishPlatform.YOUTUBE,
+            publishPlatform:PublishPlatform.BAIDU,
             publishTime:new Date(),
             publishError:"",
             publishUrl:""
@@ -65,8 +95,8 @@ export class YouTubePublishStrategy extends BaseVideoPublishStrategy {
                 await this.setCookies(options.cookies);
             }
             
-            // Navigate to YouTube upload page
-            await this.page.goto(this.YOUTUBE_UPLOAD_URL);
+            // Navigate to Baidu video upload page
+            await this.page.goto(this.BAIDU_UPLOAD_URL);
             
             // Check login status
             const isLoggedIn = await this.checkLoginStatus();
@@ -79,31 +109,18 @@ export class YouTubePublishStrategy extends BaseVideoPublishStrategy {
             
             // Fill in video details
             if (options.title) {
-                await this.page.type('#title-textarea', options.title);
+                await this.page.type('#title-input', options.title);
             }
             
             if (options.description) {
                 await this.page.type('#description-textarea', options.description);
             }
-
-            // Set privacy settings if provided
-            if (options.privacy) {
-                const privacyButton = await this.page.waitForSelector('#privacy-button');
-                if (privacyButton) {
-                    await privacyButton.click();
-                    await this.page.click(`[aria-label="${options.privacy}"]`);
-                }
-            }
             
             // Click publish button
-            const publishButton = await this.page.waitForSelector('#publish-button');
-            if (!publishButton) {
-                throw new Error('Publish button not found');
-            }
-            await publishButton.click();
+            await this.page.click('#publish-button');
             
             // Wait for the video URL to be available
-            const videoUrl = await this.page.waitForSelector('#video-url', { timeout: 30000 });
+            const videoUrl = await this.page.waitForSelector('.video-url', { timeout: 30000 });
             
             if(videoUrl){
                 const resurl = await videoUrl.evaluate(el => el.textContent);
@@ -129,15 +146,12 @@ export class YouTubePublishStrategy extends BaseVideoPublishStrategy {
     }
 
     async validateOptions(options: PublishOptions): Promise<boolean> {
-        // YouTube specific validation
+        // Baidu specific validation
         if (options.title && options.title.length > 100) {
             throw new Error('Title must be less than 100 characters');
         }
         if (options.description && options.description.length > 5000) {
             throw new Error('Description must be less than 5000 characters');
-        }
-        if (options.privacy && !['public', 'private', 'unlisted'].includes(options.privacy)) {
-            throw new Error('Privacy must be one of: public, private, unlisted');
         }
         return true;
     }
