@@ -1,16 +1,17 @@
-import { Browser } from 'puppeteer';
-import { PublishPlatform } from '@/entity/VideoPublishRecord.entity';
+//import { Browser } from 'puppeteer';
+import { PublishPlatform, PublishStatus } from "@/entityTypes/videoPublishType"
 //import { VideoPublishStrategyFactory } from '@/strategy/VideoPublishStrategyFactory';
 import { VideoDownloadEntity } from '@/entity/VideoDownload.entity';
 import { PublishOptions } from '@/strategy/VideoPublishStrategy';
 import { VideoPublishRecordEntity } from '@/entity/VideoPublishRecord.entity';
+import {VideoPublishStrategyFactory} from '@/strategy/VideoPublishStrategyFactory';
 
 export class VideoPublishService {
-    private browser: Browser;
+    //private browser: Browser;
     private strategyFactory: VideoPublishStrategyFactory;
 
-    constructor(browser: Browser) {
-        this.browser = browser;
+    constructor() {
+        //this.browser = browser;
         this.strategyFactory = VideoPublishStrategyFactory.getInstance();
     }
 
@@ -20,20 +21,29 @@ export class VideoPublishService {
         options: PublishOptions
     ): Promise<VideoPublishRecordEntity> {
         try {
-            const strategy = this.strategyFactory.getStrategy(platform, this.browser);
+            const strategy = await this.strategyFactory.createStrategy(platform, options);
             
             // Validate options before publishing
             await strategy.validateOptions(options);
             
             // Publish the video
-            return await strategy.publish(video, options);
-        } catch (error) {
+            const result = await strategy.publish(video, options);
+            
+            // Create a record from the result
+            const record = new VideoPublishRecordEntity();
+            record.video_download_id = video.id;
+            record.platform = platform;
+            record.status = result.publishStatus;
+            record.platform_video_url = result.publishUrl;
+            record.error_message = result.publishError;
+            return record;
+        } catch (error: unknown) {
             // Create a failed record
             const record = new VideoPublishRecordEntity();
             record.video_download_id = video.id;
             record.platform = platform;
-            record.status = 2; // FAILED
-            record.error_message = error.message;
+            record.status = PublishStatus.FAILED;
+            record.error_message = error instanceof Error ? error.message : 'Unknown error occurred';
             return record;
         }
     }
