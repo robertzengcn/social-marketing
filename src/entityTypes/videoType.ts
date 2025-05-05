@@ -4,6 +4,9 @@ import {TaskStatus,ItemSearchparam,CommonIdrequestIds} from "@/entityTypes/commo
 import {LanguageItem} from "@/entityTypes/commonType"
 import { VideoDescriptionEntity } from "@/entity/VideoDescription.entity"
 import {VideoDownloadTagEntity} from "@/entity/VideoDownloadTag.entity"
+import {LanguageCode} from '@/entityTypes/commonType'
+import {VideoPublishCategory} from '@/config/videosetting'
+
 export type videoScraper={
     cookies: string,
     proxy?:Proxy
@@ -281,5 +284,11 @@ export type VideoTranslateInfo={
 export type WorkerTranslateParam={
 
     data:Array<VideoTranslateItem>
+}
+//video publish platform config
+export type Vpformconfig={
+    name:string,
+    language:LanguageCode,
+    category: VideoPublishCategory
 }
 

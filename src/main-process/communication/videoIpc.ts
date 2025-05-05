@@ -432,9 +432,9 @@ export function registerVideoIpcHandlers() {
             if (!("platform" in qdata)) {
                 throw new Error("platform not found");
             }
-            if (!("options" in qdata)) {
-                throw new Error("options not found");
-            }
+            // if (!("options" in qdata)) {
+            //     throw new Error("options not found");
+            // }
 
             const videoCtrl = new videoController();
             await videoCtrl.publishVideo(qdata.videoId, qdata.platform);
