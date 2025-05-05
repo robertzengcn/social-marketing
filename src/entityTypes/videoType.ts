@@ -289,6 +289,7 @@ export type WorkerTranslateParam={
 export type Vpformconfig={
     name:string,
     language:LanguageCode,
-    category: VideoPublishCategory
+    //category: VideoPublishCategory,
+    videoCategories: string[]
 }
 
