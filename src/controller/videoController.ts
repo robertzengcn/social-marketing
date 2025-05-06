@@ -18,7 +18,8 @@ import { ProcessMessage } from "@/entityTypes/processMessage-type"
 // import {VideodownloadMsg} from "@/entityTypes/videoType";
 import { ListData, TaskStatus } from "@/entityTypes/commonType"
 import { VideoDescriptionEntity } from "@/entity/VideoDescription.entity"
-import { VideoDownloadStatus, VideodownloadTaskMsg, VideoDownloadListDisplay, VideodownloadMsg, DownloadVideoControlparam, VideoDownloadTaskDetailEntity, DownloadType, CookiesType, VideoCaptionItem, VideoCaptionMsg, VideoCaptionEntity, VideoCaptionStatus, VideoCaptionGenerateParamWithIds, VideoInformationTransParam } from "@/entityTypes/videoType"
+import { VideoDownloadStatus, VideodownloadTaskMsg, VideoDownloadListDisplay, VideodownloadMsg, DownloadVideoControlparam, DownloadType, CookiesType, VideoCaptionItem, VideoCaptionMsg, VideoCaptionEntity, VideoCaptionStatus, VideoCaptionGenerateParamWithIds, VideoInformationTransParam } from "@/entityTypes/videoType"
+import { VideoDownloadTaskDetailEntity } from "@/entity/VideoDownloadTaskDetail.entity"
 import { VideoDescriptionModule } from "@/modules/videoDescriptionModule"
 import { Video } from '@/modules/interface/Video';
 import { VideoDownloadTaskDetailModule } from '@/modules/VideoDownloadTaskDetailModule';
@@ -387,9 +388,16 @@ export class videoController {
             throw new Error("video tool not found")
         }
         //check video tool requirement
-        const res = this.checkVideoRequirement(videoTool)
-        if (!res) {
-            throw new Error("video tool requirement check failed")
+        try{
+            const res = await this.checkVideoRequirement(videoTool)
+            if (!res) {
+                throw new Error("video tool requirement check failed")
+            }
+        } catch (error) {
+            if (error instanceof Error) {
+                throw new Error(error.message)
+            }
+            throw new Error('Unknown error occurred')
         }
         //save video task
         const videoTaskEntity = new VideoDownloadTaskEntity()
@@ -404,18 +412,27 @@ export class videoController {
         }
         //save video url
 
-        const vdetd: VideoDownloadTaskDetailEntity = {
-            task_id: taskId,
-            download_type: param.isplaylist ? DownloadType.MULTIVIDEO : DownloadType.SINGLEVIDEO,
-            cookies_type: param.cookies_type == "browser cookies" ? CookiesType.USEBROWSER : CookiesType.ACCOUNTCOOKIES,
-            browser_type: param.browserName ? param.browserName : '',
-            proxy_override: param.ProxyOverride,
-            video_quality: param.videoQuality ? param.videoQuality : 0,
-            language_code: param.language_code,
-            max_page_number: param.maxpagenumber ? param.maxpagenumber : 0,
-        }
+        // const vdetd: VideoDownloadTaskDetailEntity = {
+        //     task_id: taskId,
+        //     download_type: param.isplaylist ? DownloadType.MULTIVIDEO : DownloadType.SINGLEVIDEO,
+        //     cookies_type: param.cookies_type == "browser cookies" ? CookiesType.USEBROWSER : CookiesType.ACCOUNTCOOKIES,
+        //     browser_type: param.browserName ? param.browserName : '',
+        //     proxy_override: param.ProxyOverride,
+        //     video_quality: param.videoQuality ? param.videoQuality : 0,
+        //     language_code: param.language_code,
+        //     max_page_number: param.maxpagenumber ? param.maxpagenumber : 0,
+        // }
+        const vdetd=new VideoDownloadTaskDetailEntity()
+        vdetd.task_id=taskId
+        vdetd.download_type=param.isplaylist ? DownloadType.MULTIVIDEO : DownloadType.SINGLEVIDEO
+        vdetd.cookies_type=param.cookies_type == "browser cookies" ? CookiesType.USEBROWSER : CookiesType.ACCOUNTCOOKIES
+        vdetd.browser_type=param.browserName ? param.browserName : ''
+        vdetd.proxy_override=param.ProxyOverride ? 1 : 0
+        vdetd.video_quality=param.videoQuality ? param.videoQuality : 0
+       
+        vdetd.max_page_number=param.maxpagenumber ? param.maxpagenumber : 0
         //save video task detail
-        this.videoDownloadTaskDetailModule.create(vdetd)
+        await this.videoDownloadTaskDetailModule.create(vdetd)
         //save task accounts
         if (param.accountId.length > 0) {
 
@@ -521,7 +538,7 @@ export class videoController {
             throw new Error("task info not found")
         }
         //get task detail
-        const taskDetail = this.videoDownloadTaskDetailModule.getByTaskId(taskId)
+        const taskDetail = await this.videoDownloadTaskDetailModule.getByTaskId(taskId)
         if (!taskDetail) {
             throw new Error("task detail not found")
         }
@@ -592,12 +609,12 @@ export class videoController {
             keywords: keywords,
             isplaylist: taskDetail.download_type == DownloadType.MULTIVIDEO,
             proxy: proxys,
-            ProxyOverride: taskDetail.proxy_override,
+            ProxyOverride: taskDetail.proxy_override === 1,
             cookies_type: taskDetail.cookies_type == CookiesType.ACCOUNTCOOKIES ? "account cookies" : "browser cookies",
             browserName: taskDetail.browser_type ? taskDetail.browser_type : "",
-            videoQuality: taskDetail.video_quality,
-            language_code: taskDetail.language_code,
-            maxpagenumber: taskDetail.max_page_number
+            videoQuality: taskDetail.video_quality ?? undefined,
+            language_code: taskDetail.video_language ?? "en",
+            maxpagenumber: taskDetail.max_page_number ?? undefined
         }
         return data
 
