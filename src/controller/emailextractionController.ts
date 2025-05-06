@@ -102,7 +102,9 @@ export class EmailextractionController {
     public async listEmailSearchtasks(page:number,size:number,sortby?:SortBy): Promise<{records:EmailsearchTaskEntityDisplay[],total:number}> {
         const res = await this.emailSeachTaskModule.listSearchtask(page, size, sortby)
        const displayRes:EmailsearchTaskEntityDisplay[]=[]
-        res.records.forEach(async (value)=>{
+        // res.records.forEach(async (value)=>{
+        for(let i=0;i<res.records.length;i++){
+            const value=res.records[i]
             if(value.id){
 
             const taskStatus=this.emailSeachTaskModule.taskstatusConvert(value.status)
@@ -117,7 +119,7 @@ export class EmailextractionController {
             }
             displayRes.push(displayValue)
             }
-        })
+        }
 
         return {records:displayRes,total:res.total}
     }
