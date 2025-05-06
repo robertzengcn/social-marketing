@@ -30,7 +30,7 @@
 
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
-import { listEmailSearchtasks } from '@/views/api/emailextraction'
+import { listEmailSearchtasks, downloadErrorLog } from '@/views/api/emailextraction'
 //import {SearchTaskItemdisplay} from '@/entityTypes/emailextraction-type'
 import { ref, computed, onMounted, onUnmounted, reactive, watch } from 'vue'
 import { SearchResult } from '@/views/api/types'
@@ -200,13 +200,22 @@ const openfolder = (item) => {
     name: 'Email_Extraction_Task_Detail', params: { id: item.id }
   });
 }
-const downloadErrorlog = (item) => {
-  // console.log(item)
-
-  // const url = window.URL.createObjectURL(new Blob([res.data]));
-  // const link = document.createElement('a');
-  // link.href
-
+const downloadErrorlog = async (item) => {
+    try {
+        const content = await downloadErrorLog(item.id)
+        // Create a blob and download the file
+        const blob = new Blob([content], { type: 'text/plain' })
+        const url = window.URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = `error_log_${item.id}.txt`
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        window.URL.revokeObjectURL(url)
+    } catch (error) {
+        console.error('Failed to download error log:', error)
+    }
 }
 const emit = defineEmits(['change'])
 
