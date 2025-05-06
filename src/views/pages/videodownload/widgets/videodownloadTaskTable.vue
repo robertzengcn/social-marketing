@@ -168,8 +168,9 @@ function loadItems({ page, itemsPerPage, sortBy }) {
 // }
 //confirm delete account
 const createDownload = () => {
+    console.log("createDownload")
     router.push({
-        path: '/video/download'
+        name:"Videodownload"
     });
 }
 
