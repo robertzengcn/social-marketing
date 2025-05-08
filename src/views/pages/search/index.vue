@@ -26,9 +26,18 @@
         <v-btn :value="0" color="primary">No</v-btn>
         <v-btn :value="1" color="success">Yes</v-btn>
       </v-btn-toggle>
+      <div class="d-flex justify-space-between mt-4 mb-4">
+        <v-btn color="success" type="submit" :loading="loading" class="flex-grow-1 mr-2">
+          {{ t('common.submit') }}
+        </v-btn>
+
+        <v-btn color="error" @click="router.go(-1)" class="flex-grow-1 ml-2">
+          {{ t('common.return') }}
+        </v-btn>
+      </div>
 
 
-      <div class="d-flex flex-column">
+      <!-- <div class="d-flex flex-column">
         <v-btn color="success" class="mt-4" block type="submit" :loading="loading">
           Submit
         </v-btn>
@@ -36,7 +45,7 @@
         <v-btn color="error" class="mt-4" block @click="router.go(-1)">
           Return
         </v-btn>
-      </div>
+      </div> -->
 
     </v-form>
     <div>

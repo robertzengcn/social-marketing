@@ -45,11 +45,11 @@
 
       <div class="d-flex justify-space-between mt-4 mb-4">
         <v-btn color="success" type="submit" :loading="loading" class="flex-grow-1 mr-2">
-          Submit
+          {{ t('common.submit') }}
         </v-btn>
 
         <v-btn color="error" @click="router.go(-1)" class="flex-grow-1 ml-2">
-          Return
+          {{ t('common.return') }}
         </v-btn>
       </div>
 
