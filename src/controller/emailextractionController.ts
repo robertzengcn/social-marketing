@@ -34,11 +34,6 @@ export class EmailextractionController {
         const child = utilityProcess.fork(childPath, [],{stdio:"pipe",execArgv:["DEBUG='puppeteer-cluster:*'"],env:{
             ...process.env,
             NODE_OPTIONS: "",
-            PUPPETEER_EXECUTABLE_PATH: process.platform === 'win32' 
-                ? 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
-                : process.platform === 'darwin'
-                ? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
-                : '/usr/bin/google-chrome'
         }} )
         // console.log(path.join(__dirname, 'utilityCode.js'))
         let logpath=tokenService.getValue(USERLOGPATH)

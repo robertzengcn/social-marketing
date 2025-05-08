@@ -9,11 +9,22 @@ import { timeoutExecute } from 'puppeteer-cluster/dist/util';
 import {Browser} from 'puppeteer-cluster/dist/concurrency/builtInConcurrency';
 import { detectBrowserPlatform, install, canDownload, Browser as PuppeteerBrowser, getInstalledBrowsers } from '@puppeteer/browsers';
 import * as path from 'path';
-import { app } from 'electron';
+//import { app } from 'electron';
+import * as os from 'os';
 const BROWSER_TIMEOUT = 5000;
 
+// Use Puppeteer's built-in Chrome version
 // Use a specific Chrome version that's compatible with Puppeteer
 const CHROME_BUILD_ID = '126.0.6478.182';
+
+// Use Puppeteer's built-in Chrome version
+//const CHROME_BUILD_ID = 'chrome'; // This will use the version that comes with Puppeteer
+
+// Function to get the correct cache directory path
+function getCacheDir(): string {
+    const homeDir = os.homedir();
+    return path.join(homeDir, '.cache', 'puppeteer');
+}
 
 export class CustomConcurrency extends Browser {
 
@@ -26,18 +37,18 @@ export class CustomConcurrency extends Browser {
 
     async workerInstance(perBrowserOptions: puppeteer.LaunchOptions | undefined):Promise<WorkerInstance> {
         const options = perBrowserOptions || this.options;
+        const cacheDir = getCacheDir();
         
         // Try to install Chrome if not found
         try {
             const platform = await detectBrowserPlatform();
             if (platform) {
                 const browser = 'chrome' as PuppeteerBrowser;
-                const cacheDir = path.join(app.getPath('userData'), 'puppeteer');
                 
                 // Check if Chrome is already installed
                 const installedBrowsers = await getInstalledBrowsers({ cacheDir });
                 const isChromeInstalled = installedBrowsers.some(
-                    installed => installed.browser === browser && installed.buildId === CHROME_BUILD_ID
+                    installed => installed.browser === browser
                 );
 
                 if (!isChromeInstalled) {
