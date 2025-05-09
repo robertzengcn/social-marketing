@@ -19,6 +19,8 @@ export class EmailMarketingSendLogEntity extends AuditableEntity {
     
     @Column("text", { nullable: true })
     content: string;
+    @Column("text", { nullable: true })
+    log: string;
     
     @Column("text", { nullable: true })
     record_time: string;

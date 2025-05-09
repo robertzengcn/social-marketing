@@ -7,8 +7,8 @@ export abstract class BaseDb {
     protected sqliteDb:SqliteDb
      constructor(filepath:string) {
         if(filepath){
-        const scraperModel = Scraperdb.getInstance(filepath);
-        this.db = scraperModel.getdb();
+        //const scraperModel = Scraperdb.getInstance(filepath);
+        //this.db = scraperModel.getdb();
        this.sqliteDb = SqliteDb.getInstance(filepath)
         }
     }

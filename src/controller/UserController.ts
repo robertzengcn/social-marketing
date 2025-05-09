@@ -1,7 +1,7 @@
 import { RemoteSource, jwtUser } from '@/modules/remotesource'
 // import Store,{ Schema } from 'electron-store';
 import { getUserpath, checkAndCreatePath, getApplogspath } from "@/modules/lib/function"
-import { Scraperdb } from "@/model/scraperdb";
+//import { Scraperdb } from "@/model/scraperdb";
 // import {SequelizeConfig} from "@/config/SequelizeConfig"
 // import * as fs from 'fs';
 // import * as path from 'path';
@@ -62,11 +62,11 @@ export class UserController {
                 tokenService.setValue(USERNAME, res.name)
                 tokenService.setValue(USERSDBPATH, userdataPath)
                 tokenService.setValue(USERLOGPATH, logPath)
-                const scraperModel = Scraperdb.getInstance(userdataPath);
+                //const scraperModel = Scraperdb.getInstance(userdataPath);
                 //const dbdatapath=scraperModel.getdbpath(userdataPath)
                 // console.log(dbdatapath)
                 try {
-                scraperModel.init()
+                //scraperModel.init()
                 const appDataSource = SqliteDb.getInstance(userdataPath)
                 if(!appDataSource.connection.isInitialized){
                 await appDataSource.connection.initialize()
@@ -213,11 +213,11 @@ export class UserController {
                             tokenService.setValue(USERNAME, res.name)
                             tokenService.setValue(USERSDBPATH, userdataPath)
                             tokenService.setValue(USERLOGPATH, logPath)
-                            const scraperModel = Scraperdb.getInstance(userdataPath);
+                            //const scraperModel = Scraperdb.getInstance(userdataPath);
                             //const dbdatapath=scraperModel.getdbpath(userdataPath)
                             // console.log(dbdatapath)
                             try {
-                            scraperModel.init()
+                            //scraperModel.init()
                             const appDataSource = SqliteDb.getInstance(userdataPath)
                             if(!appDataSource.connection.isInitialized){
                             await appDataSource.connection.initialize()

@@ -64,41 +64,38 @@ const FakeAPI = {
     }
 }
 
-const headers = ref<Array<Header>>([])
-headers.value = [
+const headers = computed<Array<Header>>(() => [
     {
-        title: computed(_ => CapitalizeFirstLetter(t("emailtasksendlog.id"))),
+        title: CapitalizeFirstLetter(t("emailtasksendlog.id")),
         align: 'start',
         sortable: false,
         key: 'id',
     },
- 
     {
-        title: computed(_ => CapitalizeFirstLetter(t("emailtasksendlog.receiver"))),
+        title: CapitalizeFirstLetter(t("emailtasksendlog.receiver")),
         align: 'start',
         sortable: false,
         key: 'receiver',
     },
     {
-        title: computed(_ => CapitalizeFirstLetter(t("emailtasksendlog.title"))),
+        title: CapitalizeFirstLetter(t("emailtasksendlog.title")),
         align: 'start',
         sortable: false,
         key: 'receiver',
     },
     {
-        title: computed(_ => CapitalizeFirstLetter(t("emailtasksendlog.status"))),
+        title: CapitalizeFirstLetter(t("emailtasksendlog.status")),
         align: 'start',
         sortable: false,
         key: 'status',
     },
     {
-        title: computed(_ => CapitalizeFirstLetter(t("emailtasksendlog.record_time"))),
+        title: CapitalizeFirstLetter(t("emailtasksendlog.record_time")),
         align: 'start',
         sortable: false,
         key: 'record_time',
     },
-
-];
+]);
 const itemsPerPage = ref(10);
 const serverItems = ref<Array<EmailMarketingSendLogListDisplay>>([]);
 const loading = ref(false);

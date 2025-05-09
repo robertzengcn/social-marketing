@@ -8,7 +8,7 @@
       </div>
       <!-- <v-btn class="btn" variant="flat" prepend-icon="mdi-filter-variant"><span> More</span></v-btn> -->
       <v-btn class="btn ml-3" variant="flat" prepend-icon="mdi-plus" color="#5865f2" @click="createTemplate()" >
-        {{ CapitalizeFirstLetter($t('emailmarketing.create_template')) }}
+        {{ CapitalizeFirstLetter(t('emailmarketing.create_template')) }}
       </v-btn>
     </div>
     <div>
@@ -31,8 +31,8 @@
 
   <!-- Delete Confirmation Modal -->
   <v-dialog v-model="showDeleteModal" width="auto">
-    <v-card max-width="400" prepend-icon="mdi-update" :text="$t('emailmarketing.email_template_deleted')"
-      :title="$t('emailmarketing.confirm_delete_email_template')">
+    <v-card max-width="400" prepend-icon="mdi-update" :text="t('emailmarketing.email_template_deleted')"
+      :title="t('emailmarketing.confirm_delete_email_template')">
       <template v-slot:actions>
         <v-btn class="ms-auto" text="Ok" color="secondary" @click="confirmrmItem">
         </v-btn>
@@ -102,48 +102,33 @@ const FakeAPI = {
 //     width: string;
 // };
 
-const headers = ref<Array<Header>>([]);
-let refreshInterval: ReturnType<typeof setInterval> | undefined;
-
-headers.value = [
+const headers = computed<Array<Header>>(() => [
   {
-    title: computed(_ => CapitalizeFirstLetter(t("emailmarketing.index"))),
+    title: CapitalizeFirstLetter(t("emailmarketing.index")),
     align: 'center',
     sortable: true,
     key: 'TplId',
-    
   },
   {
-    title: computed(_ => CapitalizeFirstLetter(t("emailmarketing.title"))),
+    title: CapitalizeFirstLetter(t("emailmarketing.title")),
     align: 'center',
     sortable: false,
     key: 'TplTitle',
-    
   },
   {
-    title: computed(_ => CapitalizeFirstLetter(t("common.record_time"))),
+    title: CapitalizeFirstLetter(t("common.record_time")),
     align: 'start',
     sortable: false,
     key: 'TplRecord',
-    
   },
   {
-    title: computed(_ => CapitalizeFirstLetter(t("common.actions"))),
+    title: CapitalizeFirstLetter(t("common.actions")),
     align: 'start',
     key: 'actions',
     sortable: false,
-    
   },
-];
-// Define props
-const props = defineProps({
-  isSelectedtable: {
-    type: Boolean,
-    
-    default:false,
-  }
-  
-});
+]);
+
 const itemsPerPage = ref(10);
 const serverItems = ref<Array<EmailTemplateRespdata>>([]);
 const loading = ref(false);
@@ -151,6 +136,8 @@ const showDeleteModal = ref(false);
 const deleteId = ref(0);
 const totalItems = ref(0);
 const search = ref('');
+let refreshInterval: ReturnType<typeof setInterval> | undefined;
+
 const startAutoRefresh = () => {
   refreshInterval = setInterval(function () {
     loadItems({ page: options.page, itemsPerPage: options.itemsPerPage, sortBy: "" });
@@ -271,6 +258,14 @@ watch(selected, (newValue:Array<EmailTemplateRespdata>|undefined, oldValue:Array
   console.log(`selectedtask changed from ${oldValue} to ${newValue}`);
   console.log(newValue)
   emit('change', newValue);
+});
+
+// Define props
+const props = defineProps({
+  isSelectedtable: {
+    type: Boolean,
+    default: false,
+  }
 });
 </script>
 <style scoped>

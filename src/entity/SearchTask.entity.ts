@@ -5,9 +5,14 @@ import AuditableEntity from "@/entity/Auditable.entity";
 export class SearchTaskEntity extends AuditableEntity {
     @PrimaryGeneratedColumn()
     id: number;
+
+    @Column("text", { nullable: true })
+    enginer_id: string;
     
     @Column("text", { nullable: true })
-    task_name: string;
+    error_log: string;
+    @Column("text", { nullable: true })
+    runtime_log: string;    
     
     @Column("text", { nullable: true })
     record_time: string;

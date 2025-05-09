@@ -1,33 +1,34 @@
 import { BaseModule } from "@/modules/baseModule";
-import { ExtraModulesdb } from "@/model/ExtraModulesdb";
-import { ExtraModuleEntity } from "@/entityTypes/extramoduleType";
+import { ExtraModulesModel } from "@/model/ExtraModulesdb.model";
+import { ExtraModuleEntity } from "@/entity/ExtraModule.entity";
+// import { ExtraModuleEntity } from "@/entityTypes/extramoduleType";
 
 export class ExtraModulesModule extends BaseModule {
-    private extraModulesdb: ExtraModulesdb
+    private extraModulesdb: ExtraModulesModel
     constructor() {
         super()
-        this.extraModulesdb = new ExtraModulesdb(this.dbpath)
+        this.extraModulesdb = new ExtraModulesModel(this.dbpath)
     }
-    create(extraModule: Omit<ExtraModuleEntity, 'id'>): number {
-        return this.extraModulesdb.create(extraModule)
+    async create(extraModule: Omit<ExtraModuleEntity, 'id'>): Promise<number> {
+        return await this.extraModulesdb.create(extraModule)
     }
     //get item from extra module
-    read(id: number): ExtraModuleEntity | null {
-        return this.extraModulesdb.read(id)
+    async read(id: number): Promise<ExtraModuleEntity | null> {
+        return await this.extraModulesdb.read(id)
     }
     //update extra module   
-    update(id: number, extraModule: ExtraModuleEntity) {
-        return this.extraModulesdb.update(id, extraModule)
+    async update(id: number, extraModule: ExtraModuleEntity): Promise<boolean> {
+        return await this.extraModulesdb.update(id, extraModule)
     }
     //delete extra module
-    delete(id: number): void {
-        return this.extraModulesdb.delete(id)
+    async delete(id: number): Promise<boolean> {
+        return await this.extraModulesdb.delete(id)
     }
     //get extra module by name
-    getExtraModuleByName(name: string): ExtraModuleEntity | null {
-        return this.extraModulesdb.getExtraModuleByName(name)
+    async getExtraModuleByName(name: string): Promise<ExtraModuleEntity | null> {
+        return await this.extraModulesdb.getExtraModuleByName(name)
     }
-    deletePackage(name: string): void {
-        return this.extraModulesdb.deletePackage(name)
+    async deletePackage(name: string): Promise<boolean> {
+        return await this.extraModulesdb.deletePackage(name)
     }
 }

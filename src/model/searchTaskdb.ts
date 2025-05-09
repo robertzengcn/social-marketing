@@ -14,11 +14,12 @@ export class SearchTaskdb {
   searchTaskTable = "search_task";
 
   constructor(filepath: string) {
+    console.log(filepath)
     const scraperModel = Scraperdb.getInstance(filepath);
     this.db = scraperModel.getdb();
   }
   //save search task
-  public saveSearchTask(enginerId: SearhEnginer): number | bigint {
+  public saveSearchTask(enginerId: number): number | bigint {
 
     const recordtime = getRecorddatetime();
 

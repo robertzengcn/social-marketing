@@ -15,7 +15,7 @@ import { Token } from "@/modules/token"
 // import {USERSDBPATH} from '@/config/usersetting';
 import {SearchDataParam,SearchResEntityDisplay,SearchResEntityRecord} from "@/entityTypes/scrapeType"
 // import {SEARCHEVENT} from "@/config/channellist"
-import { SearchTaskStatus } from "@/model/searchTaskdb"
+import { SearchTaskStatus } from "@/model/SearchTask.model"
 // import { SearchKeyworddb } from "@/model/searchKeyworddb";
 import { CustomError } from "@/modules/customError";
 import {USERLOGPATH,USEREMAIL} from '@/config/usersetting';
@@ -140,24 +140,24 @@ export class SearchController {
         });
     }
     //return search result
-    public listSearchresult(page:number,size:number,sortBy?:SortBy):SearchtaskEntityNum{
+    public async listSearchresult(page:number,size:number,sortBy?:SortBy):Promise<SearchtaskEntityNum>{
         // const seModel=new searhModel()
         // await seModel.init();
-        const res=this.searhModel.listSearchtask(page,size, sortBy)
+        const res=await this.searhModel.listSearchtask(page,size, sortBy)
         return res;
     }   
     //list task search result
-    public listtaskSearchResult(taskId:number,page:number,size:number):SearchResEntityRecord{
+    public async listtaskSearchResult(taskId:number,page:number,size:number):Promise<SearchResEntityRecord>{
         // const seModel=new searhModel()
-        const res=this.searhModel.listSearchResult(taskId,page,size)
+        const res=await this.searhModel.listSearchResult(taskId,page,size)
 
         const datas: Array<SearchResEntityDisplay> = []
         //const SearchKeyDb=new SearchKeyworddb(this.dbpath)
 
-        res.forEach((item) => {
+        res.forEach(async (item) => {
             console.log(item)
             console.log(item.keyword_id)
-            const keyEntity = this.searhModel.getkeywrodsEntitybyId(item.keyword_id)
+            const keyEntity = await this.searhModel.getkeywrodsEntitybyId(item.keyword_id)
             console.log(keyEntity)
             const data: SearchResEntityDisplay = {
                 id: item.id,
@@ -167,22 +167,22 @@ export class SearchController {
                 snippet: item.snippet,
                 record_time: item.record_time,
                 visible_link: item.visible_link,
-                keyword: keyEntity.keyword
+                keyword: keyEntity?.keyword??""
             }
             datas.push(data)
         })
         //return datas
 
-        const total=this.searhModel.countSearchResult(taskId)
+        const total=await this.searhModel.countSearchResult(taskId)
         const data:SearchResEntityRecord={
             total:total,
             record:datas
         }
         return data
     }
-    public getTaskErrorlog(taskId:number):string{
+    public async getTaskErrorlog(taskId:number):Promise<string>{
         // const seModel=new searhModel()
-        const log=this.searhModel.getTaskErrorLog(taskId)
+        const log=await this.searhModel.getTaskErrorLog(taskId)
         return log
     }
 

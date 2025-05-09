@@ -303,7 +303,7 @@ export function registerSocialAccountIpcHandlers(mainWindow: BrowserWindow) {
     } else {
       if (filePaths) {
         console.log(filePaths[0])
-        fs.access(filePaths[0], fs.constants.W_OK, (e) => {
+        fs.access(filePaths[0], fs.constants.W_OK, async (e) => {
           if (e) {
             if (e instanceof Error) {
               const cmsg={ status: false, msg: e.message } as CommonDialogMsg
@@ -311,7 +311,7 @@ export function registerSocialAccountIpcHandlers(mainWindow: BrowserWindow) {
             }
           } else {
             const sac=new SocialAccountController()
-            const res = sac.handleCookiesfile(filePaths[0], qdata.id)
+            const res = await sac.handleCookiesfile(filePaths[0], qdata.id)
             if (res) {
               const comMsgs: CommonDialogMsg = {
                 status: true,

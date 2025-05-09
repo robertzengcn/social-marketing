@@ -43,17 +43,18 @@
       </v-btn-toggle>
 
 
-
-
-      <div class="d-flex flex-column">
-        <v-btn color="success" class="mt-4" block type="submit" :loading="loading">
-          Submit
+      <div class="d-flex justify-space-between mt-4 mb-4">
+        <v-btn color="success" type="submit" :loading="loading" class="flex-grow-1 mr-2">
+          {{ t('common.submit') }}
         </v-btn>
 
-        <v-btn color="error" class="mt-4" block @click="$router.go(-1)">
-          Return
+        <v-btn color="error" @click="router.go(-1)" class="flex-grow-1 ml-2">
+          {{ t('common.return') }}
         </v-btn>
       </div>
+
+
+     
 
     </v-form>
     <div>
@@ -76,7 +77,7 @@
 
 import { ref, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
-import router from '@/views/router';
+import { useRouter } from 'vue-router';
 import {EmailExtractionTypes} from "@/config/emailextraction";
 import { ToArray, CapitalizeFirstLetter } from "@/views/utils/function"
 import { submitScraper,receiveSearchEmailevent } from "@/views/api/emailextraction"
@@ -119,6 +120,7 @@ const concurrent_quantity = ref(1);
 const proxyValue = ref<Array<ProxyEntity>>([]);
 const proxytableshow = ref(false);
 const searchtaskId=ref<number>(0);
+const router = useRouter();
 const initialize = () => {
   //searchplatform.value = ToArray(SearhEnginer);
   const seArr:string[]=ToArray(EmailExtractionTypes);
@@ -252,6 +254,11 @@ async function onSubmit() {
       //check url is valid
       isValidUrl(item)?validateurl.push(item):null
     })
+    // Check if there are any valid URLs after validation
+    if (validateurl.length === 0) {
+      setAlert(t('emailextraction.no_valid_urls'), "Warning", "warning");
+      return;
+    }
 
   }else if(emailtype.value?.index==1){
     extratype=emailtype.value.key;
@@ -261,6 +268,7 @@ async function onSubmit() {
   }
 
 }
+
    const scraperData:EmailscFormdata={
     extratype:extratype,
     urls:validateurl,
