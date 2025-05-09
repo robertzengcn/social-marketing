@@ -1,5 +1,5 @@
 import { ipcMain } from 'electron';
-import { EMAILEXTRACTIONAPI, EMAILEXTRACTIONMESSAGE,LISTEMAILSEARCHTASK,EMAILSEARCHTASKRESULT } from "@/config/channellist";
+import { EMAILEXTRACTIONAPI, EMAILEXTRACTIONMESSAGE,LISTEMAILSEARCHTASK,EMAILSEARCHTASKRESULT, EMAILSEARCHTASK_ERROR_LOG_DOWNLOAD } from "@/config/channellist";
 import { EmailscFormdata } from '@/entityTypes/emailextraction-type'
 import { CommonDialogMsg } from "@/entityTypes/commonType";
 import { isValidUrl } from "@/views/utils/function"
@@ -9,6 +9,8 @@ import { EmailsControldata,EmailResultDisplay,EmailsearchTaskEntityDisplay,Email
 import { EmailExtractionTypes } from '@/config/emailextraction'
 import {ItemSearchparam} from "@/entityTypes/commonType"
 import { CommonResponse } from "@/entityTypes/commonType"
+import { CommonIdrequestType } from "@/entityTypes/commonType"
+import { CommonMessage } from "@/entityTypes/commonType"
 
 export function registerEmailextractionIpcHandlers() {
     // const searchModel = new searhModel();
@@ -199,4 +201,28 @@ export function registerEmailextractionIpcHandlers() {
         return resp
     });
 
+    ipcMain.handle(EMAILSEARCHTASK_ERROR_LOG_DOWNLOAD, async (event, data) => {
+        try {
+            const qdata = JSON.parse(data) as CommonIdrequestType<number>
+            if (!("id" in qdata)) {
+                throw new Error("id not found");
+            }
+            const emailCon = new EmailextractionController();
+            const content = await emailCon.readTaskErrorlog(qdata.id)
+            const resp: CommonMessage<string> = {
+                status: true,
+                msg: "",
+                data: content
+            }
+            return resp
+        } catch (error) {
+            if (error instanceof Error) {
+                const resp: CommonMessage<string> = {
+                    status: false,
+                    msg: error.message
+                }
+                return resp
+            }
+        }
+    });
 }
