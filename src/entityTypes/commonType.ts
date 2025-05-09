@@ -66,7 +66,7 @@ export type Header = {
 };
 export type VslotHeader = {
     step: number;
-    title:string| ReturnType<typeof computed>;
+    title:string
     rules?:	any;
      valid: boolean
 }

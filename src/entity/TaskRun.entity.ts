@@ -8,6 +8,8 @@ export class TaskRunEntity extends AuditableEntity {
     
     @Column("integer")
     task_id: number;
+    @Column("text", { nullable: true })
+    taskrun_num: string;
     
     @Column("text", { nullable: true })
     log_path: string;

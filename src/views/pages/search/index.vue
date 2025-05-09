@@ -1,22 +1,21 @@
 <template>
   <v-sheet class="mx-auto" rounded>
     <v-form ref="form" @submit.prevent="onSubmit">
-      <h3>{{ $t('search.use_hint') }}</h3>
-      <v-textarea class="mt-3" v-model="keywords" :label="$t('search.input_keywords_hint')"></v-textarea>
-      <v-select v-model="enginer" :items="searchplatform" :label="$t('search.search_enginer_name') as string" required
+      <h3>{{ t('search.use_hint') }}</h3>
+      <v-textarea class="mt-3" v-model="keywords" :label="t('search.input_keywords_hint')"></v-textarea>
+      <v-select v-model="enginer" :items="searchplatform" :label="t('search.search_enginer_name')" required
         :readonly="loading" :rules="[rules.required]" class="mt-3"  
         item-title="name"
-          item-value="key"
-          ></v-select>
+        item-value="key"></v-select>
 
 
-      <v-text-field v-model="page_number" :label="$t('search.page_number')" clearable class="mt-3"></v-text-field>
+      <v-text-field v-model="page_number" :label="t('search.page_number')" clearable class="mt-3"></v-text-field>
 
-      <v-text-field v-model="concurrent_quantity" :label="$t('search.concurrent_quantity')" clearable
+      <v-text-field v-model="concurrent_quantity" :label="t('search.concurrent_quantity')" clearable
         class="mt-3"></v-text-field>
       <v-combobox v-model="proxyValue" :items="proxyValue" label="Select proxy" item-title="host" multiple return-object
         chips clearable></v-combobox>
-      <v-btn color="primary" @click="showProxytable">{{$t('search.choose_proxy')}}</v-btn>
+      <v-btn color="primary" @click="showProxytable">{{t('search.choose_proxy')}}</v-btn>
 
       <div v-if="proxytableshow" class="mt-3">
         <ProxyTableselected @change="handleSelectedChanged" />
@@ -27,17 +26,26 @@
         <v-btn :value="0" color="primary">No</v-btn>
         <v-btn :value="1" color="success">Yes</v-btn>
       </v-btn-toggle>
+      <div class="d-flex justify-space-between mt-4 mb-4">
+        <v-btn color="success" type="submit" :loading="loading" class="flex-grow-1 mr-2">
+          {{ t('common.submit') }}
+        </v-btn>
+
+        <v-btn color="error" @click="router.go(-1)" class="flex-grow-1 ml-2">
+          {{ t('common.return') }}
+        </v-btn>
+      </div>
 
 
-      <div class="d-flex flex-column">
+      <!-- <div class="d-flex flex-column">
         <v-btn color="success" class="mt-4" block type="submit" :loading="loading">
           Submit
         </v-btn>
 
-        <v-btn color="error" class="mt-4" block @click="$router.go(-1)">
+        <v-btn color="error" class="mt-4" block @click="router.go(-1)">
           Return
         </v-btn>
-      </div>
+      </div> -->
 
     </v-form>
     <div>
@@ -57,6 +65,7 @@
   </div>
 </template>
 <script setup lang="ts">
+import { useRoute, useRouter } from "vue-router";
 type SearchOption = {
   key: string;
   name: string;
@@ -64,7 +73,7 @@ type SearchOption = {
 };
 import { ref, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
-import router from '@/views/router';
+//import router from '@/views/router';
 import { SearhEnginer } from "@/config/searchSetting"
 import { ToArray, CapitalizeFirstLetter } from "@/views/utils/function"
 import { submitScraper, receiveSearchevent } from "@/views/api/search"
@@ -94,6 +103,8 @@ const page_number = ref(1);
 const concurrent_quantity = ref(1);
 const proxyValue = ref<Array<ProxyEntity>>([]);
 const proxytableshow = ref(false);
+const $route = useRoute();
+const router = useRouter();
 const initialize = () => {
   //searchplatform.value = ToArray(SearhEnginer);
   const seArr:string[]=ToArray(SearhEnginer);

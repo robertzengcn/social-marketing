@@ -108,7 +108,7 @@
           Submit
         </v-btn>
 
-        <v-btn color="error" class="mt-4" block @click="$router.go(-1)">
+        <v-btn color="error" class="mt-4" block @click="router.go(-1)">
           Return
         </v-btn>
       </div>
@@ -116,19 +116,19 @@
   </v-sheet>
 </template>
 <script setup lang="ts">
-// import router from '@/views/router';
 import { ref, onMounted, watch } from "vue";
 import {
   getSocialaccountinfo,
   saveSocialAccount,
 } from "@/views/api/socialaccount";
 import { getSocialPlatformlist } from "@/views/api/social_platform";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { SocialAccountDetailData } from "@/entityTypes/socialaccount-type";
 import ProxyTableselected from "@/views/pages/proxy/widgets/ProxySelectedTable.vue";
 import { ProxyListEntity, Proxy } from "@/entityTypes/proxyType";
 const show = ref<boolean>(false);
 const $route = useRoute();
+const router = useRouter();
 const FakeAPI = {
   async fetch(id: number): Promise<SocialAccountDetailData> {
     return await getSocialaccountinfo(id);
@@ -154,7 +154,6 @@ const alertcolor = ref("");
 const isEdit = ref(false);
 const platformitems = ref();
 const proxytableshow = ref(false);
-import router from "@/views/router";
 // const selectedProxy = ref<ProxyListEntity>();
 
 const rules = {

@@ -7,7 +7,7 @@
             </div>
 
             <v-btn class="btn ml-3" variant="flat" prepend-icon="mdi-plus" color="#5865f2" @click="createService()">
-                {{ CapitalizeFirstLetter($t('emailservice.create_service')) }}
+                {{ CapitalizeFirstLetter(t('emailservice.create_service')) }}
             </v-btn>
         </div>
 
@@ -38,11 +38,12 @@ import { ref, computed,watch } from 'vue'
 import { SearchResult } from '@/views/api/types'
 import { CapitalizeFirstLetter } from "@/views/utils/function"
 // import type { VDataTable } from 'vuetify/lib/components/index.mjs'
-import router from '@/views/router';
+import { useRouter } from 'vue-router';
 import { Header } from "@/entityTypes/commonType"
 import DeleteDialog from '@/views/components/widgets/deleteDialog.vue';
 const { t } = useI18n({ inheritLocale: true });
 const selected = ref<Array<EmailServiceListdata>>([]);
+const router = useRouter();
 const computedHeaders = computed(() => {
     if (props.isSelectedtable) {
         return headers.value.filter(value => value.key !== 'actions');
@@ -75,36 +76,37 @@ const FakeAPI = {
     }
 }
 
-const headers = ref<Array<Header>>([])
-headers.value = [
+const headers = computed<Array<Header>>(() => [
     {
-        title: computed(_ => CapitalizeFirstLetter(t("emailservice.id"))),
+        title: CapitalizeFirstLetter(t("emailservice.id")),
         align: 'start',
         sortable: false,
         key: 'id',
     },
     {
-        title: computed(_ => CapitalizeFirstLetter(t("emailservice.name"))),
+        title: CapitalizeFirstLetter(t("emailservice.name")),
         align: 'start',
         sortable: false,
         key: 'name',
     },
-
     {
-        title: computed(_ => CapitalizeFirstLetter(t("emailservice.from"))),
+        title: CapitalizeFirstLetter(t("emailservice.from")),
         align: 'start',
         sortable: false,
         key: 'from',
     },
     {
-        title: computed(_ => CapitalizeFirstLetter(t("common.created_time"))),
+        title: CapitalizeFirstLetter(t("common.created_time")),
         align: 'start',
         sortable: false,
         key: 'create_time',
     },
-    { title: computed(_ => CapitalizeFirstLetter(t("common.actions"))), key: 'actions', sortable: false },
-
-];
+    { 
+        title: CapitalizeFirstLetter(t("common.actions")), 
+        key: 'actions', 
+        sortable: false 
+    },
+]);
 const itemsPerPage = ref(10);
 const serverItems = ref<Array<EmailServiceListdata>>([]);
 const loading = ref(false);

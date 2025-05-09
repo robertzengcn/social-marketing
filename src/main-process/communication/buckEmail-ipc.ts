@@ -37,7 +37,7 @@ export function registerBuckEmailIpcHandlers() {
                 //get email address in search result
                 // const emailList:Array<EmailItem>=[]
                 const emailsearModuel = new EmailSearchTaskModule()
-                const emailList = emailsearModuel.getAllEmails(qdata.emailtaskentityId)
+                const emailList = await emailsearModuel.getAllEmails(qdata.emailtaskentityId)
                 if (emailList.length == 0) {
                     const comMsgs: CommonDialogMsg = {
                         status: false,
@@ -85,7 +85,7 @@ export function registerBuckEmailIpcHandlers() {
             qdata.size = 100;
         }
         const buckemailCon = new BuckemailController()
-        const res = buckemailCon.getBuckEmailTaskList(qdata.page, qdata.size, qdata.sortby)
+        const res = await buckemailCon.getBuckEmailTaskList(qdata.page, qdata.size, qdata.sortby)
         const resp: CommonResponse<BuckEmailListType> = {
             status: true,
             msg: "",
@@ -113,7 +113,7 @@ export function registerBuckEmailIpcHandlers() {
             qdata.size = 100;
         }
         const buckemailCon = new BuckemailController()
-        const res=buckemailCon.getBuckEmailSendLog(qdata.TaskId, qdata.page, qdata.size, qdata.where,qdata.sortby)
+        const res=await buckemailCon.getBuckEmailSendLog(qdata.TaskId, qdata.page, qdata.size, qdata.where,qdata.sortby)
         const resp: CommonResponse<EmailMarketingSendLogListDisplay> = {
             status: true,
             msg: "",

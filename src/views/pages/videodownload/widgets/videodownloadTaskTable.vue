@@ -18,20 +18,20 @@
         :items-length="totalItems" :items="serverItems" :loading="loading" item-value="name"
         @update:options="loadItems">
         <template v-slot:item.status="{ item }">
-            <v-chip color="grey" v-if="item.status == '0'">{{ CapitalizeFirstLetter(t('common.not_start')) }}</v-chip>
-            <v-chip color="blue" v-if="item.status == '1'">{{ CapitalizeFirstLetter(t('common.processing')) }}</v-chip>
-            <v-chip color="green" v-if="item.status == '2'">{{ CapitalizeFirstLetter(t('common.complete')) }}</v-chip>
-            <v-chip color="red" v-if="item.status == '3'">{{ CapitalizeFirstLetter(t('common.error')) }}</v-chip>
+            <v-chip color="grey" v-if="item.status === TaskStatus.Notstart">{{ CapitalizeFirstLetter(t('common.not_start')) }}</v-chip>
+            <v-chip color="blue" v-if="item.status === TaskStatus.Processing">{{ CapitalizeFirstLetter(t('common.processing')) }}</v-chip>
+            <v-chip color="green" v-if="item.status === TaskStatus.Complete">{{ CapitalizeFirstLetter(t('common.complete')) }}</v-chip>
+            <v-chip color="red" v-if="item.status === TaskStatus.Error">{{ CapitalizeFirstLetter(t('common.error')) }}</v-chip>
         </template>
         <template v-slot:[`item.actions`]="{ item }">
 
             <v-icon size="small" class="me-2" @click="openTasklist(item)">
                 mdi-login
             </v-icon>
-            <v-icon size="small" class="me-2" @click="taskRetry(item)" v-if="item.status != '1'">
+            <v-icon size="small" class="me-2" @click="taskRetry(item)" v-if="item.status !== TaskStatus.Processing">
                 mdi-play
             </v-icon>
-            <v-icon size="small" class="me-2" @click="showLog(item)" v-if="item.status == '3'">
+            <v-icon size="small" class="me-2" @click="showLog(item)" v-if="item.status === TaskStatus.Error">
                 mdi-file-document
             </v-icon>
 
@@ -48,7 +48,8 @@ import { useI18n } from "vue-i18n";
 import { ref, computed, reactive, onMounted, onUnmounted } from 'vue'
 import { SearchResult } from '@/views/api/types'
 import { getVideoTasklist, retryVideoTask, queryVideoTaskErrorlog, receiveVideoTaskDownloadRetryMessage } from "@/views/api/video";
-import { VideoDownloadTaskEntity } from "@/entityTypes/videoType";
+import { VideoDownloadTaskEntityType } from "@/entityTypes/videoType";
+import { TaskStatus } from "@/entityTypes/commonType";
 import router from '@/views/router';
 const { t } = useI18n({ inheritLocale: true });
 import { CapitalizeFirstLetter } from "@/views/utils/function"
@@ -67,7 +68,7 @@ type Fetchparam = {
 }
 
 const FakeAPI = {
-    async fetch(fetchparam: Fetchparam): Promise<SearchResult<VideoDownloadTaskEntity>> {
+    async fetch(fetchparam: Fetchparam): Promise<SearchResult<VideoDownloadTaskEntityType>> {
         // console.log(fetchparam.search)
         const fpage = (fetchparam.page - 1) * fetchparam.itemsPerPage
         const res = await getVideoTasklist({ page: fpage, size: fetchparam.itemsPerPage, sortby: fetchparam.sortBy, search: fetchparam.search })
@@ -124,7 +125,7 @@ const headers: Array<any> = [
 
 ];
 const itemsPerPage = ref(10);
-const serverItems = ref<Array<VideoDownloadTaskEntity>>([]);
+const serverItems = ref<Array<VideoDownloadTaskEntityType>>([]);
 const loading = ref(false);
 const totalItems = ref(0);
 const search = ref('');
@@ -167,19 +168,21 @@ function loadItems({ page, itemsPerPage, sortBy }) {
 // }
 //confirm delete account
 const createDownload = () => {
+    console.log("createDownload")
     router.push({
-        path: '/video/download'
+        name:"Videodownload"
     });
 }
 
-const openTasklist = (item: VideoDownloadTaskEntity) => {
+const openTasklist = (item: VideoDownloadTaskEntityType) => {
+    console.log(item)
     if (item.id) {
         router.push({
             name: "VideoList", params: { taskid: item.id }
         });
     }
 };
-const taskRetry = async (item: VideoDownloadTaskEntity) => {
+const taskRetry = async (item: VideoDownloadTaskEntityType) => {
     if (item.id) {
         await retryVideoTask(item.id)
         loadItemfun()

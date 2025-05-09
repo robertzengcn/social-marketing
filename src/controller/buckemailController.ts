@@ -17,7 +17,9 @@ import { TaskStatus } from "@/entityTypes/commonType"
 import { ProcessMessage } from "@/entityTypes/processMessage-type"
 import { EmailSendResult } from "@/entityTypes/emailmarketingType"
 import { EmailMarketingSendLogModule } from "@/modules/emailMarketingSendLogModule";
-import { EmailMarketingSendLogEntity,SendStatus } from "@/model/emailMarketingSendLogdb"
+// import { EmailMarketingSendLogEntity,SendStatus } from "@/model/emailMarketingSendLogdb"
+import { EmailMarketingSendLogEntity } from "@/entity/EmailMarketingSendLog.entity"
+import {SendStatus} from "@/model/emailMarketingSendLog.model"
 import { SortBy } from "@/entityTypes/commonType"
 import { BuckEmailListType,EmailMarketingSendLogListDisplay } from "@/entityTypes/buckemailType"
 import {getStatusName} from "@/modules/lib/function"
@@ -120,26 +122,40 @@ export class BuckemailController {
             const childdata = JSON.parse(message) as ProcessMessage<EmailSendResult>
             switch (childdata.action) {
                 case 'EmailSendSuccess': {
-                    const emailMarketLog: EmailMarketingSendLogEntity = {
-                        task_id: taskId,
-                        status: SendStatus.Success,
-                        receiver: message.data.receiver,
-                        title: message.data.title,
-                        content: message.data.content,
-                    }
+                    // const emailMarketLog: EmailMarketingSendLogEntity = {
+                    //     task_id: taskId,
+                    //     status: SendStatus.Success,
+                    //     receiver: message.data.receiver,
+                    //     title: message.data.title,
+                    //     content: message.data.content,
+                    // }
+                    const emailMarketLog = new EmailMarketingSendLogEntity()
+                    emailMarketLog.task_id = taskId
+                    emailMarketLog.status = SendStatus.Success
+                    emailMarketLog.receiver = message.data.receiver
+                    emailMarketLog.title = message.data.title
+                    emailMarketLog.content = message.data.content
+                    emailMarketLog.log = message.data.info?message.data.info:""
                     //update send log
                     this.emailMarketingSendlogModule.createItem(emailMarketLog)
                 }
                     break;
                 case 'EmailSendFailure': {
-                    const emailMarketLog: EmailMarketingSendLogEntity = {
-                        task_id: taskId,
-                        status: SendStatus.Failure,
-                        receiver: message.data.receiver,
-                        title: message.data.title,
-                        content: message.data.content,
-                        log: message.data.info
-                    }
+                    // const emailMarketLog: EmailMarketingSendLogEntity = {
+                    //     task_id: taskId,
+                    //     status: SendStatus.Failure,
+                    //     receiver: message.data.receiver,
+                    //     title: message.data.title,
+                    //     content: message.data.content,
+                    //     log: message.data.info
+                    // }
+                    const emailMarketLog = new EmailMarketingSendLogEntity()
+                    emailMarketLog.task_id = taskId
+                    emailMarketLog.status = SendStatus.Failure
+                    emailMarketLog.receiver = message.data.receiver
+                    emailMarketLog.title = message.data.title
+                    emailMarketLog.content = message.data.content
+                    emailMarketLog.log = message.data.info?message.data.info:""
                     //update send log
                     this.emailMarketingSendlogModule.createItem(emailMarketLog)
                 }
@@ -225,15 +241,15 @@ export class BuckemailController {
         return data
     }
     //get buck email task list
-    public getBuckEmailTaskList(page: number, size: number, sort?: SortBy): {records:Array<BuckEmailListType>,total:number} {
-        const Taskentity=this.buckEmailTaskMoudule.getTaskList(page, size, sort)
+    public async getBuckEmailTaskList(page: number, size: number, sort?: SortBy): Promise<{records:Array<BuckEmailListType>,total:number}> {
+        const Taskentity=await this.buckEmailTaskMoudule.getTaskList(page, size, sort)
         const data: Array<BuckEmailListType> = []
-        Taskentity.records.forEach((element) => {
+        Taskentity.records.forEach(async (element) => {
             let status = "unkonw"
             if(element.status){
                 status=getStatusName(element.status)
             }
-            const btype=this.buckEmailTaskMoudule.getBuckEmailTypeName(element.type)
+            const btype=await this.buckEmailTaskMoudule.getBuckEmailTypeName(element.type)
             let id=0
             if(element.id){
                 id = element.id
@@ -256,13 +272,13 @@ export class BuckemailController {
         
     }
     //get buck email send log by task id
-    public getBuckEmailSendLog(taskid: number, page: number, size: number, where?: string, sort?: SortBy): {records:Array<EmailMarketingSendLogListDisplay>,total:number} {
-        const res = this.emailMarketingSendlogModule.getSendlogList(taskid, page, size, where, sort)
+    public async getBuckEmailSendLog(taskid: number, page: number, size: number, where?: string, sort?: SortBy): Promise<{records:Array<EmailMarketingSendLogListDisplay>,total:number}> {
+        const res = await this.emailMarketingSendlogModule.getSendlogList(taskid, page, size, where, sort)
         const data: Array<EmailMarketingSendLogListDisplay> = []
-        res.records.forEach((element) => {
+        res.records.forEach(async (element) => {
             let status = "unkonw"
             if(element.status){
-                status=this.emailMarketingSendlogModule.getStatusName(element.status)
+                status=await this.emailMarketingSendlogModule.getStatusName(element.status)
             }
             let elementID=0
             if(element.id){

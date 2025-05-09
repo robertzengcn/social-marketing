@@ -277,7 +277,7 @@ export const constantRoutes: RouteRecordRaw[] = [
   },
   {
     path: '/video',
-    name: 'Video Download',
+    name: 'Video',
     meta: {
       visible: true,
       title: 'Video',

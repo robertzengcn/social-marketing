@@ -7,11 +7,16 @@ import { HttpsProxyAgent } from 'https-proxy-agent';
 import { ProxyParseItem, ProxyCheckres, ProxylistResp } from "@/entityTypes/proxyType"
 // import * as url from 'url';
 // import { socksDispatcher } from "fetch-socks";
-import { ProxyCheckdb, proxyCheckStatus } from "@/model/proxyCheckdb"
+import { ProxyCheckModel, proxyCheckStatus } from "@/model/ProxyCheck.model";
 import { Token } from "@/modules/token"
 import { USERSDBPATH } from '@/config/usersetting';
 import { ProxyApi } from "@/api/proxyApi"
 import { SocksProxyAgent } from 'socks-proxy-agent';
+// import { Request, Response } from "express";
+// import { ProxyModel } from "@/model/Proxy.model";
+// import { getRecorddatetime } from "@/modules/lib/function";
+// import { ProxyEntity } from "@/entity/Proxy.entity";
+import { ProxyCheckEntity } from "@/entity/ProxyCheck.entity";
 export class ProxyController {
     //import proxy from csv file
     // public async importProxyfile(filename: string) {
@@ -26,7 +31,7 @@ export class ProxyController {
 
     //         }
     //     });
-    private proxyCheckdb: ProxyCheckdb
+    private proxyCheckdb: ProxyCheckModel
     private proxyapi: ProxyApi
     constructor() {
         const tokenService = new Token()
@@ -35,7 +40,7 @@ export class ProxyController {
             throw new Error("user path not exist")
         }
 
-        this.proxyCheckdb = new ProxyCheckdb(dbpath)
+        this.proxyCheckdb = new ProxyCheckModel(dbpath)
         this.proxyapi = new ProxyApi()
     }
     //     //return proxy list
@@ -182,7 +187,7 @@ export class ProxyController {
     }
     public async getProxylist(page: number, size: number, search: string): Promise<ProxylistResp> {
         const checkDb = this.proxyCheckdb
-        const res = await this.proxyapi.getProxylist(page, size, search).then(function (res) {
+        const res = await this.proxyapi.getProxylist(page, size, search).then(async function (res) {
             if (res.status) {
 
                 if (res.data) {
@@ -197,7 +202,7 @@ export class ProxyController {
                         // })
                         for (let i = 0; i < res.data.records.length; i++) {
                             if (res.data.records[i].id != undefined) {
-                                const checkInfo = checkDb.getProxyCheck(res.data.records[i].id!)
+                                const checkInfo = await checkDb.getProxyCheck(res.data.records[i].id!)
                                 if (checkInfo) {
                                     res.data.records[i].status = checkInfo.status
                                     res.data.records[i].checktime = checkInfo.check_time
@@ -214,7 +219,7 @@ export class ProxyController {
     //remove failure proxy
     public async removeFailureProxy(callback?: () => void): Promise<void> {
         //get all failure proxy
-        const failureProxy = this.proxyCheckdb.getProxyByStatus(proxyCheckStatus.Failure);
+        const failureProxy = await this.proxyCheckdb.getProxyByStatus(proxyCheckStatus.Failure);
         if (failureProxy) {
             console.log(failureProxy)
             //    const proxycheckres=this.proxyCheckdb

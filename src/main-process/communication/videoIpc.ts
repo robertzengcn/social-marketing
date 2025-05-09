@@ -3,7 +3,7 @@ import { VIDEODOWNLOAD, VIDEODOWNLOAD_MESSAGE, VIDEODOWNLOAD_TASK_LIST, VIDEODOW
 import { videoController } from '@/controller/videoController';
 import { CommonDialogMsg, CommonResponse, CommonIdrequest, CommonMessage, CommonIdrequestType } from "@/entityTypes/commonType";
 import { CustomError } from '@/modules/customError';
-import { VideoDownloadTaskEntity, VideoDownloadQuery, VideoDownloadListDisplay, DownloadVideoControlparam, VideoCaptionGenerateParamWithIds, VideoCompotionEntity, VideoInformationTransParam } from "@/entityTypes/videoType";
+import { VideoDownloadTaskEntityType, VideoDownloadQuery, VideoDownloadListDisplay, DownloadVideoControlparam, VideoCaptionGenerateParamWithIds, VideoCompotionEntity, VideoInformationTransParam } from "@/entityTypes/videoType";
 
 export function registerVideoIpcHandlers() {
     console.log("video download register")
@@ -132,7 +132,7 @@ export function registerVideoIpcHandlers() {
         //return video download list
         const videoCtrl = new videoController()
         const res = await videoCtrl.videoDownloadtasklist(qdata.page, qdata.size)
-        const resp: CommonResponse<VideoDownloadTaskEntity> = {
+        const resp: CommonResponse<VideoDownloadTaskEntityType> = {
             status: true,
             msg: "video.download_list",
             data: res

@@ -46,11 +46,14 @@
         mdi-delete
       </v-icon>
       <v-icon size="small" class="me-2" @click="showitemLog(item)" v-if="item.status.toString() == '3'">
-                mdi-file-document
-            </v-icon>
-            <v-icon size="small" @click="openDetail(item)">
-              mdi-information
-            </v-icon>
+        mdi-file-document
+      </v-icon>
+      <v-icon size="small" class="me-2" @click="downloadErrorLog(item)" v-if="item.status.toString() == '3'">
+        mdi-download
+      </v-icon>
+      <v-icon size="small" @click="openDetail(item)">
+        mdi-information
+      </v-icon>
     </template>
     <template v-slot:[`item.url`]="{ item }">
 
@@ -154,7 +157,7 @@ import { ref, computed, onMounted, reactive, onUnmounted } from 'vue'
 import { SearchResult } from '@/views/api/types'
 import { useRoute } from "vue-router";
 import { getVideolistbyTaskId, retryVideoDownloadId, receiveVideoItemDownloadMessage, openFileexplor, deleteVideoDownItem, generateCaption,
-  receiveVideoCaptionGenerateMessage,queryVideoItemdownloadlog,translateInformation } from "@/views/api/video";
+  receiveVideoCaptionGenerateMessage,queryVideoItemdownloadlog,translateInformation, downloadErrorLog as downloadErrorLogApi } from "@/views/api/video";
 import { VideoDownloadListDisplay,VideoCaptionGenerateParamWithIds,VideoInformationTransParam } from "@/entityTypes/videoType";
 import router from '@/views/router';
 import { CapitalizeFirstLetter } from "@/views/utils/function"
@@ -458,6 +461,15 @@ const translateVideoInfo=async()=>{
   }
   await translateInformation(data)
   showTranslateInfroDialog.value=false;
+}
+
+const downloadErrorLog = async (item: VideoDownloadListDisplay) => {
+  try {
+    await downloadErrorLogApi(item.id)
+  } catch (error) {
+    console.error('Failed to download error log:', error)
+    setAlert(error instanceof Error ? error.message : 'Failed to download error log', t('common.error'), "error")
+  }
 }
 
 onMounted(() => {

@@ -18,5 +18,11 @@ export class EmailSearchResultEntity extends AuditableEntity {
     domain: string;
     
     @Column("text", { nullable: true })
+    url: string;
+    
+    @Column("text", { nullable: true })
+    title: string;
+    
+    @Column("text", { nullable: true })
     record_time: string;
 }

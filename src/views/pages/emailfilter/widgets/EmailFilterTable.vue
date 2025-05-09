@@ -8,7 +8,7 @@
             </div>
             
             <v-btn class="btn ml-3" variant="flat" prepend-icon="mdi-plus" color="#5865f2" @click="createFilter()">
-                {{CapitalizeFirstLetter($t('emailfilter.create_filter'))}}
+                {{CapitalizeFirstLetter(t('emailfilter.create_filter'))}}
              </v-btn> 
         </div>
    
@@ -72,25 +72,25 @@ const selected=ref<Array<EmailFilterdata>>([]);
 const headers=ref<Array<Header>>([])
 headers.value = [
     {
-        title: computed(_ => CapitalizeFirstLetter(t("emailfilter.id"))),
+        title: CapitalizeFirstLetter(t("emailfilter.id")),
         align: 'start',
         sortable: false,
         key: 'id',
     },
     {
-        title: computed(_ => CapitalizeFirstLetter(t("emailfilter.name"))),
+        title: CapitalizeFirstLetter(t("emailfilter.name")),
         align: 'start',
         sortable: false,
         key: 'name',
     },
    
     {
-        title: computed(_ => CapitalizeFirstLetter(t("common.created_time"))),
+        title: CapitalizeFirstLetter(t("common.created_time")),
         align: 'start',
         sortable: false,
         key: 'created_time',
     },
-    { title: computed(_ => CapitalizeFirstLetter(t("common.actions"))), key: 'actions', sortable: false },
+    { title: CapitalizeFirstLetter(t("common.actions")), key: 'actions', sortable: false },
 
 ];
 const itemsPerPage = ref(10);

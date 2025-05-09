@@ -1,7 +1,7 @@
 import debug from 'debug';
 // const resolve = require('path').resolve;
-import * as path from "path";
-import * as fs from "fs";
+// import * as path from "path";
+// import * as fs from "fs";
 // import { Scraperdb } from "../model/scraperdb"
 // const { spawn } = require('child_process');
 import { Subject, Observer } from './subject';
@@ -9,10 +9,11 @@ import {SMconfig} from "@/entityTypes/scrapeType"
 import { Page } from 'puppeteer';
 import { Linkdata } from '@/modules/remotesource';
 import {get_http_headers,get_ip_data} from "@/modules/metadata"
-import {TaskResultdb,TaskResultEntity} from "@/model/taskResultdb"
+// import {TaskResultModel} from "@/model/TaskResult.model"
+// import { TaskResultEntity } from "@/entity/TaskResult.entity";
 // import appRoot from 'app-root-path';
 //import { Token } from "@/modules/token"
-import {USERSDBPATH} from '@/config/usersetting';
+// import {USERSDBPATH} from '@/config/usersetting';
 
 
 // export class ScrapeOptionsPage extends Page{
