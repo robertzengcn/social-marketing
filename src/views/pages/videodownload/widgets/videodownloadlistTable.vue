@@ -324,7 +324,7 @@ const showDeleteModal = ref(false);
 let refreshInterval: ReturnType<typeof setInterval> | undefined;
 const options = reactive({
   page: 1, // Initial page
-  itemsPerPage: 10, // Items per page
+  itemsPerPage: 100, // Items per page
 });
 const showTranslateInfroDialog=ref(false);
 const logdiaContent = ref("");
@@ -333,7 +333,7 @@ const logdiastatus = ref(false);
 // const showDeleteModal = ref(false);
 // const deleteId=ref(0);
 // const alertext=ref("");
-const props = defineProps({
+defineProps({
   isSelectedtable: {
     type: Boolean,
 

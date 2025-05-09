@@ -2,7 +2,7 @@
 export { };
 import { windowInvoke, windowSend, windowReceive } from '@/views/utils/apirequest'
 import { OPENDIRECTORY, VIDEODOWNLOAD_MESSAGE, VIDEODOWNLOAD, VIDEODOWNLOAD_TASK_LIST,VIDEODOWNLOAD_LIST,VIDEODOWNLOADTASK_RETRY,VIDEODOWNLOADITEM_RETRY,VIDEODOWNLOAD_ITEM_MESSAGE,VIDEODOWNLOADITEM_EXPLORER,VIDEODOWNLOADITEM_DELETE,VIDEODOWN_TASK_ERROR_LOG_QUERY,VIDEO_CAPTION_GENERATE,VIDEO_CAPTION_GENERATE_MESSAGE,
-VIDEOTASKDOWNLOAD_RETRY_MESSAGE,VIDEODOWNLOAD_LOG_QUERY,VIDEODOWNLOAD_DETAIL_QUERY,VIDEODOWNLOAD_OPEN_CAPTIONFILE,VIDEO_INFORMATION_TRANSLATE, VIDEO_PUBLISH, VIDEO_PUBLISH_MESSAGE   
+VIDEOTASKDOWNLOAD_RETRY_MESSAGE,VIDEODOWNLOAD_LOG_QUERY,VIDEODOWNLOAD_DETAIL_QUERY,VIDEODOWNLOAD_OPEN_CAPTIONFILE,VIDEO_INFORMATION_TRANSLATE, VIDEO_PUBLISH, SYSTEM_MESSAGE   
 } from "@/config/channellist";
 import { DownloadVideoControlparam, VideoDownloadTaskEntityType,VideoDownloadQuery,VideoDownloadListDisplay,VideoCaptionGenerateParamWithIds,VideoCompotionEntity,VideoInformationTransParam } from "@/entityTypes/videoType"
 import { CommonDialogMsg,ItemSearchparam,CommonIdrequestType,CommonIdrequest } from "@/entityTypes/commonType";
@@ -99,5 +99,5 @@ export async function publishVideo(request: VideoPublishRequest) {
 }
 
 export function receiveVideoPublishMessage(cb: (data: CommonDialogMsg) => void) {
-    windowReceive(VIDEO_PUBLISH_MESSAGE, cb)
+    windowReceive(SYSTEM_MESSAGE, cb)
 }

@@ -25,9 +25,9 @@ export interface VideoPublishRequest {
     videoId: number;
     platform: PublishPlatform;
     category: string;
-    title?: string;
-    description?: string;
-    tags?: string[];
-    privacy?: 'public' | 'private' | 'unlisted';
-    scheduleDate?: Date;
+    //title?: string;
+    //description?: string;
+    //tags?: string[];
+    //privacy?: 'public' | 'private' | 'unlisted';
+    //scheduleDate?: Date;
 }
