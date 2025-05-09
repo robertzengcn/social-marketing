@@ -79,4 +79,5 @@ export const OPENLOGINPAGE='open:page'
 export const NATIVATECOMMAND='navigate:command'
 export const VIDEO_PUBLISH='video:publish'
 export const EMAILSEARCHTASK_ERROR_LOG_DOWNLOAD='email:search:task:error:log:download'
+export const SYSTEM_MESSAGE='system:message'
 
