@@ -31,7 +31,7 @@ export class EmailextractionController {
         const { port1, port2 } = new MessageChannelMain()
         const tokenService=new Token()
         
-        const child = utilityProcess.fork(childPath, [],{stdio:"pipe",execArgv:["DEBUG='puppeteer-cluster:*'"],env:{
+        const child = utilityProcess.fork(childPath, [],{stdio:"pipe",execArgv:["--inspect"],env:{
             ...process.env,
             NODE_OPTIONS: "",
         }} )
@@ -59,13 +59,16 @@ export class EmailextractionController {
            // child.kill()
         })
         child.stderr?.on('data', (data) => {
-            const ingoreStr=["Debugger attached","Waiting for the debugger to disconnect","Most NODE_OPTIONs are not supported in packaged apps"]
+            const ingoreStr=["Debugger attached","Waiting for the debugger to disconnect",
+                "Most NODE_OPTIONs are not supported in packaged apps",
+               
+            ]
             if(!ingoreStr.some((value)=>data.includes(value))){
                     
             // seModel.saveTaskerrorlog(taskId,data)
             console.log(`Received error chunk ${data}`)
             WriteLog(errorLogfile,data)
-            this.emailSeachTaskModule.updateTaskStatus(taskId,EmailsearchTaskStatus.Error)
+            //this.emailSeachTaskModule.updateTaskStatus(taskId,EmailsearchTaskStatus.Error)
             //child.kill()
             }
             
