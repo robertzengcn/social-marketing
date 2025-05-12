@@ -10310,10 +10310,10 @@ urlpattern-polyfill@10.0.0:
   resolved "https://registry.yarnpkg.com/urlpattern-polyfill/-/urlpattern-polyfill-10.0.0.tgz#f0a03a97bfb03cdf33553e5e79a2aadd22cac8ec"
   integrity sha512-H/A06tKD7sS1O1X2SshBVeA5FLycRpjqiBeqGKmBwBDBy28EnRjORxTNe269KSSr5un5qyWi1iL61wLxpd+ZOg==
 
-user-agents@^1.0.1354:
-  version "1.1.462"
-  resolved "https://registry.yarnpkg.com/user-agents/-/user-agents-1.1.462.tgz#0700603d9315fa8e34efebe1767d56912e3ec9bc"
-  integrity sha512-busWxYjOKVgyZULDsdmV/KvhG/gDkckjDY8bA6vA9CeZctQahVCpWqcGJD+olQ3/+C/JaugSwkr53AJlvr6xHA==
+user-agents@^1.1.536:
+  version "1.1.536"
+  resolved "https://registry.yarnpkg.com/user-agents/-/user-agents-1.1.536.tgz#86521efc19730bec044187568a95fe82dbfe26ad"
+  integrity sha512-N2a8i2Dp8OI4a7xFaE0720cqiicgYl4JQLmbcF7ThUMtj3hhQMzdzPi1zadPpp3e4jZBFOLEyASzplAvcIuQcA==
   dependencies:
     lodash.clonedeep "^4.5.0"
 

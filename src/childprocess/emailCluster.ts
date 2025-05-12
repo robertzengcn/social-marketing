@@ -12,7 +12,7 @@ const { combine, timestamp, printf } = format;
 const MAX_ALLOWED_BROWSERS = 10;
 const MAX_CRAWL_PAGE_LENGTH = 10;
 import map from "lodash/map";
-import { UserAgent } from "user-agents";
+import UserAgent  from "user-agents";
 import clone from "lodash/clone"
 import times from "lodash/times"
 import { crawlSite } from '@/childprocess/emailScraper'
@@ -49,9 +49,9 @@ export class EmailCluster {
       // remote_password:endcofig.PASSWORD,
       // the user agent to scrape with
       user_agent:
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36",
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
       // if random_user_agent is set to True, a random user agent is chosen
-      random_user_agent: false,
+      random_user_agent: true,
       // whether to select manual settings in visible mode
       set_manual_settings: false,
       // log ip address data
@@ -208,9 +208,28 @@ export class EmailCluster {
     }
 
     const perBrowserOptions = map(this.proxiesArr.slice(0, this.numClusters), (proxy) => {
-      const userAgent = this.config.random_user_agent
-        ? new UserAgent({ deviceCategory: "desktop" }).toString()
-        : this.config.user_agent;
+      let userAgent:string;
+      if (this.config.random_user_agent) {
+        // Randomly choose between Chrome and Firefox user agents
+        const isChrome = Math.random() > 0.5;
+        if (isChrome) {
+          // Modern Chrome user agent
+          userAgent = new UserAgent({ 
+            deviceCategory: "desktop",
+            browser: "chrome",
+            platform: "win32"
+          }).toString();
+        } else {
+          // Modern Firefox user agent
+          userAgent = new UserAgent({ 
+            deviceCategory: "desktop",
+            browser: "firefox",
+            platform: "win32"
+          }).toString();
+        }
+      } else {
+        userAgent = this.config.user_agent;
+      }
       const args = this.config.chrome_flags.concat([`--user-agent=${userAgent}`]);
       return {
         headless: this.config.headless,

@@ -121,7 +121,7 @@
     "source-map": "^0.7.4",
     "sqlite3": "^5.1.6",
     "typeorm": "^0.3.20",
-    "user-agents": "^1.0.1354",
+    "user-agents": "^1.1.536",
     "utf-8-validate": "^6.0.4",
     "uuid": "^9.0.1",
     "vite-plugin-commonjs": "^0.10.1",
