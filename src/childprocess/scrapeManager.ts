@@ -11,7 +11,7 @@ import debug from 'debug';
 import clone from "lodash/clone"
 import times from "lodash/times"
 import map from "lodash/map";
-import UserAgent from "user-agents";
+import { UserAgent } from "user-agents";
 // import { addExtra } from "puppeteer-extra";
 // import puppeteer from 'puppeteer-extra';
 import {CustomConcurrency} from "@/modules/concurrency-implementation"
@@ -277,20 +277,20 @@ if(param.keywords.length<this.numClusters){
 //https://github.com/puppeteer/puppeteer/issues/2234
     // Give the per browser options
     const perBrowserOptions = map(this.proxiesArr.slice(0, this.numClusters), (proxy) => {
-      let userAgent:string;
+      let userAgent: string;
       if (this.config.random_user_agent) {
         // Randomly choose between Chrome and Firefox user agents
         const isChrome = Math.random() > 0.5;
         if (isChrome) {
           // Modern Chrome user agent
-          userAgent = new UserAgent({ 
+          userAgent = new UserAgent({
             deviceCategory: "desktop",
             browser: "chrome",
             platform: "win32"
           }).toString();
         } else {
           // Modern Firefox user agent
-          userAgent = new UserAgent({ 
+          userAgent = new UserAgent({
             deviceCategory: "desktop",
             browser: "firefox",
             platform: "win32"

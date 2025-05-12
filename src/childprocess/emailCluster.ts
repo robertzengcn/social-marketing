@@ -12,7 +12,7 @@ const { combine, timestamp, printf } = format;
 const MAX_ALLOWED_BROWSERS = 10;
 const MAX_CRAWL_PAGE_LENGTH = 10;
 import map from "lodash/map";
-import UserAgent  from "user-agents";
+import { UserAgent } from "user-agents";
 import clone from "lodash/clone"
 import times from "lodash/times"
 import { crawlSite } from '@/childprocess/emailScraper'
@@ -208,20 +208,20 @@ export class EmailCluster {
     }
 
     const perBrowserOptions = map(this.proxiesArr.slice(0, this.numClusters), (proxy) => {
-      let userAgent:string;
+      let userAgent: string;
       if (this.config.random_user_agent) {
         // Randomly choose between Chrome and Firefox user agents
         const isChrome = Math.random() > 0.5;
         if (isChrome) {
           // Modern Chrome user agent
-          userAgent = new UserAgent({ 
+          userAgent = new UserAgent({
             deviceCategory: "desktop",
             browser: "chrome",
             platform: "win32"
           }).toString();
         } else {
           // Modern Firefox user agent
-          userAgent = new UserAgent({ 
+          userAgent = new UserAgent({
             deviceCategory: "desktop",
             browser: "firefox",
             platform: "win32"
