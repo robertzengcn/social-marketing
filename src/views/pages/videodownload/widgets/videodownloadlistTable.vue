@@ -509,7 +509,11 @@ const translateVideoInfo=async()=>{
 }
 const downloadErrorLog = async (item: VideoDownloadListDisplay) => {
   try {
-    await downloadErrorLogApi(item.id)
+    if(item.id){
+      await downloadErrorLogApi(item.id)
+    }else{
+      setAlert(t('video.select_video_error'), t('common.error'), "error");
+    }
   } catch (error) {
     console.error('Failed to download error log:', error)
     setAlert(error instanceof Error ? error.message : 'Failed to download error log', t('common.error'), "error")

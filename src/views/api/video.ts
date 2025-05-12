@@ -101,3 +101,8 @@ export async function publishVideo(request: VideoPublishRequest) {
 export function receiveVideoPublishMessage(cb: (data: CommonDialogMsg) => void) {
     windowReceive(SYSTEM_MESSAGE, cb)
 }
+
+export async function downloadErrorLog(id: number) {
+    const querydata: CommonIdrequestType<number> = { id: id, type: "errorlog" }
+    return await windowInvoke(VIDEODOWNLOAD_LOG_QUERY, querydata)
+}
