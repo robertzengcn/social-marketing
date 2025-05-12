@@ -489,7 +489,7 @@ export class videoController {
         return { records, num: count }
     }
     //publish video
-    public async publishVideo(videoId: number, platform: PublishPlatform,category:string) {
+    public async publishVideo(videoId: number, platform: PublishPlatform, category: string, accountId: number) {
         //get video platform config by platform name
         const videoPlatformConfig=VideoPublishPlatformConfig.find((value)=>value.name==platform)
         if(!videoPlatformConfig){
@@ -524,9 +524,8 @@ export class videoController {
             title: videoDescription.title,
             description: videoDescription.description,
             tags: tags,
-            category:category,
-           // category: videoEntity.category,
-           // privacy: videoEntity.privacy,
+            category: category,
+            accountId: accountId
         }
         const result = await videoPublishService.publishVideo(videoEntity, platform, options);
         return result;

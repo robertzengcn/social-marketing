@@ -183,6 +183,12 @@
             ></v-select>
           </v-col>
         </v-row>
+        <v-row v-if="selectedPlatform">
+          <v-col cols="12" md="12">
+            <v-label>{{ CapitalizeFirstLetter(t('video.select_account')) }}:</v-label>
+            <AccountSelectedTable :accountSource="selectedPlatform.value" @change="handleAccountChange" />
+          </v-col>
+        </v-row>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
@@ -215,6 +221,8 @@ import {LanguageItem} from '@/entityTypes/commonType'
 import { PublishPlatform, VideoPublishRequest } from "@/entityTypes/videoPublishType";
 import { publishVideo as publishVideoApi } from "@/views/api/video";
 import { VideoPublishPlatformConfig } from "@/config/videosetting";
+import AccountSelectedTable from "@/views/pages/socialaccount/widgets/AccountSelectedTable.vue";
+import { SocialAccountListData } from '@/entityTypes/socialaccount-type';
 const selected = ref<Array<VideoDownloadListDisplay>>([]);
 const headers = ref<Array<Header>>([])
 const $route = useRoute();
@@ -522,6 +530,7 @@ const downloadErrorLog = async (item: VideoDownloadListDisplay) => {
 const showPublishDialog = ref(false);
 const selectedPlatform = ref<{ name: string; value: PublishPlatform } | null>(null);
 const selectedCategory = ref<string>('');
+const selectedAccount = ref<SocialAccountListData[]>([]);
 
 const platformOptions = [
   { name: 'YouTube', value: PublishPlatform.YOUTUBE },
@@ -532,6 +541,10 @@ const platformOptions = [
 const getCategoriesForPlatform = (platform: PublishPlatform) => {
   const platformConfig = VideoPublishPlatformConfig.find(p => p.name === platform);
   return platformConfig?.videoCategories || [];
+};
+
+const handleAccountChange = (accounts: SocialAccountListData[]) => {
+  selectedAccount.value = accounts;
 };
 
 const publishVideo = async () => {
@@ -545,6 +558,11 @@ const publishVideo = async () => {
     return;
   }
 
+  if (selectedAccount.value.length === 0) {
+    setAlert(t('video.select_account_error'), t('common.error'), "error");
+    return;
+  }
+
   const videoId = selected.value[0].id;
   if (!videoId) {
     setAlert(t('Invalid video selection'), t('common.error'), "error");
@@ -554,7 +572,8 @@ const publishVideo = async () => {
   const request: VideoPublishRequest = {
     videoId: videoId,
     platform: selectedPlatform.value.value,
-    category: selectedCategory.value
+    category: selectedCategory.value,
+    accountId: selectedAccount.value[0].id
   };
 
   try {

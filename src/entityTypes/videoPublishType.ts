@@ -25,9 +25,10 @@ export interface VideoPublishRequest {
     videoId: number;
     platform: PublishPlatform;
     category: string;
-    //title?: string;
-    //description?: string;
-    //tags?: string[];
-    //privacy?: 'public' | 'private' | 'unlisted';
-    //scheduleDate?: Date;
+    accountId: number;
+    title?: string;
+    description?: string;
+    tags?: string[];
+    privacy?: 'public' | 'private' | 'unlisted';
+    scheduleDate?: Date;
 }

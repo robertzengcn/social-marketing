@@ -430,18 +430,18 @@ export function registerVideoIpcHandlers() {
             if (!("videoId" in qdata)) {
                 throw new Error("videoId not found");
             }
-                if (!("platform" in qdata)) {
-                    throw new Error("platform not found");
-                }
-                if (!("category" in qdata)) {
-                    throw new Error("category not found");
-                }
-            // if (!("options" in qdata)) {
-            //     throw new Error("options not found");
-            // }
+            if (!("platform" in qdata)) {
+                throw new Error("platform not found");
+            }
+            if (!("category" in qdata)) {
+                throw new Error("category not found");
+            }
+            if (!("accountId" in qdata)) {
+                throw new Error("accountId not found");
+            }
 
             const videoCtrl = new videoController();
-            await videoCtrl.publishVideo(qdata.videoId, qdata.platform,qdata.category);
+            await videoCtrl.publishVideo(qdata.videoId, qdata.platform, qdata.category, qdata.accountId);
             
             const successMsg: CommonDialogMsg = {
                 status: true,
