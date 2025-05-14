@@ -16,7 +16,7 @@ import { AccountCookiesModule } from "@/modules/accountCookiesModule"
 import { SocialAccountApi } from "@/api/socialAccountApi"
 import { ProcessMessage } from "@/entityTypes/processMessage-type"
 // import {VideodownloadMsg} from "@/entityTypes/videoType";
-import { ListData, TaskStatus } from "@/entityTypes/commonType"
+import { LanguageCode, ListData, TaskStatus } from "@/entityTypes/commonType"
 import { VideoDescriptionEntity } from "@/entity/VideoDescription.entity"
 import { VideoDownloadStatus, VideodownloadTaskMsg, VideoDownloadListDisplay, VideodownloadMsg, DownloadVideoControlparam, DownloadType, CookiesType, VideoCaptionItem, VideoCaptionMsg, VideoCaptionEntity, VideoCaptionStatus, VideoCaptionGenerateParamWithIds, VideoInformationTransParam } from "@/entityTypes/videoType"
 import { VideoDownloadTaskDetailEntity } from "@/entity/VideoDownloadTaskDetail.entity"
@@ -24,7 +24,7 @@ import { VideoDescriptionModule } from "@/modules/videoDescriptionModule"
 import { Video } from '@/modules/interface/Video';
 import { VideoDownloadTaskDetailModule } from '@/modules/VideoDownloadTaskDetailModule';
 import { VideoDownloadTaskAccountsModule } from "@/modules/VideoDownloadTaskAccountsModule"
-import { VideoDownloadTaskAccountEntity } from "@/entityTypes/videoType"
+//import { VideoDownloadTaskAccountEntity } from "@/entityTypes/videoType"
 import { VideoDownloadTaskUrlModule } from "@/modules/VideoDownloadTaskUrlModule"
 import { VideoDownloadTaskProxyModule } from "@/modules/VideoDownloadTaskProxyModule"
 import { Proxy } from "@/entityTypes/proxyType"
@@ -49,13 +49,16 @@ import { VideoDownloadTaskKeywordModule } from "@/modules/VideoDownloadTaskKeywo
 import { VideoDownloadEntity } from "@/entity/VideoDownload.entity";
 import { VideoDownloadTaskAccountsEntity } from "@/entity/VideoDownloadTaskAccounts.entity";
 import { VideoDownloadTaskEntity } from "@/entity/VideoDownloadTask.entity"
-
+import {VideoPublishService} from "@/service/VideoPublishService"
 // import { VideoDownloadTagEntity } from "@/entity/VideoDownloadTag.entity"
 // import { param } from "jquery";
 //import {} from "@/entityTypes/proxyType"
 //import { VideoDownloadModel } from "@/model/VideoDownload.model";
 import {VideoDownloadEntityType} from "@/entityTypes/videoType"
 import { VideoDownloadTaskUrlsEntity } from "@/entity/VideoDownloadTaskUrls.entity";
+import { PublishOptions } from "@/strategy/VideoPublishStrategy";
+import { PublishPlatform } from "@/entityTypes/videoPublishType";
+import {VideoPublishPlatformConfig} from "@/config/videosetting"
 export class videoController {
     private videoDownloadModule: VideoDownloadModule
     private videoDownloadTaskModule: VideoDownloadTaskModule
@@ -485,7 +488,48 @@ export class videoController {
         }))
         return { records, num: count }
     }
+    //publish video
+    public async publishVideo(videoId: number, platform: PublishPlatform, category: string, accountId: number) {
+        //get video platform config by platform name
+        const videoPlatformConfig=VideoPublishPlatformConfig.find((value)=>value.name==platform)
+        if(!videoPlatformConfig){
+            throw new Error("video platform config not found")
+        }
 
+        //get video 
+        const videoPublishService = new VideoPublishService();
+        //get video entity by video id
+        const videoEntity = await this.videoDownloadModule.getVideoDownloaditem(videoId)
+        if(!videoEntity){
+            throw new Error("video entity not found")
+        }
+        //get video description
+        const videoDescription = await this.videoDescriptionModule.getVideoDescription(videoId, videoPlatformConfig.language)
+        if(!videoDescription){
+            throw new Error("video description not found")
+        }
+        //get video tags
+        const videoTags = await this.videoDownloadTagModule.getVideoTag(videoId,videoPlatformConfig.language)
+        if(!videoTags){
+            throw new Error("video tags not found")
+        }
+        const tags = videoTags.map((value) => value.tag)
+        //get video category
+        // const videoCategory = await this.videoDownloadCategoryModule.getVideoCategory(videoId,videoEntity.language)
+        // if(!videoCategory){
+        //     throw new Error("video category not found")
+        // }
+       // const category = videoCategory.category
+        const options: PublishOptions = {
+            title: videoDescription.title,
+            description: videoDescription.description,
+            tags: tags,
+            category: category,
+            accountId: accountId
+        }
+        const result = await videoPublishService.publishVideo(videoEntity, platform, options);
+        return result;
+    }
     //get video download list by task id
     public async videoDownloadlist(taskId: number, page: number, size: number): Promise<ListData<VideoDownloadListDisplay>> {
 
@@ -508,7 +552,7 @@ export class videoController {
             }
             if (element.id && element.status == VideoDownloadStatus.Finish) {
 
-                const videoDescription = await this.videoDescriptionModule.getVideoDescription(element.id, element.language)
+                const videoDescription = await this.videoDescriptionModule.getVideoDescription(element.id, element.language as LanguageCode)
                 if (videoDescription) {
                     vdld.title = videoDescription.title
                     vdld.description = videoDescription.description
@@ -841,7 +885,7 @@ export class videoController {
             throw new Error("video download item not found")
         }
         //get video description
-        const videoDescription = await this.videoDescriptionModule.getVideoDescription(id, videoDownEntity.language)
+        const videoDescription = await this.videoDescriptionModule.getVideoDescription(id, videoDownEntity.language as LanguageCode)
         //get video caption
         const videoCaption = await this.videoCaptionModule.getCaptionByVid(id)
         const captionDisplay: Array<VideoCaptionDisplay> = []
@@ -859,7 +903,7 @@ export class videoController {
 
             })
         }
-        const transinfolist = await this.videoDescriptionModule.getVideoDescriptionOtherLanguage(id, videoDownEntity.language)
+        const transinfolist = await this.videoDescriptionModule.getVideoDescriptionOtherLanguage(id, videoDownEntity.language as LanguageCode)
         const videoDownEntityType:VideoDownloadEntityType={
             id:videoDownEntity.id,
             url:videoDownEntity.url ?? "",
@@ -907,7 +951,7 @@ export class videoController {
             for (const value of data.ids) {
                 const videoItem = await this.videoDownloadModule.getVideoDownloaditem(value)
                 if (videoItem) {
-                    const vds = await this.videoDescriptionModule.getVideoDescription(value, videoItem.language)
+                    const vds = await this.videoDescriptionModule.getVideoDescription(value, videoItem.language as LanguageCode)
                     console.log("vds is following")
                     console.log(vds)
                     //get item tags by video id and language

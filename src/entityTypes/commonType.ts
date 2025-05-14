@@ -1,4 +1,31 @@
-import { computed} from 'vue'
+//import { computed} from 'vue'
+
+export enum LanguageName {
+  ENGLISH = 'English',
+  SPANISH = 'Spanish',
+  FRENCH = 'French',
+  GERMAN = 'German',
+  CHINESE = 'Chinese',
+  JAPANESE = 'Japanese',
+  KOREAN = 'Korean',
+  RUSSIAN = 'Russian',
+  PORTUGUESE = 'Portuguese',
+  ITALIAN = 'Italian'
+}
+
+export enum LanguageCode {
+  EN = 'en',
+  ES = 'es',
+  FR = 'fr',
+  DE = 'de',
+  ZH = 'zh',
+  JA = 'ja',
+  KO = 'ko',
+  RU = 'ru',
+  PT = 'pt',
+  IT = 'it'
+}
+
 export type PageSearch={
     page:number,
     size:number
@@ -81,8 +108,8 @@ export enum TaskStatus {
 }
 export type LanguageItem={
     id:number,
-    name:string
-    code:string
+    name:LanguageName
+    code:LanguageCode
 }
 export enum InputTypeEnum {
     INPUT = 'input',

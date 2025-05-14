@@ -75,6 +75,26 @@ export default ({ mode }) => {
                             : 'node_modules/protocol-registry/src/macos/templates/script.ejs', 
                         dest: '.vite/build/templates/' 
                     },
+                    { 
+                        src: 'node_modules/protocol-registry/src/macos/defaultAppExist.sh', 
+                        dest: '.vite/build/',
+                        condition: process.platform === 'darwin'
+                    },
+                    { 
+                        src: 'node_modules/protocol-registry/src/macos/index.js', 
+                        dest: '.vite/build/',
+                        condition: process.platform === 'darwin'
+                    },
+                    { 
+                        src: 'node_modules/protocol-registry/src/macos/plistMutator.js', 
+                        dest: '.vite/build/',
+                        condition: process.platform === 'darwin'
+                    },
+                    { 
+                        src: 'node_modules/protocol-registry/src/macos/templates', 
+                        dest: '.vite/build/',
+                        condition: process.platform === 'darwin'
+                    },
                 ]
             }),
                 

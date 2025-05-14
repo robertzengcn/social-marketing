@@ -1,9 +1,10 @@
 import { ipcMain } from 'electron';
-import { VIDEODOWNLOAD, VIDEODOWNLOAD_MESSAGE, VIDEODOWNLOAD_TASK_LIST, VIDEODOWNLOAD_LIST, VIDEODOWNLOADTASK_RETRY, VIDEODOWNLOADITEM_RETRY, VIDEODOWNLOAD_ITEM_MESSAGE, VIDEODOWNLOADITEM_EXPLORER, VIDEODOWNLOADITEM_DELETE, VIDEODOWN_TASK_ERROR_LOG_QUERY, VIDEO_CAPTION_GENERATE, VIDEOTASKDOWNLOAD_RETRY_MESSAGE, VIDEODOWNLOAD_LOG_QUERY, SYSTEM_MESSAGE, VIDEODOWNLOAD_DETAIL_QUERY, VIDEODOWNLOAD_OPEN_CAPTIONFILE, VIDEO_VOICE_TRANSLATE, VIDEO_INFORMATION_TRANSLATE } from '@/config/channellist'
+import { VIDEODOWNLOAD, VIDEODOWNLOAD_MESSAGE, VIDEODOWNLOAD_TASK_LIST, VIDEODOWNLOAD_LIST, VIDEODOWNLOADTASK_RETRY, VIDEODOWNLOADITEM_RETRY, VIDEODOWNLOAD_ITEM_MESSAGE, VIDEODOWNLOADITEM_EXPLORER, VIDEODOWNLOADITEM_DELETE, VIDEODOWN_TASK_ERROR_LOG_QUERY, VIDEO_CAPTION_GENERATE, VIDEOTASKDOWNLOAD_RETRY_MESSAGE, VIDEODOWNLOAD_LOG_QUERY, VIDEODOWNLOAD_DETAIL_QUERY, VIDEODOWNLOAD_OPEN_CAPTIONFILE, VIDEO_VOICE_TRANSLATE, VIDEO_INFORMATION_TRANSLATE, VIDEO_PUBLISH, SYSTEM_MESSAGE } from '@/config/channellist'
 import { videoController } from '@/controller/videoController';
 import { CommonDialogMsg, CommonResponse, CommonIdrequest, CommonMessage, CommonIdrequestType } from "@/entityTypes/commonType";
 import { CustomError } from '@/modules/customError';
 import { VideoDownloadTaskEntityType, VideoDownloadQuery, VideoDownloadListDisplay, DownloadVideoControlparam, VideoCaptionGenerateParamWithIds, VideoCompotionEntity, VideoInformationTransParam } from "@/entityTypes/videoType";
+import { VideoPublishRequest } from '@/entityTypes/videoPublishType'
 
 export function registerVideoIpcHandlers() {
     console.log("video download register")
@@ -422,4 +423,46 @@ export function registerVideoIpcHandlers() {
        
 
     })
+    //publish video
+    ipcMain.on(VIDEO_PUBLISH, async (event, data) => {
+        try {
+            const qdata = JSON.parse(data) as VideoPublishRequest;
+            if (!("videoId" in qdata)) {
+                throw new Error("videoId not found");
+            }
+            if (!("platform" in qdata)) {
+                throw new Error("platform not found");
+            }
+            if (!("category" in qdata)) {
+                throw new Error("category not found");
+            }
+            if (!("accountId" in qdata)) {
+                throw new Error("accountId not found");
+            }
+
+            const videoCtrl = new videoController();
+            await videoCtrl.publishVideo(qdata.videoId, qdata.platform, qdata.category, qdata.accountId);
+            
+            const successMsg: CommonDialogMsg = {
+                status: true,
+                code: 200,
+                data: {
+                    title: "video.publish_success",
+                    content: "video.publish_success_message"
+                }
+            };
+            event.sender.send(SYSTEM_MESSAGE, successMsg);
+        } catch (error) {
+            console.error("Video publish error:", error);
+            const errorMsg: CommonDialogMsg = {
+                status: false,
+                code: error instanceof CustomError ? error.code : 20240521105843,
+                data: {
+                    title: "video.publish_failed",
+                    content: error instanceof Error ? error.message : "Unknown error occurred"
+                }
+            };
+            event.sender.send(SYSTEM_MESSAGE, errorMsg);
+        }
+    });
 }

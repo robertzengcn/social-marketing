@@ -1,20 +1,9 @@
 import { Entity, Column, ManyToOne, JoinColumn } from "typeorm"
 import AuditableEntity from "@/entity/Auditable.entity"
 import { VideoDownloadEntity } from "@/entity/VideoDownload.entity"
+import {PublishPlatform,PublishStatus} from "@/entityTypes/videoPublishType"
 
-export enum PublishPlatform {
-    YOUTUBE = "youtube",
-    TIKTOK = "tiktok",
-    INSTAGRAM = "instagram",
-    FACEBOOK = "facebook",
-    TWITTER = "twitter"
-}
 
-export enum PublishStatus {
-    PENDING = 0,
-    PUBLISHED = 1,
-    FAILED = 2
-}
 
 @Entity("video_publish_record")
 export class VideoPublishRecordEntity extends AuditableEntity {
