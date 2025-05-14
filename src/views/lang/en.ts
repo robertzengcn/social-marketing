@@ -248,7 +248,7 @@ export default {
         input_urls_hint:"input urls, per one per line",
         page_length:"the page length that you want to extract",
         choose_email_extraction_type:"choose email extraction type",
-        input_urls_empty:"input urls empty",
+        input_urls_empty:"Please enter at least one validate URL, the url should start with http:// or https://",
         choose_search_task:"choose search task",
         id:"id",
         type:"type",

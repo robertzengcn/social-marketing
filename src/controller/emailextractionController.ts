@@ -5,7 +5,7 @@ import { Token } from "@/modules/token"
 import * as path from 'path';
 import * as fs from 'fs';
 import {USERLOGPATH,USEREMAIL} from '@/config/usersetting';
-import {WriteLog,getApplogspath,getRandomValues} from "@/modules/lib/function"
+import {WriteLog,getApplogspath,getRandomValues, readLogFile} from "@/modules/lib/function"
 import { v4 as uuidv4 } from 'uuid';
 import {EmailsearchTaskStatus} from '@/model/emailsearchTaskdb'
 import {ProcessMessage} from "@/entityTypes/processMessage-type"
@@ -31,9 +31,9 @@ export class EmailextractionController {
         const { port1, port2 } = new MessageChannelMain()
         const tokenService=new Token()
         
-        const child = utilityProcess.fork(childPath, [],{stdio:"pipe",execArgv:["DEBUG='puppeteer-cluster:*'"],env:{
+        const child = utilityProcess.fork(childPath, [],{stdio:"pipe",execArgv:["--inspect"],env:{
             ...process.env,
-            NODE_OPTIONS: ""  
+            NODE_OPTIONS: "",
         }} )
         // console.log(path.join(__dirname, 'utilityCode.js'))
         let logpath=tokenService.getValue(USERLOGPATH)
@@ -59,13 +59,16 @@ export class EmailextractionController {
            // child.kill()
         })
         child.stderr?.on('data', (data) => {
-            const ingoreStr=["Debugger attached","Waiting for the debugger to disconnect","Most NODE_OPTIONs are not supported in packaged apps"]
+            const ingoreStr=["Debugger attached","Waiting for the debugger to disconnect",
+                "Most NODE_OPTIONs are not supported in packaged apps",
+               
+            ]
             if(!ingoreStr.some((value)=>data.includes(value))){
                     
             // seModel.saveTaskerrorlog(taskId,data)
             console.log(`Received error chunk ${data}`)
             WriteLog(errorLogfile,data)
-            this.emailSeachTaskModule.updateTaskStatus(taskId,EmailsearchTaskStatus.Error)
+            //this.emailSeachTaskModule.updateTaskStatus(taskId,EmailsearchTaskStatus.Error)
             //child.kill()
             }
             
@@ -97,7 +100,9 @@ export class EmailextractionController {
     public async listEmailSearchtasks(page:number,size:number,sortby?:SortBy): Promise<{records:EmailsearchTaskEntityDisplay[],total:number}> {
         const res = await this.emailSeachTaskModule.listSearchtask(page, size, sortby)
        const displayRes:EmailsearchTaskEntityDisplay[]=[]
-        res.records.forEach(async (value)=>{
+        // res.records.forEach(async (value)=>{
+        for(let i=0;i<res.records.length;i++){
+            const value=res.records[i]
             if(value.id){
 
             const taskStatus=this.emailSeachTaskModule.taskstatusConvert(value.status)
@@ -112,7 +117,7 @@ export class EmailextractionController {
             }
             displayRes.push(displayValue)
             }
-        })
+        }
 
         return {records:displayRes,total:res.total}
     }
@@ -124,6 +129,26 @@ export class EmailextractionController {
     public async EmailtaskresultCount(taskId:number):Promise<number>{
         const res=await this.emailSeachTaskModule.getTaskResultCount(taskId)
         return res
+    }
+
+    public async readTaskErrorlog(taskId: number): Promise<string> {
+        const task = await this.emailSeachTaskModule.getTaskDetail(taskId)
+        if (!task) {
+            throw new Error("task info not found")
+        }
+        let content = ""
+        if (task.error_log) {
+            //check file exist
+            if (fs.existsSync(task.error_log)) {
+                content = await readLogFile(task.error_log)
+            } else {
+                throw new Error("task error file log not found")
+            }
+        } else {
+            throw new Error("task error file log not found")
+        }
+        console.log(content)
+        return content
     }
   
     

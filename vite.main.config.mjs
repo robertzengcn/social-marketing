@@ -108,7 +108,8 @@ export default ({ mode }) => {
                 external: [
                     'sqlite3',  // Mark sqlite3 as external
                     'better-sqlite3',
-                    'bindings'
+                    'bindings',
+                    'typeorm'
                 ]
             },
             sourcemap: true,

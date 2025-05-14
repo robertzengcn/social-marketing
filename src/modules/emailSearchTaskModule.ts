@@ -174,5 +174,9 @@ export class EmailSearchTaskModule extends BaseModule{
         }
         return emails
     }
+    //get task detail by task id
+    public async getTaskDetail(taskId: number): Promise<EmailsearchTaskEntity | undefined> {
+        return await this.emailsearchTaskdb.getTaskById(taskId);
+    }
 
 }
