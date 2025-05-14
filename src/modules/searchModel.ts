@@ -45,7 +45,7 @@ export class searhModel extends BaseModule {
         if (!enginId) {
             throw new Error("enginerId empty")
         }
-        const taskId = await this.taskdbModel.saveSearchTask(enginId)
+        const taskId = await this.taskdbModel.saveSearchTask(enginId,data.num_pages,data.concurrency,data.notShowBrowser)
         //const searshdb = new SearchKeyworddb(this.dbpath)
         for (const keyword of data.keywords) {
             await this.serKeywordModel.saveSearchKeyword(keyword, Number(taskId))

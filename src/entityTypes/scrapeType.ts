@@ -1,6 +1,7 @@
 import { Page } from 'puppeteer';
 import winston from "winston"
 import {ProxyServer} from "@/entityTypes/proxyType"
+import {ProxyEntity} from '@/entityTypes/proxyType'
 
 export type SMconfig = {
   logger: winston.Logger;
@@ -140,6 +141,10 @@ export type SMstruct = {
 export type SearchDataParam = {
   keywords: Array<string>,
   engine: string,
+  num_pages?: number,
+  concurrency?: number,
+  notShowBrowser?: boolean,
+  proxys?: Array<ProxyEntity>,
 }
 export interface clusterData {
   page: Page

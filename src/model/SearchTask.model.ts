@@ -25,11 +25,14 @@ export class SearchTaskModel extends BaseDb {
    * @param enginerId The search engine ID
    * @returns The ID of the created task
    */
-  async saveSearchTask(enginerId: number): Promise<number> {
+  async saveSearchTask(enginerId: number,num_pages?:number,concurrency?:number,notShowBrowser?:boolean): Promise<number> {
     const taskEntity = new SearchTaskEntity();
     taskEntity.enginer_id = enginerId.toString();
     taskEntity.record_time = getRecorddatetime();
     taskEntity.status = SearchTaskStatus.Processing;
+    taskEntity.num_pages = num_pages?num_pages:1;
+    taskEntity.concurrency = concurrency?concurrency:1;
+    taskEntity.notShowBrowser = notShowBrowser ? 1 : 0;
     
     const savedTask = await this.repository.save(taskEntity);
     return savedTask.id;
