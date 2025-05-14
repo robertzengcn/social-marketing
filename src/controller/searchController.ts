@@ -33,36 +33,7 @@ export class SearchController {
     public async searchData(data: Usersearchdata) {
         //search data
 
-        // const SeachEnginArr = ToArray(SearhEnginer)
-
-        // const iterator = SeachEnginArr.values();
-        // console.log(iterator)
-        // console.log("search enginer is"+data.searchEnginer)
-        // //check data.searchEngin exist in iterator
-        // let correct = false
-        // for (const key of iterator) {
-        //     console.log("key is "+key)
-        //     //console.log("value is"+iterator[key])
-        //     if (data.searchEnginer == key) {
-        //         correct = true
-        //         break
-        //     }
-        // }
-        // if (!correct) {
-        //     console.log("searchEnginer not exist")
-        //     throw new Error("searchEnginer not exist")
-        //     // return {
-        //     //     status: false,
-        //     //     msg: "searchEnginer not exist",
-        //     //     data: null
-        //     // }
-        // }
-        //console.log(data)
-        // const seModel=new searhModel()
-        // const enginName=this.searhModel.convertNumtoSE(data.searchEnginer)
-        // if(!enginName){
-        //     throw new CustomError("enginer name error",20240809160454)
-        // }
+       
         const dp:SearchDataParam={
             engine:data.searchEnginer,
             keywords:data.keywords
@@ -139,6 +110,8 @@ export class SearchController {
             }
         });
     }
+    //run search function
+    
     //return search result
     public async listSearchresult(page:number,size:number,sortBy?:SortBy):Promise<SearchtaskEntityNum>{
         // const seModel=new searhModel()

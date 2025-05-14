@@ -11,7 +11,8 @@ import debug from 'debug';
 import clone from "lodash/clone"
 import times from "lodash/times"
 import map from "lodash/map";
-import { UserAgent } from "user-agents";
+//import UserAgent from "user-agents";
+import randomUseragent from "random-useragent";
 // import { addExtra } from "puppeteer-extra";
 // import puppeteer from 'puppeteer-extra';
 import {CustomConcurrency} from "@/modules/concurrency-implementation"
@@ -280,27 +281,38 @@ if(param.keywords.length<this.numClusters){
       let userAgent: string;
       if (this.config.random_user_agent) {
         // Randomly choose between Chrome and Firefox user agents
-        const isChrome = Math.random() > 0.5;
-        if (isChrome) {
-          // Modern Chrome user agent
-          userAgent = new UserAgent({
-            deviceCategory: "desktop",
-            browser: "chrome",
-            platform: "win32"
-          }).toString();
-        } else {
-          // Modern Firefox user agent
-          userAgent = new UserAgent({
-            deviceCategory: "desktop",
-            browser: "firefox",
-            platform: "win32"
-          }).toString();
-        }
+        // const isChrome = Math.random() > 0.5;
+        // console.log(isChrome)
+        // if (isChrome) {
+        //   // Modern Chrome user agent
+        //   const Agent = new UserAgent({
+        //     deviceCategory: "desktop",
+        //     //browser: "chrome",
+        //     platform: "win32"
+        //   });
+        //   userAgent = Agent.toString();
+        // } else {
+        //   // Modern Firefox user agent
+        //   const Agent = new UserAgent({
+        //     deviceCategory: "desktop",
+        //     browser: "firefox",
+        //     platform: "win32"
+        //   });
+        //   userAgent = Agent.toString();
+        // }
+          //         const Agent = new UserAgent({
+          //   deviceCategory: "desktop",
+          //   //browser: "chrome",
+          //   platform: "win32"
+          // });
+          // userAgent = Agent.toString();
+          // console.log(userAgent)
+          userAgent = randomUseragent.getRandom();
       } else {
         userAgent = this.config.user_agent;
       }
       const args = this.config.chrome_flags.concat([`--user-agent=${userAgent}`]);
-
+      console.log(args)
       // if (proxy&&proxy.server) {
       //   // set proxy place
       //   //console.log("proxy is" + proxy.server)

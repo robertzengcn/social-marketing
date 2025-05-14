@@ -12,7 +12,7 @@ const { combine, timestamp, printf } = format;
 const MAX_ALLOWED_BROWSERS = 10;
 const MAX_CRAWL_PAGE_LENGTH = 10;
 import map from "lodash/map";
-import { UserAgent } from "user-agents";
+import randomUseragent from "random-useragent";
 import clone from "lodash/clone"
 import times from "lodash/times"
 import { crawlSite } from '@/childprocess/emailScraper'
@@ -211,22 +211,28 @@ export class EmailCluster {
       let userAgent: string;
       if (this.config.random_user_agent) {
         // Randomly choose between Chrome and Firefox user agents
-        const isChrome = Math.random() > 0.5;
-        if (isChrome) {
-          // Modern Chrome user agent
-          userAgent = new UserAgent({
-            deviceCategory: "desktop",
-            browser: "chrome",
-            platform: "win32"
-          }).toString();
-        } else {
-          // Modern Firefox user agent
-          userAgent = new UserAgent({
-            deviceCategory: "desktop",
-            browser: "firefox",
-            platform: "win32"
-          }).toString();
-        }
+        // const isChrome = Math.random() > 0.5;
+        // if (isChrome) {
+        //   // Modern Chrome user agent
+        //   userAgent = new UserAgent({
+        //     deviceCategory: "desktop",
+        //     browser: "chrome",
+        //     platform: "win32"
+        //   }).toString();
+        // } else {
+        //   // Modern Firefox user agent
+        //   userAgent = new UserAgent({
+        //     deviceCategory: "desktop",
+        //     browser: "firefox",
+        //     platform: "win32"
+        //   }).toString();
+        // }
+        // const Agent = new UserAgent({
+        //   deviceCategory: "desktop",
+        //   //browser: "chrome",
+        //   platform: "win32"
+        // });
+        userAgent = randomUseragent.getRandom();
       } else {
         userAgent = this.config.user_agent;
       }
