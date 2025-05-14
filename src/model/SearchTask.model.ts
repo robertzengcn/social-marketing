@@ -142,10 +142,10 @@ export class SearchTaskModel extends BaseDb {
    * @param taskId The task ID
    * @returns The task entity
    */
-  async getTaskEntity(taskId: number): Promise<SearchtaskdbEntity | null> {
+  async getTaskEntity(taskId: number): Promise<SearchTaskEntity | null> {
     return this.repository.findOne({
       where: { id: taskId }
-    }) as unknown as Promise<SearchtaskdbEntity | null>;
+    }) 
   }
 
   /**

@@ -43,76 +43,79 @@ export class SearchController {
             proxys:data.proxys
         }
         // console.log(dp)
-        const taskId=await this.searhModel.saveSearchtask(dp)
+        // const taskId=await this.searhModel.saveSearchtask(dp)
+
+        const taskId=await this.createTask(dp)
+        await this.runTask(taskId)
         // const jsonData=JSON.stringify(data);
         //console.log(jsonData)
-       const childPath = path.join(__dirname, 'taskCode.js')
-        if (!fs.existsSync(childPath)) {
-            throw new Error("child js path not exist for the path " + childPath);
-        }
-        const { port1, port2 } = new MessageChannelMain()
-        const tokenService=new Token()
+    //    const childPath = path.join(__dirname, 'taskCode.js')
+    //     if (!fs.existsSync(childPath)) {
+    //         throw new Error("child js path not exist for the path " + childPath);
+    //     }
+    //     const { port1, port2 } = new MessageChannelMain()
+    //     const tokenService=new Token()
         
-        const child = utilityProcess.fork(childPath, [],{stdio:"pipe",execArgv:["puppeteer-cluster:*"],env:{
-            ...process.env,
-            NODE_OPTIONS: ""  
-        }} )
-        // console.log(path.join(__dirname, 'utilityCode.js'))
-        let logpath=tokenService.getValue(USERLOGPATH)
-        if(!logpath){
-            const useremail=tokenService.getValue(USEREMAIL)
-            //create log path
-            logpath=getApplogspath(useremail)
-        }
-        // console.log(logpath)
-        const uuid=uuidv4({random: getRandomValues(new Uint8Array(16))})
-        const errorLogfile=path.join(logpath,'search_'+taskId.toString()+'_'+uuid+'.error.log')
-        const runLogfile=path.join(logpath,'search_'+taskId.toString()+'_'+uuid+'.runtime.log')
-       // console.log(errorLogfile)
-        // console.log(data)
-        // child.postMessage({ message: 'hello' }, [port1])
-        child.on("spawn", () => {
-            console.log("child process satart, pid is"+child.pid)
-            child.postMessage(JSON.stringify({action:"searchscraper",data:data}),[port1])
-            this.searhModel.updateTaskLog(taskId,runLogfile,errorLogfile)
-        })
+    //     const child = utilityProcess.fork(childPath, [],{stdio:"pipe",execArgv:["puppeteer-cluster:*"],env:{
+    //         ...process.env,
+    //         NODE_OPTIONS: ""  
+    //     }} )
+    //     // console.log(path.join(__dirname, 'utilityCode.js'))
+    //     let logpath=tokenService.getValue(USERLOGPATH)
+    //     if(!logpath){
+    //         const useremail=tokenService.getValue(USEREMAIL)
+    //         //create log path
+    //         logpath=getApplogspath(useremail)
+    //     }
+    //     // console.log(logpath)
+    //     const uuid=uuidv4({random: getRandomValues(new Uint8Array(16))})
+    //     const errorLogfile=path.join(logpath,'search_'+taskId.toString()+'_'+uuid+'.error.log')
+    //     const runLogfile=path.join(logpath,'search_'+taskId.toString()+'_'+uuid+'.runtime.log')
+    //    // console.log(errorLogfile)
+    //     // console.log(data)
+    //     // child.postMessage({ message: 'hello' }, [port1])
+    //     child.on("spawn", () => {
+    //         console.log("child process satart, pid is"+child.pid)
+    //         child.postMessage(JSON.stringify({action:"searchscraper",data:data}),[port1])
+    //         this.searhModel.updateTaskLog(taskId,runLogfile,errorLogfile)
+    //     })
         
-        child.stdout?.on('data', (data) => {
-            console.log(`Received data chunk ${data}`)
-            WriteLog(runLogfile,data)
-           // child.kill()
-        })
-        child.stderr?.on('data', (data) => {
-            const ingoreStr=["Debugger attached","Waiting for the debugger to disconnect","Most NODE_OPTIONs are not supported in packaged apps"]
-            if(!ingoreStr.some((value)=>data.includes(value))){
+    //     child.stdout?.on('data', (data) => {
+    //         console.log(`Received data chunk ${data}`)
+    //         WriteLog(runLogfile,data)
+    //        // child.kill()
+    //     })
+    //     child.stderr?.on('data', (data) => {
+    //         const ingoreStr=["Debugger attached","Waiting for the debugger to disconnect","Most NODE_OPTIONs are not supported in packaged apps"]
+    //         if(!ingoreStr.some((value)=>data.includes(value))){
                     
-            // seModel.saveTaskerrorlog(taskId,data)
-            console.log(`Received error chunk ${data}`)
-            WriteLog(errorLogfile,data)
-            this.searhModel.updateTaskStatus(taskId,SearchTaskStatus.Error)
-            //child.kill()
-            }
+    //         // seModel.saveTaskerrorlog(taskId,data)
+    //         console.log(`Received error chunk ${data}`)
+    //         WriteLog(errorLogfile,data)
+    //         this.searhModel.updateTaskStatus(taskId,SearchTaskStatus.Error)
+    //         //child.kill()
+    //         }
             
-        })
-        child.on("exit", (code) => {
-            if (code !== 0) {
-                console.error(`Child process exited with code ${code}`);
+    //     })
+    //     child.on("exit", (code) => {
+    //         if (code !== 0) {
+    //             console.error(`Child process exited with code ${code}`);
                 
-            } else {
-                console.log('Child process exited successfully');
-            }
-        })
-        child.on('message', (message) => {
-            console.log("get message from child")
-            console.log('Message from child:', JSON.parse(message));
-            const childdata=JSON.parse(message)
-            if(childdata.action=="saveres"){
-                //save result
-                this.searhModel.saveSearchResult(childdata.data,taskId)
-                this.searhModel.updateTaskStatus(taskId,SearchTaskStatus.Complete)
-                child.kill()
-            }
-        });
+    //         } else {
+    //             console.log('Child process exited successfully');
+    //         }
+    //     })
+    //     child.on('message', (message) => {
+    //         console.log("get message from child")
+    //         console.log('Message from child:', JSON.parse(message));
+    //         const childdata=JSON.parse(message)
+    //         if(childdata.action=="saveres"){
+    //             //save result
+    //             this.searhModel.saveSearchResult(childdata.data,taskId)
+    //             this.searhModel.updateTaskStatus(taskId,SearchTaskStatus.Complete)
+    //             child.kill()
+    //         }
+    //     });
     }
 
     public async createTask(data:SearchDataParam):Promise<number>{
@@ -133,12 +136,34 @@ export class SearchController {
     //run search function
     public async runTask(taskId:number):Promise<void>{
 
+        //get error log and run log
+        const taskEntity=await this.searhModel.getTaskEntityById(taskId)
+        if(!taskEntity){
+            throw new Error("task not exist")
+        }
+        const errorLogfile=taskEntity.error_log
+        if(!errorLogfile){
+            throw new Error("error log not exist")
+        }
+        const runLogfile=taskEntity.run_log
+        if(!runLogfile){
+            throw new Error("run log not exist")
+        }
+        const data:Usersearchdata={
+            searchEnginer:taskEntity.engine,
+            keywords:taskEntity.keywords,
+            num_pages:taskEntity.num_pages??1,
+            concurrency:taskEntity.concurrency??1,
+            notShowBrowser:taskEntity.notShowBrowser??false,
+            proxys:taskEntity.proxys
+        }
+
         const childPath = path.join(__dirname, 'taskCode.js')
         if (!fs.existsSync(childPath)) {
             throw new Error("child js path not exist for the path " + childPath);
         }
         const { port1, port2 } = new MessageChannelMain()
-        const tokenService=new Token()
+       // const tokenService=new Token()
         
         const child = utilityProcess.fork(childPath, [],{stdio:"pipe",execArgv:["puppeteer-cluster:*"],env:{
             ...process.env,
@@ -147,7 +172,7 @@ export class SearchController {
         child.on("spawn", () => {
             console.log("child process satart, pid is"+child.pid)
             child.postMessage(JSON.stringify({action:"searchscraper",data:data}),[port1])
-            this.searhModel.updateTaskLog(taskId,runLogfile,errorLogfile)
+           // this.searhModel.updateTaskLog(taskId,runLogfile,errorLogfile)
         })
         
         child.stdout?.on('data', (data) => {
@@ -232,6 +257,14 @@ export class SearchController {
         // const seModel=new searhModel()
         const log=await this.searhModel.getTaskErrorLog(taskId)
         return log
+    }
+    //retry task by task id
+    public async retryTask(taskId:number):Promise<void>{
+        const taskEntity=await this.searhModel.getTaskEntityById(taskId)
+        if(!taskEntity){
+            throw new Error("task not exist")
+        }
+        await this.runTask(taskId)
     }
 
 

@@ -145,6 +145,8 @@ export type SearchDataParam = {
   concurrency?: number,
   notShowBrowser?: boolean,
   proxys?: Array<ProxyEntity>,
+  error_log?:string,
+  run_log?:string,
 }
 export interface clusterData {
   page: Page

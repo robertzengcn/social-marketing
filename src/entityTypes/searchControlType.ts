@@ -11,6 +11,8 @@ export type Usersearchdata = {
     concurrency: number,
     notShowBrowser: boolean,
     proxys?: Array<ProxyEntity>,
+    error_log?:string,
+    run_log?:string,
     // maxConcurrent: number,
   }
   export interface UsersearchdataParam  extends Usersearchdata{
