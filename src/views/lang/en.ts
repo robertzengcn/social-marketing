@@ -180,7 +180,10 @@ export default {
         translation_info:"translation info",
         select_language:"select language",
         keyword:"video keyword",
-        max_page_number:"max page number"
+        max_page_number:"max page number",
+        publish_video:"publish video",
+        select_platform:"select platform",
+        select_category:"select category",
     },
     language:{
         zh:"Chinese",
