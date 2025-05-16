@@ -8,7 +8,7 @@ import { getUserpath, checkAndCreatePath, getApplogspath } from "@/modules/lib/f
 import { USERSDBPATH, USERLOGPATH, USEREMAIL,USERNAME } from '@/config/usersetting';
 import { Token } from "@/modules/token"
 //import {runAfterTableCreate} from "@/modules/lib/databaseinit"
-import { SqliteDb } from "@/modules/SqliteDb"
+import { SqliteDb } from "@/config/SqliteDb"
 import { runafterbootup } from "@/modules/bootuprun"
 import {UserInfoType} from "@/entityTypes/userType"
 //import { CommonMessage } from "@/entityTypes/commonType";

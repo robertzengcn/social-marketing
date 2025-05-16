@@ -14,11 +14,15 @@ import * as path from 'path';
 import * as fs from 'fs';
 import {SortBy} from "@/entityTypes/commonType";
 import { BaseModule } from "@/modules/baseModule";
+import { SearchTaskProxyModel } from "@/model/SearchTaskProxy.model";
+import { SearchTaskProxyEntity } from "@/entity/SearchTaskProxy.entity";
+import { SearchTaskEntity } from "@/entity/SearchTask.entity";
 export class searhModel extends BaseModule {
    // private dbpath: string
     private taskdbModel: SearchTaskModel
     private serResultModel: SearchResultModel
     private serKeywordModel: SearchKeywordModel
+    private searchTaskProxyModel: SearchTaskProxyModel
     constructor() {
         // const tokenService = new Token()
         // const dbpath = tokenService.getValue(USERSDBPATH)
@@ -30,6 +34,7 @@ export class searhModel extends BaseModule {
         this.taskdbModel = new SearchTaskModel(this.dbpath)
         this.serResultModel = new SearchResultModel(this.dbpath)
         this.serKeywordModel = new SearchKeywordModel(this.dbpath)
+        this.searchTaskProxyModel = new SearchTaskProxyModel(this.dbpath)
     }
 
     //save search task, call it when user start search keyword
@@ -45,10 +50,23 @@ export class searhModel extends BaseModule {
         if (!enginId) {
             throw new Error("enginerId empty")
         }
-        const taskId = await this.taskdbModel.saveSearchTask(enginId)
+        const taskId = await this.taskdbModel.saveSearchTask(enginId,data.num_pages,data.concurrency,data.notShowBrowser)
         //const searshdb = new SearchKeyworddb(this.dbpath)
         for (const keyword of data.keywords) {
             await this.serKeywordModel.saveSearchKeyword(keyword, Number(taskId))
+        }
+        if(data.proxys){
+            for (const proxy of data.proxys) {
+                const proxyEntity=new SearchTaskProxyEntity()
+                proxyEntity.task_id=Number(taskId)
+              
+                proxyEntity.host=proxy.host
+                proxyEntity.port=proxy.port
+                proxyEntity.user=proxy.user?proxy.user:''
+                proxyEntity.pass=proxy.pass?proxy.pass:''
+            
+                await this.searchTaskProxyModel.create(proxyEntity)
+            }
         }
         return Number(taskId)
     }
@@ -210,6 +228,33 @@ export class searhModel extends BaseModule {
     //get search task entity by id
     public async getkeywrodsEntitybyId(keywordId: number) {
         return await this.serKeywordModel.getKeywordsEntityById(keywordId)
+    }
+    //get task entity by id
+    public async getTaskEntityById(taskId: number): Promise< SearchDataParam | null> {
+        const taskEntity=  await this.taskdbModel.getTaskEntity(taskId)
+        if(!taskEntity){
+            return null
+        }
+        const keywords=await this.serKeywordModel.getKeywordsEntityByTask(taskId)
+        const proxys=await this.searchTaskProxyModel.getItemsByTaskId(taskId)
+        const data:SearchDataParam={
+            engine:taskEntity.enginer_id,
+            keywords:keywords.map(item=>item.keyword),
+            num_pages:taskEntity.num_pages,
+            concurrency:taskEntity.concurrency,
+            notShowBrowser:taskEntity.notShowBrowser?true:false,
+            proxys:proxys.map(item=>{
+                return {
+                    host:item.host,
+                    port:item.port,
+                    user:item.user,
+                    pass:item.pass
+                }
+            }),
+            error_log:taskEntity.error_log,
+            run_log:taskEntity.runtime_log
+        }
+        return data
     }
 
 

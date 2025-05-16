@@ -19,4 +19,10 @@ export class SearchTaskEntity extends AuditableEntity {
     
     @Column("integer", { nullable: true })
     status: number;
+    @Column("integer", { nullable: true })
+    num_pages: number; //how many pages to scrape
+    @Column("integer", { nullable: true })
+    concurrency: number; //how many concurrent requests
+    @Column("integer", { nullable: true })
+    notShowBrowser: number; //if true, the browser will not be shown
 }

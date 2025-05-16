@@ -45,6 +45,7 @@ globs: **/*.{js,jsx,ts,tsx,html,css,scss,mjs,cjs}
 │   ├── buckEmail.ts
 │   ├── childprocess   # child process folder
 │   ├── config        # config for the project
+│        ├── SqliteDb.ts   # typeorm config file, if add entity, the new entity path should be add into the file
 │   ├── controller    # controller folder
 │   ├── entity        # entity for database
 │   ├── entityTypes   # type defined for the project

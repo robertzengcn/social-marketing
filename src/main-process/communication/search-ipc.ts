@@ -1,5 +1,5 @@
 import { ipcMain, dialog, app } from 'electron';
-import { SEARCHSCRAPERAPI, LISTSESARCHRESUT, SEARCHEVENT, TASKSEARCHRESULTLIST, SAVESEARCHERRORLOG } from '@/config/channellist'
+import { SEARCHSCRAPERAPI, LISTSESARCHRESUT, SEARCHEVENT, TASKSEARCHRESULTLIST, SAVESEARCHERRORLOG, RETRYSEARCHTASK } from '@/config/channellist'
 import { CommonDialogMsg } from "@/entityTypes/commonType";
 import { Usersearchdata, SearchtaskItem, SearchResultFetchparam } from "@/entityTypes/searchControlType"
 import { SearchController } from "@/controller/searchController"
@@ -148,4 +148,31 @@ export function registerSearchIpcHandlers() {
         }
 
     })
+
+    ipcMain.handle(RETRYSEARCHTASK, async (event, data) => {
+        const qdata = JSON.parse(data) as { id: number };
+        if (!qdata.id) {
+            const resp: CommonResponse<any> = {
+                status: false,
+                msg: "task id is empty",
+            }
+            return resp;
+        }
+
+        try {
+            const searchControl = new SearchController();
+            await searchControl.retryTask(qdata.id);
+            const resp: CommonResponse<any> = {
+                status: true,
+                msg: "Task retry started successfully",
+            }
+            return resp;
+        } catch (error) {
+            const resp: CommonResponse<any> = {
+                status: false,
+                msg: error instanceof Error ? error.message : "Unknown error occurred",
+            }
+            return resp;
+        }
+    });
 }

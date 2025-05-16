@@ -24,7 +24,14 @@
           >
           mdi-download
           </v-icon>
-
+          <v-icon 
+          size="small"
+          class="me-2"
+          v-if="item.status=='Error'" 
+          @click="retryTask(item)"
+          >
+          mdi-refresh
+          </v-icon>
         </template>
     </v-data-table-server>
     
@@ -33,7 +40,7 @@
 
 <script setup lang="ts">
 import {useI18n} from "vue-i18n";
-import { listSearchresult,Errorlogquery } from '@/views/api/search'
+import { listSearchresult,Errorlogquery, retrySearchTask } from '@/views/api/search'
 import { ref,computed,onMounted,onUnmounted,reactive } from 'vue'
 import { SearchResult } from '@/views/api/types'
 // import type { VDataTable } from 'vuetify/lib/components/index.mjs'
@@ -176,6 +183,19 @@ const downloadErrorlog=(item)=>{
         // const link = document.createElement('a');
         // link.href
     })
+}
+const retryTask = async (item) => {
+    try {
+        const response = await retrySearchTask(item.id);
+        if (response.status) {
+            // Refresh the table after successful retry
+            loadItems({ page: options.page, itemsPerPage: options.itemsPerPage, sortBy: "" });
+        } else {
+            console.error('Failed to retry task:', response.msg);
+        }
+    } catch (error) {
+        console.error('Error retrying task:', error);
+    }
 }
 onMounted(() => {
   

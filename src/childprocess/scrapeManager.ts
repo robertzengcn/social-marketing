@@ -11,7 +11,8 @@ import debug from 'debug';
 import clone from "lodash/clone"
 import times from "lodash/times"
 import map from "lodash/map";
-import { UserAgent } from "user-agents";
+//import UserAgent from "user-agents";
+import randomUseragent from "random-useragent";
 // import { addExtra } from "puppeteer-extra";
 // import puppeteer from 'puppeteer-extra';
 import {CustomConcurrency} from "@/modules/concurrency-implementation"
@@ -60,9 +61,9 @@ export class ScrapeManager {
       // remote_password:endcofig.PASSWORD,
       // the user agent to scrape with
       user_agent:
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36",
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
       // if random_user_agent is set to True, a random user agent is chosen
-      random_user_agent: false,
+      random_user_agent: true,
       // whether to select manual settings in visible mode
       set_manual_settings: false,
       // log ip address data
@@ -277,11 +278,41 @@ if(param.keywords.length<this.numClusters){
 //https://github.com/puppeteer/puppeteer/issues/2234
     // Give the per browser options
     const perBrowserOptions = map(this.proxiesArr.slice(0, this.numClusters), (proxy) => {
-      const userAgent = this.config.random_user_agent
-        ? new UserAgent({ deviceCategory: "desktop" }).toString()
-        : this.config.user_agent;
+      let userAgent: string;
+      if (this.config.random_user_agent) {
+        // Randomly choose between Chrome and Firefox user agents
+        // const isChrome = Math.random() > 0.5;
+        // console.log(isChrome)
+        // if (isChrome) {
+        //   // Modern Chrome user agent
+        //   const Agent = new UserAgent({
+        //     deviceCategory: "desktop",
+        //     //browser: "chrome",
+        //     platform: "win32"
+        //   });
+        //   userAgent = Agent.toString();
+        // } else {
+        //   // Modern Firefox user agent
+        //   const Agent = new UserAgent({
+        //     deviceCategory: "desktop",
+        //     browser: "firefox",
+        //     platform: "win32"
+        //   });
+        //   userAgent = Agent.toString();
+        // }
+          //         const Agent = new UserAgent({
+          //   deviceCategory: "desktop",
+          //   //browser: "chrome",
+          //   platform: "win32"
+          // });
+          // userAgent = Agent.toString();
+          // console.log(userAgent)
+          userAgent = randomUseragent.getRandom();
+      } else {
+        userAgent = this.config.user_agent;
+      }
       const args = this.config.chrome_flags.concat([`--user-agent=${userAgent}`]);
-
+      console.log(args)
       // if (proxy&&proxy.server) {
       //   // set proxy place
       //   //console.log("proxy is" + proxy.server)

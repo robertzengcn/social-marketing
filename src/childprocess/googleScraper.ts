@@ -259,6 +259,47 @@ export class GoogleScraper extends SearchScrape {
             waitUntil: "networkidle2",
             timeout: 60000
           });
+        // Wait for user to take action
+        this.logger.info('Waiting for user to take action...');
+        
+        // Display a message on the page to inform the user
+        await this.page.evaluate(() => {
+            const div = document.createElement('div');
+            div.style.position = 'fixed';
+            div.style.top = '0';
+            div.style.left = '0';
+            div.style.width = '100%';
+            div.style.backgroundColor = 'rgba(255, 0, 0, 0.7)';
+            div.style.color = 'white';
+            div.style.padding = '10px';
+            div.style.zIndex = '9999';
+            div.style.textAlign = 'center';
+            div.style.fontSize = '16px';
+            div.textContent = 'Please take action and press Enter when ready to continue...';
+            document.body.appendChild(div);
+        });
+        
+        // Wait for user to press Enter
+        await this.page.waitForFunction(() => {
+            return new Promise(resolve => {
+                const listener = (e) => {
+                    if (e.key === 'Enter') {
+                        document.removeEventListener('keydown', listener);
+                        resolve(true);
+                    }
+                };
+                document.addEventListener('keydown', listener);
+            });
+        }, { timeout: 0 }); // No timeout, wait indefinitely
+        
+        // Remove the message
+        await this.page.evaluate(() => {
+            const div = document.querySelector('div[style*="position: fixed"]');
+            if (div) div.remove();
+        });
+        
+        this.logger.info('User action completed, continuing...');
+
 
         await this.page.waitForSelector('textarea[name="q"]', { timeout: this.STANDARD_TIMEOUT });
 

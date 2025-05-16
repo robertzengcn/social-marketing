@@ -49,12 +49,13 @@ export class UserSearch {
         const SeachEnginArr = ToArray(SearhEnginer)
         let enginer = ""
         SeachEnginArr.forEach(async (value, key) => {
+            
             if (data.searchEnginer == value) {
                 enginer = value
             }
         })
         if(!enginer){
-            throw new CustomError("search enginer is incorrect",20240801112434)
+            throw new CustomError("search enginer is incorrect:"+data.searchEnginer,20240801112434)
         }
 
         // await scraper.start()
