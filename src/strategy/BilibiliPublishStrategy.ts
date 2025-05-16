@@ -7,7 +7,7 @@ import {PublishPlatform,PublishStatus} from "@/entityTypes/videoPublishType"
 
 export class BilibiliPublishStrategy extends BaseVideoPublishStrategy {
     private readonly BILIBILI_UPLOAD_URL = 'https://member.bilibili.com/platform/upload/video/frame';
-    private readonly BILIBILI_LOGIN_CHECK_SELECTOR = '.header-avatar-wrap--container'; // This selector should be present when logged in
+    private readonly BILIBILI_LOGIN_CHECK_SELECTOR = '.upload-wrp'; // This selector should be present when logged in
 
     private async checkLoginStatus(): Promise<boolean> {
         try {
