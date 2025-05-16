@@ -2,12 +2,12 @@ import { BaseVideoPublishStrategy, PublishOptions } from './VideoPublishStrategy
 import { VideoDownloadEntity } from '@/entity/VideoDownload.entity';
 import {VideoPublishResultType} from "@/entityTypes/videoPublishType"
 import {PublishPlatform,PublishStatus} from "@/entityTypes/videoPublishType"
-import { Page } from 'puppeteer';
+//import { Page } from 'puppeteer';
 
 
 export class BilibiliPublishStrategy extends BaseVideoPublishStrategy {
     private readonly BILIBILI_UPLOAD_URL = 'https://member.bilibili.com/platform/upload/video/frame';
-    private readonly BILIBILI_LOGIN_CHECK_SELECTOR = '.upload-btn'; // This selector should be present when logged in
+    private readonly BILIBILI_LOGIN_CHECK_SELECTOR = '.header-avatar-wrap--container'; // This selector should be present when logged in
 
     private async checkLoginStatus(): Promise<boolean> {
         try {

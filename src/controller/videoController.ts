@@ -520,12 +520,26 @@ export class videoController {
         //     throw new Error("video category not found")
         // }
        // const category = videoCategory.category
-        const options: PublishOptions = {
+        
+       //convert account id to cookies
+       const cookies = await this.accountCookiesModule.getAccountCookies(accountId)
+       if(!cookies){
+        throw new Error("account cookies not found")
+       }
+       const cookiesArray = JSON.parse(cookies.cookies).map((value) => ({
+        name: value.name,
+        value: value.value,
+        domain: value.domain,
+        path: value.path
+       }))
+       const options: PublishOptions = {
             title: videoDescription.title,
             description: videoDescription.description,
             tags: tags,
             category: category,
-            accountId: accountId
+            cookies: cookiesArray,
+            headless: false,
+            //accountId: accountId
         }
         const result = await videoPublishService.publishVideo(videoEntity, platform, options);
         return result;
