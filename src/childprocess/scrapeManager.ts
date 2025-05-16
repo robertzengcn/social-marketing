@@ -471,34 +471,8 @@ if(param.keywords.length<this.numClusters){
     let num_requests = 0;
     const metadata:MetadataType = {};
     const startTime = Date.now();
-    // Object.assign(this.config, scrape_config);
 
-    // if (this.pluggable && this.pluggable.start_browser) {
-    // console.log(this.config.platform)
-    //   this.scraper = getScraper(this.config.platform, {
-    //     config: this.config,
-    //     context: this.context,
-    //     pluggable: this.pluggable,
-    //     page: this.page,
-    //     // taskid: this.taskid,
-    //     // taskrunid: this.taskrunId,
-    //     // taskid?: number,
-    //     // taskrunid?:number,
-    //     // tmppath: this.tmppath,
-    //   });
-    //   const searobj: WosearchObj = { page: this.page };
-    //   await this.scraper.workersearchdata(searobj);
-    // } else {
-    // Each browser will get N/(K+1) keywords and will issue N/(K+1) * M total requests to the search engine.
-    // https://github.com/GoogleChrome/puppeteer/issues/678
-    // The question is: Is it possible to set proxies per Page? Per Browser?
-    // as far as I can see, puppeteer cluster uses the same puppeteerOptions
-    // for every browser instance. We will use our custom puppeteer-cluster version.
-    // https://www.npmjs.com/package/proxy-chain
-    // this answer looks nice: https://github.com/GoogleChrome/puppeteer/issues/678#issuecomment-389096077
-    //this.numClusters=Math.min(this.numClusters,param.keywords.length);
-   
-    const chunks: Array<Array<string>> = []; // Initialize the 'chunks' variable
+    const chunks: Array<Array<string>> = []; 
 
     for (let n = 0; n < this.numClusters; n++) {
       chunks.push([]);
@@ -507,56 +481,81 @@ if(param.keywords.length<this.numClusters){
       chunks[k % this.numClusters].push(param.keywords[k]);
     }
 
-    // this.logger.info(chunks);
     const engineFactory = new searchEngineFactory()
     const execPromises: Array<Promise<any>> = [];
 
     for (let c = 0; c < chunks.length; c++) {
-      // const config = clone(this.config);
-      // config.keywords = chunks[c];
-      // console.log("task run id is" + config.taskrunid)
-      // const obj = getScraper(this.config.platform, {
-      //   config: config,
-      //   context: {},
-      //   pluggable: this.pluggable,
-      //   taskid: config.taskid,
-      //   taskrunid: config.taskrunid,
-
-      // });
-      // const browser=this.browser
       const scop: ScrapeOptions = {
         config: this.config,
         context: this.context,
-        // pluggable: this.pluggable,
         page: this.page,
-        // browser: this.browser
       }
       const obj = engineFactory.getSearchEngine(param.engine.toLowerCase(), scop)
       const boundMethod = obj.run.bind(obj);
       const cludata: ClusterSearchData = {
-
-        // page:this.page,
         keywords: chunks[c]
       }
       if(this.proxiesArr&&this.proxiesArr.length>0){
-        //get random proxy from proxy array
         const randomIndex = Math.floor(Math.random() * this.proxiesArr.length);
-
         cludata.proxyServer=this.proxiesArr[randomIndex];
       }
-      // const boundMethod = (data: string,res:any) => obj.searchData(data, page);
-      execPromises.push(this.cluster.execute(cludata, boundMethod));
+
+      // Wrap the execute call in a try-catch to handle Puppeteer errors
+      const wrappedExecute = async () => {
+        try {
+          return await this.cluster.execute(cludata, boundMethod);
+        } catch (error) {
+          if (error instanceof Error) {
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+            const debugDir = param.debug_log_path||"./debug";
+            
+            // Create debug directory if it doesn't exist
+            if (!fs.existsSync(debugDir)) {
+              fs.mkdirSync(debugDir);
+            }
+
+            // Use the page from ScrapeOptions
+            if (scop.page) {
+              const page = scop.page;
+              
+              // Save HTML
+              const html = await page.content();
+              const htmlPath = `${debugDir}/error_${timestamp}.html`;
+              fs.writeFileSync(htmlPath, html);
+              
+              // Save screenshot
+              const screenshotPath = `${debugDir}/error_${timestamp}.png`;
+              await page.screenshot({ 
+                path: screenshotPath,
+                fullPage: true 
+              });
+
+              this.logger.error(`Puppeteer error occurred. Debug files saved to ${debugDir}/error_${timestamp}.*`);
+              this.logger.error(`Error details: ${error.message}`);
+            }
+          }
+          throw error; // Re-throw the error after saving debug info
+        }
+      };
+
+      execPromises.push(wrappedExecute());
     }
 
-    const promiseReturns = await Promise.all(execPromises);
+    try {
+      const promiseReturns = await Promise.all(execPromises);
 
-    // Merge results and metadata per keyword
-    for (const promiseReturn of promiseReturns) {
-      Object.assign(results, promiseReturn.results);
-      Object.assign(metadata, promiseReturn.metadata);
-      num_requests += promiseReturn.num_requests;
+      // Merge results and metadata per keyword
+      for (const promiseReturn of promiseReturns) {
+        Object.assign(results, promiseReturn.results);
+        Object.assign(metadata, promiseReturn.metadata);
+        num_requests += promiseReturn.num_requests;
+      }
+    } catch (error) {
+      this.logger.error('Error during search execution:', error);
+      throw error;
+    } finally {
+      await this.quit();
     }
-    await this.quit()
 
     const timeDelta = Date.now() - startTime;
     const ms_per_request = timeDelta / num_requests;
@@ -583,8 +582,6 @@ if(param.keywords.length<this.numClusters){
       results: results,
       metadata: metadata || {},
     };
-
-
   }
 
   //   // let timeDelta = Date.now() - startTime;

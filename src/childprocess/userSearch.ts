@@ -7,7 +7,7 @@ import { ToArray } from "@/modules/lib/function"
 import { CustomError } from "@/modules/customError"
 import {SearchDataRun} from "@/entityTypes/scrapeType"
 // import { ProxyController } from "@/controller/proxy-controller";
-import {proxyEntityToUrl} from "@/modules/lib/function"
+import {proxyEntityToUrl,getEnumKeyByValue} from "@/modules/lib/function"
 import { ProxyParseItem} from "@/entityTypes/proxyType"
 
 export class UserSearch {
@@ -46,14 +46,23 @@ export class UserSearch {
         }
         const keywords = data.keywords
          const scraper = new ScrapeManager(smConfig)
-        const SeachEnginArr = ToArray(SearhEnginer)
+        // Convert SearhEnginer to key-value format for easier validation
+        
+        // const searchEngineMap = {};
+        // const searchEngineArray = ToArray(SearhEnginer);
+        // searchEngineArray.forEach(engine => {
+        //     searchEngineMap[engine] = true;
+        // });
+       const SeachEnginArr = ToArray(SearhEnginer)
         let enginer = ""
+        // console.log(SeachEnginArr)
         SeachEnginArr.forEach(async (value, key) => {
-            
-            if (data.searchEnginer == value) {
+            if (Number(data.searchEnginer) === key+1) {
                 enginer = value
             }
         })
+        
+        // const enginer=getEnumKeyByValue(SearhEnginer,data.searchEnginer)
         if(!enginer){
             throw new CustomError("search enginer is incorrect:"+data.searchEnginer,20240801112434)
         }

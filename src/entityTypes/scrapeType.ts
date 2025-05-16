@@ -147,6 +147,7 @@ export type SearchDataParam = {
   proxys?: Array<ProxyEntity>,
   error_log?:string,
   run_log?:string,
+  debug_log_path?:string,
 }
 export interface clusterData {
   page: Page

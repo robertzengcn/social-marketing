@@ -52,8 +52,8 @@ export async function Errorlogquery(id:number){
 }
 
 export async function retrySearchTask(id: number) {
-    const res = await windowInvoke(RETRYSEARCHTASK, { id: id });
-    return res;
+    await windowSend(RETRYSEARCHTASK, { id: id });
+    // return res;
 }
 
 
