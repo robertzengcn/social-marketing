@@ -1,6 +1,6 @@
 import { Token } from "@/modules/token"
 import { USERSDBPATH } from '@/config/usersetting';
-import {SqliteDb} from "@/modules/SqliteDb"
+import {SqliteDb} from "@/config/SqliteDb"
 export abstract class BaseModule {
     protected dbpath: string
    protected sqliteDb:SqliteDb

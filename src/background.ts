@@ -8,7 +8,7 @@ import { registerCommunicationIpcHandlers } from "./main-process/communication/"
 import * as path from 'path';
 import { Token } from "@/modules/token"
 import { USERSDBPATH} from '@/config/usersetting';
-import { SqliteDb } from "@/modules/SqliteDb"
+import { SqliteDb } from "@/config/SqliteDb"
 import log from 'electron-log/main';
 import fs from 'fs';
 import ProtocolRegistry from 'protocol-registry'

@@ -9,7 +9,8 @@ import { SortBy } from "@/entityTypes/commonType";
 export enum SearchTaskStatus {
   Processing = 1,
   Complete = 2,
-  Error = 3
+  Error = 3,
+  NotStart = 4
 }
 
 export class SearchTaskModel extends BaseDb {
@@ -29,7 +30,7 @@ export class SearchTaskModel extends BaseDb {
     const taskEntity = new SearchTaskEntity();
     taskEntity.enginer_id = enginerId.toString();
     taskEntity.record_time = getRecorddatetime();
-    taskEntity.status = SearchTaskStatus.Processing;
+    taskEntity.status = SearchTaskStatus.NotStart;
     taskEntity.num_pages = num_pages?num_pages:1;
     taskEntity.concurrency = concurrency?concurrency:1;
     taskEntity.notShowBrowser = notShowBrowser ? 1 : 0;

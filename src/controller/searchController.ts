@@ -130,7 +130,10 @@ export class SearchController {
         const uuid=uuidv4({random: getRandomValues(new Uint8Array(16))})
         const errorLogfile=path.join(logpath,'search_'+taskId.toString()+'_'+uuid+'.error.log')
         const runLogfile=path.join(logpath,'search_'+taskId.toString()+'_'+uuid+'.runtime.log')
-        this.searhModel.updateTaskLog(taskId,runLogfile,errorLogfile)
+        //create log file and runlog file
+        fs.writeFileSync(errorLogfile,'')
+        fs.writeFileSync(runLogfile,'')
+        await this.searhModel.updateTaskLog(taskId,runLogfile,errorLogfile)
         return taskId
     }
     //run search function
