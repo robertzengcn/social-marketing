@@ -3,6 +3,7 @@ import { VideoDownloadEntity } from '@/entity/VideoDownload.entity';
 import {VideoPublishResultType} from "@/entityTypes/videoPublishType"
 import {PublishPlatform,PublishStatus} from "@/entityTypes/videoPublishType"
 //import { Page } from 'puppeteer';
+import { ElementHandle } from 'puppeteer';
 
 
 export class BilibiliPublishStrategy extends BaseVideoPublishStrategy {
@@ -70,7 +71,7 @@ export class BilibiliPublishStrategy extends BaseVideoPublishStrategy {
             }
             
             if (options.description) {
-                await this.page.type('#description-textarea', options.description);
+                await this.page.type('.ql-editor', options.description);
             }
             
             // Set privacy settings
@@ -115,6 +116,31 @@ export class BilibiliPublishStrategy extends BaseVideoPublishStrategy {
     }
     async uploadVideo(videoPath: string): Promise<void> {
         // Wait for the upload wrapper to be available
+        // Wait for the upload button to be visible
+        await this.page.waitForSelector('.upload-wrp', { visible: true, timeout: 30000 });
+        
+        // Find the file input element
+        const fileInput = await this.page.$('input[type="file"]');
+        if (!fileInput) {
+            // If no direct file input is found, try to find it within the upload wrapper
+            const uploadWrapperFileInput = await this.page.$('.upload-wrp input[type="file"]') as ElementHandle<HTMLInputElement>;
+            if (!uploadWrapperFileInput) {
+                throw new Error('File input element not found');
+            }
+            // Set the file path to the input element
+            await uploadWrapperFileInput.uploadFile(videoPath);
+        } else {
+            // Set the file path to the input element
+            await fileInput.uploadFile(videoPath);
+        }
+        
+        // Wait for the upload to start and complete
+        await this.page.waitForSelector('.upload-progress', { timeout: 10000 })
+            .catch(() => console.log('Upload progress indicator not found, continuing anyway'));
+            
+        // Wait for upload to complete (this selector may need to be adjusted based on Bilibili's UI)
+        await this.page.waitForSelector('.upload-complete', { timeout: 300000 })
+            .catch(() => console.log('Upload complete indicator not found, continuing anyway'));
         const uploadWrapper = await this.page.waitForSelector('.upload-wrp');
         if (!uploadWrapper) {
             throw new Error('Upload wrapper not found');
@@ -133,7 +159,9 @@ export class BilibiliPublishStrategy extends BaseVideoPublishStrategy {
         // Create and dispatch the drag and drop events
         await this.page.evaluate(async (centerX, centerY, filePath) => {
             const uploadWrapper = document.querySelector('.upload-wrp');
-            if (!uploadWrapper) return;
+            if (!uploadWrapper){
+                throw new Error('Upload wrapper not found');
+            }
 
             // Read the file data
             const response = await fetch(filePath);
