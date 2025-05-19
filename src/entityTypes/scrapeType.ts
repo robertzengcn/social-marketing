@@ -134,7 +134,8 @@ export type SMstruct = {
   headless: boolean,
   num_pages?: number,
   page_length?: number,
-  logger?: winston.Logger
+  logger?: winston.Logger,
+  debug_log_path?:string,
   // taskid?: number,
   // taskrunId?: number
 }

@@ -13,6 +13,7 @@ export type Usersearchdata = {
     proxys?: Array<ProxyEntity>,
     error_log?:string,
     run_log?:string,
+    debug_log_path?:string,
     // maxConcurrent: number,
   }
   export interface UsersearchdataParam  extends Usersearchdata{

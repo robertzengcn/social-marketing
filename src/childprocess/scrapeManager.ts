@@ -43,6 +43,7 @@ export class ScrapeManager {
   numClusters: number;
   tmppath: string;
   proxiesArr:Array<ProxyServer|null>
+  debug_log_path?:string;
   // runLogin: Function;
   // taskid?: number;
   // taskrunId?: number;
@@ -52,6 +53,7 @@ export class ScrapeManager {
     // this.pluggable = null;
     // this.scraper = null;
     this.context = context;
+    this.debug_log_path=config.debug_log_path;
 
     // await this.getRemoteConfig(campaignId)
 
@@ -507,7 +509,7 @@ if(param.keywords.length<this.numClusters){
         } catch (error) {
           if (error instanceof Error) {
             const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-            const debugDir = param.debug_log_path||"./debug";
+            const debugDir =this.debug_log_path||"./debug";
             
             // Create debug directory if it doesn't exist
             if (!fs.existsSync(debugDir)) {

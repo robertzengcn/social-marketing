@@ -40,7 +40,8 @@ export class SearchController {
             num_pages:data.num_pages,
             concurrency:data.concurrency,
             notShowBrowser:data.notShowBrowser,
-            proxys:data.proxys
+            proxys:data.proxys,
+            
         }
         // console.log(dp)
         // const taskId=await this.searhModel.saveSearchtask(dp)
@@ -152,13 +153,21 @@ export class SearchController {
         if(!runLogfile){
             throw new Error("run log not exist")
         }
+        // Get parent path of errorLogfile
+        const errorLogDir = path.dirname(errorLogfile);
+        
+        // Ensure the directory exists
+        if (!fs.existsSync(errorLogDir)) {
+            fs.mkdirSync(errorLogDir, { recursive: true });
+        }
         const data:Usersearchdata={
             searchEnginer:taskEntity.engine,
             keywords:taskEntity.keywords,
             num_pages:taskEntity.num_pages??1,
             concurrency:taskEntity.concurrency??1,
             notShowBrowser:taskEntity.notShowBrowser??false,
-            proxys:taskEntity.proxys
+            proxys:taskEntity.proxys,
+            debug_log_path:errorLogDir
         }
 
         const childPath = path.join(__dirname, 'taskCode.js')
