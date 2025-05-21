@@ -768,7 +768,8 @@ export class videoController {
     public async convertToVideoCaptionitem(data: VideoCaptionGenerateParamWithIds<number>): Promise<Array<VideoCaptionItem>> {
         const res: Array<VideoCaptionItem> = []
         if (data.ids.length > 0) {
-            data.ids.forEach(async (value) => {
+            for (let i = 0; i < data.ids.length; i++) {
+                const value = data.ids[i];
                 const videoItem = await this.videoDownloadModule.getVideoDownloaditem(value)
                 if (videoItem) {
                     if (videoItem.savepath) {
@@ -781,8 +782,8 @@ export class videoController {
                         res.push(item)
                     }
                 }
-
-            })
+            }
+            //})
         }
         return res
     }

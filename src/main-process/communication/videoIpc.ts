@@ -260,7 +260,7 @@ export function registerVideoIpcHandlers() {
         event.sender.send(SYSTEM_MESSAGE, startMsg)
         const videoCtrl = new videoController()
         await videoCtrl.generateCaptionbyids(qdata, (errorMsg) => {
-            const videoCtrl = new videoController()
+            //const videoCtrl = new videoController()
             const videoMsgs: CommonDialogMsg = {
                 status: false,
                 code: 20240513142039,
