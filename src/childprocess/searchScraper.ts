@@ -7,6 +7,8 @@ import debug from 'debug';
 import useProxy from "@lem0-packages/puppeteer-page-proxy"
 import {ProxyServer} from "@/entityTypes/proxyType"
 import {convertProxyServertourl} from '@/modules/lib/function'
+import * as path from 'path';
+import * as fs from 'fs';
 
 // const logger = debug('SearchScrape');
 
@@ -32,10 +34,13 @@ export class SearchScrape implements searchEngineImpl {
     keyword: string;
     page_num: number;
     proxyServer?:ProxyServer|null
+    debug_log_path?:string;
     constructor(options: ScrapeOptions) {
         if (options.page) {
             this.page = options.page;
         }
+        
+
         // if(options.browser){
         //     this.browser=options.browser;
         // }
@@ -459,7 +464,19 @@ export class SearchScrape implements searchEngineImpl {
                 //debug('this.last_response=%O', this.last_response);
 
                 if (this.config.take_screenshot_on_error) {
-                    await this.page.screenshot({ path: `debug_se_scraper_${this.config.search_engine_name}_${keyword}.png` });
+                    if(this.config.debug_log_path){
+                        await this.page.screenshot({ path: path.join(this.config.debug_log_path, `debug_se_scraper_${this.config.search_engine_name}_${keyword}.png`) });
+                    }else{
+                        await this.page.screenshot({ path: `debug_se_scraper_${this.config.search_engine_name}_${keyword}.png` });
+                    }
+                }
+                if(this.config.save_html){
+                    const html = await this.page.content();
+                    if(this.config.debug_log_path){
+                        await fs.promises.writeFile(path.join(this.config.debug_log_path, `debug_se_scraper_${this.config.search_engine_name}_${keyword}.html`), html);
+                    }else{
+                        await fs.promises.writeFile(`debug_se_scraper_${this.config.search_engine_name}_${keyword}.html`, html);
+                    }
                 }
 
                 this.metadata.scraping_detected = await this.detected();

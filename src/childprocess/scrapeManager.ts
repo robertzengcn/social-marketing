@@ -1,12 +1,12 @@
-import { SMconfig, SMstruct, SearchDataParam, ScrapeOptions, ClusterSearchData,MetadataType,ResultParseType,SearchDataRun } from "@/entityTypes/scrapeType"
+import { SMconfig, SMstruct, SearchDataParam, ScrapeOptions, ClusterSearchData, MetadataType, ResultParseType, SearchDataRun } from "@/entityTypes/scrapeType"
 import defaults from "lodash/defaults"
 import { Page, Browser } from 'puppeteer';
 import { createLogger, format, transports } from "winston"
 import winston from "winston"
 const { combine, timestamp, printf } = format;
-import { Cluster} from "puppeteer-cluster"
+import { Cluster } from "puppeteer-cluster"
 import fs from "fs";
-import { read_keywords_from_file,writeResults } from "@/modules/lib/function"
+import { read_keywords_from_file, writeResults } from "@/modules/lib/function"
 import debug from 'debug';
 import clone from "lodash/clone"
 import times from "lodash/times"
@@ -15,11 +15,11 @@ import map from "lodash/map";
 import randomUseragent from "random-useragent";
 // import { addExtra } from "puppeteer-extra";
 // import puppeteer from 'puppeteer-extra';
-import {CustomConcurrency} from "@/modules/concurrency-implementation"
+import { CustomConcurrency } from "@/modules/concurrency-implementation"
 import { searchEngineFactory } from "@/modules/searchEngineFactory"
 // import { Keyword } from "./keyword";
 import { pluggableType } from "@/entityTypes/scrapeType"
-import {ProxyServer} from "@/entityTypes/proxyType"
+import { ProxyServer } from "@/entityTypes/proxyType"
 
 // import {ProxyServer} from "@/entityTypes/proxyType"
 // import { app } from 'electron'
@@ -42,8 +42,8 @@ export class ScrapeManager {
   page: Page;
   numClusters: number;
   tmppath: string;
-  proxiesArr:Array<ProxyServer|null>
-  debug_log_path?:string;
+  proxiesArr: Array<ProxyServer | null>
+  debug_log_path?: string;
   // runLogin: Function;
   // taskid?: number;
   // taskrunId?: number;
@@ -53,7 +53,7 @@ export class ScrapeManager {
     // this.pluggable = null;
     // this.scraper = null;
     this.context = context;
-    this.debug_log_path=config.debug_log_path;
+    this.debug_log_path = config.debug_log_path;
 
     // await this.getRemoteConfig(campaignId)
 
@@ -85,10 +85,10 @@ export class ScrapeManager {
           })
         ),
         transports: [new transports.Console(),
-    //       new winston.transports.File({ filename: path.join(app.getPath("logs"),'error.log'), level: 'error' }),
-    // new winston.transports.File({ filename: path.join(app.getPath("logs"),'combined.log') }),
-    //       new winston.transports.File({ filename: 'error.log', level: 'error' }),
-    // new winston.transports.File({ filename: 'combined.log' }),
+          //       new winston.transports.File({ filename: path.join(app.getPath("logs"),'error.log'), level: 'error' }),
+          // new winston.transports.File({ filename: path.join(app.getPath("logs"),'combined.log') }),
+          //       new winston.transports.File({ filename: 'error.log', level: 'error' }),
+          // new winston.transports.File({ filename: 'combined.log' }),
         ],
       }),
       // platform: "facebook",
@@ -258,7 +258,7 @@ export class ScrapeManager {
         MAX_ALLOWED_BROWSERS
       );
 
-      this.proxiesArr = clone(this.config.proxies) ;
+      this.proxiesArr = clone(this.config.proxies);
 
       // Insert a first config without proxy if use_proxy_only is false
       // if (this.config.use_proxies_only === false) {
@@ -270,14 +270,14 @@ export class ScrapeManager {
     }
 
     this.logger.info(`Using ${this.numClusters} clusters.`);
-  
-console.log(this.numClusters)
-//avoid to waste resource
-if(param.keywords.length<this.numClusters){
-  this.numClusters=param.keywords.length;
-}
 
-//https://github.com/puppeteer/puppeteer/issues/2234
+    console.log(this.numClusters)
+    //avoid to waste resource
+    if (param.keywords.length < this.numClusters) {
+      this.numClusters = param.keywords.length;
+    }
+
+    //https://github.com/puppeteer/puppeteer/issues/2234
     // Give the per browser options
     const perBrowserOptions = map(this.proxiesArr.slice(0, this.numClusters), (proxy) => {
       let userAgent: string;
@@ -302,14 +302,14 @@ if(param.keywords.length<this.numClusters){
         //   });
         //   userAgent = Agent.toString();
         // }
-          //         const Agent = new UserAgent({
-          //   deviceCategory: "desktop",
-          //   //browser: "chrome",
-          //   platform: "win32"
-          // });
-          // userAgent = Agent.toString();
-          // console.log(userAgent)
-          userAgent = randomUseragent.getRandom();
+        //         const Agent = new UserAgent({
+        //   deviceCategory: "desktop",
+        //   //browser: "chrome",
+        //   platform: "win32"
+        // });
+        // userAgent = Agent.toString();
+        // console.log(userAgent)
+        userAgent = randomUseragent.getRandom();
       } else {
         userAgent = this.config.user_agent;
       }
@@ -348,7 +348,7 @@ if(param.keywords.length<this.numClusters){
       // puppeteer,
       monitor: this.config.puppeteer_cluster_config.monitor,
       timeout: this.config.puppeteer_cluster_config.timeout, // max timeout set to 30 minutes
-     concurrency: CustomConcurrency,
+      concurrency: CustomConcurrency,
       //concurrency: Cluster.CustomConcurrency,
       maxConcurrency: this.numClusters,
       // puppeteerOptions: {
@@ -357,6 +357,7 @@ if(param.keywords.length<this.numClusters){
       // },
       perBrowserOptions: perBrowserOptions,
       retryLimit: 3,
+      //debug_log_path: this.debug_log_path,
       // puppeteerOptions:perBrowserOptions,
     });
     // console.log(this.cluster)
@@ -466,15 +467,15 @@ if(param.keywords.length<this.numClusters){
   /*
    * get data from search engine
    */
-  async searchdata(param: SearchDataParam):Promise<SearchDataRun> {
+  async searchdata(param: SearchDataParam): Promise<SearchDataRun> {
     await this.start(param);
 
-    const results:ResultParseType = {};
+    const results: ResultParseType = {};
     let num_requests = 0;
-    const metadata:MetadataType = {};
+    const metadata: MetadataType = {};
     const startTime = Date.now();
 
-    const chunks: Array<Array<string>> = []; 
+    const chunks: Array<Array<string>> = [];
 
     for (let n = 0; n < this.numClusters; n++) {
       chunks.push([]);
@@ -497,9 +498,9 @@ if(param.keywords.length<this.numClusters){
       const cludata: ClusterSearchData = {
         keywords: chunks[c]
       }
-      if(this.proxiesArr&&this.proxiesArr.length>0){
+      if (this.proxiesArr && this.proxiesArr.length > 0) {
         const randomIndex = Math.floor(Math.random() * this.proxiesArr.length);
-        cludata.proxyServer=this.proxiesArr[randomIndex];
+        cludata.proxyServer = this.proxiesArr[randomIndex];
       }
 
       // Wrap the execute call in a try-catch to handle Puppeteer errors
@@ -509,8 +510,8 @@ if(param.keywords.length<this.numClusters){
         } catch (error) {
           if (error instanceof Error) {
             const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-            const debugDir =this.debug_log_path||"./debug";
-            
+            const debugDir = this.debug_log_path || "./debug";
+
             // Create debug directory if it doesn't exist
             if (!fs.existsSync(debugDir)) {
               fs.mkdirSync(debugDir);
@@ -519,17 +520,17 @@ if(param.keywords.length<this.numClusters){
             // Use the page from ScrapeOptions
             if (scop.page) {
               const page = scop.page;
-              
+
               // Save HTML
               const html = await page.content();
               const htmlPath = `${debugDir}/error_${timestamp}.html`;
               fs.writeFileSync(htmlPath, html);
-              
+
               // Save screenshot
               const screenshotPath = `${debugDir}/error_${timestamp}.png`;
-              await page.screenshot({ 
+              await page.screenshot({
                 path: screenshotPath,
-                fullPage: true 
+                fullPage: true
               });
 
               this.logger.error(`Puppeteer error occurred. Debug files saved to ${debugDir}/error_${timestamp}.*`);

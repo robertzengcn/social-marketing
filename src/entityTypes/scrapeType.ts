@@ -42,6 +42,8 @@ export type SMconfig = {
   throw_on_detection?: boolean;
   output_file?: string;
   page_length?;number
+  debug_log_path?:string;
+  save_html?:boolean;
 }
 export type pluginType = {
   results: object,
@@ -138,6 +140,7 @@ export type SMstruct = {
   debug_log_path?:string,
   // taskid?: number,
   // taskrunId?: number
+  save_html?:boolean
 }
 export type SearchDataParam = {
   keywords: Array<string>,

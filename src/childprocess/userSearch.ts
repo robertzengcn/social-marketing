@@ -43,7 +43,9 @@ export class UserSearch {
             },
             num_pages: data.num_pages,
             proxies: proxyStrList,
-            debug_log_path:data.debug_log_path
+            debug_log_path:data.debug_log_path,
+            save_html:true
+
         }
         const keywords = data.keywords
          const scraper = new ScrapeManager(smConfig)

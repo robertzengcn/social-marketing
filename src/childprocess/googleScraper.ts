@@ -193,6 +193,7 @@ export class GoogleScraper extends SearchScrape {
                         return serp_obj 
                     }
         ))
+        console.log(searchRes)
         for( const resValue of searchRes){
            
             result.results.push(resValue);
