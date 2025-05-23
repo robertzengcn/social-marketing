@@ -74,7 +74,8 @@ export class SqliteDb {
             synchronize: true, 
             migrations: [],
             subscribers: [],
-            logging:  false, /// use this for debugging
+            //logging:  process.env.NODE_ENV !== 'production', /// use this for debugging
+            logging:  false,
             // driver: {
             //     sqlite3: sqlite3
             // }
