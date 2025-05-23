@@ -1,4 +1,4 @@
-import { Browser, Page, BrowserLaunchArgumentOptions } from 'puppeteer';
+import { Browser, Page, LaunchOptions } from 'puppeteer';
 import * as puppeteer from 'puppeteer';
 //import { VideoPublishRecordEntity } from '@/entity/VideoPublishRecord.entity';
 import { VideoDownloadEntity } from '@/entity/VideoDownload.entity';
@@ -29,7 +29,7 @@ export interface VideoPublishStrategy {
 
 export class BrowserFactory {
     static async createBrowser(options: PublishOptions): Promise<Browser> {
-        const launchOptions: BrowserLaunchArgumentOptions = {
+        const launchOptions: LaunchOptions = {
             headless: options.headless === false ? false : true,
             args: [
                 '--no-sandbox',

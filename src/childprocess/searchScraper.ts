@@ -467,7 +467,7 @@ export class SearchScrape implements searchEngineImpl {
                     if(this.config.debug_log_path){
                         const screenshot_path = path.join(this.config.debug_log_path, `debug_se_scraper_${this.config.search_engine_name}_${keyword}_${Date.now()}.png`)
                         this.logger.info(`Saving screenshot to ${screenshot_path}`);
-                        await this.page.screenshot({ path: screenshot_path });
+                        await this.page.screenshot({ path: screenshot_path as `${string}.png` });
                         //await fs.promises.writeFile(screenshot_path, screenshot);
                     }else{
                         this.logger.info(`sceen path:`+`debug_se_scraper_${this.config.search_engine_name}_${keyword}.png`);

@@ -106,7 +106,7 @@
     "pinia": "^2.1.7",
     "progress-stream": "^2.0.0",
     "protocol-registry": "^2.0.0",
-    "puppeteer": "22.13.1",
+    "puppeteer": "^24.9.0",
     "puppeteer-cluster": "^0.23.0",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-adblocker": "^2.13.6",

@@ -1,6 +1,6 @@
 "use strict";
 //import { upload } from 'youtube-videos-uploader'
-import { PuppeteerNodeLaunchOptions } from 'puppeteer';
+//import { PuppeteerNodeLaunchOptions } from 'puppeteer';
 
 export type credentials={
     email:string,
@@ -32,7 +32,7 @@ export class youtubePuppter{
 
     // constructor() {
     // }
-    uploadVideo(credentials:credentials,videoInfos:Array<Video>,puppeteerConfig:PuppeteerNodeLaunchOptions){
+    uploadVideo(credentials:credentials,videoInfos:Array<Video>){
         //upload (credentials, videoInfos, puppeteerConfig).then(console.log)
     }
 

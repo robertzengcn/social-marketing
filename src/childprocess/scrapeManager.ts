@@ -20,6 +20,10 @@ import { searchEngineFactory } from "@/modules/searchEngineFactory"
 // import { Keyword } from "./keyword";
 import { pluggableType } from "@/entityTypes/scrapeType"
 import { ProxyServer } from "@/entityTypes/proxyType"
+import puppeteerExtra from 'puppeteer-extra';
+import StealthPlugin from 'puppeteer-extra-plugin-stealth';
+
+puppeteerExtra.use(StealthPlugin());
 
 // import {ProxyServer} from "@/entityTypes/proxyType"
 // import { app } from 'electron'
@@ -348,20 +352,13 @@ export class ScrapeManager {
     // puppeteer.use(AdblockerPlugin({ blockTrackers: true }));
 
     this.cluster = await Cluster.launch({
-      // puppeteer,
+      puppeteer:puppeteerExtra,
       monitor: this.config.puppeteer_cluster_config.monitor,
-      timeout: this.config.puppeteer_cluster_config.timeout, // max timeout set to 30 minutes
+      timeout: this.config.puppeteer_cluster_config.timeout,
       concurrency: CustomConcurrency,
-      //concurrency: Cluster.CustomConcurrency,
       maxConcurrency: this.numClusters,
-      // puppeteerOptions: {
-      //   // puppeteer:puppeteer,
-      //   perBrowserOptions: perBrowserOptions,
-      // },
       perBrowserOptions: perBrowserOptions,
       retryLimit: 3,
-      //debug_log_path: this.debug_log_path,
-      // puppeteerOptions:perBrowserOptions,
     });
     // console.log(this.cluster)
     //}
@@ -542,7 +539,7 @@ export class ScrapeManager {
               // Save screenshot
               const screenshotPath = `${debugDir}/error_${timestamp}.png`;
               await page.screenshot({
-                path: screenshotPath,
+                path: screenshotPath as `${string}.png`,
                 fullPage: true
               });
 

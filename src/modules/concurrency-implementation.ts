@@ -11,6 +11,8 @@ import { detectBrowserPlatform, install, canDownload, Browser as PuppeteerBrowse
 import * as path from 'path';
 //import { app } from 'electron';
 import * as os from 'os';
+import puppeteerExtra from 'puppeteer-extra';
+import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 const BROWSER_TIMEOUT = 5000;
 
 // Use Puppeteer's built-in Chrome version
@@ -19,6 +21,8 @@ const CHROME_BUILD_ID = '126.0.6478.182';
 
 // Use Puppeteer's built-in Chrome version
 //const CHROME_BUILD_ID = 'chrome'; // This will use the version that comes with Puppeteer
+
+puppeteerExtra.use(StealthPlugin());
 
 // Function to get the correct cache directory path
 function getCacheDir(): string {
@@ -74,7 +78,7 @@ export class CustomConcurrency extends Browser {
         }
         
         // Add configuration for packaged environment
-        const launchOptions: puppeteer.PuppeteerLaunchOptions = {
+        const launchOptions: puppeteer.LaunchOptions = {
             ...options,
             args: [
                 ...((options as any).args || []),
@@ -87,7 +91,7 @@ export class CustomConcurrency extends Browser {
             ]
         };
 
-        let chrome = await this.puppeteer.launch(launchOptions) as puppeteer.Browser;
+        let chrome = await puppeteerExtra.launch(launchOptions) as puppeteer.Browser;
         let page: puppeteer.Page;
         let context;
 
@@ -127,11 +131,11 @@ export class CustomConcurrency extends Browser {
                 } catch (e) {
                     // debug('Failed to close chrome: %o', e);
                     // just relaunch as there is only one page per browser
-                    chrome = await this.puppeteer.launch(options);
+                    chrome = await puppeteerExtra.launch(options);
                 }
 
                 // just relaunch as there is only one page per browser
-                chrome = await this.puppeteer.launch(options);
+                chrome = await puppeteerExtra.launch(options);
             },
         };
     }
