@@ -102,7 +102,7 @@ export class SearchScrape implements searchEngineImpl {
         // await this.exposeFunction()
 
         this.keywords = data.data.keywords
-       
+        await this.page.bringToFront();
         await this.page.setViewport({ width: 1920, height: 1040 });
         let do_continue: boolean | void = true;
 
@@ -465,16 +465,22 @@ export class SearchScrape implements searchEngineImpl {
 
                 if (this.config.take_screenshot_on_error) {
                     if(this.config.debug_log_path){
-                        await this.page.screenshot({ path: path.join(this.config.debug_log_path, `debug_se_scraper_${this.config.search_engine_name}_${keyword}.png`) });
+                        const screenshot_path = path.join(this.config.debug_log_path, `debug_se_scraper_${this.config.search_engine_name}_${keyword}_${Date.now()}.png`)
+                        this.logger.info(`Saving screenshot to ${screenshot_path}`);
+                        await this.page.screenshot({ path: screenshot_path });
+                        //await fs.promises.writeFile(screenshot_path, screenshot);
                     }else{
+                        this.logger.info(`sceen path:`+`debug_se_scraper_${this.config.search_engine_name}_${keyword}.png`);
                         await this.page.screenshot({ path: `debug_se_scraper_${this.config.search_engine_name}_${keyword}.png` });
                     }
                 }
                 if(this.config.save_html){
                     const html = await this.page.content();
                     if(this.config.debug_log_path){
+                        this.logger.info(`Saving html to ${path.join(this.config.debug_log_path, `debug_se_scraper_${this.config.search_engine_name}_${keyword}.html`)}`);
                         await fs.promises.writeFile(path.join(this.config.debug_log_path, `debug_se_scraper_${this.config.search_engine_name}_${keyword}.html`), html);
                     }else{
+                        this.logger.info(`html path:`+`debug_se_scraper_${this.config.search_engine_name}_${keyword}.html`);
                         await fs.promises.writeFile(`debug_se_scraper_${this.config.search_engine_name}_${keyword}.html`, html);
                     }
                 }

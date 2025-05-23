@@ -309,7 +309,10 @@ export class ScrapeManager {
         // });
         // userAgent = Agent.toString();
         // console.log(userAgent)
-        userAgent = randomUseragent.getRandom();
+        userAgent = randomUseragent.getRandom((ua) => {
+            return ua.browserName === 'Chrome'&&(parseFloat(ua.browserVersion) >= 126);
+        });
+        //userAgent = randomUseragent.getRandom();
       } else {
         userAgent = this.config.user_agent;
       }
@@ -506,7 +509,17 @@ export class ScrapeManager {
       // Wrap the execute call in a try-catch to handle Puppeteer errors
       const wrappedExecute = async () => {
         try {
-          return await this.cluster.execute(cludata, boundMethod);
+          const page = await this.cluster.execute(cludata, boundMethod);
+          await page.setExtraHTTPHeaders({
+            'accept-language': 'en-US,en;q=0.9',
+            // Add more headers if needed
+          });
+          await page.setViewport({ width: 1920, height: 1080 });
+          return {
+            results: await obj.parse(page),
+            metadata: {},
+            num_requests: 1,
+          };
         } catch (error) {
           if (error instanceof Error) {
             const timestamp = new Date().toISOString().replace(/[:.]/g, '-');

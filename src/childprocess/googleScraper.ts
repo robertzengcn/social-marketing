@@ -171,7 +171,45 @@ export class GoogleScraper extends SearchScrape {
                 bottom_ads: [],
                 // places: [],
             };
-         const searchRes= await this.page.$$eval('#search .MjjYud', elements =>
+         let searchRes: SearchResult[] = [];
+         const searchResultsExist = await this.page.$('#search .MjjYud');
+         if (!searchResultsExist) {
+             // Try alternative selectors for search results
+             const alternativeSelectors = [
+                 '#search .g',
+                 '#search .rc',
+                 '#search .srg .g',
+                 '#search .srg .rc',
+                 '#search .srg .g .rc'
+             ];
+             
+             for (const selector of alternativeSelectors) {
+                 const results = await this.page.$(selector);
+                 if (results) {
+                     // Found results with alternative selector
+                     const searchRes = await this.page.$$eval(selector, elements =>
+                         elements.map(el => {
+                             const link = el.querySelector('a')?.getAttribute('href');
+                             const title = el.querySelector('h3')?.textContent;
+                             
+                             const serp_obj: SearchResult = {
+                                 link: link ? link : '',
+                                 title: title ? title : '',
+                                 snippet: el.querySelector('.VwiC3b span, .st')?.textContent,
+                                 visible_link: el.querySelector('cite')?.textContent
+                             };
+                             return serp_obj;
+                         })
+                     );
+                     
+                     for (const resValue of searchRes) {
+                         result.results.push(resValue);
+                     }
+                     break; // Exit loop once we find results
+                 }
+             }
+         }else{
+         searchRes= await this.page.$$eval('#search .MjjYud', elements =>
             elements.map(el => {
                 const link=el.querySelector('.yuRUbf a')?.getAttribute('href')
                 
@@ -193,7 +231,11 @@ export class GoogleScraper extends SearchScrape {
                         return serp_obj 
                     }
         ))
+        }
         console.log(searchRes)
+        if (!searchRes || searchRes.length === 0) {
+            throw new CustomError('No search results found,may be element not found', 202405301120304);
+        }
         for( const resValue of searchRes){
            
             result.results.push(resValue);
@@ -357,7 +399,40 @@ export class GoogleScraper extends SearchScrape {
     }
 
     async wait_for_results() {
-        await this.page.waitForSelector('#fbar', { timeout: this.STANDARD_TIMEOUT });
+        const html = await this.page.content();
+        if (html.includes("Our systems have detected unusual traffic from your computer network")) {
+            this.logger.warn("Google detected unusual traffic");
+            //return true;
+            throw new CustomError("Google detected unusual traffic", 202405301120304);
+        }
+        const waitSelectors = [
+            '#fbar',
+            '#search',
+            '#res',
+            '#main',
+            '.g',
+            '#rcnt'
+        ];
+
+        for (const selector of waitSelectors) {
+            try {
+                const element = await this.page.waitForSelector(selector, { timeout: this.STANDARD_TIMEOUT });
+                if (element) {
+                    return; // If any selector is found, exit the function
+                }
+            } catch (error) {
+                // Continue to the next selector if this one times out
+                continue;
+            }
+        }
+        const recaptchaElement = await this.page.$('#recaptcha');
+        if (recaptchaElement) {
+            throw new CustomError("Google reCAPTCHA detected", 202405301120305);
+        }
+        throw new CustomError("No search results found - possible detection or page load failure", 202405301120304);
+        // If none of the selectors are found, throw an error or log a warning
+        //this.logger.warn('None of the expected result selectors were found within the timeout period');
+        //await this.page.waitForSelector('#fbar', { timeout: this.STANDARD_TIMEOUT });
     }
 
     async detected() {
