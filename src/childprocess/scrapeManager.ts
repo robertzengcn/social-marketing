@@ -250,6 +250,7 @@ export class ScrapeManager {
     //let proxies:Array<ProxyServer>;
     // if we have at least one proxy, always use CONCURRENCY_BROWSER
     // and set maxConcurrency to this.config.proxies.length + 1
+    this.config.test_evasion=true;
     // else use whatever this.configuration was passed
     if (this.config.proxies && this.config.proxies.length > 0) {
       // because we use real browsers, we ran out of memory on normal laptops

@@ -210,7 +210,12 @@ export class SearchScrape implements searchEngineImpl {
             const testUrl = 'https://bot.sannysoft.com';
             await this.page.goto(testUrl);
             // Save a screenshot of the results.
-            await this.page.screenshot({ path: 'headless-evasion-result.png' });
+            if(this.config.debug_log_path){
+                this.logger.info("headless-evasion-result path:"+path.join(this.config.debug_log_path, 'headless-evasion-result.png') as `${string}.png`)
+                await this.page.screenshot({ path: path.join(this.config.debug_log_path, 'headless-evasion-result.png') as `${string}.png` });
+            }else{
+                await this.page.screenshot({ path: 'headless-evasion-result.png' });
+            }
         }
 
         if (this.config.log_http_headers === true) {
