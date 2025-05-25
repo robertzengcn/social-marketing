@@ -314,13 +314,13 @@ export class ScrapeManager {
         // });
         // userAgent = Agent.toString();
         // console.log(userAgent)
-        userAgent = randomUseragent.getRandom((ua) => {
-            return ua.browserName === 'Chrome'&&(parseFloat(ua.browserVersion) >= 126);
-        });
+        userAgent = randomUseragent.getRandom();
+        // console.log("generate randomuser agent here:"+userAgent)
         //userAgent = randomUseragent.getRandom();
       } else {
         userAgent = this.config.user_agent;
       }
+      console.log("generate user agent:"+userAgent)
       const args = this.config.chrome_flags.concat([`--user-agent=${userAgent}`]);
       console.log(args)
       // if (proxy&&proxy.server) {
@@ -508,6 +508,14 @@ export class ScrapeManager {
       const wrappedExecute = async () => {
         try {
           const page = await this.cluster.execute(cludata, boundMethod);
+          await page.evaluateOnNewDocument(() => {
+            Object.defineProperty(navigator, 'plugins', {
+              get: () => [1, 2, 3, 4, 5],
+            });
+            Object.defineProperty(navigator, 'languages', {
+              get: () => ['en-US', 'en'],
+            });
+            });
           await page.setExtraHTTPHeaders({
             'accept-language': 'en-US,en;q=0.9',
             // Add more headers if needed

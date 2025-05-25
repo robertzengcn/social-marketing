@@ -87,7 +87,9 @@ export class CustomConcurrency extends Browser {
                 '--disable-dev-shm-usage',
                 '--disable-accelerated-2d-canvas',
                 '--disable-gpu',
-                '--window-size=1280,768'
+                '--window-size=1280,768',
+                 '--enable-webgl',
+                '--use-gl=swiftshader'
             ]
         };
 
