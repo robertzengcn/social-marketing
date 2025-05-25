@@ -12,7 +12,8 @@ import clone from "lodash/clone"
 import times from "lodash/times"
 import map from "lodash/map";
 //import UserAgent from "user-agents";
-import randomUseragent from "random-useragent";
+// import randomUseragent from "random-useragent";
+import UserAgent from 'user-agents';
 // import { addExtra } from "puppeteer-extra";
 // import puppeteer from 'puppeteer-extra';
 import { CustomConcurrency } from "@/modules/concurrency-implementation"
@@ -20,10 +21,11 @@ import { searchEngineFactory } from "@/modules/searchEngineFactory"
 // import { Keyword } from "./keyword";
 import { pluggableType } from "@/entityTypes/scrapeType"
 import { ProxyServer } from "@/entityTypes/proxyType"
-import puppeteerExtra from 'puppeteer-extra';
+import * as vanillaPuppeteer from 'puppeteer';
+import {addExtra} from 'puppeteer-extra';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 
-puppeteerExtra.use(StealthPlugin());
+
 
 // import {ProxyServer} from "@/entityTypes/proxyType"
 // import { app } from 'electron'
@@ -115,6 +117,14 @@ export class ScrapeManager {
         "--start-fullscreen",
         "--hide-scrollbars",
         "--disable-notifications",
+        '--use-gl=swiftshader',
+                '--disable-blink-features=AutomationControlled',
+                '--disable-features=IsolateOrigins,site-per-process',
+                '--disable-site-isolation-trials',
+                '--disable-web-security',
+                '--disable-features=BlockInsecurePrivateNetworkRequests',
+                '--disable-features=IsolateOrigins',
+                '--disable-site-isolation-trials'
       ],
       //fix google account can not login
       ignoreDefaultArgs: [
@@ -285,61 +295,40 @@ export class ScrapeManager {
     //https://github.com/puppeteer/puppeteer/issues/2234
     // Give the per browser options
     const perBrowserOptions = map(this.proxiesArr.slice(0, this.numClusters), (proxy) => {
-      let userAgent: string;
+      let userAgents: string;
       if (this.config.random_user_agent) {
-        // Randomly choose between Chrome and Firefox user agents
-        // const isChrome = Math.random() > 0.5;
-        // console.log(isChrome)
-        // if (isChrome) {
-        //   // Modern Chrome user agent
-        //   const Agent = new UserAgent({
-        //     deviceCategory: "desktop",
-        //     //browser: "chrome",
-        //     platform: "win32"
-        //   });
-        //   userAgent = Agent.toString();
-        // } else {
-        //   // Modern Firefox user agent
-        //   const Agent = new UserAgent({
-        //     deviceCategory: "desktop",
-        //     browser: "firefox",
-        //     platform: "win32"
-        //   });
-        //   userAgent = Agent.toString();
-        // }
-        //         const Agent = new UserAgent({
-        //   deviceCategory: "desktop",
-        //   //browser: "chrome",
-        //   platform: "win32"
+        const userAgent = new UserAgent();
+        console.log("user agent is "+userAgent.toString());
+        userAgents = userAgent.toString();
+        // this.config.user_agent=userAgents
+        // userAgent = randomUseragent.getRandom(function(ua){
+          
+        //   return ua
         // });
-        // userAgent = Agent.toString();
-        // console.log(userAgent)
-        userAgent = randomUseragent.getRandom();
-        // console.log("generate randomuser agent here:"+userAgent)
-        //userAgent = randomUseragent.getRandom();
       } else {
-        userAgent = this.config.user_agent;
+        userAgents = this.config.user_agent;
       }
-      console.log("generate user agent:"+userAgent)
-      const args = this.config.chrome_flags.concat([`--user-agent=${userAgent}`]);
-      console.log(args)
-      // if (proxy&&proxy.server) {
-      //   // set proxy place
-      //   //console.log("proxy is" + proxy.server)
-      //   args = args.concat([`--proxy-server=${proxy.server}`]);
-      //   // args =args.concat([`--proxy-auth=${proxy.server.username}:${proxy.server.password}`]);
-
-      // }
-
+      console.log("generate user agent:"+userAgents)
+      
       return {
         headless: this.config.headless,
         ignoreHTTPSErrors: true,
-        args,
-        // proxy
+        args: [
+          ...this.config.chrome_flags,
+          `--user-agent=${userAgents}`
+        ],
+        defaultViewport: {
+          width: 1280 + Math.floor(Math.random() * 100),
+          height: 768 + Math.floor(Math.random() * 100),
+          deviceScaleFactor: 1,
+          hasTouch: false,
+          isLandscape: true,
+          isMobile: false
+        }
       };
     });
-    this.logger.info(this.config)
-    this.logger.info(perBrowserOptions);
+    //console.log(this.config)
+    console.log(perBrowserOptions);
 
     // puppeteer.use(_StealthPlugin());
     // puppeteer.use(_AdblockerPlugin());
@@ -352,8 +341,10 @@ export class ScrapeManager {
     // Add adblocker plugin to block all ads and trackers (saves bandwidth)
     // puppeteer.use(AdblockerPlugin({ blockTrackers: true }));
 
+    const puppeteer = addExtra(vanillaPuppeteer as any);
+    puppeteer.use(StealthPlugin());
     this.cluster = await Cluster.launch({
-      puppeteer:puppeteerExtra,
+      puppeteer:puppeteer,
       monitor: this.config.puppeteer_cluster_config.monitor,
       timeout: this.config.puppeteer_cluster_config.timeout,
       concurrency: CustomConcurrency,
@@ -508,19 +499,19 @@ export class ScrapeManager {
       const wrappedExecute = async () => {
         try {
           const page = await this.cluster.execute(cludata, boundMethod);
-          await page.evaluateOnNewDocument(() => {
-            Object.defineProperty(navigator, 'plugins', {
-              get: () => [1, 2, 3, 4, 5],
-            });
-            Object.defineProperty(navigator, 'languages', {
-              get: () => ['en-US', 'en'],
-            });
-            });
-          await page.setExtraHTTPHeaders({
-            'accept-language': 'en-US,en;q=0.9',
-            // Add more headers if needed
-          });
-          await page.setViewport({ width: 1920, height: 1080 });
+          // await page.evaluateOnNewDocument(() => {
+          //   Object.defineProperty(navigator, 'plugins', {
+          //     get: () => [1, 2, 3, 4, 5],
+          //   });
+          //   Object.defineProperty(navigator, 'languages', {
+          //     get: () => ['en-US', 'en'],
+          //   });
+          //   });
+          // await page.setExtraHTTPHeaders({
+          //   'accept-language': 'en-US,en;q=0.9',
+          //   // Add more headers if needed
+          // });
+          // await page.setViewport({ width: 1920, height: 1080 });
           return {
             results: await obj.parse(page),
             metadata: {},

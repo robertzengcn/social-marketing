@@ -206,15 +206,24 @@ export class SearchScrape implements searchEngineImpl {
         }
 
         if (this.config.test_evasion === true) {
+            // await this.page.evaluate(() => {
+            //     console.log('Current User Agent:', navigator.userAgent);
+            // });
+            //await this.page.getUserAgent(navigator.userAgent);
+            //console.log('Current User Agent:', navigator.userAgent);
             // Navigate to the page that will perform the tests.
             const testUrl = 'https://bot.sannysoft.com';
             await this.page.goto(testUrl);
             // Save a screenshot of the results.
             if(this.config.debug_log_path){
+                await this.page.evaluate(() => {
+                    console.log('Current User Agent:', navigator.userAgent);
+                });
+                await new Promise(resolve => setTimeout(resolve, 500));
                 this.logger.info("headless-evasion-result path:"+path.join(this.config.debug_log_path, 'headless-evasion-result.png') as `${string}.png`)
-                await this.page.screenshot({ path: path.join(this.config.debug_log_path, 'headless-evasion-result.png') as `${string}.png` });
+                await this.page.screenshot({fullPage: true, path: path.join(this.config.debug_log_path, 'headless-evasion-result.png') as `${string}.png` });
             }else{
-                await this.page.screenshot({ path: 'headless-evasion-result.png' });
+                await this.page.screenshot({fullPage: true, path: 'headless-evasion-result.png' });
             }
         }
 
