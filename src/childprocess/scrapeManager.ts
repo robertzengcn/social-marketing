@@ -117,7 +117,7 @@ export class ScrapeManager {
         "--start-fullscreen",
         "--hide-scrollbars",
         "--disable-notifications",
-        '--use-gl=swiftshader',
+        // '--use-gl=swiftshader',
                 '--disable-blink-features=AutomationControlled',
                 '--disable-features=IsolateOrigins,site-per-process',
                 '--disable-site-isolation-trials',

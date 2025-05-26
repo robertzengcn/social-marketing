@@ -172,11 +172,13 @@ export class GoogleScraper extends SearchScrape {
                 // places: [],
             };
          let searchRes: SearchResult[] = [];
-         const searchResultsExist = await this.page.$('#search .MjjYud');
-         if (!searchResultsExist) {
+        //  const searchResultsExist = await this.page.$('#search .MjjYud');
+        //  if (!searchResultsExist) {
              // Try alternative selectors for search results
              const alternativeSelectors = [
-                 '#search .g',
+                '#main .Gx5Zad',
+                '#search .MjjYud',
+                '#search .g',
                  '#search .rc',
                  '#search .srg .g',
                  '#search .srg .rc',
@@ -189,8 +191,29 @@ export class GoogleScraper extends SearchScrape {
                      // Found results with alternative selector
                      const searchRes = await this.page.$$eval(selector, elements =>
                          elements.map(el => {
-                             const link = el.querySelector('a')?.getAttribute('href');
-                             const title = el.querySelector('h3')?.textContent;
+                             const selectors = [
+                                 { link: 'a', title: 'h3', snippet: '.VwiC3b span, .st', visible: 'cite' },
+                                 { link: 'a', title: 'h3', snippet: '.kCrYT span', visible: '.sCuL3' },
+                                 { link: '.yuRUbf a', title: '.yuRUbf a h3', snippet: '.VwiC3b span', visible: '.yuRUbf cite' },
+                                 { link: '.g a', title: '.g h3', snippet: '.st', visible: '.g cite' }
+                             ];
+
+                             let link = '', title = '', snippet = '', visible_link = '';
+                             
+                             for (const selector of selectors) {
+                                 const linkEl = el.querySelector(selector.link);
+                                 const titleEl = el.querySelector(selector.title);
+                                 const snippetEl = el.querySelector(selector.snippet);
+                                 const visibleEl = el.querySelector(selector.visible);
+                                 
+                                 if (linkEl && titleEl) {
+                                     link = linkEl.getAttribute('href') || '';
+                                     title = titleEl.textContent || '';
+                                     snippet = snippetEl?.textContent || '';
+                                     visible_link = visibleEl?.textContent || '';
+                                     break;
+                                 }
+                             }
                              
                              const serp_obj: SearchResult = {
                                  link: link ? link : '',
@@ -208,30 +231,30 @@ export class GoogleScraper extends SearchScrape {
                      break; // Exit loop once we find results
                  }
              }
-         }else{
-         searchRes= await this.page.$$eval('#search .MjjYud', elements =>
-            elements.map(el => {
-                const link=el.querySelector('.yuRUbf a')?.getAttribute('href')
+        //  }else{
+        //  searchRes= await this.page.$$eval('#search .MjjYud', elements =>
+        //     elements.map(el => {
+        //         const link=el.querySelector('.yuRUbf a')?.getAttribute('href')
                 
-                const title=el.querySelector('.yuRUbf a h3')?.textContent
+        //         const title=el.querySelector('.yuRUbf a h3')?.textContent
                 
                
-                        const serp_obj:SearchResult  = {
-                            // link: await (window as any)._attr(el, '.yuRUbf a', 'href'),
-                            //link: el.getAttribute('href'),
-                            link:link?link:'',
-                            // title: await (window as any)._text(el, '.yuRUbf a h3'),
-                            title:title,
-                            //snippet: await (window as any)._text(el, '.VwiC3b span'),
-                            snippet: el.querySelector('.VwiC3b span')?.textContent,
-                            //visible_link: await (window as any)._text(el, '.yuRUbf cite'),
-                            visible_link: el.querySelector('.yuRUbf cite')?.textContent,
-                            // date: _text(el, 'span.f'),
-                        }
-                        return serp_obj 
-                    }
-        ))
-        }
+        //                 const serp_obj:SearchResult  = {
+        //                     // link: await (window as any)._attr(el, '.yuRUbf a', 'href'),
+        //                     //link: el.getAttribute('href'),
+        //                     link:link?link:'',
+        //                     // title: await (window as any)._text(el, '.yuRUbf a h3'),
+        //                     title:title,
+        //                     //snippet: await (window as any)._text(el, '.VwiC3b span'),
+        //                     snippet: el.querySelector('.VwiC3b span')?.textContent,
+        //                     //visible_link: await (window as any)._text(el, '.yuRUbf cite'),
+        //                     visible_link: el.querySelector('.yuRUbf cite')?.textContent,
+        //                     // date: _text(el, 'span.f'),
+        //                 }
+        //                 return serp_obj 
+        //             }
+        // ))
+        // }
         console.log(searchRes)
         if (!searchRes || searchRes.length === 0) {
             throw new CustomError('No search results found,may be element not found', 202405301120304);

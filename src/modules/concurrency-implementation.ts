@@ -88,11 +88,11 @@ export class CustomConcurrency extends Browser {
                 '--no-sandbox',
                 '--disable-setuid-sandbox',
                 '--disable-dev-shm-usage',
-                '--disable-accelerated-2d-canvas',
-                '--disable-gpu',
-                '--window-size=1280,768',
                 '--enable-webgl',
-                '--use-gl=swiftshader',
+                '--window-position=0,0',
+                '--ignore-certifcate-errors',
+                '--ignore-certifcate-errors-spki-list',
+                //'--use-gl=swiftshader',
                 '--disable-blink-features=AutomationControlled',
                 '--disable-features=IsolateOrigins,site-per-process',
                 '--disable-site-isolation-trials',
@@ -110,10 +110,10 @@ export class CustomConcurrency extends Browser {
                 isMobile: false
             }
         };
-        const puppeteer = addExtra(vanillaPuppeteer as any);
-        puppeteer.use(StealthPlugin());
+        const puppeteers = addExtra(vanillaPuppeteer as any);
+        puppeteers.use(StealthPlugin());
 
-        let chrome = await puppeteer.launch(launchOptions) as puppeteer.Browser;
+        let chrome = await puppeteers.launch(launchOptions) as puppeteer.Browser;
         let page: puppeteer.Page;
         let context;
 
@@ -126,19 +126,110 @@ export class CustomConcurrency extends Browser {
                     // Additional anti-detection measures
                     await page.evaluateOnNewDocument(() => {
                         // Overwrite the 'navigator.webdriver' property
-                        Object.defineProperty(navigator, 'webdriver', {
-                            get: () => undefined
-                        });
+                        // Object.defineProperty(navigator, 'webdriver', {
+                        //     get: () => undefined
+                        // });
                         
                         // Overwrite the 'plugins' property
-                        Object.defineProperty(navigator, 'plugins', {
-                            get: () => [1, 2, 3, 4, 5]
-                        });
+                        // Object.defineProperty(navigator, 'plugins', {
+                        //     get: () => {
+                        //         const plugins = [
+                        //             {
+                        //                 name: 'Chrome PDF Plugin',
+                        //                 filename: 'internal-pdf-viewer',
+                        //                 description: 'Portable Document Format',
+                        //                 version: '1.0.0'
+                        //             },
+                        //             {
+                        //                 name: 'Chrome PDF Viewer',
+                        //                 filename: 'mhjfbmdgcfjbbpaeojofohoefgiehjai',
+                        //                 description: 'Portable Document Format',
+                        //                 version: '1.0.0'
+                        //             },
+                        //             {
+                        //                 name: 'Native Client',
+                        //                 filename: 'internal-nacl-plugin',
+                        //                 description: 'Native Client Executable',
+                        //                 version: '1.0.0'
+                        //             }
+                        //         ];
+
+                        //         const pluginArray = {
+                        //             length: plugins.length,
+                        //             refresh: () => {},
+                        //             item: (index: number) => plugins[index],
+                        //             namedItem: (name: string) => plugins.find(p => p.name === name),
+                        //             [Symbol.iterator]: function* () {
+                        //                 for (let i = 0; i < plugins.length; i++) {
+                        //                     yield plugins[i];
+                        //                 }
+                        //             }
+                        //         };
+
+                        //         // Add numeric properties
+                        //         plugins.forEach((plugin, index) => {
+                        //             Object.defineProperty(pluginArray, index, {
+                        //                 value: plugin,
+                        //                 enumerable: true
+                        //             });
+                        //         });
+
+                        //         return pluginArray;
+                        //     }
+                        // });
                         
                         // Overwrite the 'languages' property
                         Object.defineProperty(navigator, 'languages', {
                             get: () => ['en-US', 'en']
                         });
+
+                        // Add permissions API
+                        Object.defineProperty(navigator, 'permissions', {
+                            get: () => ({
+                                query: async (permissionDesc: { name: string }) => {
+                                    const permissionStates = {
+                                        'geolocation': 'prompt',
+                                        'notifications': 'prompt',
+                                        'push': 'prompt',
+                                        'midi': 'prompt',
+                                        'camera': 'prompt',
+                                        'microphone': 'prompt',
+                                        'speaker': 'prompt',
+                                        'device-info': 'prompt',
+                                        'background-fetch': 'prompt',
+                                        'background-sync': 'prompt',
+                                        'bluetooth': 'prompt',
+                                        'persistent-storage': 'prompt',
+                                        'ambient-light-sensor': 'prompt',
+                                        'accelerometer': 'prompt',
+                                        'gyroscope': 'prompt',
+                                        'magnetometer': 'prompt',
+                                        'clipboard-read': 'prompt',
+                                        'clipboard-write': 'prompt',
+                                        'payment-handler': 'prompt'
+                                    };
+                                    
+                                    return {
+                                        state: permissionStates[permissionDesc.name] || 'prompt',
+                                        onchange: null
+                                    };
+                                }
+                            })
+                        });
+
+                        // Set WebGL vendor and renderer
+                        const getParameter = WebGLRenderingContext.prototype.getParameter;
+                        WebGLRenderingContext.prototype.getParameter = function(parameter) {
+                            // UNMASKED_VENDOR_WEBGL
+                            if (parameter === 37445) {
+                                return 'Intel Inc.';
+                            }
+                            // UNMASKED_RENDERER_WEBGL
+                            if (parameter === 37446) {
+                                return 'Intel Iris OpenGL Engine';
+                            }
+                            return getParameter.apply(this, [parameter]);
+                        };
                         
                         // Add Chrome-specific properties
                         (window as any).chrome = {
