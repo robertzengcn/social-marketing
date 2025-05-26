@@ -177,6 +177,7 @@ export class GoogleScraper extends SearchScrape {
              // Try alternative selectors for search results
              const alternativeSelectors = [
                 '#main .Gx5Zad',
+                '#main .MjjYud',
                 '#search .MjjYud',
                 '#search .g',
                  '#search .rc',
@@ -194,6 +195,7 @@ export class GoogleScraper extends SearchScrape {
                              const selectors = [
                                  { link: 'a', title: 'h3', snippet: '.VwiC3b span, .st', visible: 'cite' },
                                  { link: 'a', title: 'h3', snippet: '.kCrYT span', visible: '.sCuL3' },
+                                 { link: 'a', title: '.v7jaNc', snippet: '.VwiC3b span', visible: '.ob9lvb' },
                                  { link: '.yuRUbf a', title: '.yuRUbf a h3', snippet: '.VwiC3b span', visible: '.yuRUbf cite' },
                                  { link: '.g a', title: '.g h3', snippet: '.st', visible: '.g cite' }
                              ];

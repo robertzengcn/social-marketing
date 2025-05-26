@@ -15,6 +15,8 @@ import * as os from 'os';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 import * as vanillaPuppeteer from 'puppeteer';
 import {addExtra} from 'puppeteer-extra';
+import * as fs from 'fs';
+import { execSync } from 'child_process';
 
 const BROWSER_TIMEOUT = 5000;
 
@@ -33,6 +35,103 @@ function getCacheDir(): string {
     return path.join(homeDir, '.cache', 'puppeteer');
 }
 
+// Function to find Chrome path on macOS
+function findChromeOnMac(): string | undefined {
+    try {
+        // Try using mdfind to locate Chrome
+        const chromePath = execSync('mdfind "kMDItemCFBundleIdentifier == com.google.Chrome"').toString().trim();
+        if (chromePath) {
+            return path.join(chromePath, 'Contents/MacOS/Google Chrome');
+        }
+    } catch (error) {
+        console.error('Error finding Chrome:', error);
+    }
+    
+    // Fallback paths
+    const possiblePaths = [
+        path.join('/Applications', 'Google Chrome.app', 'Contents', 'MacOS', 'Google Chrome'),
+        path.join('/Applications', 'Google Chrome Beta.app', 'Contents', 'MacOS', 'Google Chrome Beta'),
+        path.join('/Applications', 'Google Chrome Canary.app', 'Contents', 'MacOS', 'Google Chrome Canary'),
+        path.join(process.env.HOME || '', 'Applications', 'Google Chrome.app', 'Contents', 'MacOS', 'Google Chrome')
+    ];
+
+    for (const chromePath of possiblePaths) {
+        console.log('chromePath', chromePath);
+        if (fs.existsSync(chromePath)) {
+            return chromePath;
+        }
+    }
+
+    return undefined;
+}
+
+function findChromeOnWindows(): string | undefined {
+    const possiblePaths = [
+        'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+        'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
+        path.join(process.env.LOCALAPPDATA || '', 'Google\\Chrome\\Application\\chrome.exe'),
+        'C:\\Program Files\\Google\\Chrome Beta\\Application\\chrome.exe',
+        'C:\\Program Files (x86)\\Google\\Chrome Beta\\Application\\chrome.exe',
+        path.join(process.env.LOCALAPPDATA || '', 'Google\\Chrome Beta\\Application\\chrome.exe'),
+        'C:\\Program Files\\Google\\Chrome Canary\\Application\\chrome.exe',
+        'C:\\Program Files (x86)\\Google\\Chrome Canary\\Application\\chrome.exe',
+        path.join(process.env.LOCALAPPDATA || '', 'Google\\Chrome Canary\\Application\\chrome.exe')
+    ];
+
+    for (const chromePath of possiblePaths) {
+        if (fs.existsSync(chromePath)) {
+            return chromePath;
+        }
+    }
+
+    try {
+        const output = execSync('reg query "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\chrome.exe" /ve').toString();
+        const match = output.match(/REG_SZ\s+(.*)/);
+        if (match && match[1]) {
+            const chromePath = match[1].trim();
+            if (fs.existsSync(chromePath)) {
+                return chromePath;
+            }
+        }
+    } catch (error) {
+        console.error('Error finding Chrome in registry:', error);
+    }
+
+    return undefined;
+}
+
+function findChromeOnLinux(): string | undefined {
+    try {
+        const chromePath = execSync('which google-chrome').toString().trim();
+        if (chromePath && fs.existsSync(chromePath)) {
+            return chromePath;
+        }
+    } catch (error) {
+        console.error('Error finding Chrome with which:', error);
+    }
+
+    const possiblePaths = [
+        '/usr/bin/google-chrome',
+        '/usr/bin/google-chrome-stable',
+        '/usr/bin/google-chrome-beta',
+        '/usr/bin/google-chrome-unstable',
+        '/usr/bin/chromium-browser',
+        '/usr/bin/chromium',
+        '/snap/bin/google-chrome',
+        '/snap/bin/chromium',
+        path.join(process.env.HOME || '', '.local/bin/google-chrome'),
+        path.join(process.env.HOME || '', '.local/bin/chromium-browser')
+    ];
+
+    for (const chromePath of possiblePaths) {
+        if (fs.existsSync(chromePath)) {
+            return chromePath;
+        }
+    }
+
+    return undefined;
+}
+
 export class CustomConcurrency extends Browser {
 
     async init() {
@@ -46,43 +145,64 @@ export class CustomConcurrency extends Browser {
         const options = perBrowserOptions || this.options;
         const cacheDir = getCacheDir();
         
-        // Try to install Chrome if not found
+        // Try to find local Chrome installation
+        let executablePath: string | undefined;
         try {
             const platform = await detectBrowserPlatform();
             if (platform) {
                 const browser = 'chrome' as PuppeteerBrowser;
                 
-                // Check if Chrome is already installed
-                const installedBrowsers = await getInstalledBrowsers({ cacheDir });
-                const isChromeInstalled = installedBrowsers.some(
-                    installed => installed.browser === browser
-                );
-
-                if (!isChromeInstalled) {
-                    const canDownloadBrowser = await canDownload({
-                        browser,
-                        buildId: CHROME_BUILD_ID,
-                        platform,
-                        cacheDir
-                    });
+                // First try to find Chrome in system paths
+                let systemChromePath: string | undefined;
+                if (platform === 'mac') {
+                    systemChromePath = findChromeOnMac();
+                } else if (platform === 'linux') {
+                    systemChromePath = findChromeOnLinux();
+                } else if (platform === 'win32') {
+                    systemChromePath = findChromeOnWindows();
+                }
+                console.log('systemChromePath', systemChromePath);
+                if (systemChromePath && fs.existsSync(systemChromePath)) {
+                    executablePath = systemChromePath;
+                    console.log('Using system Chrome installation:', executablePath);
+                } else {
+                    // If system Chrome not found, check cache directory
+                    const installedBrowsers = await getInstalledBrowsers({ cacheDir });
+                    const chromeInstallation = installedBrowsers.find(
+                        installed => installed.browser === browser
+                    );
                     
-                    if (canDownloadBrowser) {
-                        await install({
+                    if (chromeInstallation) {
+                        executablePath = chromeInstallation.executablePath;
+                        console.log('Using cached Chrome installation:', executablePath);
+                    } else {
+                        console.log('No Chrome installation found, will download browser');
+                        const canDownloadBrowser = await canDownload({
                             browser,
                             buildId: CHROME_BUILD_ID,
                             platform,
                             cacheDir
                         });
+                        
+                        if (canDownloadBrowser) {
+                            await install({
+                                browser,
+                                buildId: CHROME_BUILD_ID,
+                                platform,
+                                cacheDir
+                            });
+                        }
                     }
                 }
             }
         } catch (error) {
-            console.error('Failed to install Chrome:', error);
+            console.error('Failed to detect/install Chrome:', error);
         }
         
         // Add configuration for packaged environment
         const launchOptions: puppeteer.LaunchOptions = {
             ...options,
+            executablePath,
             args: [
                 ...((options as any).args || []),
                 '--no-sandbox',
