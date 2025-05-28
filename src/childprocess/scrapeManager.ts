@@ -112,7 +112,8 @@ export class ScrapeManager {
         // "--disable-setuid-sandbox",
         // "--disable-dev-shm-usage",
         // "--disable-accelerated-2d-canvas",
-      
+        "--disable-plugins",
+        "--disable-extensions",
         // "--window-size=1280,768",
         // "--start-fullscreen",
         // "--hide-scrollbars",
@@ -171,7 +172,7 @@ export class ScrapeManager {
       // check if headless chrome escapes common detection techniques
       // this is a quick test and should be used for debugging
       test_evasion: false,
-      apply_evasion_techniques: true,
+      apply_evasion_techniques: false,
       // settings for puppeteer-cluster
       puppeteer_cluster_config: {
         timeout: 30 * 60 * 1000, // max timeout set to 30 minutes
