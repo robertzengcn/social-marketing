@@ -36,7 +36,7 @@ export class UserSearch {
             puppeteer_cluster_config: {
                 timeout: 30 * 60 * 1000, // max timeout set to 10 minutes
                 monitor: true,
-                concurrency: Cluster.CONCURRENCY_BROWSER,
+                //concurrency: Cluster.CONCURRENCY_BROWSER,
                 //concurrency:data.concurrency, // one scraper per tab
                maxConcurrency: data.concurrency, // scrape with 1 tab
                

@@ -219,7 +219,7 @@ export class SearchScrape implements searchEngineImpl {
                 await this.page.evaluate(() => {
                     console.log('Current User Agent:', navigator.userAgent);
                 });
-                await new Promise(resolve => setTimeout(resolve, 500));
+                await new Promise(resolve => setTimeout(resolve, 1000));
                 this.logger.info("headless-evasion-result path:"+path.join(this.config.debug_log_path, 'headless-evasion-result.png') as `${string}.png`)
                 await this.page.screenshot({fullPage: true, path: path.join(this.config.debug_log_path, 'headless-evasion-result.png') as `${string}.png` });
             }else{

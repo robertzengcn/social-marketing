@@ -21,9 +21,9 @@ import { searchEngineFactory } from "@/modules/searchEngineFactory"
 // import { Keyword } from "./keyword";
 import { pluggableType } from "@/entityTypes/scrapeType"
 import { ProxyServer } from "@/entityTypes/proxyType"
-import * as vanillaPuppeteer from 'puppeteer';
-import {addExtra} from 'puppeteer-extra';
-import StealthPlugin from 'puppeteer-extra-plugin-stealth';
+// import vanillaPuppeteer from 'puppeteer';
+// import {addExtra} from 'puppeteer-extra';
+// import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 
 
 
@@ -104,35 +104,35 @@ export class ScrapeManager {
       // specify flags passed to chrome here
       // About our defaults values https://peter.sh/experiments/chromium-command-line-switches/
       chrome_flags: [
-        "--disable-infobars",
-        "--window-position=0,0",
-        "--ignore-certifcate-errors",
-        "--ignore-certifcate-errors-spki-list",
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-        "--disable-dev-shm-usage",
-        "--disable-accelerated-2d-canvas",
-        "--disable-gpu",
-        "--window-size=1280,768",
-        "--start-fullscreen",
-        "--hide-scrollbars",
-        "--disable-notifications",
+        //"--disable-infobars",
+        //"--window-position=0,0",
+        // "--ignore-certifcate-errors",
+        // "--ignore-certifcate-errors-spki-list",
+        //"--no-sandbox",
+        // "--disable-setuid-sandbox",
+        // "--disable-dev-shm-usage",
+        // "--disable-accelerated-2d-canvas",
+      
+        // "--window-size=1280,768",
+        // "--start-fullscreen",
+        // "--hide-scrollbars",
+        // "--disable-notifications",
         // '--use-gl=swiftshader',
-                '--disable-blink-features=AutomationControlled',
-                '--disable-features=IsolateOrigins,site-per-process',
-                '--disable-site-isolation-trials',
-                '--disable-web-security',
-                '--disable-features=BlockInsecurePrivateNetworkRequests',
-                '--disable-features=IsolateOrigins',
-                '--disable-site-isolation-trials'
+                // '--disable-blink-features=AutomationControlled',
+                // '--disable-features=IsolateOrigins,site-per-process',
+                // '--disable-site-isolation-trials',
+                // '--disable-web-security',
+                // '--disable-features=BlockInsecurePrivateNetworkRequests',
+                // '--disable-features=IsolateOrigins',
+                // '--disable-site-isolation-trials'
       ],
       //fix google account can not login
-      ignoreDefaultArgs: [
-        "--enable-automation",
-        "--disable-extensions",
-        "--disable-default-apps",
-        "--disable-component-extensions-with-background-pages",
-      ],
+      // ignoreDefaultArgs: [
+      //   "--enable-automation",
+      //   "--disable-extensions",
+      //   "--disable-default-apps",
+      //   "--disable-component-extensions-with-background-pages",
+      // ],
       // the number of pages to scrape for each keyword
       num_pages: 1,
       // path to output file, data will be stored in JSON
@@ -317,14 +317,14 @@ export class ScrapeManager {
           ...this.config.chrome_flags,
           `--user-agent=${userAgents}`
         ],
-        defaultViewport: {
-          width: 1280 + Math.floor(Math.random() * 100),
-          height: 768 + Math.floor(Math.random() * 100),
-          deviceScaleFactor: 1,
-          hasTouch: false,
-          isLandscape: true,
-          isMobile: false
-        }
+        // defaultViewport: {
+        //   width: 1280 + Math.floor(Math.random() * 100),
+        //   height: 768 + Math.floor(Math.random() * 100),
+        //   deviceScaleFactor: 1,
+        //   hasTouch: false,
+        //   isLandscape: true,
+        //   isMobile: false
+        // }
       };
     });
     //console.log(this.config)
@@ -341,15 +341,15 @@ export class ScrapeManager {
     // Add adblocker plugin to block all ads and trackers (saves bandwidth)
     // puppeteer.use(AdblockerPlugin({ blockTrackers: true }));
 
-    const puppeteer = addExtra(vanillaPuppeteer as any);
-    puppeteer.use(StealthPlugin());
+    // const puppeteer = addExtra(vanillaPuppeteer);
+    // puppeteer.use(StealthPlugin());
     this.cluster = await Cluster.launch({
-      puppeteer:puppeteer,
+      //puppeteer,
       monitor: this.config.puppeteer_cluster_config.monitor,
       timeout: this.config.puppeteer_cluster_config.timeout,
       concurrency: CustomConcurrency,
       maxConcurrency: this.numClusters,
-      perBrowserOptions: perBrowserOptions,
+       perBrowserOptions: perBrowserOptions,
       retryLimit: 3,
     });
     // console.log(this.cluster)

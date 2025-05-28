@@ -424,40 +424,57 @@ export class GoogleScraper extends SearchScrape {
     }
 
     async wait_for_results() {
-        const html = await this.page.content();
-        if (html.includes("Our systems have detected unusual traffic from your computer network")) {
-            this.logger.warn("Google detected unusual traffic");
-            //return true;
-            throw new CustomError("Google detected unusual traffic", 202405301120304);
-        }
-        const waitSelectors = [
-            '#fbar',
-            '#search',
-            '#res',
-            '#main',
-            '.g',
-            '#rcnt'
-        ];
+        try {
+            // Wait for the page to be stable
+            await this.page.waitForFunction(() => {
+                return document.readyState === 'complete';
+            }, { timeout: this.STANDARD_TIMEOUT });
 
-        for (const selector of waitSelectors) {
-            try {
-                const element = await this.page.waitForSelector(selector, { timeout: this.STANDARD_TIMEOUT });
-                if (element) {
-                    return; // If any selector is found, exit the function
-                }
-            } catch (error) {
-                // Continue to the next selector if this one times out
-                continue;
+            // Wait a bit more to ensure any dynamic content is loaded
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            const html = await this.page.content();
+            if (html.includes("Our systems have detected unusual traffic from your computer network")) {
+                this.logger.warn("Google detected unusual traffic");
+                //throw new CustomError("Google detected unusual traffic", 202405301120304);
+                await this.page.solveRecaptchas()
             }
+
+            const waitSelectors = [
+                '#fbar',
+                '#search',
+                '#res',
+                '#main',
+                '.g',
+                '#rcnt'
+            ];
+
+            for (const selector of waitSelectors) {
+                try {
+                    const element = await this.page.waitForSelector(selector, { timeout: this.STANDARD_TIMEOUT });
+                    if (element) {
+                        return; // If any selector is found, exit the function
+                    }
+                } catch (error) {
+                    // Continue to the next selector if this one times out
+                    continue;
+                }
+            }
+
+            const recaptchaElement = await this.page.$('#recaptcha');
+            if (recaptchaElement) {
+                throw new CustomError("Google reCAPTCHA detected", 202405301120305);
+            }
+
+            throw new CustomError("No search results found - possible detection or page load failure", 202405301120304);
+        } catch (error) {
+            if (error instanceof Error && error.message.includes('Execution context was destroyed')) {
+                // If the context was destroyed, wait a bit and try again
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                return this.wait_for_results();
+            }
+            throw error;
         }
-        const recaptchaElement = await this.page.$('#recaptcha');
-        if (recaptchaElement) {
-            throw new CustomError("Google reCAPTCHA detected", 202405301120305);
-        }
-        throw new CustomError("No search results found - possible detection or page load failure", 202405301120304);
-        // If none of the selectors are found, throw an error or log a warning
-        //this.logger.warn('None of the expected result selectors were found within the timeout period');
-        //await this.page.waitForSelector('#fbar', { timeout: this.STANDARD_TIMEOUT });
     }
 
     async detected() {

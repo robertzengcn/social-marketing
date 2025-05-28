@@ -13,11 +13,13 @@ import * as path from 'path';
 import * as os from 'os';
 //import puppeteerExtra from 'puppeteer-extra';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
-import * as vanillaPuppeteer from 'puppeteer';
+import AdblockerPlugin from 'puppeteer-extra-plugin-adblocker';
+import RecaptchaPlugin from 'puppeteer-extra-plugin-recaptcha';
+import vanillaPuppeteer from 'puppeteer';
 import {addExtra} from 'puppeteer-extra';
 import * as fs from 'fs';
 import { execSync } from 'child_process';
-
+//import { executablePath } from 'puppeteer';
 const BROWSER_TIMEOUT = 5000;
 
 // Use Puppeteer's built-in Chrome version
@@ -153,19 +155,27 @@ export class CustomConcurrency extends Browser {
                 const browser = 'chrome' as PuppeteerBrowser;
                 
                 // First try to find Chrome in system paths
-                let systemChromePath: string | undefined;
-                if (platform === 'mac') {
-                    systemChromePath = findChromeOnMac();
-                } else if (platform === 'linux') {
-                    systemChromePath = findChromeOnLinux();
-                } else if (platform === 'win32') {
-                    systemChromePath = findChromeOnWindows();
-                }
-                console.log('systemChromePath', systemChromePath);
-                if (systemChromePath && fs.existsSync(systemChromePath)) {
-                    executablePath = systemChromePath;
-                    console.log('Using system Chrome installation:', executablePath);
-                } else {
+                //let systemChromePath: string | undefined;
+                // if (platform.includes('mac_arm')) {
+                //     systemChromePath = findChromeOnMac();
+                // } else if (platform === 'linux') {
+                //     systemChromePath = findChromeOnLinux();
+                // } else if (platform === 'win32') {
+                //     systemChromePath = findChromeOnWindows();
+                // }
+                // if (platform.includes('mac_arm')) {
+                //     systemChromePath = findChromeOnMac();
+                // } else if (platform === 'linux') {
+                //     systemChromePath = findChromeOnLinux();
+                // } else if (platform === 'win32') {
+                //     systemChromePath = findChromeOnWindows();
+                // }
+                // console.log('platform', platform);
+                // console.log('systemChromePath', systemChromePath);
+                // if (systemChromePath && fs.existsSync(systemChromePath)) {
+                //     executablePath = systemChromePath;
+                //     console.log('Using system Chrome installation:', executablePath);
+                // } else {
                     // If system Chrome not found, check cache directory
                     const installedBrowsers = await getInstalledBrowsers({ cacheDir });
                     const chromeInstallation = installedBrowsers.find(
@@ -193,7 +203,7 @@ export class CustomConcurrency extends Browser {
                             });
                         }
                     }
-                }
+                //}
             }
         } catch (error) {
             console.error('Failed to detect/install Chrome:', error);
@@ -213,6 +223,7 @@ export class CustomConcurrency extends Browser {
                 '--ignore-certifcate-errors',
                 '--ignore-certifcate-errors-spki-list',
                 //'--use-gl=swiftshader',
+                //'--use-gl=angle',
                 '--disable-blink-features=AutomationControlled',
                 '--disable-features=IsolateOrigins,site-per-process',
                 '--disable-site-isolation-trials',
@@ -230,9 +241,28 @@ export class CustomConcurrency extends Browser {
                 isMobile: false
             }
         };
-        const puppeteers = addExtra(vanillaPuppeteer as any);
+        console.log('launchOptions', launchOptions);
+        const puppeteers = addExtra(vanillaPuppeteer);
         puppeteers.use(StealthPlugin());
+        puppeteers.use(AdblockerPlugin({
+            // Block trackers
+            blockTrackers: true
+        }));
 
+        // Add reCAPTCHA solver
+        puppeteers.use(
+            RecaptchaPlugin({
+                provider: {
+                    id: '2captcha',
+                    token: process.env.TWOCAPTCHA_TOKEN || '', // Your 2captcha API token
+                },
+                visualFeedback: true, // Show a visual feedback when solving a CAPTCHA
+                solveInViewportOnly: true, // Only solve CAPTCHAs that are in the viewport
+                solveScoreBased: true, // Solve score-based CAPTCHAs
+                solveInactiveChallenges: true, // Solve inactive challenges
+            })
+        );
+        
         let chrome = await puppeteers.launch(launchOptions) as puppeteer.Browser;
         let page: puppeteer.Page;
         let context;
