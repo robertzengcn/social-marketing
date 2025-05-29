@@ -84,19 +84,19 @@ export class EmailCluster {
       // specify flags passed to chrome here
       // About our defaults values https://peter.sh/experiments/chromium-command-line-switches/
       chrome_flags: [
-        "--disable-infobars",
-        "--window-position=0,0",
-        "--ignore-certifcate-errors",
-        "--ignore-certifcate-errors-spki-list",
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-        "--disable-dev-shm-usage",
-        "--disable-accelerated-2d-canvas",
-        "--disable-gpu",
-        "--window-size=1280,768",
-        "--start-fullscreen",
-        "--hide-scrollbars",
-        "--disable-notifications",
+        // "--disable-infobars",
+        // "--window-position=0,0",
+        // "--ignore-certifcate-errors",
+        // "--ignore-certifcate-errors-spki-list",
+        // "--no-sandbox",
+        // "--disable-setuid-sandbox",
+        // "--disable-dev-shm-usage",
+        // "--disable-accelerated-2d-canvas",
+        // "--disable-gpu",
+        // "--window-size=1280,768",
+        // "--start-fullscreen",
+        // "--hide-scrollbars",
+        // "--disable-notifications",
       ],
       //fix google account can not login
       ignoreDefaultArgs: [
@@ -143,7 +143,7 @@ export class EmailCluster {
       // check if headless chrome escapes common detection techniques
       // this is a quick test and should be used for debugging
       test_evasion: false,
-      apply_evasion_techniques: true,
+      apply_evasion_techniques: false,
       // settings for puppeteer-cluster
       puppeteer_cluster_config: {
         timeout: 30 * 60 * 1000, // max timeout set to 30 minutes

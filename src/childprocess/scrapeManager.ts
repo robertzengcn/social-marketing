@@ -261,7 +261,7 @@ export class ScrapeManager {
     //let proxies:Array<ProxyServer>;
     // if we have at least one proxy, always use CONCURRENCY_BROWSER
     // and set maxConcurrency to this.config.proxies.length + 1
-    this.config.test_evasion=true;
+    this.config.test_evasion=false;
     // else use whatever this.configuration was passed
     if (this.config.proxies && this.config.proxies.length > 0) {
       // because we use real browsers, we ran out of memory on normal laptops
@@ -298,7 +298,7 @@ export class ScrapeManager {
     const perBrowserOptions = map(this.proxiesArr.slice(0, this.numClusters), (proxy) => {
       let userAgents: string;
       if (this.config.random_user_agent) {
-        const userAgent = new UserAgent();
+        const userAgent = new UserAgent({ deviceCategory: 'desktop' });
         console.log("user agent is "+userAgent.toString());
         userAgents = userAgent.toString();
         // this.config.user_agent=userAgents
@@ -309,7 +309,7 @@ export class ScrapeManager {
       } else {
         userAgents = this.config.user_agent;
       }
-      console.log("generate user agent:"+userAgents)
+      //console.log("generate user agent:"+userAgents)
       
       return {
         headless: this.config.headless,

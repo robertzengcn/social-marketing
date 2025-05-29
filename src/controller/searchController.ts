@@ -22,12 +22,15 @@ import {USERLOGPATH,USEREMAIL} from '@/config/usersetting';
 import {WriteLog,getApplogspath,getRandomValues} from "@/modules/lib/function"
 import { v4 as uuidv4 } from 'uuid';
 import {SortBy} from "@/entityTypes/commonType";
-
-
+import { SystemSettingGroupModule } from '@/modules/SystemSettingGroupModule';
+import {twocaptchagroup,twocaptchatoken} from '@/config/settinggroupInit'
 export class SearchController {
     private searhModel:searhModel;
+
+    private systemSettingGroupModule: SystemSettingGroupModule
     constructor() {
         this.searhModel=new searhModel()
+        this.systemSettingGroupModule=new SystemSettingGroupModule()
     }
     
     public async searchData(data: Usersearchdata) {
@@ -176,10 +179,19 @@ export class SearchController {
         }
         const { port1, port2 } = new MessageChannelMain()
        // const tokenService=new Token()
-        
+       let twoCaptchaTokenvalue=""
+       const twoCaptchaToken=await this.systemSettingGroupModule.getGroupItembyName(twocaptchagroup)
+       if(twoCaptchaToken){
+        const token=twoCaptchaToken.settings.find((item)=>item.key===twocaptchatoken)
+        if(token){
+            twoCaptchaTokenvalue=token.value
+        }
+       }
+       
         const child = utilityProcess.fork(childPath, [],{stdio:"pipe",execArgv:["puppeteer-cluster:*"],env:{
             ...process.env,
-            NODE_OPTIONS: ""  
+            NODE_OPTIONS: "",
+            TWOCAPTCHA_TOKEN: twoCaptchaTokenvalue
         }} )
         child.on("spawn", () => {
             console.log("child process satart, pid is"+child.pid)

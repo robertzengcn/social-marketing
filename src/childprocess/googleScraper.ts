@@ -386,6 +386,34 @@ export class GoogleScraper extends SearchScrape {
             try {
                 const input = await this.page.$(selector);
                 if (input) {
+                    // Get input element position
+                    const inputBox = await input.boundingBox();
+                    if (!inputBox) {
+                        throw new Error('Could not get input box position');
+                    }
+
+                    // Generate random coordinates within the input box
+                    const randomX = inputBox.x + Math.random() * inputBox.width;
+                    const randomY = inputBox.y + Math.random() * inputBox.height;
+
+                    // Move mouse with random speed
+                    const steps = 10 + Math.floor(Math.random() * 20); // Random number of steps
+                    const stepDelay = 50 + Math.random() * 100; // Random delay between steps
+
+                    for (let i = 0; i < steps; i++) {
+                        const progress = i / steps;
+                        const currentX = randomX * progress;
+                        const currentY = randomY * progress;
+                        
+                        await this.page.mouse.move(currentX, currentY);
+                        //await this.page.waitForTimeout(stepDelay);
+                        await new Promise(resolve => setTimeout(resolve, stepDelay));
+                    }
+
+                    // Final click with random delay
+                    //await this.page.waitForTimeout(100 + Math.random() * 200);
+                    await new Promise(resolve => setTimeout(resolve, 100 + Math.random() * 200));
+                    await this.page.mouse.click(randomX, randomY);
                     await this.set_input_value(selector, keyword);
                     await this.page.evaluate(async () => {
                         await new Promise(function (resolve) {
@@ -404,20 +432,34 @@ export class GoogleScraper extends SearchScrape {
     }
     //click next page
     async next_page(): Promise<boolean | void> {
-        const next_page_link = await this.page.$('#pnnext');
-        if (!next_page_link) {
-            //return false;
-            const targetElement = await this.page.$('.RVQdVd')
-            if (targetElement) {
-                await targetElement.scrollIntoView();
-                targetElement.click();
-                return true
+        // const next_page_link = await this.page.$('#pnnext');
+        // if (!next_page_link) {
+            const nextPageSelectors = [
+                '.RVQdVd',  // Current selector
+                '#pnnext',  // Standard next page button
+                '.nBDE1b',
+                'a[aria-label="Next page"]',  // Alternative next page link
+                'a[href*="start="]',  // Links containing start parameter
+                'a[role="button"][aria-label*="Next"]'  // Next button with role
+            ];
+
+            for (const selector of nextPageSelectors) {
+                try {
+                    const targetElement = await this.page.$(selector);
+                    if (targetElement) {
+                        await targetElement.scrollIntoView();
+                        await targetElement.click();
+                        return true;
+                    }
+                } catch (error) {
+                    continue;
+                }
             }
 
-        } else {
-            await next_page_link.click();
-            return true;
-        }
+        // } else {
+        //     await next_page_link.click();
+        //     return true;
+        // }
 
 
         return false;
@@ -437,7 +479,9 @@ export class GoogleScraper extends SearchScrape {
             if (html.includes("Our systems have detected unusual traffic from your computer network")) {
                 this.logger.warn("Google detected unusual traffic");
                 //throw new CustomError("Google detected unusual traffic", 202405301120304);
-                await this.page.solveRecaptchas()
+                if (process.env.TWOCAPTCHA_TOKEN && process.env.TWOCAPTCHA_TOKEN.trim() !== '') {
+                    await this.page.solveRecaptchas()
+                }
             }
 
             const waitSelectors = [

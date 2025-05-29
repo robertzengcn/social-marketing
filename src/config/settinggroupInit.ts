@@ -22,6 +22,9 @@ export const Doubao_PRO_A:LlmDatatype={
     url:volcengineproapiurl,
     apikey:volcengineproapikey
 }
+export const twocaptchagroup='2captcha-group'
+export const twocaptchatoken='2captcha-token'   
+export const twocaptchadescription='2captcha-description'
 
 export const settinggroupInit: Array<SystemSettingGroupdf> = [
     {
@@ -40,6 +43,18 @@ export const settinggroupInit: Array<SystemSettingGroupdf> = [
                 description:'deepseek-local-model-description',
                 type:'input',
              },
+        ]
+    },
+    {
+        name: twocaptchagroup,
+        description: twocaptchadescription,
+        items: [
+            {
+                key: twocaptchatoken,
+                value: '',
+                description: '2captcha-token-description',
+                type: 'input',
+            }
         ]
     },
     {

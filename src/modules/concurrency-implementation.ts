@@ -248,20 +248,34 @@ export class CustomConcurrency extends Browser {
             // Block trackers
             blockTrackers: true
         }));
-
+        // Only add reCAPTCHA plugin if token exists and is not empty
+        if (process.env.TWOCAPTCHA_TOKEN && process.env.TWOCAPTCHA_TOKEN.trim() !== '') {
+            puppeteers.use(
+                RecaptchaPlugin({
+                    provider: {
+                        id: '2captcha',
+                        token: process.env.TWOCAPTCHA_TOKEN,
+                    },
+                    visualFeedback: true,
+                    solveInViewportOnly: true,
+                    solveScoreBased: true,
+                    solveInactiveChallenges: true,
+                })
+            );
+        }
         // Add reCAPTCHA solver
-        puppeteers.use(
-            RecaptchaPlugin({
-                provider: {
-                    id: '2captcha',
-                    token: process.env.TWOCAPTCHA_TOKEN || '', // Your 2captcha API token
-                },
-                visualFeedback: true, // Show a visual feedback when solving a CAPTCHA
-                solveInViewportOnly: true, // Only solve CAPTCHAs that are in the viewport
-                solveScoreBased: true, // Solve score-based CAPTCHAs
-                solveInactiveChallenges: true, // Solve inactive challenges
-            })
-        );
+        // puppeteers.use(
+        //     RecaptchaPlugin({
+        //         provider: {
+        //             id: '2captcha',
+        //             token: process.env.TWOCAPTCHA_TOKEN || '', // Your 2captcha API token
+        //         },
+        //         visualFeedback: true, // Show a visual feedback when solving a CAPTCHA
+        //         solveInViewportOnly: true, // Only solve CAPTCHAs that are in the viewport
+        //         solveScoreBased: true, // Solve score-based CAPTCHAs
+        //         solveInactiveChallenges: true, // Solve inactive challenges
+        //     })
+        // );
         
         let chrome = await puppeteers.launch(launchOptions) as puppeteer.Browser;
         let page: puppeteer.Page;
