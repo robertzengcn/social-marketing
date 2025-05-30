@@ -16,6 +16,7 @@ import {convertProxyServertourl} from "@/modules/lib/function"
 // }
 
 export class BingScraper extends SearchScrape {
+    search_engine_name="bing"
     constructor(options: ScrapeOptions) {
         super(options);
     }

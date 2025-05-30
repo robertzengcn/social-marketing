@@ -1,6 +1,6 @@
 import { Usersearchdata } from "@/entityTypes/searchControlType"
 import { ScrapeManager } from "@/childprocess/scrapeManager"
-import { SMstruct, SearchDataParam } from "@/entityTypes/scrapeType"
+import { SMstruct, SearchDataParam,ResultParseItemType } from "@/entityTypes/scrapeType"
 import { Cluster } from "puppeteer-cluster"
 import { SearhEnginer } from "@/config/searchSetting"
 import { ToArray } from "@/modules/lib/function"
@@ -11,7 +11,7 @@ import {proxyEntityToUrl,getEnumKeyByValue} from "@/modules/lib/function"
 import { ProxyParseItem} from "@/entityTypes/proxyType"
 
 export class UserSearch {
-    public async searchData(data: Usersearchdata,callback?: (arg: SearchDataRun) => void):Promise<SearchDataRun> {
+    public async searchData(data: Usersearchdata,callback?: (arg: ResultParseItemType) => void):Promise<void> {
 
         const proxyStrList:Array<string> = []
         console.log("proxy are following")
@@ -78,9 +78,11 @@ export class UserSearch {
        const results = await scraper.searchdata(searchDataParam)
         //console.log(results)
         if(callback){
-            callback(results)
+            for(const result of results){
+            callback(result)
+            }
         }
-        return results
+        //return results
     }
 
 }

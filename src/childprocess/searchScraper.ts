@@ -1,6 +1,6 @@
 import { searchEngineImpl } from "@/modules/interface/searchEngineImpl"
 import { Page, Browser, InterceptResolutionAction } from 'puppeteer';
-import { SMconfig, ScrapeOptions, clusterData, RunResult, ParseType, SearchData, ClusterSearchData } from "@/entityTypes/scrapeType"
+import { SMconfig, ScrapeOptions, clusterData, RunResult, ParseType, SearchData, ClusterSearchData,ResultParseItemType } from "@/entityTypes/scrapeType"
 import { evadeChromeHeadlessDetection } from "@/modules/lib/function"
 import { get_http_headers, get_ip_data } from "@/modules/metadata"
 import debug from 'debug';
@@ -25,7 +25,7 @@ export class SearchScrape implements searchEngineImpl {
     keywords: Array<string>;
     STANDARD_TIMEOUT: number;
     SOLVE_CAPTCHA_TIME: number;
-    results; // change it to map:
+    results:Array<ResultParseItemType>; // change it to map:
     // https://stackoverflow.com/questions/40976536/how-to-define-typescript-map-of-key-value-pair-where-key-is-a-number-and-value
     // https://howtodoinjava.com/typescript/maps/ 
     result_rank: number;
@@ -35,6 +35,7 @@ export class SearchScrape implements searchEngineImpl {
     page_num: number;
     proxyServer?:ProxyServer|null
     debug_log_path?:string;
+    search_engine_name:string;
     constructor(options: ScrapeOptions) {
         if (options.page) {
             this.page = options.page;
@@ -81,7 +82,7 @@ export class SearchScrape implements searchEngineImpl {
                 this.config[`${this.config.platform}_settings`] = settings;
             }
         }
-        this.results = new Map<string, ParseType>();
+        this.results = [];
     }
 
     async run(data: { page: Page, data: ClusterSearchData, worker }): Promise<RunResult> {
@@ -340,7 +341,7 @@ export class SearchScrape implements searchEngineImpl {
         for (const keyword of this.keywords) {
             this.num_keywords++;
             this.keyword = keyword;
-            this.results[keyword] = {};
+            //this.results.push();
             // this.results.set(keyword, {});
             this.result_rank = 1;
 //console.log("keyword is "+keyword)
@@ -377,7 +378,7 @@ export class SearchScrape implements searchEngineImpl {
                     if (this.config.sleep_range) {
                         await this.random_sleep();
                     }
-                    this.results[keyword][this.page_num] = {};
+                    //this.results[keyword][this.page_num] = {};
                     const html = await this.page.content();
                     const parsed = this.parse(html);
                     if (parsed) {
@@ -385,27 +386,50 @@ export class SearchScrape implements searchEngineImpl {
                         //const setdata:ParseType=new map();
 
                         // setdata.value=parsed;
-                        this.results[keyword][this.page_num].value = parsed
+                        //this.results[keyword][this.page_num].value = parsed
+                        const resultParseItem:ResultParseItemType={
+                            keyword:keyword,
+                            page:this.page_num,
+                            
+                        }
+                        if(parsed.results){
+                            resultParseItem.results=parsed.results;
+                        }
+                        this.results.push(resultParseItem);
                     } else {
                         // this.results[keyword][this.page_num] = await this.parse_async(html);
                         const pareseres: SearchData | void = await this.parse_async();
                         if (pareseres) {
-                            this.results[keyword][this.page_num].value = pareseres.results;
+                            console.log(`pareseres: ${pareseres}`);
+                            //this.results[keyword][this.page_num].value = pareseres.results;
                             //this.results[keyword].set(this.page_num,{value:pareseres.results})
+                            const resultParseItem:ResultParseItemType={
+                                keyword:keyword,
+                                page:this.page_num,
+                                results:pareseres.results
+                            }
+                            this.results.push(resultParseItem);
                         } else {
                             this.logger.warn(`No results found for keyword "${keyword}" on page ${this.page_num}`);
                             // this.results[keyword][this.page_num].value =""
-                            this.results[keyword][this.page_num].value = null
+                            const resultParseItem:ResultParseItemType={
+                                keyword:keyword,
+                                page:this.page_num,
+                                results:[]
+                            }
+                            this.results.push(resultParseItem);
                         }
                     }
                     // this.results[keyword][this.page_num] = parsed ? parsed : await this.parse_async(html);
 
 
-                    if (this.config.screen_output) {
-                        this.results[keyword][this.page_num].screenshot = await this.page.screenshot({
-                            encoding: 'base64',
-                            fullPage: false,
-                        });
+                    if (this.config.screen_output&&this.config.debug_log_path) {
+                        // this.results[keyword][this.page_num].screenshot = await this.page.screenshot({
+                        //     encoding: 'base64',
+                        //     fullPage: false,
+                        // });
+                        const html_screenshot_path = path.join(this.config.debug_log_path, `html_debug_se_scraper_${this.search_engine_name}_${keyword}_${Date.now()}.png`)
+                        await this.page.screenshot({ path: html_screenshot_path as `${string}.png` });
                     }
 
                     if (this.config.html_output) {
@@ -451,7 +475,11 @@ export class SearchScrape implements searchEngineImpl {
                         // https://stackoverflow.com/questions/27841112/how-to-remove-white-space-between-html-tags-using-javascript
                         // TODO: not sure if this is save!
                         html_contents = html_contents.replace(/>\s+</g, '><');
-                        this.results[keyword][this.page_num].html = html_contents;
+                        //this.results[keyword][this.page_num].html = html_contents;
+                        if(this.config.debug_log_path){
+                            const html_path = path.join(this.config.debug_log_path, `html_debug_se_scraper_${this.search_engine_name}_${keyword}_${Date.now()}.html`)
+                            await fs.promises.writeFile(html_path, html_contents);
+                        }
                     }
 
                     this.page_num += 1;
@@ -479,30 +507,30 @@ export class SearchScrape implements searchEngineImpl {
 
                 if (this.config.take_screenshot_on_error) {
                     if(this.config.debug_log_path){
-                        const screenshot_path = path.join(this.config.debug_log_path, `debug_se_scraper_${this.config.search_engine_name}_${keyword}_${Date.now()}.png`)
+                        const screenshot_path = path.join(this.config.debug_log_path, `debug_se_scraper_${this.search_engine_name}_${keyword}_${Date.now()}.png`)
                         this.logger.info(`Saving screenshot to ${screenshot_path}`);
                         await this.page.screenshot({ path: screenshot_path as `${string}.png` });
                         //await fs.promises.writeFile(screenshot_path, screenshot);
                     }else{
-                        this.logger.info(`sceen path:`+`debug_se_scraper_${this.config.search_engine_name}_${keyword}.png`);
-                        await this.page.screenshot({ path: `debug_se_scraper_${this.config.search_engine_name}_${keyword}.png` });
+                        this.logger.info(`sceen path:`+`debug_se_scraper_${this.search_engine_name}_${keyword}.png`);
+                        await this.page.screenshot({ path: `debug_se_scraper_${this.search_engine_name}_${keyword}.png` });
                     }
                 }
                 if(this.config.save_html){
                     const html = await this.page.content();
                     if(this.config.debug_log_path){
-                        this.logger.info(`Saving html to ${path.join(this.config.debug_log_path, `debug_se_scraper_${this.config.search_engine_name}_${keyword}.html`)}`);
-                        await fs.promises.writeFile(path.join(this.config.debug_log_path, `debug_se_scraper_${this.config.search_engine_name}_${keyword}.html`), html);
+                        this.logger.info(`Saving html to ${path.join(this.config.debug_log_path, `debug_se_scraper_${this.search_engine_name}_${keyword}.html`)}`);
+                        await fs.promises.writeFile(path.join(this.config.debug_log_path, `debug_se_scraper_${this.search_engine_name}_${keyword}.html`), html);
                     }else{
-                        this.logger.info(`html path:`+`debug_se_scraper_${this.config.search_engine_name}_${keyword}.html`);
-                        await fs.promises.writeFile(`debug_se_scraper_${this.config.search_engine_name}_${keyword}.html`, html);
+                        this.logger.info(`html path:`+`debug_se_scraper_${this.search_engine_name}_${keyword}.html`);
+                        await fs.promises.writeFile(`debug_se_scraper_${this.search_engine_name}_${keyword}.html`, html);
                     }
                 }
 
                 this.metadata.scraping_detected = await this.detected();
 
                 if (this.metadata.scraping_detected === true) {
-                    this.logger.warn(`${this.config.search_engine_name} detected the scraping!`);
+                    this.logger.warn(`${this.search_engine_name} detected the scraping!`);
 
                     if (this.config.is_local === true) {
                         await this.sleep(this.SOLVE_CAPTCHA_TIME);
@@ -558,7 +586,7 @@ export class SearchScrape implements searchEngineImpl {
         return "https://example.com";
     }
 
-    parse(html: any): string | void {
+    parse(html: any): SearchData | void {
         // Implement the logic to parse the HTML here
     }
 

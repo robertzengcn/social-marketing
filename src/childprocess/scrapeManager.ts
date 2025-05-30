@@ -1,4 +1,4 @@
-import { SMconfig, SMstruct, SearchDataParam, ScrapeOptions, ClusterSearchData, MetadataType, ResultParseType, SearchDataRun } from "@/entityTypes/scrapeType"
+import { SMconfig, SMstruct, SearchDataParam, ScrapeOptions, ClusterSearchData, MetadataType, ResultParseType, ResultParseItemType } from "@/entityTypes/scrapeType"
 import defaults from "lodash/defaults"
 import { Page, Browser } from 'puppeteer';
 import { createLogger, format, transports } from "winston"
@@ -460,10 +460,10 @@ export class ScrapeManager {
   /*
    * get data from search engine
    */
-  async searchdata(param: SearchDataParam): Promise<SearchDataRun> {
+  async searchdata(param: SearchDataParam): Promise<Array<ResultParseItemType>> {
     await this.start(param);
 
-    const results: ResultParseType = {};
+    const results: Array<ResultParseItemType> = [];
     let num_requests = 0;
     const metadata: MetadataType = {};
     const startTime = Date.now();
@@ -499,7 +499,7 @@ export class ScrapeManager {
       // Wrap the execute call in a try-catch to handle Puppeteer errors
       const wrappedExecute = async () => {
         try {
-          const page = await this.cluster.execute(cludata, boundMethod);
+          const content = await this.cluster.execute(cludata, boundMethod);
           // await page.evaluateOnNewDocument(() => {
           //   Object.defineProperty(navigator, 'plugins', {
           //     get: () => [1, 2, 3, 4, 5],
@@ -513,8 +513,9 @@ export class ScrapeManager {
           //   // Add more headers if needed
           // });
           // await page.setViewport({ width: 1920, height: 1080 });
+          console.log(`content: ${content}`);
           return {
-            results: await obj.parse(page),
+            results: content,
             metadata: {},
             num_requests: 1,
           };
@@ -592,10 +593,12 @@ export class ScrapeManager {
       this.logger.info(`Writing results to ${this.config.output_file}`);
       writeResults(this.config.output_file, JSON.stringify(results, null, 4));
     }
-    return {
-      results: results,
-      metadata: metadata || {},
-    };
+    console.log(`results: ${results}`);
+    return results;
+    // return {
+    //   //results: results,
+    //   //metadata: metadata || {},
+    // };
   }
 
   //   // let timeDelta = Date.now() - startTime;

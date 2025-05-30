@@ -228,7 +228,7 @@ export class SearchController {
             console.log("get message from child")
             console.log('Message from child:', JSON.parse(message));
             const childdata=JSON.parse(message)
-            if(childdata.action=="saveres"){
+            if(childdata.action=="savesearchresult"){
                 //save result
                 this.searhModel.saveSearchResult(childdata.data,taskId)
                 this.searhModel.updateTaskStatus(taskId,SearchTaskStatus.Complete)

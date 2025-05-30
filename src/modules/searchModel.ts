@@ -6,7 +6,7 @@ import { SearhEnginer } from "@/config/searchSetting"
 // import { ToArray } from "@/modules/lib/function"
 import { SearchKeywordModel } from "@/model/SearchKeyword.model"
 import { SearchResultModel } from "@/model/SearchResult.model"
-import { SearchResEntity, SearchDataRun } from "@/entityTypes/scrapeType"
+import { SearchResEntity, SearchDataRun,ResultParseItemType } from "@/entityTypes/scrapeType"
 //import {SearchTaskdb} from "@/model/searchTaskdb"
 import { SearchtaskEntityNum, SearchtaskItem } from "@/entityTypes/searchControlType"
 import { getEnumKeyByValue, getEnumValueByNumber } from "@/modules/lib/function"
@@ -95,21 +95,27 @@ export class searhModel extends BaseModule {
         return enginerName
     }
     //save search result
-    public async saveSearchResult(data: SearchDataRun, taskId: number) {
+    public async saveSearchResult(data: ResultParseItemType, taskId: number) {
         console.log("save search result")
-        const resultsMap = new Map(Object.entries(data.results));
-        console.log(resultsMap);
+        // const resultsMap = new Map(Object.entries(data.results));
+        // console.log(resultsMap);
         
-        for (const [key, value] of resultsMap) {
-            const keywordId = await this.serKeywordModel.getKeywordId(key, taskId)
-            console.log(value)
-            const resval = new Map(Object.entries(value));
+        // for (const [key, value] of resultsMap) {
+            let keywordId = await this.serKeywordModel.getKeywordId(data.keyword, taskId)
+            if(!keywordId){
+                //save keyword
+                await this.serKeywordModel.saveSearchKeyword(data.keyword, taskId)
+                keywordId = await this.serKeywordModel.getKeywordId(data.keyword, taskId)
+            }
+            //console.log(value)
+            //const resval = new Map(Object.entries(value));
             const linkearr: Array<string> = []
-            for (const [rvkey, rvvalue] of resval) {
-                console.log(rvkey)
-                console.log(rvvalue.value)
-                if(rvvalue.value){
-                    for (const item of rvvalue.value) {
+        //    for (const [rvkey, rvvalue] of resval) {
+                //console.log(rvkey)
+                //console.log(rvvalue.value)
+                //if(rvvalue.value){
+                if(data.results){
+                    for (const item of data.results) {
                         console.log(item)
                         if (item.link) {
                             if (!linkearr.includes(item.link)) {
@@ -126,9 +132,9 @@ export class searhModel extends BaseModule {
                         }
                     }
                 }
-            }
-            console.log(`Saving result for key: ${key}, value: ${value}`);
-        }
+            //}
+            //console.log(`Saving result for key: ${key}, value: ${value}`);
+        //}
     }
 
     public async saveTaskerrorlog(taskId: number, errorLog: string) {

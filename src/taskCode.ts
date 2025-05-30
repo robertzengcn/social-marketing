@@ -18,7 +18,7 @@ import { VideoDownloadTagEntity } from "@/entity/VideoDownloadTag.entity"
 import { CommonMessage } from "@/entityTypes/commonType"
 import { Usersearchdata } from "@/entityTypes/searchControlType"
 import { UserSearch } from "@/childprocess/userSearch"
-import { SearchDataRun } from "@/entityTypes/scrapeType"
+import { ResultParseItemType } from "@/entityTypes/scrapeType"
 
 
 process.parentPort.on('message', async (e) => {
@@ -33,14 +33,22 @@ process.parentPort.on('message', async (e) => {
                 return
             }
             const userSer = new UserSearch()
-            const res = await userSer.searchData(userSearchdata)
+            //const res = await userSer.searchData(userSearchdata)
             //console.log(res)
-            const message: ProcessMessage<SearchDataRun> = {
-                action: "saveres",
-                data: res
-            }
+            // const message: ProcessMessage<SearchDataRun> = {
+            //     action: "saveres",
+            //     data: res
+            // }
+            await userSer.searchData(userSearchdata,function(result){
+                console.log(result)
+                const message:ProcessMessage<ResultParseItemType>={
+                    action:"savesearchresult",
+                    data:result
+                }
+                process.parentPort.postMessage(JSON.stringify(message))
+            })
             //console.log(port)
-            process.parentPort.postMessage(JSON.stringify(message))
+            //process.parentPort.postMessage(JSON.stringify(message))
             //});
             break;
         }

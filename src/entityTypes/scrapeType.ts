@@ -195,6 +195,11 @@ export type ParseType = {
 export type ResultParseType = {
   [key: string]: ParseType
 }
+export type ResultParseItemType = {
+  keyword: string,
+  page: number,
+  results?: Array<SearchResult>
+}
 
 export type SearchResult = {
   link: string | null | undefined;
