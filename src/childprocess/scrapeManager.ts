@@ -513,7 +513,7 @@ export class ScrapeManager {
           //   // Add more headers if needed
           // });
           // await page.setViewport({ width: 1920, height: 1080 });
-          console.log(`content: ${content}`);
+          console.log(`scraper content: ${content}`);
           return {
             results: content,
             metadata: {},
@@ -561,7 +561,10 @@ export class ScrapeManager {
 
       // Merge results and metadata per keyword
       for (const promiseReturn of promiseReturns) {
-        Object.assign(results, promiseReturn.results);
+        console.log(`promiseReturn: ${promiseReturn}`);
+        console.log(`promiseReturn.results: ${promiseReturn.results}`);
+        results.push(promiseReturn.results.results  );
+        //Object.assign(results, promiseReturn.results);
         Object.assign(metadata, promiseReturn.metadata);
         num_requests += promiseReturn.num_requests;
       }

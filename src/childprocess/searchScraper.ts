@@ -25,7 +25,7 @@ export class SearchScrape implements searchEngineImpl {
     keywords: Array<string>;
     STANDARD_TIMEOUT: number;
     SOLVE_CAPTCHA_TIME: number;
-    results:Array<ResultParseItemType>; // change it to map:
+    results:Array<ResultParseItemType>=[]; // change it to map:
     // https://stackoverflow.com/questions/40976536/how-to-define-typescript-map-of-key-value-pair-where-key-is-a-number-and-value
     // https://howtodoinjava.com/typescript/maps/ 
     result_rank: number;
@@ -82,7 +82,7 @@ export class SearchScrape implements searchEngineImpl {
                 this.config[`${this.config.platform}_settings`] = settings;
             }
         }
-        this.results = [];
+        //this.results = [];
     }
 
     async run(data: { page: Page, data: ClusterSearchData, worker }): Promise<RunResult> {
@@ -401,6 +401,7 @@ export class SearchScrape implements searchEngineImpl {
                         const pareseres: SearchData | void = await this.parse_async();
                         if (pareseres) {
                             console.log(`pareseres: ${pareseres}`);
+                            console.log(`pareseres.results: ${pareseres.results}`); 
                             //this.results[keyword][this.page_num].value = pareseres.results;
                             //this.results[keyword].set(this.page_num,{value:pareseres.results})
                             const resultParseItem:ResultParseItemType={

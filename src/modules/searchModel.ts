@@ -95,17 +95,18 @@ export class searhModel extends BaseModule {
         return enginerName
     }
     //save search result
-    public async saveSearchResult(data: ResultParseItemType, taskId: number) {
+    public async saveSearchResult(data: Array<ResultParseItemType>, taskId: number) {
         console.log("save search result")
+        console.log(`data: ${data}`);
         // const resultsMap = new Map(Object.entries(data.results));
         // console.log(resultsMap);
-        
+        for (const item of data) {
         // for (const [key, value] of resultsMap) {
-            let keywordId = await this.serKeywordModel.getKeywordId(data.keyword, taskId)
+            let keywordId = await this.serKeywordModel.getKeywordId(item.keyword, taskId)
             if(!keywordId){
                 //save keyword
-                await this.serKeywordModel.saveSearchKeyword(data.keyword, taskId)
-                keywordId = await this.serKeywordModel.getKeywordId(data.keyword, taskId)
+                await this.serKeywordModel.saveSearchKeyword(item.keyword, taskId)
+                keywordId = await this.serKeywordModel.getKeywordId(item.keyword, taskId)
             }
             //console.log(value)
             //const resval = new Map(Object.entries(value));
@@ -114,25 +115,27 @@ export class searhModel extends BaseModule {
                 //console.log(rvkey)
                 //console.log(rvvalue.value)
                 //if(rvvalue.value){
-                if(data.results){
-                    for (const item of data.results) {
-                        console.log(item)
-                        if (item.link) {
-                            if (!linkearr.includes(item.link)) {
+                if(item.results&&item.results.length>0){
+                    for (const sitem of item.results) {
+                        console.log(`item: ${item}`);
+                        if (sitem.link&&sitem.link.length>0) {
+                            if (!linkearr.includes(sitem.link)) {
+                                console.log(`item.link: ${sitem.link}`);
                                 const reEntity: SearchResEntity = {
                                     keyword_id: Number(keywordId),
-                                    link: item.link,
-                                    title: item.title,
-                                    snippet: item.snippet,
-                                    visible_link: item.visible_link,
+                                    link: sitem.link,
+                                    title: sitem.title,
+                                    snippet: sitem.snippet,
+                                    visible_link: sitem.visible_link,
                                 }
-                                await this.serResultModel.saveResult(reEntity)
-                                linkearr.push(item.link)
+                                const res=await this.serResultModel.saveResult(reEntity)
+                                console.log(`save result is: ${res}`);
+                                linkearr.push(sitem.link)
                             }
                         }
                     }
                 }
-            //}
+            }
             //console.log(`Saving result for key: ${key}, value: ${value}`);
         //}
     }

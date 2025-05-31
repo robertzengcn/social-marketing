@@ -48,7 +48,7 @@ export class UserSearch {
 
         }
         const keywords = data.keywords
-         const scraper = new ScrapeManager(smConfig)
+        const scraper = new ScrapeManager(smConfig)
         // Convert SearhEnginer to key-value format for easier validation
         
         // const searchEngineMap = {};
