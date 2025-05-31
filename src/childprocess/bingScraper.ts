@@ -2,10 +2,10 @@
 import { SearchScrape } from "@/childprocess/searchScraper"
 import { ScrapeOptions, SearchData, SearchResult } from "@/entityTypes/scrapeType"
 import { CustomError } from "@/modules/customError"
-import { TimeoutError,InterceptResolutionAction } from 'puppeteer';
+import { TimeoutError, InterceptResolutionAction } from 'puppeteer';
 //import { delay } from "@/modules/lib/function";
 import useProxy from "@lem0-packages/puppeteer-page-proxy"
-import {convertProxyServertourl} from "@/modules/lib/function"
+import { convertProxyServertourl } from "@/modules/lib/function"
 
 
 // export type googlePlaces = {
@@ -16,7 +16,7 @@ import {convertProxyServertourl} from "@/modules/lib/function"
 // }
 
 export class BingScraper extends SearchScrape {
-    search_engine_name="bing"
+    search_engine_name = "bing"
     constructor(options: ScrapeOptions) {
         super(options);
     }
@@ -32,8 +32,8 @@ export class BingScraper extends SearchScrape {
 
     async parse_async(): Promise<SearchData> {
 
-     //     // check if no results
-       
+        //     // check if no results
+
         // results.time = (new Date()).toUTCString();
         const result: SearchData = {
             num_results: '',
@@ -208,81 +208,51 @@ export class BingScraper extends SearchScrape {
     async search_keyword(keyword: string) {
         //wait for full page loading
         // await delay(5000)
+        await this.page.waitForSelector('textarea[name="q"]', { timeout: this.STANDARD_TIMEOUT });
+        await this.page.waitForFunction(() => {
+            return document.readyState === 'complete';
+        }, { timeout: this.STANDARD_TIMEOUT });
         const textareaSearch = await this.page.$('textarea[name="q"]');
         if (textareaSearch) {
 
-            // await this.set_input_value(`textarea[name="q"]`, keyword);
-            await this.page.evaluate((element, value) => {
-                element.value = value;
-            }, textareaSearch, keyword);
-            // await this.page.waitForTimeout(50);
-            await this.page.evaluate(async () => {
-                await new Promise(function (resolve) {
-                    setTimeout(resolve, 1000)
-                });
-            });
-            // await textareaSearch.focus();
-            // await this.page.keyboard.press("Enter");
-    
-            // const labelSelector = '#search_icon';
-            // const svgSelector = 'svg';
-            // await this.page.evaluate((labelSel, svgSel) => {
-            //     const label = document.querySelector(labelSel);
-            //     if (label) {
-            //       const svg = label.querySelector(svgSel) as HTMLElement;
-            //       if (svg) {
-            //         // const clickEvent = new MouseEvent('click', {
-            //         //     view: window,
-            //         //     bubbles: true,
-            //         //     cancelable: true
-            //         //   });
-            //         //   svg.dispatchEvent(clickEvent);
-            //         const rect = svg.getBoundingClientRect();
-            //         return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
-            //       }
-            //       return null;
-            //     }
-            //   }, labelSelector, svgSelector).then(async (position) => {
-            //     if (position) {
-            //         await this.page.mouse.move(position.x, position.y);
-            //         await this.page.mouse.click(position.x, position.y);
-            //       }
-            //   });
-            await this.page.evaluate(async () => {
-                const form = document.querySelector('form[action="/search"]') as HTMLFormElement;
-                if (form) {
-                    form.submit();
-                }
-            });
+            const rect = await textareaSearch.boundingBox();
+            await textareaSearch.focus();
+            if (rect) {
+                await this.page.mouse.move(rect.x + rect.width / 2, rect.y + rect.height / 2);
+                await this.page.mouse.click(rect.x + rect.width / 2, rect.y + rect.height / 2);
+                await this.page.keyboard.type(keyword, { delay: Math.random() * 100 + 250 });
+                await this.page.keyboard.press('Enter');
 
-              //#search_icon
-            
-            // const clickbtn = await this.page.$('#search_icon');
-            // if(!clickbtn){
-            //     //click button not found
-            //     throw new CustomError("click button not found", 202408291119318)
-            // }else{
-            //     clickbtn.click();
-            // }
-            // await this.page.click(`#search_icon`);
-        } else {
-            const input = await this.page.$('input[name="q"]');
-            if (input) {
-                // await this.set_input_value(`input[name="q"]`, keyword);
-                await this.page.evaluate((element, value) => {
-                    element.value = value;
-                }, input, keyword);
-                // await this.page.waitForTimeout(50);
-                await this.page.evaluate(async () => {
-                    await new Promise(function (resolve) {
-                        setTimeout(resolve, 3000)
+                try {
+                    await this.page.waitForNavigation({ timeout: 5000 });
+                } catch {
+                    await this.page.evaluate(() => {
+                        const form = document.querySelector('form[action="/search"]') as HTMLFormElement;
+                        if (form) {
+                            console.log("form found and submit");
+                            form.submit();
+                        }
                     });
-                });
-
-                await input.focus();
-                await this.page.keyboard.press("Enter");
+                }
             } else {
-                throw new CustomError("input keyword button not found", 202408191127280)
+                const input = await this.page.$('input[name="q"]');
+                if (input) {
+                    // await this.set_input_value(`input[name="q"]`, keyword);
+                    await this.page.evaluate((element, value) => {
+                        element.value = value;
+                    }, input, keyword);
+                    // await this.page.waitForTimeout(50);
+                    await this.page.evaluate(async () => {
+                        await new Promise(function (resolve) {
+                            setTimeout(resolve, 3000)
+                        });
+                    });
+
+                    await input.focus();
+                    await this.page.keyboard.press("Enter");
+                } else {
+                    throw new CustomError("input keyword button not found", 202408191127280)
+                }
             }
         }
     }
@@ -315,7 +285,23 @@ export class BingScraper extends SearchScrape {
     }
 
     async wait_for_results() {
-        await this.page.waitForSelector('#b_tween', { timeout: this.STANDARD_TIMEOUT });
+        const selectors = [
+            '#b_tween',
+            '#b_results',
+            '.b_results',
+            '#main',
+            '#b_mcw',
+        ];
+
+        for (const selector of selectors) {
+            try {
+                await this.page.waitForSelector(selector, { timeout: this.STANDARD_TIMEOUT });
+                return; // Exit if any selector is found
+            } catch (error) {
+                continue; // Try next selector if current one times out
+            }
+        }
+        //await this.page.waitForSelector('#b_tween', { timeout: this.STANDARD_TIMEOUT });
     }
 
     async detected() {
