@@ -96,8 +96,8 @@ export class searhModel extends BaseModule {
     }
     //save search result
     public async saveSearchResult(data: Array<ResultParseItemType>, taskId: number) {
-        console.log("save search result")
-        console.log(`data: ${data}`);
+        // console.log("save search result")
+        // console.log(`data: ${data}`);
         // const resultsMap = new Map(Object.entries(data.results));
         // console.log(resultsMap);
         for (const item of data) {
@@ -117,10 +117,10 @@ export class searhModel extends BaseModule {
                 //if(rvvalue.value){
                 if(item.results&&item.results.length>0){
                     for (const sitem of item.results) {
-                        console.log(`item: ${item}`);
+                    //    console.log(`item: ${item}`);
                         if (sitem.link&&sitem.link.length>0) {
                             if (!linkearr.includes(sitem.link)) {
-                                console.log(`item.link: ${sitem.link}`);
+                            //    console.log(`item.link: ${sitem.link}`);
                                 const reEntity: SearchResEntity = {
                                     keyword_id: Number(keywordId),
                                     link: sitem.link,
