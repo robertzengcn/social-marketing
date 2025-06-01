@@ -89,6 +89,13 @@ export async function crawlSite ({ page, data }: { page: Page; data: EmailCluste
     if (data.visited.has(data.url)) return;
     data.visited.add(data.url);
 
+    // Check if we've exceeded maxPageNumber
+    const maxPageNumber = data.maxPageNumber ?? 0;
+    if (maxPageNumber > 0 && data.visited.size > maxPageNumber) {
+        console.log(`Reached maximum page limit of ${maxPageNumber}`);
+        return;
+    }
+
     if (data.proxy) {
         if (data.proxy != undefined) {
  
