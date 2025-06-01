@@ -31,6 +31,7 @@ export class EmailCluster {
   numClusters: number;
   tmppath: string;
   proxiesArr: Array<ProxyServer|null>
+  maxPageNumber:number
   // runLogin: Function;
   // taskid?: number;
   // taskrunId?: number;
@@ -157,6 +158,9 @@ export class EmailCluster {
     // }
 
     this.logger = this.config.logger;
+    if(config.maxPageNumber&&config.maxPageNumber>0){
+      this.maxPageNumber = config.maxPageNumber
+    }
 
     if (config.sleep_range) {
       // parse an array
@@ -277,6 +281,7 @@ export class EmailCluster {
         proxy: proxyServer,
         domain: domain,
         maxPageLevel: pageLength,
+        maxPageNumber:this.maxPageNumber,
         callback: param.callback
       }
       this.cluster.queue(crawlData);

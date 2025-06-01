@@ -140,7 +140,8 @@ export type SMstruct = {
   debug_log_path?:string,
   // taskid?: number,
   // taskrunId?: number
-  save_html?:boolean
+  save_html?:boolean,
+  maxPageNumber?:number
 }
 export type SearchDataParam = {
   keywords: Array<string>,

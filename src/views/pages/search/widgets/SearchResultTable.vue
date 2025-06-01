@@ -147,7 +147,7 @@ function loadItems({ page=1, itemsPerPage=10, sortBy}) {
    console.log(fetchitem)
     FakeAPI.fetch(fetchitem).then(
         ({ data, total }) => {
-             //console.log(data)
+             console.log(data)
             // console.log(total)
         
             serverItems.value = data

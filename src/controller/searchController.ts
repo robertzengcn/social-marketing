@@ -195,6 +195,7 @@ export class SearchController {
         }} )
         child.on("spawn", () => {
             console.log("child process satart, pid is"+child.pid)
+            this.searhModel.updateTaskStatus(taskId,SearchTaskStatus.Processing)
             child.postMessage(JSON.stringify({action:"searchscraper",data:data}),[port1])
            // this.searhModel.updateTaskLog(taskId,runLogfile,errorLogfile)
         })
@@ -219,8 +220,9 @@ export class SearchController {
         child.on("exit", (code) => {
             if (code !== 0) {
                 console.error(`Child process exited with code ${code}`);
-                
+                this.searhModel.updateTaskStatus(taskId,SearchTaskStatus.Error)
             } else {
+                this.searhModel.updateTaskStatus(taskId,SearchTaskStatus.Complete)
                 console.log('Child process exited successfully');
             }
         })

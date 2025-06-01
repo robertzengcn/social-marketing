@@ -127,6 +127,8 @@ export class SearchTaskModel extends BaseDb {
    */
   taskStatusToString(status: SearchTaskStatus): string {
     switch (status) {
+      case SearchTaskStatus.NotStart:
+        return "Not Start";
       case SearchTaskStatus.Processing:
         return "Processing";
       case SearchTaskStatus.Complete:

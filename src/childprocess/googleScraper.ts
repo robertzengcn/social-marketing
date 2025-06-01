@@ -447,7 +447,8 @@ export class GoogleScraper extends SearchScrape {
         // if (!next_page_link) {
         const nextPageSelectors = [
             '.RVQdVd',  // Current selector
-            '#pnnext',  // Standard next page button
+            '#pnnext',
+              // Standard next page button
             '.nBDE1b',
             'a[aria-label="Next page"]',  // Alternative next page link
             'a[href*="start="]',  // Links containing start parameter

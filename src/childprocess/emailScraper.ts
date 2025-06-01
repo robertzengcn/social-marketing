@@ -7,6 +7,7 @@ import {convertProxyServertourl} from "@/modules/lib/function"
 export const extractLink = async (page: Page, val: EmailClusterdata ) => {
     const url = val.url;
     if (!url) return;
+    const maxPageNumber = val.maxPageNumber?val.maxPageNumber:0
     
     if(val.proxy){
         if (val.proxy != undefined) {
