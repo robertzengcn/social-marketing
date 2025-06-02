@@ -826,3 +826,114 @@ export async function closePuppeteer(page?: Page, browser?: Browser): Promise<vo
           console.error('Error closing puppeteer resources:', error);
       }
   }
+  // Function to find Chrome path on macOS
+export function findChromeOnMac(): string | undefined {
+  try {
+      // Try using mdfind to locate Chrome
+      const chromePath = execSync('mdfind "kMDItemCFBundleIdentifier == com.google.Chrome"').toString().trim();
+      if (chromePath) {
+          return path.join(chromePath, 'Contents/MacOS/Google Chrome');
+      }
+  } catch (error) {
+      console.error('Error finding Chrome:', error);
+  }
+  
+  // Fallback paths
+  const possiblePaths = [
+      path.join('/Applications', 'Google Chrome.app', 'Contents', 'MacOS', 'Google Chrome'),
+      path.join('/Applications', 'Google Chrome Beta.app', 'Contents', 'MacOS', 'Google Chrome Beta'),
+      path.join('/Applications', 'Google Chrome Canary.app', 'Contents', 'MacOS', 'Google Chrome Canary'),
+      path.join(process.env.HOME || '', 'Applications', 'Google Chrome.app', 'Contents', 'MacOS', 'Google Chrome')
+  ];
+
+  for (const chromePath of possiblePaths) {
+      console.log('chromePath', chromePath);
+      if (fs.existsSync(chromePath)) {
+          return chromePath;
+      }
+  }
+
+  return undefined;
+}
+
+export function findChromeOnWindows(): string | undefined {
+  const possiblePaths = [
+      'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+      'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
+      path.join(process.env.LOCALAPPDATA || '', 'Google\\Chrome\\Application\\chrome.exe'),
+      'C:\\Program Files\\Google\\Chrome Beta\\Application\\chrome.exe',
+      'C:\\Program Files (x86)\\Google\\Chrome Beta\\Application\\chrome.exe',
+      path.join(process.env.LOCALAPPDATA || '', 'Google\\Chrome Beta\\Application\\chrome.exe'),
+      'C:\\Program Files\\Google\\Chrome Canary\\Application\\chrome.exe',
+      'C:\\Program Files (x86)\\Google\\Chrome Canary\\Application\\chrome.exe',
+      path.join(process.env.LOCALAPPDATA || '', 'Google\\Chrome Canary\\Application\\chrome.exe')
+  ];
+
+  for (const chromePath of possiblePaths) {
+      if (fs.existsSync(chromePath)) {
+          return chromePath;
+      }
+  }
+
+  try {
+      const output = execSync('reg query "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\chrome.exe" /ve').toString();
+      const match = output.match(/REG_SZ\s+(.*)/);
+      if (match && match[1]) {
+          const chromePath = match[1].trim();
+          if (fs.existsSync(chromePath)) {
+              return chromePath;
+          }
+      }
+  } catch (error) {
+      console.error('Error finding Chrome in registry:', error);
+  }
+
+  return undefined;
+}
+
+export function findChromeOnLinux(): string | undefined {
+  try {
+      const chromePath = execSync('which google-chrome').toString().trim();
+      if (chromePath && fs.existsSync(chromePath)) {
+          return chromePath;
+      }
+  } catch (error) {
+      console.error('Error finding Chrome with which:', error);
+  }
+
+  const possiblePaths = [
+      '/usr/bin/google-chrome',
+      '/usr/bin/google-chrome-stable',
+      '/usr/bin/google-chrome-beta',
+      '/usr/bin/google-chrome-unstable',
+      '/usr/bin/chromium-browser',
+      '/usr/bin/chromium',
+      '/snap/bin/google-chrome',
+      '/snap/bin/chromium',
+      path.join(process.env.HOME || '', '.local/bin/google-chrome'),
+      path.join(process.env.HOME || '', '.local/bin/chromium-browser')
+  ];
+
+  for (const chromePath of possiblePaths) {
+      if (fs.existsSync(chromePath)) {
+          return chromePath;
+      }
+  }
+
+  return undefined;
+}
+export function getChromeUserDataDir(): string {
+  const platform = os.platform();
+  const homeDir = os.homedir();
+
+  switch (platform) {
+      case 'darwin': // macOS
+          return path.join(homeDir, 'Library', 'Application Support', 'Google', 'Chrome', 'Default');
+      case 'win32': // Windows
+          return path.join(homeDir, 'AppData', 'Local', 'Google', 'Chrome', 'User Data', 'Default');
+      case 'linux': // Linux
+          return path.join(homeDir, '.config', 'google-chrome', 'Default');
+      default:
+          throw new Error(`Unsupported platform: ${platform}`);
+  }
+}
