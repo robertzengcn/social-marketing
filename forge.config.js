@@ -15,7 +15,7 @@ const EXTERNAL_DEPENDENCIES = [
 'puppeteer',
 'puppeteer-extra',
 'puppeteer-extra-plugin-stealth',
-'puppeteer-extra-plugin-adblocker',
+//'puppeteer-extra-plugin-adblocker',
 'puppeteer-extra-plugin-recaptcha',
 '@lem0-packages/puppeteer-page-proxy',
 'nodemailer',

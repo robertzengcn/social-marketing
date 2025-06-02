@@ -13,7 +13,7 @@ import * as path from 'path';
 import * as os from 'os';
 //import puppeteerExtra from 'puppeteer-extra';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
-import AdblockerPlugin from 'puppeteer-extra-plugin-adblocker';
+//import AdblockerPlugin from 'puppeteer-extra-plugin-adblocker';
 import RecaptchaPlugin from 'puppeteer-extra-plugin-recaptcha';
 import vanillaPuppeteer from 'puppeteer';
 import {addExtra} from 'puppeteer-extra';
@@ -150,10 +150,10 @@ export class CustomConcurrency extends Browser {
         console.log('launchOptions', launchOptions);
         const puppeteers = addExtra(vanillaPuppeteer);
         puppeteers.use(StealthPlugin());
-        puppeteers.use(AdblockerPlugin({
-            // Block trackers
-            blockTrackers: true
-        }));
+        // puppeteers.use(AdblockerPlugin({
+        //     // Block trackers
+        //     blockTrackers: true
+        // }));
         // Only add reCAPTCHA plugin if token exists and is not empty
         if (process.env.TWOCAPTCHA_TOKEN && process.env.TWOCAPTCHA_TOKEN.trim() !== '') {
             puppeteers.use(
