@@ -16,6 +16,7 @@ export const volcengineproapiurl='volcengine-url'
 export const volcengineproapikey='volcengine-key'
 export const openaiapimodel='openai-model'
 export const volcengineapipromodel='volcengine-model'
+export const twocaptcha_enabled='2captcha-enabled'
 export const Doubao_PRO_A:LlmDatatype={
     groupName:volcenginegrouppro,
     modelName:volcengineapipromodel,
@@ -54,6 +55,12 @@ export const settinggroupInit: Array<SystemSettingGroupdf> = [
                 value: '',
                 description: '2captcha-token-description',
                 type: 'input',
+            },
+            {
+                key: twocaptcha_enabled,
+                value: '0',
+                description: '2captcha-enabled-description',
+                type: 'toggle',
             }
         ]
     },

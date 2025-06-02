@@ -245,6 +245,7 @@ export default {
         unkonw:"unkonw",
     },
     emailextraction:{
+        max_page_number:"max page number",
         manualinputurl:"manual input url",
         searchresult:"search result",
         extraction_type:"Extraction Type", 
@@ -375,8 +376,15 @@ export default {
 
     },
     system_settings:{
-        title:"System Settings",
-        no_setting_item_found_exit:"No setting item found, please exit",
+        "title":"System Settings",
+        "no_setting_item_found_exit":"No setting item found, please exit",
+        "2captcha-group":"2captcha",
+        "2captcha-description":"2captcha description",
+        "2captcha-token":"2captcha token",
+        "2captcha-enabled":"2captcha enabled",
+        "2captcha-disabled":"2captcha disabled",
+        "2captcha-enabled-description":"do you want to enable 2captcha",
+    "2captcha-token-description":"input 2captcha token"
     }
 
 }

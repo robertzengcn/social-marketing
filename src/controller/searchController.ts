@@ -17,13 +17,13 @@ import {SearchDataParam,SearchResEntityDisplay,SearchResEntityRecord} from "@/en
 // import {SEARCHEVENT} from "@/config/channellist"
 import { SearchTaskStatus } from "@/model/SearchTask.model"
 // import { SearchKeyworddb } from "@/model/searchKeyworddb";
-import { CustomError } from "@/modules/customError";
+//import { CustomError } from "@/modules/customError";
 import {USERLOGPATH,USEREMAIL} from '@/config/usersetting';
 import {WriteLog,getApplogspath,getRandomValues} from "@/modules/lib/function"
 import { v4 as uuidv4 } from 'uuid';
 import {SortBy} from "@/entityTypes/commonType";
 import { SystemSettingGroupModule } from '@/modules/SystemSettingGroupModule';
-import {twocaptchagroup,twocaptchatoken} from '@/config/settinggroupInit'
+import {twocaptchagroup,twocaptchatoken,twocaptcha_enabled} from '@/config/settinggroupInit'
 export class SearchController {
     private searhModel:searhModel;
 
@@ -182,11 +182,15 @@ export class SearchController {
        let twoCaptchaTokenvalue=""
        const twoCaptchaToken=await this.systemSettingGroupModule.getGroupItembyName(twocaptchagroup)
        if(twoCaptchaToken){
+        //find 2captcha enable key
+        const twocaptchenable=twoCaptchaToken.settings.find((item)=>item.key===twocaptcha_enabled)
+        if(twocaptchenable){
         const token=twoCaptchaToken.settings.find((item)=>item.key===twocaptchatoken)
         if(token){
             twoCaptchaTokenvalue=token.value
         }
        }
+    }
        
         const child = utilityProcess.fork(childPath, [],{stdio:"pipe",execArgv:["puppeteer-cluster:*"],env:{
             ...process.env,

@@ -118,7 +118,8 @@ export function registerEmailextractionIpcHandlers() {
             notShowBrowser: qdata.notShowBrowser,
             proxys: qdata.proxys,
             type: extraType,
-            processTimeout:Number(qdata.processTimeout)
+            processTimeout:Number(qdata.processTimeout),
+            maxPageNumber:qdata.maxPageNumber
         }
             
     const emailCon = new EmailextractionController();

@@ -16,20 +16,20 @@
       <v-col cols="9">
         <v-card>
           <v-card-title v-if="selectedGroup">
-            {{ selectedGroup.name }}
+            {{ t('system_settings.' + selectedGroup.name) }}
           </v-card-title>
           <v-card-text v-if="selectedGroup">
-            <p>{{ selectedGroup.description }}</p>
+              <p>{{ t('system_settings.' + selectedGroup.description) }}</p>
             <v-list>
               <v-list-item v-for="setting in settinglist" :key="setting.id"
               :class="{ 'highlighted-item': setting.id === selectItemid }"
               >
                 <v-list-item-content>
                   <v-list-item-title>
-                    {{ setting.key }}
+                    {{ t('system_settings.' + setting.key) }}
                   </v-list-item-title>
                   <v-list-item-subtitle>
-                    {{ setting.description || t('system_settings.no_description') }}
+                    {{ t('system_settings.' +setting.description) || t('system_settings.no_description') }}
                   </v-list-item-subtitle>
                 </v-list-item-content>
                 <v-list-item>
@@ -72,6 +72,17 @@
                     />
                     <v-divider></v-divider>
                   </div>
+                  <div v-else-if="setting.type === 'toggle'">
+                    <v-switch
+                      :model-value="setting.value === '1'"
+                      :loading="loadingSettings[setting.id]"
+                      @update:modelValue="updateSetting(setting.id, $event ? '1' : '0')"
+                      color="primary"
+                      hide-details
+                    ></v-switch>
+                    <v-divider></v-divider>
+                  </div>
+
 
                   <!-- Default to text input if the type is unrecognized -->
                   <div v-else>

@@ -11,7 +11,8 @@ export type EmailscFormdata = {
   pagelength: number,
   notShowBrowser: boolean,
   proxys?: Array<ProxyEntity>,
-  processTimeout:number
+  processTimeout:number,
+  maxPageNumber?:number 
   // maxConcurrent: number,
 }
 export type EmailClusterdata = {

@@ -30,7 +30,7 @@ export interface SystemSettingDisplay {
     key: string;          // e.g. 'site_name'
     value: string;        // stored value
     description?: string; // optional description
-    type: 'input' | 'select' | 'radio' | 'checkbox';  
+    type: 'input' | 'select' | 'radio' | 'checkbox'|'toggle';  
     options?: OptionSettingdf[];
   }
   export type OptionSettingdf={
