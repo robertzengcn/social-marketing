@@ -12,7 +12,8 @@ const { combine, timestamp, printf } = format;
 const MAX_ALLOWED_BROWSERS = 10;
 const MAX_CRAWL_PAGE_LENGTH = 10;
 import map from "lodash/map";
-import randomUseragent from "random-useragent";
+//import randomUseragent from "random-useragent";
+import UserAgent from 'user-agents';
 import clone from "lodash/clone"
 import times from "lodash/times"
 import { crawlSite } from '@/childprocess/emailScraper'
@@ -212,7 +213,8 @@ export class EmailCluster {
     }
 
     const perBrowserOptions = map(this.proxiesArr.slice(0, this.numClusters), (proxy) => {
-      let userAgent: string;
+      //let userAgent: string;
+      let userAgents: string;
       if (this.config.random_user_agent) {
         // Randomly choose between Chrome and Firefox user agents
         // const isChrome = Math.random() > 0.5;
@@ -236,11 +238,14 @@ export class EmailCluster {
         //   //browser: "chrome",
         //   platform: "win32"
         // });
-        userAgent = randomUseragent.getRandom();
+        //userAgent = randomUseragent.getRandom();
+        const userAgent = new UserAgent({ deviceCategory: 'desktop' });
+        console.log("user agent is "+userAgent.toString());
+        userAgents = userAgent.toString();
       } else {
-        userAgent = this.config.user_agent;
+        userAgents = this.config.user_agent;
       }
-      const args = this.config.chrome_flags.concat([`--user-agent=${userAgent}`]);
+      const args = this.config.chrome_flags.concat([`--user-agent=${userAgents}`]);
       return {
         headless: this.config.headless,
         ignoreHTTPSErrors: true,
