@@ -186,11 +186,12 @@ export class GoogleScraper extends SearchScrape {
             '#search .srg .rc',
             '#search .srg .g .rc'
         ];
-
+        let findelement=false
         for (const selector of alternativeSelectors) {
             this.logger.info(`Searching for results with selector: ${selector}`);
             const results = await this.page.$(selector);
             if (results) {
+                findelement=true
                 this.logger.info(`Found results with alternative selector: ${selector}`);
                 this.page.on('console', msg => {
                     console.log(`Browser console: ${msg.text()}`);
@@ -242,6 +243,9 @@ export class GoogleScraper extends SearchScrape {
                 }
                 break; // Exit loop once we find results
             }
+        }
+        if(!findelement){
+            throw new CustomError("No search results found,may be element not found in the list page", 202405301120304);
         }
         //  }else{
         //  searchRes= await this.page.$$eval('#search .MjjYud', elements =>
