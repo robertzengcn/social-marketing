@@ -153,6 +153,8 @@ export type SearchDataParam = {
   error_log?:string,
   run_log?:string,
   debug_log_path?:string,
+  useLocalbrowserdata:boolean,
+  localBrowser?:string
 }
 export interface clusterData {
   page: Page

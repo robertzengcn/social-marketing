@@ -50,7 +50,7 @@ export class searhModel extends BaseModule {
         if (!enginId) {
             throw new Error("enginerId empty")
         }
-        const taskId = await this.taskdbModel.saveSearchTask(enginId,data.num_pages,data.concurrency,data.notShowBrowser)
+        const taskId = await this.taskdbModel.saveSearchTask(enginId,data.num_pages,data.concurrency,data.notShowBrowser,data.useLocalbrowserdata,data.localBrowser)
         //const searshdb = new SearchKeyworddb(this.dbpath)
         for (const keyword of data.keywords) {
             await this.serKeywordModel.saveSearchKeyword(keyword, Number(taskId))
@@ -252,6 +252,8 @@ export class searhModel extends BaseModule {
             num_pages:taskEntity.num_pages,
             concurrency:taskEntity.concurrency,
             notShowBrowser:taskEntity.notShowBrowser?true:false,
+            useLocalbrowserdata:taskEntity.useLocalbrowserdata?true:false,
+            localBrowser:taskEntity.localBrowser?taskEntity.localBrowser:"",
             proxys:proxys.map(item=>{
                 return {
                     host:item.host,

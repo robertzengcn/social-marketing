@@ -19,11 +19,13 @@ import { SearchTaskStatus } from "@/model/SearchTask.model"
 // import { SearchKeyworddb } from "@/model/searchKeyworddb";
 //import { CustomError } from "@/modules/customError";
 import {USERLOGPATH,USEREMAIL} from '@/config/usersetting';
-import {WriteLog,getApplogspath,getRandomValues} from "@/modules/lib/function"
+import {WriteLog,getApplogspath,getChromeUserDataDir,getRandomValues,getChromeExcutepath,getFirefoxExcutepath} from "@/modules/lib/function"
 import { v4 as uuidv4 } from 'uuid';
 import {SortBy} from "@/entityTypes/commonType";
 import { SystemSettingGroupModule } from '@/modules/SystemSettingGroupModule';
-import {twocaptchagroup,twocaptchatoken,twocaptcha_enabled} from '@/config/settinggroupInit'
+import {twocaptchagroup,twocaptchatoken,twocaptcha_enabled,chrome_path,firefox_path,external_system} from '@/config/settinggroupInit'
+
+
 export class SearchController {
     private searhModel:searhModel;
 
@@ -44,9 +46,11 @@ export class SearchController {
             concurrency:data.concurrency,
             notShowBrowser:data.notShowBrowser,
             proxys:data.proxys,
-            
+            useLocalbrowserdata:data.useLocalbrowserdata,
+            localBrowser:data.localBrowser
         }
-        // console.log(dp)
+        //console.log("search datat dp")
+        //console.log(dp)
         // const taskId=await this.searhModel.saveSearchtask(dp)
 
         const taskId=await this.createTask(dp)
@@ -170,7 +174,9 @@ export class SearchController {
             concurrency:taskEntity.concurrency??1,
             notShowBrowser:taskEntity.notShowBrowser??false,
             proxys:taskEntity.proxys,
-            debug_log_path:errorLogDir
+            debug_log_path:errorLogDir,
+            useLocalbrowserdata:taskEntity.useLocalbrowserdata?true:false,
+            localBrowser:taskEntity.localBrowser?taskEntity.localBrowser:""
         }
 
         const childPath = path.join(__dirname, 'taskCode.js')
@@ -191,11 +197,52 @@ export class SearchController {
         }
        }
     }
-       
+    let localBrowserexcutepath:string=""
+    if(data.localBrowser&&data.localBrowser.length>0){
+        const external_system_group=await this.systemSettingGroupModule.getGroupItembyName(external_system)
+        if(external_system_group){
+            const chromePath=external_system_group.settings.find((item)=>item.key===chrome_path)
+            if(chromePath){
+                localBrowserexcutepath=chromePath.value
+            }
+            const firefoxPath=external_system_group.settings.find((item)=>item.key===firefox_path)
+            if(firefoxPath){
+                localBrowserexcutepath=firefoxPath.value
+            }
+        }
+        if(data.localBrowser=="chrome"&&!localBrowserexcutepath){
+            
+            const localBrowserexcutepathresult=getChromeExcutepath()
+            if(localBrowserexcutepathresult){
+                localBrowserexcutepath=localBrowserexcutepathresult
+            }
+
+        }else if(data.localBrowser=="firefox"&&!localBrowserexcutepath){
+            const localBrowserexcutepathresult=getFirefoxExcutepath()
+            if(localBrowserexcutepathresult){
+                localBrowserexcutepath=localBrowserexcutepathresult
+            }
+        }
+        if(!localBrowserexcutepath){
+            throw new Error("local browser excute path not exist")
+        }
+    }
+    let userDataDir=""
+    if(data.useLocalbrowserdata){
+        userDataDir=getChromeUserDataDir()
+        if(!userDataDir){
+            throw new Error("user data dir not exist")
+        }
+    }
+       //console.log("two captcha token value is "+twoCaptchaTokenvalue)
+       //console.log("local browser excute path is "+localBrowserexcutepath)
+       //console.log("user data dir is "+userDataDir)
         const child = utilityProcess.fork(childPath, [],{stdio:"pipe",execArgv:["puppeteer-cluster:*"],env:{
             ...process.env,
             NODE_OPTIONS: "",
-            TWOCAPTCHA_TOKEN: twoCaptchaTokenvalue
+            TWOCAPTCHA_TOKEN: twoCaptchaTokenvalue,
+            LOCAL_BROWSER_EXCUTE_PATH: localBrowserexcutepath,
+            USEDATADIR: userDataDir
         }} )
         child.on("spawn", () => {
             console.log("child process satart, pid is"+child.pid)
@@ -258,10 +305,10 @@ export class SearchController {
         //const SearchKeyDb=new SearchKeyworddb(this.dbpath)
 
         res.forEach(async (item) => {
-            console.log(item)
-            console.log(item.keyword_id)
+            //console.log(item)
+            //console.log(item.keyword_id)
             const keyEntity = await this.searhModel.getkeywrodsEntitybyId(item.keyword_id)
-            console.log(keyEntity)
+            //console.log(keyEntity)
             const data: SearchResEntityDisplay = {
                 id: item.id,
                 keyword_id: item.keyword_id,

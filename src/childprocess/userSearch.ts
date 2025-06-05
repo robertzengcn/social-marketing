@@ -74,6 +74,7 @@ export class UserSearch {
         const searchDataParam: SearchDataParam = {
             keywords: keywords,
             engine: enginer,
+            useLocalbrowserdata:data.useLocalbrowserdata
         }
        const results = await scraper.searchdata(searchDataParam)
         //console.log(results)

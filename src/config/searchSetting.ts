@@ -3,3 +3,6 @@ export enum SearhEnginer{
     Bing=2,
     Baidu=3
   }
+export const LocalBrowerList=[
+   'chrome', 
+]

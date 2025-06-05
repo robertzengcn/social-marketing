@@ -54,7 +54,15 @@ export class CustomConcurrency extends Browser {
         
         // Try to find local Chrome installation
         let executablePath: string | undefined;
+        const localBrowserPath = process.env.LOCAL_BROWSER_EXCUTE_PATH;
+        console.log("localBrowserPath", localBrowserPath);
+        if (localBrowserPath && fs.existsSync(localBrowserPath)) {
+            executablePath = localBrowserPath;
+            console.log('Using local browser installation:', executablePath);
+        }else{
         try {
+           
+
             const platform = await detectBrowserPlatform();
             if (platform) {
                 const browser = 'chrome' as PuppeteerBrowser;
@@ -113,11 +121,12 @@ export class CustomConcurrency extends Browser {
         } catch (error) {
             console.error('Failed to detect/install Chrome:', error);
         }
-        
+    }
         // Add configuration for packaged environment
-        const launchOptions: puppeteer.LaunchOptions = {
+        const launchOptions:puppeteer.LaunchOptions = {
             ...options,
             executablePath,
+            //product: executablePath?.includes('firefox') ? 'firefox' : 'chrome',
             userDataDir: process.env.USEDATADIR && process.env.USEDATADIR.trim() !== '' ? process.env.USEDATADIR : undefined,
             args: [
                 ...((options as any).args || []),
@@ -138,6 +147,9 @@ export class CustomConcurrency extends Browser {
                 '--disable-features=IsolateOrigins',
                 '--disable-site-isolation-trials'
             ],
+            //...(process.env.USEDATADIR && process.env.USEDATADIR.trim() !== '' ? {} : {
+                ignoreDefaultArgs: ['--password-store=basic','--use-mock-keychain'],
+            //}),
             defaultViewport: {
                 width: 1280 + Math.floor(Math.random() * 100),
                 height: 768 + Math.floor(Math.random() * 100),

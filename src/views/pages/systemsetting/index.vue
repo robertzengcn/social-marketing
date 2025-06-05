@@ -55,6 +55,20 @@
                     </v-select>
                     <v-divider></v-divider>
                   </div>
+                  <div v-else-if="setting.type === 'file'">
+                    <span v-if="setting.value" class="ml-2 mb-2 mt-2">{{ setting.value }}</span>
+                    <v-btn
+                      color="primary"
+                      variant="outlined"
+                      class="mb-2 mt-2"
+                      :loading="loadingSettings[setting.id]"
+                      @click="openFileDialog(setting.id)"
+                    >
+                    {{ t('system_settings.choose_file') }}
+                    </v-btn>
+                    
+                    <v-divider></v-divider>
+                  </div>
 
                   <div v-else-if="setting.type === 'radio'">
                     <v-radio-group :model-value="setting.value"
@@ -114,6 +128,7 @@ import { SystemSettingDisplay, SystemSettingGroupDisplay, OptionSettingDisplay }
 import { getSystemSettinglist,updateSystemSetting } from "@/views/api/systemsetting";
 // i18n setup
 const { t } = useI18n();
+import { chooseFileDialog } from "@/views/api/common"
 
 // Store references for settings, groups, and tree state
 //const systemSettings = ref<SystemSettingDisplay[]>([]);
@@ -267,7 +282,19 @@ async function updateSetting(settingId: number, newValue: string | boolean|null)
   }
 }
 
-
+// Add file dialog handler
+async function openFileDialog(settingId: number) {
+  // 
+  try{
+  const res=await chooseFileDialog()
+  
+  //if(res.status){
+    await updateSetting(settingId, res)
+  //}
+  }catch(error){
+    console.error('Failed to open file dialog:', error);
+  }
+}
 
 onMounted(() => {
   fetchSettings().then(() => {

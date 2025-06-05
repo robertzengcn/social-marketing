@@ -937,3 +937,63 @@ export function getChromeUserDataDir(): string {
           throw new Error(`Unsupported platform: ${platform}`);
   }
 }
+export function getChromeExcutepath():string|undefined{
+  const platform = os.platform();
+  switch(platform){
+    case "darwin":
+      return findChromeOnMac()
+    case "win32":
+      return findChromeOnWindows()
+    case "linux":
+      return findChromeOnLinux()
+    default:
+      return undefined;
+  }
+}
+export function getFirefoxExcutepath(): string | undefined {
+  const platform = os.platform();
+  switch(platform) {
+    case "darwin": // macOS
+      const macPaths = [
+        '/Applications/Firefox.app/Contents/MacOS/firefox',
+        '/Applications/Firefox Developer Edition.app/Contents/MacOS/firefox',
+        '/Applications/Firefox Nightly.app/Contents/MacOS/firefox'
+      ];
+      for (const firefoxPath of macPaths) {
+        if (fs.existsSync(firefoxPath)) {
+          return firefoxPath;
+        }
+      }
+      return undefined;
+
+    case "win32": // Windows
+      const winPaths = [
+        'C:\\Program Files\\Mozilla Firefox\\firefox.exe',
+        'C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe',
+        path.join(process.env.LOCALAPPDATA || '', 'Mozilla Firefox\\firefox.exe')
+      ];
+      for (const firefoxPath of winPaths) {
+        if (fs.existsSync(firefoxPath)) {
+          return firefoxPath;
+        }
+      }
+      return undefined;
+
+    case "linux": // Linux
+      const linuxPaths = [
+        '/usr/bin/firefox',
+        '/usr/bin/firefox-esr',
+        '/snap/bin/firefox',
+        path.join(process.env.HOME || '', '.local/bin/firefox')
+      ];
+      for (const firefoxPath of linuxPaths) {
+        if (fs.existsSync(firefoxPath)) {
+          return firefoxPath;
+        }
+      }
+      return undefined;
+
+    default:
+      return undefined;
+  }
+}

@@ -14,6 +14,8 @@ export type Usersearchdata = {
     error_log?:string,
     run_log?:string,
     debug_log_path?:string,
+    useLocalbrowserdata:boolean
+    localBrowser?:string
     // maxConcurrent: number,
   }
   export interface UsersearchdataParam  extends Usersearchdata{

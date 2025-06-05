@@ -4,9 +4,7 @@
       <h3>{{ t('search.use_hint') }}</h3>
       <v-textarea class="mt-3" v-model="keywords" :label="t('search.input_keywords_hint')"></v-textarea>
       <v-select v-model="enginer" :items="searchplatform" :label="t('search.search_enginer_name')" required
-        :readonly="loading" :rules="[rules.required]" class="mt-3"  
-        item-title="name"
-        item-value="key"></v-select>
+        :readonly="loading" :rules="[rules.required]" class="mt-3" item-title="name" item-value="key"></v-select>
 
 
       <v-text-field v-model="page_number" :label="t('search.page_number')" clearable class="mt-3"></v-text-field>
@@ -15,11 +13,42 @@
         class="mt-3"></v-text-field>
       <v-combobox v-model="proxyValue" :items="proxyValue" label="Select proxy" item-title="host" multiple return-object
         chips clearable></v-combobox>
-      <v-btn color="primary" @click="showProxytable">{{t('search.choose_proxy')}}</v-btn>
+      <v-btn color="primary" @click="showProxytable">{{ t('search.choose_proxy') }}</v-btn>
 
       <div v-if="proxytableshow" class="mt-3">
         <ProxyTableselected @change="handleSelectedChanged" />
       </div>
+      <v-container>
+        <p class="mt-5">{{ capletter(t('search.use_local_browser')) }}:</p>
+        <v-row>
+          <v-col cols="12" md="12">
+            <v-btn-toggle v-model="useLocalBrowser" mandatory class="mt-3">
+              <v-btn :value=false color="primary">No</v-btn>
+              <v-btn :value=true color="success">Yes</v-btn>
+            </v-btn-toggle>
+          </v-col>
+           </v-row>
+      </v-container>
+      <v-container v-if="useLocalBrowser==true">
+        <v-row>
+          <v-col cols="12" md="12">
+            <v-select v-model="localBrowser" :items="LocalBrowerList" :label="t('search.choose_local_browser')" required
+              :readonly="loading" :rules="[rules.required]"></v-select>
+          </v-col>
+        </v-row>
+      </v-container>
+      
+      <v-container>
+        <p class="mt-5">{{ capletter(t('search.use_local_chrome_data')) }}:</p>
+        <v-row>
+          <v-col cols="12" md="12">
+            <v-btn-toggle v-model="useLocalbrowserdata" mandatory class="mt-3">
+              <v-btn :value="0" color="primary">No</v-btn>
+              <v-btn :value="1" color="success">Yes</v-btn>
+            </v-btn-toggle>
+          </v-col>
+        </v-row>
+      </v-container>
 
       <p class="mt-5">{{ capletter(t('search.show_in_Browser')) }}:</p>
       <v-btn-toggle v-model="showinbrwoser" mandatory class="mt-3">
@@ -82,7 +111,8 @@ import { convertNumberToBoolean } from "@/views/utils/function"
 import { SEARCHEVENT } from "@/config/channellist"
 import { CommonDialogMsg } from "@/entityTypes/commonType"
 import ProxyTableselected from "@/views/pages/proxy/widgets/ProxySelectedTable.vue";
-import { ProxyEntity,ProxyListEntity } from "@/entityTypes/proxyType";
+import { ProxyEntity, ProxyListEntity } from "@/entityTypes/proxyType";
+import {LocalBrowerList} from "@/config/searchSetting"
 const { t } = useI18n({ inheritLocale: true });
 const alert = ref(false);
 const alerttext = ref("");
@@ -90,11 +120,14 @@ const alerttitle = ref("");
 const alerttype = ref<"success" | "error" | "warning" | "info" | undefined>(
   "success"
 );
+const localBrowser=ref("");
+const useLocalbrowserdata = ref(0);
 const form = ref<HTMLFormElement>();
 const loading = ref(false);
 const rules = {
   required: (value) => !!value || "Field is required",
 };
+const useLocalBrowser=ref(false)
 const enginer = ref<string>();
 const keywords = ref();
 const searchplatform = ref<Array<SearchOption>>([]);
@@ -103,15 +136,15 @@ const page_number = ref(1);
 const concurrent_quantity = ref(1);
 const proxyValue = ref<Array<ProxyEntity>>([]);
 const proxytableshow = ref(false);
-const $route = useRoute();
+//const $route = useRoute();
 const router = useRouter();
 const initialize = () => {
   //searchplatform.value = ToArray(SearhEnginer);
-  const seArr:string[]=ToArray(SearhEnginer);
+  const seArr: string[] = ToArray(SearhEnginer);
 
   //console.log(seArr);
-  seArr.map((item,index)=>{
-    searchplatform.value?.push({name:t('search.'+item.toLowerCase()),key:item,index:index})
+  seArr.map((item, index) => {
+    searchplatform.value?.push({ name: t('search.' + item.toLowerCase()), key: item, index: index })
   })
   console.log(searchplatform.value)
   //searchplatform.value=seArr
@@ -152,10 +185,10 @@ const receiveMsg = () => {
               path: '/search/tasklist'
             });
           }
-        }else if(obj.data.action == 'error'){
-            //error notice
-            setAlert(t(obj.data.content), t(obj.data.title), "error");
-          }
+        } else if (obj.data.action == 'error') {
+          //error notice
+          setAlert(t(obj.data.content), t(obj.data.title), "error");
+        }
       }
     }
   })
@@ -178,17 +211,17 @@ const handleSelectedChanged = (newValue: ProxyListEntity[]) => {
         }
         console.log("isexist:" + isexist.toString());
         if (!isexist) {
-          if((newValue[i].host)&&( newValue[i].port)){
-          proxyValue.value.push({
-            id: newValue[i].id,
-            host: newValue[i].host!,
-            port: newValue[i].port!,
-            user: newValue[i].username,
-            pass: newValue[i].password,
-            protocol: newValue[i].protocol,
-          });
-          console.log(proxyValue.value);
-        }
+          if ((newValue[i].host) && (newValue[i].port)) {
+            proxyValue.value.push({
+              id: newValue[i].id,
+              host: newValue[i].host!,
+              port: newValue[i].port!,
+              user: newValue[i].username,
+              pass: newValue[i].password,
+              protocol: newValue[i].protocol,
+            });
+            console.log(proxyValue.value);
+          }
         }
       }
     }
@@ -213,21 +246,26 @@ async function onSubmit() {
     }
     const subkeyword = keywords.value.split('\n').map(keyword => keyword.trim());
     // let finalser="";
-    console.log("enginer value is"+enginer.value)
+    console.log("enginer value is" + enginer.value)
     // searchplatform.value.forEach((item) => {
     //   console.log(item)
     //   if (item.key == enginer.value) {
     //     finalser = item.index;
     //   }
     // })
-    
+    let localbowser:string=""
+    if(useLocalBrowser){
+      localbowser=localBrowser.value
+    }
     const subdata: Usersearchdata = {
       searchEnginer: enginer.value,
       keywords: subkeyword,
       num_pages: page_number.value,
       concurrency: concurrent_quantity.value,
       notShowBrowser: !convertNumberToBoolean(showinbrwoser.value),
-      proxys: proxyValue.value
+      proxys: proxyValue.value,
+      useLocalbrowserdata:convertNumberToBoolean(useLocalbrowserdata.value),
+      localBrowser:localbowser
       // maxConcurrent:concurrent_quantity.value
     }
     //split keywords one line per one
