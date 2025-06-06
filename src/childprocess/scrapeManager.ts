@@ -350,7 +350,7 @@ export class ScrapeManager {
       timeout: this.config.puppeteer_cluster_config.timeout,
       concurrency: CustomConcurrency,
       maxConcurrency: this.numClusters,
-       perBrowserOptions: perBrowserOptions,
+      perBrowserOptions: perBrowserOptions,
       retryLimit: 3,
     });
     // console.log(this.cluster)

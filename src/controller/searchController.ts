@@ -19,18 +19,19 @@ import { SearchTaskStatus } from "@/model/SearchTask.model"
 // import { SearchKeyworddb } from "@/model/searchKeyworddb";
 //import { CustomError } from "@/modules/customError";
 import {USERLOGPATH,USEREMAIL} from '@/config/usersetting';
-import {WriteLog,getApplogspath,getChromeUserDataDir,getRandomValues,getChromeExcutepath,getFirefoxExcutepath} from "@/modules/lib/function"
+import {WriteLog,getApplogspath,getRandomValues,getChromeExcutepath,getFirefoxExcutepath} from "@/modules/lib/function"
 import { v4 as uuidv4 } from 'uuid';
-import {SortBy} from "@/entityTypes/commonType";
+import {SortBy,CookiesType} from "@/entityTypes/commonType";
 import { SystemSettingGroupModule } from '@/modules/SystemSettingGroupModule';
 import {twocaptchagroup,twocaptchatoken,twocaptcha_enabled,chrome_path,firefox_path,external_system} from '@/config/settinggroupInit'
-
+import { AccountCookiesModule } from "@/modules/accountCookiesModule"
 
 export class SearchController {
     private searhModel:searhModel;
-
+    private accountCookiesModule: AccountCookiesModule;
     private systemSettingGroupModule: SystemSettingGroupModule
     constructor() {
+        this.accountCookiesModule=new AccountCookiesModule()
         this.searhModel=new searhModel()
         this.systemSettingGroupModule=new SystemSettingGroupModule()
     }
@@ -46,8 +47,9 @@ export class SearchController {
             concurrency:data.concurrency,
             notShowBrowser:data.notShowBrowser,
             proxys:data.proxys,
-            useLocalbrowserdata:data.useLocalbrowserdata,
-            localBrowser:data.localBrowser
+            //useLocalbrowserdata:data.useLocalbrowserdata,
+            localBrowser:data.localBrowser,
+            accounts:data.accounts
         }
         //console.log("search datat dp")
         //console.log(dp)
@@ -167,6 +169,21 @@ export class SearchController {
         if (!fs.existsSync(errorLogDir)) {
             fs.mkdirSync(errorLogDir, { recursive: true });
         }
+        const cookiesArray:Array<Array<CookiesType>>=[]
+        if(taskEntity.accounts){
+            for (const account of taskEntity.accounts) {
+                const cookies = await this.accountCookiesModule.getAccountCookies(account)
+                if(cookies){
+                    const cookiesArray:Array<CookiesType>=JSON.parse(cookies.cookies)
+                    cookiesArray.push(...cookiesArray)
+                    }
+            }
+        }  
+    // const cookies = await this.accountCookiesModule.getAccountCookies(taskEntity.accounts)
+    // //    if(!cookies){
+    //     throw new Error("account cookies not found")
+    //    }
+       
         const data:Usersearchdata={
             searchEnginer:taskEntity.engine,
             keywords:taskEntity.keywords,
@@ -175,8 +192,9 @@ export class SearchController {
             notShowBrowser:taskEntity.notShowBrowser??false,
             proxys:taskEntity.proxys,
             debug_log_path:errorLogDir,
-            useLocalbrowserdata:taskEntity.useLocalbrowserdata?true:false,
-            localBrowser:taskEntity.localBrowser?taskEntity.localBrowser:""
+            //useLocalbrowserdata:taskEntity.useLocalbrowserdata?true:false,
+            localBrowser:taskEntity.localBrowser?taskEntity.localBrowser:"",
+            cookies:cookiesArray
         }
 
         const childPath = path.join(__dirname, 'taskCode.js')
@@ -227,13 +245,13 @@ export class SearchController {
             throw new Error("local browser excute path not exist")
         }
     }
-    let userDataDir=""
-    if(data.useLocalbrowserdata){
-        userDataDir=getChromeUserDataDir()
-        if(!userDataDir){
-            throw new Error("user data dir not exist")
-        }
-    }
+    //let userDataDir=""
+    // if(data.useLocalbrowserdata){
+    //     userDataDir=getChromeUserDataDir()
+    //     if(!userDataDir){
+    //         throw new Error("user data dir not exist")
+    //     }
+    // }
        //console.log("two captcha token value is "+twoCaptchaTokenvalue)
        //console.log("local browser excute path is "+localBrowserexcutepath)
        //console.log("user data dir is "+userDataDir)
@@ -242,7 +260,7 @@ export class SearchController {
             NODE_OPTIONS: "",
             TWOCAPTCHA_TOKEN: twoCaptchaTokenvalue,
             LOCAL_BROWSER_EXCUTE_PATH: localBrowserexcutepath,
-            USEDATADIR: userDataDir
+            //USEDATADIR: userDataDir
         }} )
         child.on("spawn", () => {
             console.log("child process satart, pid is"+child.pid)

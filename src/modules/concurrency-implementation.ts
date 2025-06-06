@@ -127,7 +127,7 @@ export class CustomConcurrency extends Browser {
             ...options,
             executablePath,
             //product: executablePath?.includes('firefox') ? 'firefox' : 'chrome',
-            userDataDir: process.env.USEDATADIR && process.env.USEDATADIR.trim() !== '' ? process.env.USEDATADIR : undefined,
+            //userDataDir: process.env.USEDATADIR && process.env.USEDATADIR.trim() !== '' ? process.env.USEDATADIR : undefined,
             args: [
                 ...((options as any).args || []),
                 '--no-sandbox',
@@ -148,7 +148,7 @@ export class CustomConcurrency extends Browser {
                 '--disable-site-isolation-trials'
             ],
             //...(process.env.USEDATADIR && process.env.USEDATADIR.trim() !== '' ? {} : {
-                ignoreDefaultArgs: ['--password-store=basic','--use-mock-keychain'],
+                //ignoreDefaultArgs: ['--password-store=basic','--use-mock-keychain'],
             //}),
             defaultViewport: {
                 width: 1280 + Math.floor(Math.random() * 100),

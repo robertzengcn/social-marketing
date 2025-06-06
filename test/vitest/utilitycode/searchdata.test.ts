@@ -10,7 +10,7 @@ test('user-search', async function () {
         notShowBrowser:false,
         num_pages:1,
         concurrency:1,
-        useLocalbrowserdata:false,
+        //useLocalbrowserdata:false,
     }
     //user search test
     const userSer=new UserSearch()

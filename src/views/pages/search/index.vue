@@ -27,9 +27,9 @@
               <v-btn :value=true color="success">Yes</v-btn>
             </v-btn-toggle>
           </v-col>
-           </v-row>
+        </v-row>
       </v-container>
-      <v-container v-if="useLocalBrowser==true">
+      <v-container v-if="useLocalBrowser == true">
         <v-row>
           <v-col cols="12" md="12">
             <v-select v-model="localBrowser" :items="LocalBrowerList" :label="t('search.choose_local_browser')" required
@@ -37,17 +37,22 @@
           </v-col>
         </v-row>
       </v-container>
-      
+
+
       <v-container>
         <p class="mt-5">{{ capletter(t('search.use_local_chrome_data')) }}:</p>
         <v-row>
           <v-col cols="12" md="12">
-            <v-btn-toggle v-model="useLocalbrowserdata" mandatory class="mt-3">
-              <v-btn :value="0" color="primary">No</v-btn>
-              <v-btn :value="1" color="success">Yes</v-btn>
+            <v-btn-toggle v-model="useAccount" mandatory class="mt-3">
+              <v-btn :value="false" color="primary">No</v-btn>
+              <v-btn :value="true" color="success">Yes</v-btn>
             </v-btn-toggle>
           </v-col>
         </v-row>
+      </v-container>
+
+      <v-container v-if="useAccount == true">
+        <AccountSelectedTable :accountSource="enginer" @change="handleAccountChange" />
       </v-container>
 
       <p class="mt-5">{{ capletter(t('search.show_in_Browser')) }}:</p>
@@ -95,6 +100,8 @@
 </template>
 <script setup lang="ts">
 import { useRoute, useRouter } from "vue-router";
+import AccountSelectedTable from "@/views/pages/socialaccount/widgets/AccountSelectedTable.vue";
+
 type SearchOption = {
   key: string;
   name: string;
@@ -112,7 +119,9 @@ import { SEARCHEVENT } from "@/config/channellist"
 import { CommonDialogMsg } from "@/entityTypes/commonType"
 import ProxyTableselected from "@/views/pages/proxy/widgets/ProxySelectedTable.vue";
 import { ProxyEntity, ProxyListEntity } from "@/entityTypes/proxyType";
-import {LocalBrowerList} from "@/config/searchSetting"
+import { LocalBrowerList } from "@/config/searchSetting"
+import { SocialAccountListData } from '@/entityTypes/socialaccount-type'
+
 const { t } = useI18n({ inheritLocale: true });
 const alert = ref(false);
 const alerttext = ref("");
@@ -120,14 +129,14 @@ const alerttitle = ref("");
 const alerttype = ref<"success" | "error" | "warning" | "info" | undefined>(
   "success"
 );
-const localBrowser=ref("");
-const useLocalbrowserdata = ref(0);
+const localBrowser = ref("");
+const useAccount = ref(false);
 const form = ref<HTMLFormElement>();
 const loading = ref(false);
 const rules = {
   required: (value) => !!value || "Field is required",
 };
-const useLocalBrowser=ref(false)
+const useLocalBrowser = ref(false)
 const enginer = ref<string>();
 const keywords = ref();
 const searchplatform = ref<Array<SearchOption>>([]);
@@ -138,6 +147,7 @@ const proxyValue = ref<Array<ProxyEntity>>([]);
 const proxytableshow = ref(false);
 //const $route = useRoute();
 const router = useRouter();
+const accounts = ref<Array<SocialAccountListData>>([])
 const initialize = () => {
   //searchplatform.value = ToArray(SearhEnginer);
   const seArr: string[] = ToArray(SearhEnginer);
@@ -171,6 +181,28 @@ onMounted(() => {
 const showProxytable = () => {
   console.log("show proxy table");
   proxytableshow.value = !proxytableshow.value;
+};
+
+const handleAccountChange = (newValue: SocialAccountListData[]) => {
+  if (newValue && newValue.length > 0) {
+
+    // accounts.value.length=0;
+    // accounts.value=newValue;
+    for (let i = 0; i < newValue.length; i++) {
+      if (newValue[i] && newValue[i].id) {
+        let isexist = false;
+        for (let is = 0; is < accounts.value.length; is++) {
+          if (accounts.value[is].id == newValue[i].id) {
+            isexist = true;
+          }
+        }
+        console.log("isexist:" + isexist.toString());
+        if (!isexist) {
+          accounts.value.push(newValue[i]);
+        }
+      }
+    }
+  }
 };
 
 const receiveMsg = () => {
@@ -253,9 +285,13 @@ async function onSubmit() {
     //     finalser = item.index;
     //   }
     // })
-    let localbowser:string=""
-    if(useLocalBrowser){
-      localbowser=localBrowser.value
+    let localbowser: string = ""
+    if (useLocalBrowser) {
+      localbowser = localBrowser.value
+    }
+    let accountids:Array<number>=[]
+    if(useAccount.value){
+      accountids=accounts.value.map(item=>item.id)
     }
     const subdata: Usersearchdata = {
       searchEnginer: enginer.value,
@@ -264,8 +300,9 @@ async function onSubmit() {
       concurrency: concurrent_quantity.value,
       notShowBrowser: !convertNumberToBoolean(showinbrwoser.value),
       proxys: proxyValue.value,
-      useLocalbrowserdata:convertNumberToBoolean(useLocalbrowserdata.value),
-      localBrowser:localbowser
+      // useLocalbrowserdata:convertNumberToBoolean(useLocalbrowserdata.value),
+      localBrowser: localbowser,
+      accounts:accountids
       // maxConcurrent:concurrent_quantity.value
     }
     //split keywords one line per one

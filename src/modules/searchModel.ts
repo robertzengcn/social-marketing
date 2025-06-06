@@ -6,7 +6,7 @@ import { SearhEnginer } from "@/config/searchSetting"
 // import { ToArray } from "@/modules/lib/function"
 import { SearchKeywordModel } from "@/model/SearchKeyword.model"
 import { SearchResultModel } from "@/model/SearchResult.model"
-import { SearchResEntity, SearchDataRun,ResultParseItemType } from "@/entityTypes/scrapeType"
+import { SearchResEntity, ResultParseItemType } from "@/entityTypes/scrapeType"
 //import {SearchTaskdb} from "@/model/searchTaskdb"
 import { SearchtaskEntityNum, SearchtaskItem } from "@/entityTypes/searchControlType"
 import { getEnumKeyByValue, getEnumValueByNumber } from "@/modules/lib/function"
@@ -16,13 +16,16 @@ import {SortBy} from "@/entityTypes/commonType";
 import { BaseModule } from "@/modules/baseModule";
 import { SearchTaskProxyModel } from "@/model/SearchTaskProxy.model";
 import { SearchTaskProxyEntity } from "@/entity/SearchTaskProxy.entity";
-import { SearchTaskEntity } from "@/entity/SearchTask.entity";
+//import { SearchTaskEntity } from "@/entity/SearchTask.entity";
+import {SearchAccountModel} from "@/model/SearchAccount.model"
+import { SearchAccountEntity } from "@/entity/SearchAccount.entity";
 export class searhModel extends BaseModule {
    // private dbpath: string
     private taskdbModel: SearchTaskModel
     private serResultModel: SearchResultModel
     private serKeywordModel: SearchKeywordModel
     private searchTaskProxyModel: SearchTaskProxyModel
+    private searchAccountModel: SearchAccountModel
     constructor() {
         // const tokenService = new Token()
         // const dbpath = tokenService.getValue(USERSDBPATH)
@@ -35,6 +38,7 @@ export class searhModel extends BaseModule {
         this.serResultModel = new SearchResultModel(this.dbpath)
         this.serKeywordModel = new SearchKeywordModel(this.dbpath)
         this.searchTaskProxyModel = new SearchTaskProxyModel(this.dbpath)
+        this.searchAccountModel = new SearchAccountModel(this.dbpath)
     }
 
     //save search task, call it when user start search keyword
@@ -50,7 +54,7 @@ export class searhModel extends BaseModule {
         if (!enginId) {
             throw new Error("enginerId empty")
         }
-        const taskId = await this.taskdbModel.saveSearchTask(enginId,data.num_pages,data.concurrency,data.notShowBrowser,data.useLocalbrowserdata,data.localBrowser)
+        const taskId = await this.taskdbModel.saveSearchTask(enginId,data.num_pages,data.concurrency,data.notShowBrowser,data.localBrowser)
         //const searshdb = new SearchKeyworddb(this.dbpath)
         for (const keyword of data.keywords) {
             await this.serKeywordModel.saveSearchKeyword(keyword, Number(taskId))
@@ -66,6 +70,14 @@ export class searhModel extends BaseModule {
                 proxyEntity.pass=proxy.pass?proxy.pass:''
             
                 await this.searchTaskProxyModel.create(proxyEntity)
+            }
+        }
+        if(data.accounts){
+            for (const account of data.accounts) {
+                const accountEntity=new SearchAccountEntity()
+                accountEntity.task_id=Number(taskId)
+                accountEntity.account_id=account
+                await this.searchAccountModel.create(accountEntity)
             }
         }
         return Number(taskId)
@@ -240,6 +252,7 @@ export class searhModel extends BaseModule {
     }
     //get task entity by id
     public async getTaskEntityById(taskId: number): Promise< SearchDataParam | null> {
+        
         const taskEntity=  await this.taskdbModel.getTaskEntity(taskId)
         if(!taskEntity){
             return null
@@ -252,7 +265,7 @@ export class searhModel extends BaseModule {
             num_pages:taskEntity.num_pages,
             concurrency:taskEntity.concurrency,
             notShowBrowser:taskEntity.notShowBrowser?true:false,
-            useLocalbrowserdata:taskEntity.useLocalbrowserdata?true:false,
+            //useLocalbrowserdata:taskEntity.useLocalbrowserdata?true:false,
             localBrowser:taskEntity.localBrowser?taskEntity.localBrowser:"",
             proxys:proxys.map(item=>{
                 return {
