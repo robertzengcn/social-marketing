@@ -1,6 +1,7 @@
-import { CookiesType } from './commonType'
+//import { CookiesType } from './commonType'
+import {CookiesType} from "@/entityTypes/cookiesType"
 import {ProxyEntity} from './proxyType'
-import { SocialAccountListData } from './socialaccount-type'
+//import { SocialAccountListData } from './socialaccount-type'
 export type SearchResponse={
     status:boolean,
     msg:string,

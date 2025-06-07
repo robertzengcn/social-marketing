@@ -21,11 +21,11 @@ import { SearchTaskStatus } from "@/model/SearchTask.model"
 import {USERLOGPATH,USEREMAIL} from '@/config/usersetting';
 import {WriteLog,getApplogspath,getRandomValues,getChromeExcutepath,getFirefoxExcutepath} from "@/modules/lib/function"
 import { v4 as uuidv4 } from 'uuid';
-import {SortBy,CookiesType} from "@/entityTypes/commonType";
+import {SortBy} from "@/entityTypes/commonType";
 import { SystemSettingGroupModule } from '@/modules/SystemSettingGroupModule';
 import {twocaptchagroup,twocaptchatoken,twocaptcha_enabled,chrome_path,firefox_path,external_system} from '@/config/settinggroupInit'
 import { AccountCookiesModule } from "@/modules/accountCookiesModule"
-
+import {CookiesType} from "@/entityTypes/cookiesType"
 export class SearchController {
     private searhModel:searhModel;
     private accountCookiesModule: AccountCookiesModule;
@@ -169,16 +169,16 @@ export class SearchController {
         if (!fs.existsSync(errorLogDir)) {
             fs.mkdirSync(errorLogDir, { recursive: true });
         }
-        const cookiesArray:Array<Array<CookiesType>>=[]
-        if(taskEntity.accounts){
-            for (const account of taskEntity.accounts) {
-                const cookies = await this.accountCookiesModule.getAccountCookies(account)
-                if(cookies){
-                    const cookiesArray:Array<CookiesType>=JSON.parse(cookies.cookies)
-                    cookiesArray.push(...cookiesArray)
-                    }
-            }
-        }  
+        //const cookiesArray:Array<Array<CookiesType>>=[]
+        // if(taskEntity.accounts){
+        //     for (const account of taskEntity.accounts) {
+        //         const cookies = await this.accountCookiesModule.getAccountCookies(account)
+        //         if(cookies){
+        //             const cookiesits:Array<CookiesType>=JSON.parse(cookies.cookies)
+        //             cookiesArray.push(cookiesits)
+        //             }
+        //     }
+        // }  
     // const cookies = await this.accountCookiesModule.getAccountCookies(taskEntity.accounts)
     // //    if(!cookies){
     //     throw new Error("account cookies not found")
@@ -194,7 +194,7 @@ export class SearchController {
             debug_log_path:errorLogDir,
             //useLocalbrowserdata:taskEntity.useLocalbrowserdata?true:false,
             localBrowser:taskEntity.localBrowser?taskEntity.localBrowser:"",
-            cookies:cookiesArray
+            cookies:taskEntity.cookies
         }
 
         const childPath = path.join(__dirname, 'taskCode.js')

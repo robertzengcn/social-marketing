@@ -106,6 +106,49 @@ export class SearchScrape implements searchEngineImpl {
         await this.page.bringToFront();
         await this.page.setViewport({ width: 1920, height: 1040 });
         let do_continue: boolean | void = true;
+        //console.log("data.data=%O",data.data)
+        //set cookies if data.data.cookies is not empty
+        if (data.data.cookies && data.data.cookies.length > 0) {
+            //console.log("data.data.cookies=%O",data.data.cookies)
+            const browserContext = this.page.browser().defaultBrowserContext();
+            const pageContext = this.page;
+            
+            for (const cookie of data.data.cookies) {
+                if(cookie){
+                    const mappedCookie = {
+                        ...cookie,
+                        sameSite: cookie.sameSite === 'None' ? 'None' as const : 
+                                cookie.sameSite === 'lax' ? 'Lax' as const :
+                                cookie.sameSite === 'strict' ? 'Strict' as const : 'None' as const,
+                        // Ensure domain is set correctly
+                        domain: cookie.domain || new URL(this.build_start_url()).hostname,
+                        // Ensure path is set
+                        path: cookie.path || '/',
+                        // Ensure secure is set for https
+                        secure: cookie.secure ?? true,
+                        // Ensure httpOnly is set
+                        httpOnly: cookie.httpOnly ?? true
+                    };
+                    console.log("Setting cookie in browser context:", mappedCookie);
+                    
+                    // Set cookie in browser context
+                    await browserContext.setCookie(mappedCookie);
+                    
+                    // Also set cookie in page context
+                    console.log("Setting cookie in page context:", mappedCookie);
+                    await pageContext.browser().setCookie(mappedCookie);
+                }
+            }
+            
+            // Verify cookies were set in both contexts
+            const browserCookies = await browserContext.cookies();
+            const pageCookies = await pageContext.cookies();
+            console.log("Browser context cookies:", browserCookies);
+            console.log("Page context cookies:", pageCookies);
+            
+            // Wait a moment to ensure cookies are properly set
+            await this.sleep(1000);
+        }
 
         if (data.data.proxyServer) {
             if (data.data.proxyServer != undefined) {
@@ -138,6 +181,7 @@ export class SearchScrape implements searchEngineImpl {
             do_continue = await this.load_search_engine();
         }
 
+        console.log("browser cookies=%O",await this.page.browser().cookies());
         if (!do_continue) {
             console.error('Failed to load the search engine: load_search_engine()');
         } else {

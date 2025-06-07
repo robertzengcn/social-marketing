@@ -29,12 +29,12 @@ export class UserSearch {
                    proxyStrList.push(proxyStr)
                })
            }
-           if(data.cookies){
-            for(const cookie of data.cookies){
-                // const cookieStr=cookie.map((value)=>value.name+"="+value.value).join(";")
-                // proxyStrList.push(cookieStr)
-            }
-           }
+        //    if(data.cookies){
+        //     for(const cookie of data.cookies){
+        //         // const cookieStr=cookie.map((value)=>value.name+"="+value.value).join(";")
+        //         // proxyStrList.push(cookieStr)
+        //     }
+        //    }
        
         const smConfig: SMstruct = {
             headless: data.notShowBrowser,
@@ -80,6 +80,7 @@ export class UserSearch {
         const searchDataParam: SearchDataParam = {
             keywords: keywords,
             engine: enginer,
+            cookies:data.cookies
             //useLocalbrowserdata:data.useLocalbrowserdata
         }
        const results = await scraper.searchdata(searchDataParam)

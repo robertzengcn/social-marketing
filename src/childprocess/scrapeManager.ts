@@ -21,6 +21,7 @@ import { searchEngineFactory } from "@/modules/searchEngineFactory"
 // import { Keyword } from "./keyword";
 import { pluggableType } from "@/entityTypes/scrapeType"
 import { ProxyServer } from "@/entityTypes/proxyType"
+import { CookiesType } from "@/entityTypes/cookiesType";
 // import vanillaPuppeteer from 'puppeteer';
 // import {addExtra} from 'puppeteer-extra';
 // import StealthPlugin from 'puppeteer-extra-plugin-stealth';
@@ -301,15 +302,9 @@ export class ScrapeManager {
         const userAgent = new UserAgent({ deviceCategory: 'desktop' });
         console.log("user agent is "+userAgent.toString());
         userAgents = userAgent.toString();
-        // this.config.user_agent=userAgents
-        // userAgent = randomUseragent.getRandom(function(ua){
-          
-        //   return ua
-        // });
       } else {
         userAgents = this.config.user_agent;
       }
-      //console.log("generate user agent:"+userAgents)
       
       return {
         headless: this.config.headless,
@@ -318,14 +313,6 @@ export class ScrapeManager {
           ...this.config.chrome_flags,
           `--user-agent=${userAgents}`
         ],
-        // defaultViewport: {
-        //   width: 1280 + Math.floor(Math.random() * 100),
-        //   height: 768 + Math.floor(Math.random() * 100),
-        //   deviceScaleFactor: 1,
-        //   hasTouch: false,
-        //   isLandscape: true,
-        //   isMobile: false
-        // }
       };
     });
     //console.log(this.config)
@@ -345,13 +332,16 @@ export class ScrapeManager {
     // const puppeteer = addExtra(vanillaPuppeteer);
     // puppeteer.use(StealthPlugin());
     this.cluster = await Cluster.launch({
-      //puppeteer,
       monitor: this.config.puppeteer_cluster_config.monitor,
       timeout: this.config.puppeteer_cluster_config.timeout,
       concurrency: CustomConcurrency,
       maxConcurrency: this.numClusters,
       perBrowserOptions: perBrowserOptions,
       retryLimit: 3,
+      puppeteerOptions: {
+        // Add default cookies that will be set for all browser instances
+        defaultViewport: null,
+      },
     });
     // console.log(this.cluster)
     //}
@@ -359,6 +349,8 @@ export class ScrapeManager {
     this.cluster.on('taskerror', (err, data) => {
       console.log(`Error crawling ${data}: ${err.message}`);
     });
+    //}
+    //}
   }
 
   /*
@@ -488,13 +480,23 @@ export class ScrapeManager {
       }
       const obj = engineFactory.getSearchEngine(param.engine.toLowerCase(), scop)
       const boundMethod = obj.run.bind(obj);
-      const cludata: ClusterSearchData = {
-        keywords: chunks[c]
+      let cookiesArray:Array<CookiesType>=[]
+      if (param.cookies && param.cookies.length > 0) {
+        const randomIndex = Math.floor(Math.random() * param.cookies.length);
+        cookiesArray = param.cookies[randomIndex];
       }
+      const cludata: ClusterSearchData = {
+        keywords: chunks[c],
+        cookies:cookiesArray
+      }
+      console.log("cludata=%O",cludata)
       if (this.proxiesArr && this.proxiesArr.length > 0) {
         const randomIndex = Math.floor(Math.random() * this.proxiesArr.length);
         cludata.proxyServer = this.proxiesArr[randomIndex];
       }
+      // if(param.cookies){
+      //   cludata.cookies=param.cookies
+      // }
 
       // Wrap the execute call in a try-catch to handle Puppeteer errors
       const wrappedExecute = async () => {

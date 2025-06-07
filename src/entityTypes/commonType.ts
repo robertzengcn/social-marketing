@@ -65,8 +65,8 @@ export type SortBy={
     order:string
 }
 export type CookiesType={
-    name: string
-   value: string
+name: string
+value: string
 domain: string
 path: string
 }

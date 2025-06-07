@@ -218,7 +218,8 @@ export default {
         search_enginer_invalid:"search enginer invalid",
         use_local_chrome_data:"use local chrome browser profile",
         use_local_browser:"use local browser",
-        choose_local_browser:"choose local browser"
+        choose_local_browser:"choose local browser",
+        use_search_enginer_account:"use search enginer account",
     },
     searchtask:{
         id:"Task Id",

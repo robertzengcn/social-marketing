@@ -2,6 +2,7 @@ import { Page } from 'puppeteer';
 import winston from "winston"
 import {ProxyServer} from "@/entityTypes/proxyType"
 import {ProxyEntity} from '@/entityTypes/proxyType'
+import {CookiesType} from "@/entityTypes/cookiesType"
 
 export type SMconfig = {
   logger: winston.Logger;
@@ -156,15 +157,15 @@ export type SearchDataParam = {
   //useLocalbrowserdata:boolean,
   localBrowser?:string
   accounts?:Array<number>
+  cookies?: Array<Array<CookiesType>>;
 }
 export interface clusterData {
   page: Page
 }
 export interface ClusterSearchData {
-  proxyServer?:ProxyServer|null
-//import {ProxyServer} from "@/entityTypes/proxyType"
-
-  keywords: Array<string>
+  keywords: string[];
+  proxyServer?: ProxyServer | null;
+  cookies?: Array<CookiesType>;
 }
 export type ClusterFunctionparam = {
   page: Page,

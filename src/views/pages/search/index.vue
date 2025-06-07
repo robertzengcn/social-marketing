@@ -40,7 +40,7 @@
 
 
       <v-container>
-        <p class="mt-5">{{ capletter(t('search.use_local_chrome_data')) }}:</p>
+        <p class="mt-5">{{ capletter(t('search.use_search_enginer_account')) }}:</p>
         <v-row>
           <v-col cols="12" md="12">
             <v-btn-toggle v-model="useAccount" mandatory class="mt-3">
