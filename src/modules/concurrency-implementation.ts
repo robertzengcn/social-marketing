@@ -34,6 +34,7 @@ function getCacheDir(): string {
 
 // Function to get the latest Chrome version
 async function getLatestChromeVersion(): Promise<string> {
+    //return CHROME_BUILD_ID;
     try {
         const platform = await detectBrowserPlatform();
         if (platform) {
@@ -76,7 +77,7 @@ export class CustomConcurrency extends Browser {
                     const browser = 'chrome' as PuppeteerBrowser;
                     
                     // Get the latest Chrome version
-                    CHROME_BUILD_ID = await getLatestChromeVersion();
+                    //CHROME_BUILD_ID = await getLatestChromeVersion();
                     console.log('Using Chrome version:', CHROME_BUILD_ID);
                     
                     // Check cache directory for installed browsers
