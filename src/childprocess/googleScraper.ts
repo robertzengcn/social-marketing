@@ -158,7 +158,15 @@ export class GoogleScraper extends SearchScrape {
         // results.top_products = this.clean_results(results.top_products, ['title', 'link']);
         // results.right_products = this.clean_results(results.right_products, ['title', 'link']);
         // results.results = this.clean_results(results.results, ['title', 'link' , 'snippet']);
-
+        
+        
+        // Wait for network to be idle
+        await this.page.waitForNetworkIdle({ timeout: 30000 }).catch(() => {
+            this.logger.warn('Timeout waiting for network idle');
+        });
+        
+        // Additional wait to ensure dynamic content is loaded
+        await new Promise(resolve => setTimeout(resolve, 2000));
         // results.time = (new Date()).toUTCString();
         const result: SearchData = {
             num_results: '',
