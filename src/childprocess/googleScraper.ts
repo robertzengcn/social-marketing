@@ -437,7 +437,18 @@ export class GoogleScraper extends SearchScrape {
                     //await this.page.waitForTimeout(100 + Math.random() * 200);
                     await new Promise(resolve => setTimeout(resolve, 100 + Math.random() * 200));
                     await this.page.mouse.click(randomX, randomY);
-                    await this.set_input_value(selector, keyword);
+                    // Type each character with random delays to simulate human typing
+                    for (const char of keyword) {
+                        await this.page.keyboard.type(char, {
+                            delay: 50 + Math.random() * 150 // Random delay between 50-200ms per character
+                        });
+                        // Add occasional longer pauses between words
+                        if (char === ' ') {
+                            await new Promise(resolve => setTimeout(resolve, 200 + Math.random() * 300));
+                        }
+                    }
+                    //await this.set_input_value(selector, keyword);
+                    
                     await this.page.evaluate(async () => {
                         await new Promise(function (resolve) {
                             setTimeout(resolve, 1000)
