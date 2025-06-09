@@ -7,7 +7,7 @@ import * as puppeteer from 'puppeteer';
 import { timeoutExecute } from 'puppeteer-cluster/dist/util';
 // import {WorkerInstance} from 'puppeteer-cluster/dist/concurrency/ConcurrencyImplementation'
 import {Browser} from 'puppeteer-cluster/dist/concurrency/builtInConcurrency';
-import { detectBrowserPlatform, install, canDownload, Browser as PuppeteerBrowser, getInstalledBrowsers } from '@puppeteer/browsers';
+import { detectBrowserPlatform, install, canDownload, Browser as PuppeteerBrowser, getInstalledBrowsers, resolveBuildId } from '@puppeteer/browsers';
 import * as path from 'path';
 //import { app } from 'electron';
 import * as os from 'os';
@@ -18,18 +18,13 @@ import RecaptchaPlugin from 'puppeteer-extra-plugin-recaptcha';
 import vanillaPuppeteer from 'puppeteer';
 import {addExtra} from 'puppeteer-extra';
 import * as fs from 'fs';
-import { execSync } from 'child_process';
+//import { execSync } from 'child_process';
 //import { executablePath } from 'puppeteer';
 const BROWSER_TIMEOUT = 5000;
 
 // Use Puppeteer's built-in Chrome version
 // Use a specific Chrome version that's compatible with Puppeteer
-const CHROME_BUILD_ID = '126.0.6478.182';
-
-// Use Puppeteer's built-in Chrome version
-//const CHROME_BUILD_ID = 'chrome'; // This will use the version that comes with Puppeteer
-
-//puppeteerExtra.use(StealthPlugin());
+let CHROME_BUILD_ID = '136.0.7103.94';
 
 // Function to get the correct cache directory path
 function getCacheDir(): string {
@@ -37,7 +32,22 @@ function getCacheDir(): string {
     return path.join(homeDir, '.cache', 'puppeteer');
 }
 
+// Function to get the latest Chrome version
+async function getLatestChromeVersion(): Promise<string> {
+    try {
+        const platform = await detectBrowserPlatform();
+        if (platform) {
+            const browser = 'chrome' as PuppeteerBrowser;
+            const latestBuildId = await resolveBuildId(browser, platform, 'latest');
+            return latestBuildId;
+        }
+    } catch (error) {
+        console.error('Failed to resolve latest Chrome version:', error);
+    }
+    return CHROME_BUILD_ID; // Fallback to default version if resolution fails
+}
 
+//puppeteerExtra.use(StealthPlugin());
 
 export class CustomConcurrency extends Browser {
 
@@ -59,37 +69,17 @@ export class CustomConcurrency extends Browser {
         if (localBrowserPath && fs.existsSync(localBrowserPath)) {
             executablePath = localBrowserPath;
             console.log('Using local browser installation:', executablePath);
-        }else{
-        try {
-           
-
-            const platform = await detectBrowserPlatform();
-            if (platform) {
-                const browser = 'chrome' as PuppeteerBrowser;
-                
-                // First try to find Chrome in system paths
-                //let systemChromePath: string | undefined;
-                // if (platform.includes('mac_arm')) {
-                //     systemChromePath = findChromeOnMac();
-                // } else if (platform === 'linux') {
-                //     systemChromePath = findChromeOnLinux();
-                // } else if (platform === 'win32') {
-                //     systemChromePath = findChromeOnWindows();
-                // }
-                // if (platform.includes('mac_arm')) {
-                //     systemChromePath = findChromeOnMac();
-                // } else if (platform === 'linux') {
-                //     systemChromePath = findChromeOnLinux();
-                // } else if (platform === 'win32') {
-                //     systemChromePath = findChromeOnWindows();
-                // }
-                // console.log('platform', platform);
-                // console.log('systemChromePath', systemChromePath);
-                // if (systemChromePath && fs.existsSync(systemChromePath)) {
-                //     executablePath = systemChromePath;
-                //     console.log('Using system Chrome installation:', executablePath);
-                // } else {
-                    // If system Chrome not found, check cache directory
+        } else {
+            try {
+                const platform = await detectBrowserPlatform();
+                if (platform) {
+                    const browser = 'chrome' as PuppeteerBrowser;
+                    
+                    // Get the latest Chrome version
+                    CHROME_BUILD_ID = await getLatestChromeVersion();
+                    console.log('Using Chrome version:', CHROME_BUILD_ID);
+                    
+                    // Check cache directory for installed browsers
                     const installedBrowsers = await getInstalledBrowsers({ cacheDir });
                     const chromeInstallation = installedBrowsers.find(
                         installed => installed.browser === browser
@@ -116,12 +106,11 @@ export class CustomConcurrency extends Browser {
                             });
                         }
                     }
-                //}
+                }
+            } catch (error) {
+                console.error('Failed to detect/install Chrome:', error);
             }
-        } catch (error) {
-            console.error('Failed to detect/install Chrome:', error);
         }
-    }
         // Add configuration for packaged environment
         const launchOptions:puppeteer.LaunchOptions = {
             ...options,
