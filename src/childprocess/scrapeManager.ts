@@ -68,11 +68,21 @@ export class ScrapeManager {
       // remote_add:endcofig.REMOTEADD,
       // remote_username:endcofig.USERNAME,
       // remote_password:endcofig.PASSWORD,
-      // the user agent to scrape with
-      user_agent:
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      // the user agent to scrape with - set based on platform
+      user_agent: (() => {
+        const platform = process.platform;
+        switch(platform) {
+          case 'darwin':
+            return "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36";
+          case 'linux':
+            return "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36";
+          case 'win32':
+          default:
+            return "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36";
+        }
+      })(),
       // if random_user_agent is set to True, a random user agent is chosen
-      random_user_agent: true,
+      random_user_agent: false,
       // whether to select manual settings in visible mode
       set_manual_settings: false,
       // log ip address data
@@ -172,7 +182,7 @@ export class ScrapeManager {
       use_proxies_only: false,
       // check if headless chrome escapes common detection techniques
       // this is a quick test and should be used for debugging
-      test_evasion: false,
+      test_evasion: true,
       apply_evasion_techniques: false,
       // settings for puppeteer-cluster
       puppeteer_cluster_config: {
@@ -228,6 +238,7 @@ export class ScrapeManager {
     // if (config.taskrunId) {
     //   this.taskrunId = config.taskrunId;
     // }
+    
   }
 
   /*
@@ -262,7 +273,7 @@ export class ScrapeManager {
     //let proxies:Array<ProxyServer>;
     // if we have at least one proxy, always use CONCURRENCY_BROWSER
     // and set maxConcurrency to this.config.proxies.length + 1
-    this.config.test_evasion=false;
+    this.config.test_evasion=true;
     // else use whatever this.configuration was passed
     if (this.config.proxies && this.config.proxies.length > 0) {
       // because we use real browsers, we ran out of memory on normal laptops
@@ -296,24 +307,30 @@ export class ScrapeManager {
 
     //https://github.com/puppeteer/puppeteer/issues/2234
     // Give the per browser options
+    let userAgents: string;
     const perBrowserOptions = map(this.proxiesArr.slice(0, this.numClusters), (proxy) => {
-      let userAgents: string;
+      
       if (this.config.random_user_agent) {
         const userAgent = new UserAgent({ deviceCategory: 'desktop' });
         console.log("user agent is "+userAgent.toString());
         userAgents = userAgent.toString();
-      } else {
+      } 
+      else {
         userAgents = this.config.user_agent;
       }
       
-      return {
+      const res={
         headless: this.config.headless,
         ignoreHTTPSErrors: true,
         args: [
           ...this.config.chrome_flags,
-          `--user-agent=${userAgents}`
+           `--user-agent=${userAgents}`
         ],
       };
+      // if(userAgents.length>0){
+      //   res.args.push(`--user-agent=${userAgents}`)
+      // }
+      return res;
     });
     //console.log(this.config)
     console.log(perBrowserOptions);

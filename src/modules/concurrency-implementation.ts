@@ -123,31 +123,31 @@ export class CustomConcurrency extends Browser {
                 '--no-sandbox',
                 '--disable-setuid-sandbox',
                 '--disable-dev-shm-usage',
-                '--enable-webgl',
-                '--window-position=0,0',
+                // '--enable-webgl',
+                // '--window-position=0,0',
                 '--ignore-certifcate-errors',
                 '--ignore-certifcate-errors-spki-list',
                 //'--use-gl=swiftshader',
                 //'--use-gl=angle',
                 '--disable-blink-features=AutomationControlled',
-                '--disable-features=IsolateOrigins,site-per-process',
-                '--disable-site-isolation-trials',
-                '--disable-web-security',
-                '--disable-features=BlockInsecurePrivateNetworkRequests',
-                '--disable-features=IsolateOrigins',
-                '--disable-site-isolation-trials'
+                // '--disable-features=IsolateOrigins,site-per-process',
+                // '--disable-site-isolation-trials',
+                // '--disable-web-security',
+                // '--disable-features=BlockInsecurePrivateNetworkRequests',
+                // //'--disable-features=IsolateOrigins',
+                // '--disable-site-isolation-trials'
             ],
             //...(process.env.USEDATADIR && process.env.USEDATADIR.trim() !== '' ? {} : {
                 //ignoreDefaultArgs: ['--password-store=basic','--use-mock-keychain'],
             //}),
-            defaultViewport: {
-                width: 1280 + Math.floor(Math.random() * 100),
-                height: 768 + Math.floor(Math.random() * 100),
-                deviceScaleFactor: 1,
-                hasTouch: false,
-                isLandscape: true,
-                isMobile: false
-            }
+            // defaultViewport: {
+            //     width: 1280 + Math.floor(Math.random() * 100),
+            //     height: 768 + Math.floor(Math.random() * 100),
+            //     deviceScaleFactor: 1,
+            //     hasTouch: false,
+            //     isLandscape: true,
+            //     isMobile: false
+            // }
         };
         console.log('launchOptions', launchOptions);
         const puppeteers = addExtra(vanillaPuppeteer);
@@ -256,52 +256,52 @@ export class CustomConcurrency extends Browser {
                         });
 
                         // Add permissions API
-                        Object.defineProperty(navigator, 'permissions', {
-                            get: () => ({
-                                query: async (permissionDesc: { name: string }) => {
-                                    const permissionStates = {
-                                        'geolocation': 'prompt',
-                                        'notifications': 'prompt',
-                                        'push': 'prompt',
-                                        'midi': 'prompt',
-                                        'camera': 'prompt',
-                                        'microphone': 'prompt',
-                                        'speaker': 'prompt',
-                                        'device-info': 'prompt',
-                                        'background-fetch': 'prompt',
-                                        'background-sync': 'prompt',
-                                        'bluetooth': 'prompt',
-                                        'persistent-storage': 'prompt',
-                                        'ambient-light-sensor': 'prompt',
-                                        'accelerometer': 'prompt',
-                                        'gyroscope': 'prompt',
-                                        'magnetometer': 'prompt',
-                                        'clipboard-read': 'prompt',
-                                        'clipboard-write': 'prompt',
-                                        'payment-handler': 'prompt'
-                                    };
+                        // Object.defineProperty(navigator, 'permissions', {
+                        //     get: () => ({
+                        //         query: async (permissionDesc: { name: string }) => {
+                        //             const permissionStates = {
+                        //                 'geolocation': 'prompt',
+                        //                 'notifications': 'prompt',
+                        //                 'push': 'prompt',
+                        //                 'midi': 'prompt',
+                        //                 'camera': 'prompt',
+                        //                 'microphone': 'prompt',
+                        //                 'speaker': 'prompt',
+                        //                 'device-info': 'prompt',
+                        //                 'background-fetch': 'prompt',
+                        //                 'background-sync': 'prompt',
+                        //                 'bluetooth': 'prompt',
+                        //                 'persistent-storage': 'prompt',
+                        //                 'ambient-light-sensor': 'prompt',
+                        //                 'accelerometer': 'prompt',
+                        //                 'gyroscope': 'prompt',
+                        //                 'magnetometer': 'prompt',
+                        //                 'clipboard-read': 'prompt',
+                        //                 'clipboard-write': 'prompt',
+                        //                 'payment-handler': 'prompt'
+                        //             };
                                     
-                                    return {
-                                        state: permissionStates[permissionDesc.name] || 'prompt',
-                                        onchange: null
-                                    };
-                                }
-                            })
-                        });
+                        //             return {
+                        //                 state: permissionStates[permissionDesc.name] || 'prompt',
+                        //                 onchange: null
+                        //             };
+                        //         }
+                        //     })
+                        // });
 
                         // Set WebGL vendor and renderer
-                        const getParameter = WebGLRenderingContext.prototype.getParameter;
-                        WebGLRenderingContext.prototype.getParameter = function(parameter) {
-                            // UNMASKED_VENDOR_WEBGL
-                            if (parameter === 37445) {
-                                return 'Intel Inc.';
-                            }
-                            // UNMASKED_RENDERER_WEBGL
-                            if (parameter === 37446) {
-                                return 'Intel Iris OpenGL Engine';
-                            }
-                            return getParameter.apply(this, [parameter]);
-                        };
+                        // const getParameter = WebGLRenderingContext.prototype.getParameter;
+                        // WebGLRenderingContext.prototype.getParameter = function(parameter) {
+                        //     // UNMASKED_VENDOR_WEBGL
+                        //     if (parameter === 37445) {
+                        //         return 'Intel Inc.';
+                        //     }
+                        //     // UNMASKED_RENDERER_WEBGL
+                        //     if (parameter === 37446) {
+                        //         return 'Intel Iris OpenGL Engine';
+                        //     }
+                        //     return getParameter.apply(this, [parameter]);
+                        // };
                         
                         // Add Chrome-specific properties
                         (window as any).chrome = {

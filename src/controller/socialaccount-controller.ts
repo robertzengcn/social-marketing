@@ -163,7 +163,7 @@ export class SocialAccountController {
          
                     }
                     try {
-                        
+                        console.log(cookieDetails)
                         await ses.cookies.set(cookieDetails)
                     } catch (error) {
                         console.error(`Failed to set cookie: ${cookie.name}`, error);

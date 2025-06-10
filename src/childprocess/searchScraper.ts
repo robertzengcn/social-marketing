@@ -115,8 +115,15 @@ export class SearchScrape implements searchEngineImpl {
             
             for (const cookie of data.data.cookies) {
                 if(cookie){
+                    let url = cookie.domain
+                    if (cookie.domain && cookie.domain.charAt(0) === '.') {
+                        url = cookie.domain.slice(1);
+                    }
+
                     const mappedCookie = {
                         ...cookie,
+                        url: `http${cookie.secure ? 's' : ''}://${url}${cookie.path}`,
+                        //url:"https://www.google.com",
                         sameSite: cookie.sameSite === 'None' ? 'None' as const : 
                                 cookie.sameSite === 'lax' ? 'Lax' as const :
                                 cookie.sameSite === 'strict' ? 'Strict' as const : 'None' as const,
@@ -127,9 +134,10 @@ export class SearchScrape implements searchEngineImpl {
                         // Ensure secure is set for https
                         secure: cookie.secure ?? true,
                         // Ensure httpOnly is set
-                        httpOnly: cookie.httpOnly ?? true
+                        httpOnly: cookie.httpOnly ?? true,
+                        expires: cookie.expirationDate ?? 0
                     };
-                    console.log("Setting cookie in browser context:", mappedCookie);
+                    //console.log("Setting cookie in browser context:", mappedCookie);
                     
                     // Set cookie in browser context
                     await browserContext.setCookie(mappedCookie);
@@ -143,7 +151,7 @@ export class SearchScrape implements searchEngineImpl {
             // Verify cookies were set in both contexts
             const browserCookies = await browserContext.cookies();
            // const pageCookies = await pageContext.cookies();
-            console.log("Browser context cookies:", browserCookies);
+            //console.log("Browser context cookies:", browserCookies);
             //console.log("Page context cookies:", pageCookies);
             
             // Wait a moment to ensure cookies are properly set
@@ -181,7 +189,7 @@ export class SearchScrape implements searchEngineImpl {
             do_continue = await this.load_search_engine();
         }
 
-        console.log("browser cookies=%O",await this.page.browser().cookies());
+        //console.log("browser cookies=%O",await this.page.browser().cookies());
         if (!do_continue) {
             console.error('Failed to load the search engine: load_search_engine()');
         } else {
@@ -269,6 +277,23 @@ export class SearchScrape implements searchEngineImpl {
                 await this.page.screenshot({fullPage: true, path: path.join(this.config.debug_log_path, 'headless-evasion-result.png') as `${string}.png` });
             }else{
                 await this.page.screenshot({fullPage: true, path: 'headless-evasion-result.png' });
+            }
+            const sectesturl="https://arh.antoinevastel.com/bots/"
+            await this.page.goto(sectesturl);
+
+           if(this.config.debug_log_path){
+               
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                this.logger.info("antoinevastel-result path:"+path.join(this.config.debug_log_path, 'antoinevastel-result.png') as `${string}.png`)
+                await this.page.screenshot({fullPage: true, path: path.join(this.config.debug_log_path, 'antoinevastel-result.png') as `${string}.png` });
+            const htmlContent = await this.page.content();
+            await fs.promises.writeFile(
+                path.join(this.config.debug_log_path, 'antoinevastel-result.html'),
+                htmlContent
+            );
+            this.logger.info("Saved HTML content to: " + path.join(this.config.debug_log_path, 'antoinevastel-result.html'));
+            }else{
+                await this.page.screenshot({fullPage: true, path: 'antoinevastel-result.png' });
             }
         }
 
