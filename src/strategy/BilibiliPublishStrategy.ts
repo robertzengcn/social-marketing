@@ -75,6 +75,10 @@ export class BilibiliPublishStrategy extends BaseVideoPublishStrategy {
             }
             
             if (options.description) {
+                const descriptionEditor = await this.page.$('.ql-editor');
+                if (!descriptionEditor) {
+                    throw new Error('Description editor not found');
+                }
                 await this.page.type('.ql-editor', options.description);
             }
             const moreSettingsButton = await this.page.$('//span[contains(text(), "更多设置")]');
