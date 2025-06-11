@@ -10,7 +10,7 @@ export class VideoDownloadTaskAccountsEntity extends AuditableEntity {
     @Column("integer")
     task_id: number;
 
-   
+    @Column("integer")
     account_id: number;
 
     @ManyToOne(() => VideoDownloadTaskEntity)

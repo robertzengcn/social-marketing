@@ -4,7 +4,7 @@ import {Usersearchdata} from "@/entityTypes/searchControlType"
 import {UserSearch} from "@/childprocess/userSearch"
 // import { resolveCname } from "node:dns";
 import {ProcessMessage} from "@/entityTypes/processMessage-type"
-import {SearchDataRun} from "@/entityTypes/scrapeType"
+import {ResultParseItemType} from "@/entityTypes/scrapeType"
 
 //             // const data=parameter[3]
 //             // if(!parameter){
@@ -46,14 +46,19 @@ process.parentPort.on('message', async (e) => {
                     console.log("data is empty")
                     return
                 }
-                const res=await userSer.searchData(userSearchdata)
+                
                     //console.log(res)
-                    const message:ProcessMessage<SearchDataRun>={
-                        action:"saveres",
-                        data:res
-                    }
-                    console.log(port)
-                    process.parentPort.postMessage(JSON.stringify(message))
+                   
+                    await userSer.searchData(userSearchdata,function(result){
+                        console.log(result)
+                        const message:ProcessMessage<ResultParseItemType>={
+                            action:"saveres",
+                            data:result
+                        }
+                        process.parentPort.postMessage(JSON.stringify(message))
+                    })
+                    //console.log(port)
+                    //process.parentPort.postMessage(JSON.stringify(message))
                 //});
                 break;
             }

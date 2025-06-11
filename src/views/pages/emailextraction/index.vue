@@ -20,6 +20,14 @@
 
       <v-text-field v-model="concurrent_quantity" :label="t('search.concurrent_quantity')" clearable
         class="mt-3"></v-text-field>
+        <v-number-input
+          :label="t('emailextraction.max_page_number')"
+          control-variant="default"
+          v-model="maxPageNumber"
+          :max="1000"
+          :min="0"
+          :default="100"
+        ></v-number-input>
       
         <v-number-input
         :label="t('emailextraction.process_timeout')"
@@ -104,6 +112,7 @@ const rules = {
   required: (value) => !!value || "Field is required",
 };
 const processTimeout = ref<number>(10);
+const maxPageNumber = ref<number>(100);
 type EmailOption = {
   key: string;
   name: string;
@@ -277,7 +286,8 @@ async function onSubmit() {
     notShowBrowser:!convertNumberToBoolean(showinbrwoser.value),
     proxys:proxyValue.value,
     searchTaskId:searchtaskId.value,
-    processTimeout:processTimeout.value
+    processTimeout:processTimeout.value,
+    maxPageNumber:maxPageNumber.value
    }
    console.log(scraperData)
    submitScraper(scraperData).catch(function (err) {

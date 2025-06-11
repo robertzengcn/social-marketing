@@ -10,15 +10,16 @@ import { v4 as uuidv4 } from 'uuid';
 import {EmailsearchTaskStatus} from '@/model/emailsearchTaskdb'
 import {ProcessMessage} from "@/entityTypes/processMessage-type"
 import { SortBy } from "@/entityTypes/commonType"
-
+import { SystemSettingGroupModule } from '@/modules/SystemSettingGroupModule';
+import {twocaptchagroup,twocaptchatoken,twocaptcha_enabled} from '@/config/settinggroupInit'
 
 
 export class EmailextractionController {
        private emailSeachTaskModule:EmailSearchTaskModule
-    
+       private systemSettingGroupModule: SystemSettingGroupModule 
        constructor() {
        this.emailSeachTaskModule=new EmailSearchTaskModule()
-       
+       this.systemSettingGroupModule=new SystemSettingGroupModule()
     }
     public async searchEmail(data: EmailsControldata) {
         //save search email task
@@ -30,10 +31,24 @@ export class EmailextractionController {
 
         const { port1, port2 } = new MessageChannelMain()
         const tokenService=new Token()
+
+        let twoCaptchaTokenvalue = ""
+                const twoCaptchaToken = await this.systemSettingGroupModule.getGroupItembyName(twocaptchagroup)
+                if (twoCaptchaToken) {
+                    //find 2captcha enable key
+                    const twocaptchenable = twoCaptchaToken.settings.find((item) => item.key === twocaptcha_enabled)
+                    if (twocaptchenable) {
+                        const token = twoCaptchaToken.settings.find((item) => item.key === twocaptchatoken)
+                        if (token) {
+                            twoCaptchaTokenvalue = token.value
+                        }
+                    }
+                }
         
         const child = utilityProcess.fork(childPath, [],{stdio:"pipe",execArgv:["--inspect"],env:{
             ...process.env,
             NODE_OPTIONS: "",
+             TWOCAPTCHA_TOKEN: twoCaptchaTokenvalue
         }} )
         // console.log(path.join(__dirname, 'utilityCode.js'))
         let logpath=tokenService.getValue(USERLOGPATH)

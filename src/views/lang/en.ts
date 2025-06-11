@@ -215,7 +215,11 @@ export default {
         keywords_empty:"keywords empty",
         page_number:"page number",
         choose_proxy:"choose proxy",
-        search_enginer_invalid:"search enginer invalid"
+        search_enginer_invalid:"search enginer invalid",
+        use_local_chrome_data:"use local chrome browser profile",
+        use_local_browser:"use local browser",
+        choose_local_browser:"choose local browser",
+        use_search_enginer_account:"use search enginer account",
     },
     searchtask:{
         id:"Task Id",
@@ -245,6 +249,7 @@ export default {
         unkonw:"unkonw",
     },
     emailextraction:{
+        max_page_number:"max page number",
         manualinputurl:"manual input url",
         searchresult:"search result",
         extraction_type:"Extraction Type", 
@@ -375,8 +380,21 @@ export default {
 
     },
     system_settings:{
-        title:"System Settings",
-        no_setting_item_found_exit:"No setting item found, please exit",
+        "title":"System Settings",
+        "no_setting_item_found_exit":"No setting item found, please exit",
+        "2captcha-group":"2captcha",
+        "2captcha-description":"2captcha description",
+        "2captcha-token":"2captcha token",
+        "2captcha-enabled":"2captcha enabled",
+        "2captcha-disabled":"2captcha disabled",
+        "2captcha-enabled-description":"do you want to enable 2captcha",
+    "2captcha-token-description":"input 2captcha token",
+    "choose_file":"choose file",
+    "chrome-path-description":"input chrome path",
+    "firefox-path-description":"input firefox path",
+    "chrome_path":"chrome path",
+    "firefox_path":"firefox path",
+    "external-system-group-description":"external system group setting"
     }
 
 }

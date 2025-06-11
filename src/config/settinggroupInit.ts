@@ -16,12 +16,19 @@ export const volcengineproapiurl='volcengine-url'
 export const volcengineproapikey='volcengine-key'
 export const openaiapimodel='openai-model'
 export const volcengineapipromodel='volcengine-model'
+export const twocaptcha_enabled='2captcha-enabled'
 export const Doubao_PRO_A:LlmDatatype={
     groupName:volcenginegrouppro,
     modelName:volcengineapipromodel,
     url:volcengineproapiurl,
     apikey:volcengineproapikey
 }
+export const twocaptchagroup='2captcha-group'
+export const twocaptchatoken='2captcha-token'   
+export const twocaptchadescription='2captcha-description'
+export const external_system='external_system'
+export const chrome_path='chrome_path'
+export const firefox_path='firefox_path'
 
 export const settinggroupInit: Array<SystemSettingGroupdf> = [
     {
@@ -40,6 +47,24 @@ export const settinggroupInit: Array<SystemSettingGroupdf> = [
                 description:'deepseek-local-model-description',
                 type:'input',
              },
+        ]
+    },
+    {
+        name: twocaptchagroup,
+        description: twocaptchadescription,
+        items: [
+            {
+                key: twocaptchatoken,
+                value: '',
+                description: '2captcha-token-description',
+                type: 'input',
+            },
+            {
+                key: twocaptcha_enabled,
+                value: '0',
+                description: '2captcha-enabled-description',
+                type: 'toggle',
+            }
         ]
     },
     {
@@ -136,6 +161,24 @@ export const settinggroupInit: Array<SystemSettingGroupdf> = [
                 description:'volcengine-api-key-description',
                 type:'input',
              }
+        ]
+    },
+    {
+        name: external_system,
+        description: 'external-system-group-description',
+        items: [
+            {
+                key: 'chrome_path',
+                value: '',
+                description: 'chrome-path-description',
+                type: 'file',
+            },
+            {
+                key: 'firefox_path', 
+                value: '',
+                description: 'firefox-path-description',
+                type: 'file',
+            }
         ]
     },
 

@@ -64,6 +64,12 @@ export type SortBy={
     key:string
     order:string
 }
+export type CookiesType={
+name: string
+value: string
+domain: string
+path: string
+}
 export type ItemSearchparam={
     page:number
     size:number

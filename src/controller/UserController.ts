@@ -222,6 +222,7 @@ export class UserController {
                             if(!appDataSource.connection.isInitialized){
                             await appDataSource.connection.initialize()
                             }
+                            await runafterbootup()
                             } catch (error) {
                                 console.error('Failed to initialize database connection:', error)
             

@@ -15,6 +15,7 @@ import {convertProxyServertourl} from "@/modules/lib/function"
 // }
 
 export class BaiduScraper extends SearchScrape {
+    search_engine_name="baidu"
     constructor(options: ScrapeOptions) {
         super(options);
     }

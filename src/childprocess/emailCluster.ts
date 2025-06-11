@@ -12,7 +12,8 @@ const { combine, timestamp, printf } = format;
 const MAX_ALLOWED_BROWSERS = 10;
 const MAX_CRAWL_PAGE_LENGTH = 10;
 import map from "lodash/map";
-import randomUseragent from "random-useragent";
+//import randomUseragent from "random-useragent";
+import UserAgent from 'user-agents';
 import clone from "lodash/clone"
 import times from "lodash/times"
 import { crawlSite } from '@/childprocess/emailScraper'
@@ -31,6 +32,7 @@ export class EmailCluster {
   numClusters: number;
   tmppath: string;
   proxiesArr: Array<ProxyServer|null>
+  maxPageNumber:number
   // runLogin: Function;
   // taskid?: number;
   // taskrunId?: number;
@@ -84,19 +86,19 @@ export class EmailCluster {
       // specify flags passed to chrome here
       // About our defaults values https://peter.sh/experiments/chromium-command-line-switches/
       chrome_flags: [
-        "--disable-infobars",
-        "--window-position=0,0",
-        "--ignore-certifcate-errors",
-        "--ignore-certifcate-errors-spki-list",
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-        "--disable-dev-shm-usage",
-        "--disable-accelerated-2d-canvas",
-        "--disable-gpu",
-        "--window-size=1280,768",
-        "--start-fullscreen",
-        "--hide-scrollbars",
-        "--disable-notifications",
+        // "--disable-infobars",
+        // "--window-position=0,0",
+        // "--ignore-certifcate-errors",
+        // "--ignore-certifcate-errors-spki-list",
+        // "--no-sandbox",
+        // "--disable-setuid-sandbox",
+        // "--disable-dev-shm-usage",
+        // "--disable-accelerated-2d-canvas",
+        // "--disable-gpu",
+        // "--window-size=1280,768",
+        // "--start-fullscreen",
+        // "--hide-scrollbars",
+        // "--disable-notifications",
       ],
       //fix google account can not login
       ignoreDefaultArgs: [
@@ -143,7 +145,7 @@ export class EmailCluster {
       // check if headless chrome escapes common detection techniques
       // this is a quick test and should be used for debugging
       test_evasion: false,
-      apply_evasion_techniques: true,
+      apply_evasion_techniques: false,
       // settings for puppeteer-cluster
       puppeteer_cluster_config: {
         timeout: 30 * 60 * 1000, // max timeout set to 30 minutes
@@ -157,6 +159,9 @@ export class EmailCluster {
     // }
 
     this.logger = this.config.logger;
+    if(config.maxPageNumber&&config.maxPageNumber>0){
+      this.maxPageNumber = config.maxPageNumber
+    }
 
     if (config.sleep_range) {
       // parse an array
@@ -208,7 +213,8 @@ export class EmailCluster {
     }
 
     const perBrowserOptions = map(this.proxiesArr.slice(0, this.numClusters), (proxy) => {
-      let userAgent: string;
+      //let userAgent: string;
+      let userAgents: string;
       if (this.config.random_user_agent) {
         // Randomly choose between Chrome and Firefox user agents
         // const isChrome = Math.random() > 0.5;
@@ -232,11 +238,14 @@ export class EmailCluster {
         //   //browser: "chrome",
         //   platform: "win32"
         // });
-        userAgent = randomUseragent.getRandom();
+        //userAgent = randomUseragent.getRandom();
+        const userAgent = new UserAgent({ deviceCategory: 'desktop' });
+        console.log("user agent is "+userAgent.toString());
+        userAgents = userAgent.toString();
       } else {
-        userAgent = this.config.user_agent;
+        userAgents = this.config.user_agent;
       }
-      const args = this.config.chrome_flags.concat([`--user-agent=${userAgent}`]);
+      const args = this.config.chrome_flags.concat([`--user-agent=${userAgents}`]);
       return {
         headless: this.config.headless,
         ignoreHTTPSErrors: true,
@@ -277,6 +286,7 @@ export class EmailCluster {
         proxy: proxyServer,
         domain: domain,
         maxPageLevel: pageLength,
+        maxPageNumber:this.maxPageNumber,
         callback: param.callback
       }
       this.cluster.queue(crawlData);

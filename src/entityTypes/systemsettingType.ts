@@ -4,7 +4,7 @@ export interface SystemSettingDisplay {
     value: string|null;        // stored value
     description?: string; // optional description
     group_id?: number;    // reference to setting group
-    type: 'input' | 'select' | 'radio' | 'checkbox';  // new field for input type
+    type: 'input' | 'select' | 'radio' | 'checkbox'|'file';  // new field for input type
     options?: OptionSettingDisplay[];   // optional list of choices for select/radio
     label?: string;       // optional label for checkbox
   }
@@ -30,7 +30,7 @@ export interface SystemSettingDisplay {
     key: string;          // e.g. 'site_name'
     value: string;        // stored value
     description?: string; // optional description
-    type: 'input' | 'select' | 'radio' | 'checkbox';  
+    type: 'input' | 'select' | 'radio' | 'checkbox'|'toggle'|'file';  
     options?: OptionSettingdf[];
   }
   export type OptionSettingdf={

@@ -26,8 +26,7 @@
           </v-icon>
           <v-icon 
           size="small"
-          class="me-2"
-          v-if="item.status=='Error'" 
+          class="me-2"   
           @click="retryTask(item)"
           >
           mdi-refresh
@@ -148,7 +147,7 @@ function loadItems({ page=1, itemsPerPage=10, sortBy}) {
    console.log(fetchitem)
     FakeAPI.fetch(fetchitem).then(
         ({ data, total }) => {
-             //console.log(data)
+             console.log(data)
             // console.log(total)
         
             serverItems.value = data
@@ -186,13 +185,14 @@ const downloadErrorlog=(item)=>{
 }
 const retryTask = async (item) => {
     try {
-        const response = await retrySearchTask(item.id);
-        if (response.status) {
+        await retrySearchTask(item.id);
+        // console.log(response)   
+        // if (response) {
             // Refresh the table after successful retry
             loadItems({ page: options.page, itemsPerPage: options.itemsPerPage, sortBy: "" });
-        } else {
-            console.error('Failed to retry task:', response.msg);
-        }
+        // } else {
+        //     console.error('Failed to retry task:');
+        // }
     } catch (error) {
         console.error('Error retrying task:', error);
     }

@@ -1,12 +1,14 @@
 import { searchEngineImpl } from "@/modules/interface/searchEngineImpl"
 import { Page, Browser, InterceptResolutionAction } from 'puppeteer';
-import { SMconfig, ScrapeOptions, clusterData, RunResult, ParseType, SearchData, ClusterSearchData } from "@/entityTypes/scrapeType"
+import { SMconfig, ScrapeOptions, clusterData, RunResult, ParseType, SearchData, ClusterSearchData,ResultParseItemType } from "@/entityTypes/scrapeType"
 import { evadeChromeHeadlessDetection } from "@/modules/lib/function"
 import { get_http_headers, get_ip_data } from "@/modules/metadata"
 import debug from 'debug';
 import useProxy from "@lem0-packages/puppeteer-page-proxy"
 import {ProxyServer} from "@/entityTypes/proxyType"
 import {convertProxyServertourl} from '@/modules/lib/function'
+import * as path from 'path';
+import * as fs from 'fs';
 
 // const logger = debug('SearchScrape');
 
@@ -23,7 +25,7 @@ export class SearchScrape implements searchEngineImpl {
     keywords: Array<string>;
     STANDARD_TIMEOUT: number;
     SOLVE_CAPTCHA_TIME: number;
-    results; // change it to map:
+    results:Array<ResultParseItemType>=[]; // change it to map:
     // https://stackoverflow.com/questions/40976536/how-to-define-typescript-map-of-key-value-pair-where-key-is-a-number-and-value
     // https://howtodoinjava.com/typescript/maps/ 
     result_rank: number;
@@ -32,10 +34,14 @@ export class SearchScrape implements searchEngineImpl {
     keyword: string;
     page_num: number;
     proxyServer?:ProxyServer|null
+    debug_log_path?:string;
+    search_engine_name:string;
     constructor(options: ScrapeOptions) {
         if (options.page) {
             this.page = options.page;
         }
+        
+
         // if(options.browser){
         //     this.browser=options.browser;
         // }
@@ -76,7 +82,7 @@ export class SearchScrape implements searchEngineImpl {
                 this.config[`${this.config.platform}_settings`] = settings;
             }
         }
-        this.results = new Map<string, ParseType>();
+        //this.results = [];
     }
 
     async run(data: { page: Page, data: ClusterSearchData, worker }): Promise<RunResult> {
@@ -97,9 +103,60 @@ export class SearchScrape implements searchEngineImpl {
         // await this.exposeFunction()
 
         this.keywords = data.data.keywords
-       
+        await this.page.bringToFront();
         await this.page.setViewport({ width: 1920, height: 1040 });
         let do_continue: boolean | void = true;
+        //console.log("data.data=%O",data.data)
+        //set cookies if data.data.cookies is not empty
+        if (data.data.cookies && data.data.cookies.length > 0) {
+            //console.log("data.data.cookies=%O",data.data.cookies)
+            const browserContext = this.page.browser().defaultBrowserContext();
+            const pageContext = this.page;
+            
+            for (const cookie of data.data.cookies) {
+                if(cookie){
+                    let url = cookie.domain
+                    if (cookie.domain && cookie.domain.charAt(0) === '.') {
+                        url = cookie.domain.slice(1);
+                    }
+
+                    const mappedCookie = {
+                        ...cookie,
+                        url: `http${cookie.secure ? 's' : ''}://${url}${cookie.path}`,
+                        //url:"https://www.google.com",
+                        sameSite: cookie.sameSite === 'None' ? 'None' as const : 
+                                cookie.sameSite === 'lax' ? 'Lax' as const :
+                                cookie.sameSite === 'strict' ? 'Strict' as const : 'None' as const,
+                        // Ensure domain is set correctly
+                        domain: cookie.domain || new URL(this.build_start_url()).hostname,
+                        // Ensure path is set
+                        path: cookie.path || '/',
+                        // Ensure secure is set for https
+                        secure: cookie.secure ?? true,
+                        // Ensure httpOnly is set
+                        httpOnly: cookie.httpOnly ?? true,
+                        expires: cookie.expirationDate ?? 0
+                    };
+                    //console.log("Setting cookie in browser context:", mappedCookie);
+                    
+                    // Set cookie in browser context
+                    await browserContext.setCookie(mappedCookie);
+                    
+                    // Also set cookie in page context
+                    console.log("Setting cookie in page context:", mappedCookie);
+                    await pageContext.browser().setCookie(mappedCookie);
+                }
+            }
+            
+            // Verify cookies were set in both contexts
+            const browserCookies = await browserContext.cookies();
+           // const pageCookies = await pageContext.cookies();
+            //console.log("Browser context cookies:", browserCookies);
+            //console.log("Page context cookies:", pageCookies);
+            
+            // Wait a moment to ensure cookies are properly set
+            await this.sleep(1000);
+        }
 
         if (data.data.proxyServer) {
             if (data.data.proxyServer != undefined) {
@@ -132,6 +189,7 @@ export class SearchScrape implements searchEngineImpl {
             do_continue = await this.load_search_engine();
         }
 
+        //console.log("browser cookies=%O",await this.page.browser().cookies());
         if (!do_continue) {
             console.error('Failed to load the search engine: load_search_engine()');
         } else {
@@ -201,11 +259,42 @@ export class SearchScrape implements searchEngineImpl {
         }
 
         if (this.config.test_evasion === true) {
+            // await this.page.evaluate(() => {
+            //     console.log('Current User Agent:', navigator.userAgent);
+            // });
+            //await this.page.getUserAgent(navigator.userAgent);
+            //console.log('Current User Agent:', navigator.userAgent);
             // Navigate to the page that will perform the tests.
             const testUrl = 'https://bot.sannysoft.com';
             await this.page.goto(testUrl);
             // Save a screenshot of the results.
-            await this.page.screenshot({ path: 'headless-evasion-result.png' });
+            if(this.config.debug_log_path){
+                await this.page.evaluate(() => {
+                    console.log('Current User Agent:', navigator.userAgent);
+                });
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                this.logger.info("headless-evasion-result path:"+path.join(this.config.debug_log_path, 'headless-evasion-result.png') as `${string}.png`)
+                await this.page.screenshot({fullPage: true, path: path.join(this.config.debug_log_path, 'headless-evasion-result.png') as `${string}.png` });
+            }else{
+                await this.page.screenshot({fullPage: true, path: 'headless-evasion-result.png' });
+            }
+            const sectesturl="https://arh.antoinevastel.com/bots/"
+            await this.page.goto(sectesturl);
+
+           if(this.config.debug_log_path){
+               
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                this.logger.info("antoinevastel-result path:"+path.join(this.config.debug_log_path, 'antoinevastel-result.png') as `${string}.png`)
+                await this.page.screenshot({fullPage: true, path: path.join(this.config.debug_log_path, 'antoinevastel-result.png') as `${string}.png` });
+            const htmlContent = await this.page.content();
+            await fs.promises.writeFile(
+                path.join(this.config.debug_log_path, 'antoinevastel-result.html'),
+                htmlContent
+            );
+            this.logger.info("Saved HTML content to: " + path.join(this.config.debug_log_path, 'antoinevastel-result.html'));
+            }else{
+                await this.page.screenshot({fullPage: true, path: 'antoinevastel-result.png' });
+            }
         }
 
         if (this.config.log_http_headers === true) {
@@ -321,7 +410,7 @@ export class SearchScrape implements searchEngineImpl {
         for (const keyword of this.keywords) {
             this.num_keywords++;
             this.keyword = keyword;
-            this.results[keyword] = {};
+            //this.results.push();
             // this.results.set(keyword, {});
             this.result_rank = 1;
 //console.log("keyword is "+keyword)
@@ -358,7 +447,7 @@ export class SearchScrape implements searchEngineImpl {
                     if (this.config.sleep_range) {
                         await this.random_sleep();
                     }
-                    this.results[keyword][this.page_num] = {};
+                    //this.results[keyword][this.page_num] = {};
                     const html = await this.page.content();
                     const parsed = this.parse(html);
                     if (parsed) {
@@ -366,27 +455,51 @@ export class SearchScrape implements searchEngineImpl {
                         //const setdata:ParseType=new map();
 
                         // setdata.value=parsed;
-                        this.results[keyword][this.page_num].value = parsed
+                        //this.results[keyword][this.page_num].value = parsed
+                        const resultParseItem:ResultParseItemType={
+                            keyword:keyword,
+                            page:this.page_num,
+                            
+                        }
+                        if(parsed.results){
+                            resultParseItem.results=parsed.results;
+                        }
+                        this.results.push(resultParseItem);
                     } else {
                         // this.results[keyword][this.page_num] = await this.parse_async(html);
                         const pareseres: SearchData | void = await this.parse_async();
                         if (pareseres) {
-                            this.results[keyword][this.page_num].value = pareseres.results;
+                            console.log(`pareseres: ${pareseres}`);
+                            console.log(`pareseres.results: ${pareseres.results}`); 
+                            //this.results[keyword][this.page_num].value = pareseres.results;
                             //this.results[keyword].set(this.page_num,{value:pareseres.results})
+                            const resultParseItem:ResultParseItemType={
+                                keyword:keyword,
+                                page:this.page_num,
+                                results:pareseres.results
+                            }
+                            this.results.push(resultParseItem);
                         } else {
                             this.logger.warn(`No results found for keyword "${keyword}" on page ${this.page_num}`);
                             // this.results[keyword][this.page_num].value =""
-                            this.results[keyword][this.page_num].value = null
+                            const resultParseItem:ResultParseItemType={
+                                keyword:keyword,
+                                page:this.page_num,
+                                results:[]
+                            }
+                            this.results.push(resultParseItem);
                         }
                     }
                     // this.results[keyword][this.page_num] = parsed ? parsed : await this.parse_async(html);
 
 
-                    if (this.config.screen_output) {
-                        this.results[keyword][this.page_num].screenshot = await this.page.screenshot({
-                            encoding: 'base64',
-                            fullPage: false,
-                        });
+                    if (this.config.screen_output&&this.config.debug_log_path) {
+                        // this.results[keyword][this.page_num].screenshot = await this.page.screenshot({
+                        //     encoding: 'base64',
+                        //     fullPage: false,
+                        // });
+                        const html_screenshot_path = path.join(this.config.debug_log_path, `html_debug_se_scraper_${this.search_engine_name}_${keyword}_${Date.now()}.png`)
+                        await this.page.screenshot({ path: html_screenshot_path as `${string}.png` });
                     }
 
                     if (this.config.html_output) {
@@ -432,7 +545,11 @@ export class SearchScrape implements searchEngineImpl {
                         // https://stackoverflow.com/questions/27841112/how-to-remove-white-space-between-html-tags-using-javascript
                         // TODO: not sure if this is save!
                         html_contents = html_contents.replace(/>\s+</g, '><');
-                        this.results[keyword][this.page_num].html = html_contents;
+                        //this.results[keyword][this.page_num].html = html_contents;
+                        if(this.config.debug_log_path){
+                            const html_path = path.join(this.config.debug_log_path, `html_debug_se_scraper_${this.search_engine_name}_${keyword}_${Date.now()}.html`)
+                            await fs.promises.writeFile(html_path, html_contents);
+                        }
                     }
 
                     this.page_num += 1;
@@ -459,13 +576,31 @@ export class SearchScrape implements searchEngineImpl {
                 //debug('this.last_response=%O', this.last_response);
 
                 if (this.config.take_screenshot_on_error) {
-                    await this.page.screenshot({ path: `debug_se_scraper_${this.config.search_engine_name}_${keyword}.png` });
+                    if(this.config.debug_log_path){
+                        const screenshot_path = path.join(this.config.debug_log_path, `debug_se_scraper_${this.search_engine_name}_${keyword}_${Date.now()}.png`)
+                        this.logger.info(`Saving screenshot to ${screenshot_path}`);
+                        await this.page.screenshot({ path: screenshot_path as `${string}.png` });
+                        //await fs.promises.writeFile(screenshot_path, screenshot);
+                    }else{
+                        this.logger.info(`sceen path:`+`debug_se_scraper_${this.search_engine_name}_${keyword}.png`);
+                        await this.page.screenshot({ path: `debug_se_scraper_${this.search_engine_name}_${keyword}.png` });
+                    }
+                }
+                if(this.config.save_html){
+                    const html = await this.page.content();
+                    if(this.config.debug_log_path){
+                        this.logger.info(`Saving html to ${path.join(this.config.debug_log_path, `debug_se_scraper_${this.search_engine_name}_${keyword}.html`)}`);
+                        await fs.promises.writeFile(path.join(this.config.debug_log_path, `debug_se_scraper_${this.search_engine_name}_${keyword}.html`), html);
+                    }else{
+                        this.logger.info(`html path:`+`debug_se_scraper_${this.search_engine_name}_${keyword}.html`);
+                        await fs.promises.writeFile(`debug_se_scraper_${this.search_engine_name}_${keyword}.html`, html);
+                    }
                 }
 
                 this.metadata.scraping_detected = await this.detected();
 
                 if (this.metadata.scraping_detected === true) {
-                    this.logger.warn(`${this.config.search_engine_name} detected the scraping!`);
+                    this.logger.warn(`${this.search_engine_name} detected the scraping!`);
 
                     if (this.config.is_local === true) {
                         await this.sleep(this.SOLVE_CAPTCHA_TIME);
@@ -521,7 +656,7 @@ export class SearchScrape implements searchEngineImpl {
         return "https://example.com";
     }
 
-    parse(html: any): string | void {
+    parse(html: any): SearchData | void {
         // Implement the logic to parse the HTML here
     }
 

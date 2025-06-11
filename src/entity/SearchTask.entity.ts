@@ -25,4 +25,8 @@ export class SearchTaskEntity extends AuditableEntity {
     concurrency: number; //how many concurrent requests
     @Column("integer", { nullable: true })
     notShowBrowser: number; //if true, the browser will not be shown
+    @Column("integer", { nullable: true })
+    useLocalbrowserdata:number
+    @Column("text", { nullable: true })
+    localBrowser:string
 }

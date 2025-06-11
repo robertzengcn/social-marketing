@@ -13,7 +13,7 @@ import { User } from '@/modules/user'
 // import { ProxyParseItem } from '@/entityTypes/proxyType'
 import { CommonResponse } from "@/entityTypes/commonType"
 import { campaignEntity } from "@/entityTypes/campaign-type"
-import { OPENDIRECTORY, SOCIALPLATFORM_LIST, SOCIALACCOUNTlIST } from "@/config/channellist"
+import { OPENDIRECTORY, CHOOSEFILEDIALOG } from "@/config/channellist"
 
 
 export default function SyncMsg(mainWindow: BrowserWindow) {
@@ -34,7 +34,7 @@ export default function SyncMsg(mainWindow: BrowserWindow) {
       } as userResponse;
 
     }).catch(function (err) {
-     // console.error(err);
+      // console.error(err);
       console.error("Error trace:", err);
       if (err instanceof Error) {
         return {
@@ -332,7 +332,7 @@ export default function SyncMsg(mainWindow: BrowserWindow) {
     return res;
   })
 
- 
+
 
 
 
@@ -346,4 +346,18 @@ export default function SyncMsg(mainWindow: BrowserWindow) {
       return { status: true, data: filePaths[0] }
     }
   })
+  //choose file dialog
+  ipcMain.handle(CHOOSEFILEDIALOG, async () => {
+    const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
+      properties: ['openFile', 'openDirectory']
+    })
+    if (canceled) {
+      return { status: false, msg: "canceled" }
+    } else {
+      return { status: true, data: filePaths[0] }
+    }
+  })
+
+
+
 }

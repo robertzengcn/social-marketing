@@ -29,6 +29,7 @@ import {TaskRunEntity} from "@/entity/TaskRun.entity"
 import {VideoDownloadTaskKeywordEntity} from "@/entity/VideoDownloadTaskKeyword.entity"
 import { SearchTaskEntity } from "@/entity/SearchTask.entity";
 import { SearchTaskProxyEntity } from "@/entity/SearchTaskProxy.entity";
+import {SearchAccountEntity} from "@/entity/SearchAccount.entity"
 // import sqlite3 from "sqlite3"; 
 
 
@@ -69,13 +70,14 @@ export class SqliteDb {
                 VideoDownloadTaskUrlsEntity,
                 VideoDownloadTagEntity,
                 VideoDownloadTaskKeywordEntity,
-                SearchTaskProxyEntity
+                SearchTaskProxyEntity,
+                SearchAccountEntity
             ],
             synchronize: true, 
             migrations: [],
             subscribers: [],
             //logging:  process.env.NODE_ENV !== 'production', /// use this for debugging
-            logging:  false,
+            logging:  false, 
             // driver: {
             //     sqlite3: sqlite3
             // }

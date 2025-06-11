@@ -1,4 +1,7 @@
+//import { CookiesType } from './commonType'
+import {CookiesType} from "@/entityTypes/cookiesType"
 import {ProxyEntity} from './proxyType'
+//import { SocialAccountListData } from './socialaccount-type'
 export type SearchResponse={
     status:boolean,
     msg:string,
@@ -13,7 +16,12 @@ export type Usersearchdata = {
     proxys?: Array<ProxyEntity>,
     error_log?:string,
     run_log?:string,
+    debug_log_path?:string,
+    //useLocalbrowserdata:boolean
+    localBrowser?:string
+    accounts?:Array<number>
     // maxConcurrent: number,
+    cookies?: Array<Array<CookiesType>>
   }
   export interface UsersearchdataParam  extends Usersearchdata{
     proxyIds?:Array<number>,

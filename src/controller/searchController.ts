@@ -17,17 +17,23 @@ import {SearchDataParam,SearchResEntityDisplay,SearchResEntityRecord} from "@/en
 // import {SEARCHEVENT} from "@/config/channellist"
 import { SearchTaskStatus } from "@/model/SearchTask.model"
 // import { SearchKeyworddb } from "@/model/searchKeyworddb";
-import { CustomError } from "@/modules/customError";
+//import { CustomError } from "@/modules/customError";
 import {USERLOGPATH,USEREMAIL} from '@/config/usersetting';
-import {WriteLog,getApplogspath,getRandomValues} from "@/modules/lib/function"
+import {WriteLog,getApplogspath,getRandomValues,getChromeExcutepath,getFirefoxExcutepath} from "@/modules/lib/function"
 import { v4 as uuidv4 } from 'uuid';
 import {SortBy} from "@/entityTypes/commonType";
-
-
+import { SystemSettingGroupModule } from '@/modules/SystemSettingGroupModule';
+import {twocaptchagroup,twocaptchatoken,twocaptcha_enabled,chrome_path,firefox_path,external_system} from '@/config/settinggroupInit'
+import { AccountCookiesModule } from "@/modules/accountCookiesModule"
+import {CookiesType} from "@/entityTypes/cookiesType"
 export class SearchController {
     private searhModel:searhModel;
+    private accountCookiesModule: AccountCookiesModule;
+    private systemSettingGroupModule: SystemSettingGroupModule
     constructor() {
+        this.accountCookiesModule=new AccountCookiesModule()
         this.searhModel=new searhModel()
+        this.systemSettingGroupModule=new SystemSettingGroupModule()
     }
     
     public async searchData(data: Usersearchdata) {
@@ -40,9 +46,13 @@ export class SearchController {
             num_pages:data.num_pages,
             concurrency:data.concurrency,
             notShowBrowser:data.notShowBrowser,
-            proxys:data.proxys
+            proxys:data.proxys,
+            //useLocalbrowserdata:data.useLocalbrowserdata,
+            localBrowser:data.localBrowser,
+            accounts:data.accounts
         }
-        // console.log(dp)
+        //console.log("search datat dp")
+        //console.log(dp)
         // const taskId=await this.searhModel.saveSearchtask(dp)
 
         const taskId=await this.createTask(dp)
@@ -152,13 +162,39 @@ export class SearchController {
         if(!runLogfile){
             throw new Error("run log not exist")
         }
+        // Get parent path of errorLogfile
+        const errorLogDir = path.dirname(errorLogfile);
+        
+        // Ensure the directory exists
+        if (!fs.existsSync(errorLogDir)) {
+            fs.mkdirSync(errorLogDir, { recursive: true });
+        }
+        //const cookiesArray:Array<Array<CookiesType>>=[]
+        // if(taskEntity.accounts){
+        //     for (const account of taskEntity.accounts) {
+        //         const cookies = await this.accountCookiesModule.getAccountCookies(account)
+        //         if(cookies){
+        //             const cookiesits:Array<CookiesType>=JSON.parse(cookies.cookies)
+        //             cookiesArray.push(cookiesits)
+        //             }
+        //     }
+        // }  
+    // const cookies = await this.accountCookiesModule.getAccountCookies(taskEntity.accounts)
+    // //    if(!cookies){
+    //     throw new Error("account cookies not found")
+    //    }
+       
         const data:Usersearchdata={
             searchEnginer:taskEntity.engine,
             keywords:taskEntity.keywords,
             num_pages:taskEntity.num_pages??1,
             concurrency:taskEntity.concurrency??1,
             notShowBrowser:taskEntity.notShowBrowser??false,
-            proxys:taskEntity.proxys
+            proxys:taskEntity.proxys,
+            debug_log_path:errorLogDir,
+            //useLocalbrowserdata:taskEntity.useLocalbrowserdata?true:false,
+            localBrowser:taskEntity.localBrowser?taskEntity.localBrowser:"",
+            cookies:taskEntity.cookies
         }
 
         const childPath = path.join(__dirname, 'taskCode.js')
@@ -167,13 +203,68 @@ export class SearchController {
         }
         const { port1, port2 } = new MessageChannelMain()
        // const tokenService=new Token()
-        
+       let twoCaptchaTokenvalue=""
+       const twoCaptchaToken=await this.systemSettingGroupModule.getGroupItembyName(twocaptchagroup)
+       if(twoCaptchaToken){
+        //find 2captcha enable key
+        const twocaptchenable=twoCaptchaToken.settings.find((item)=>item.key===twocaptcha_enabled)
+        if(twocaptchenable){
+        const token=twoCaptchaToken.settings.find((item)=>item.key===twocaptchatoken)
+        if(token){
+            twoCaptchaTokenvalue=token.value
+        }
+       }
+    }
+    let localBrowserexcutepath:string=""
+    if(data.localBrowser&&data.localBrowser.length>0){
+        const external_system_group=await this.systemSettingGroupModule.getGroupItembyName(external_system)
+        if(external_system_group){
+            const chromePath=external_system_group.settings.find((item)=>item.key===chrome_path)
+            if(chromePath){
+                localBrowserexcutepath=chromePath.value
+            }
+            const firefoxPath=external_system_group.settings.find((item)=>item.key===firefox_path)
+            if(firefoxPath){
+                localBrowserexcutepath=firefoxPath.value
+            }
+        }
+        if(data.localBrowser=="chrome"&&!localBrowserexcutepath){
+            
+            const localBrowserexcutepathresult=getChromeExcutepath()
+            if(localBrowserexcutepathresult){
+                localBrowserexcutepath=localBrowserexcutepathresult
+            }
+
+        }else if(data.localBrowser=="firefox"&&!localBrowserexcutepath){
+            const localBrowserexcutepathresult=getFirefoxExcutepath()
+            if(localBrowserexcutepathresult){
+                localBrowserexcutepath=localBrowserexcutepathresult
+            }
+        }
+        if(!localBrowserexcutepath){
+            throw new Error("local browser excute path not exist")
+        }
+    }
+    //let userDataDir=""
+    // if(data.useLocalbrowserdata){
+    //     userDataDir=getChromeUserDataDir()
+    //     if(!userDataDir){
+    //         throw new Error("user data dir not exist")
+    //     }
+    // }
+       //console.log("two captcha token value is "+twoCaptchaTokenvalue)
+       //console.log("local browser excute path is "+localBrowserexcutepath)
+       //console.log("user data dir is "+userDataDir)
         const child = utilityProcess.fork(childPath, [],{stdio:"pipe",execArgv:["puppeteer-cluster:*"],env:{
             ...process.env,
-            NODE_OPTIONS: ""  
+            NODE_OPTIONS: "",
+            TWOCAPTCHA_TOKEN: twoCaptchaTokenvalue,
+            LOCAL_BROWSER_EXCUTE_PATH: localBrowserexcutepath,
+            //USEDATADIR: userDataDir
         }} )
         child.on("spawn", () => {
             console.log("child process satart, pid is"+child.pid)
+            this.searhModel.updateTaskStatus(taskId,SearchTaskStatus.Processing)
             child.postMessage(JSON.stringify({action:"searchscraper",data:data}),[port1])
            // this.searhModel.updateTaskLog(taskId,runLogfile,errorLogfile)
         })
@@ -198,8 +289,9 @@ export class SearchController {
         child.on("exit", (code) => {
             if (code !== 0) {
                 console.error(`Child process exited with code ${code}`);
-                
+                this.searhModel.updateTaskStatus(taskId,SearchTaskStatus.Error)
             } else {
+                this.searhModel.updateTaskStatus(taskId,SearchTaskStatus.Complete)
                 console.log('Child process exited successfully');
             }
         })
@@ -207,7 +299,7 @@ export class SearchController {
             console.log("get message from child")
             console.log('Message from child:', JSON.parse(message));
             const childdata=JSON.parse(message)
-            if(childdata.action=="saveres"){
+            if(childdata.action=="savesearchresult"){
                 //save result
                 this.searhModel.saveSearchResult(childdata.data,taskId)
                 this.searhModel.updateTaskStatus(taskId,SearchTaskStatus.Complete)
@@ -231,10 +323,10 @@ export class SearchController {
         //const SearchKeyDb=new SearchKeyworddb(this.dbpath)
 
         res.forEach(async (item) => {
-            console.log(item)
-            console.log(item.keyword_id)
+            //console.log(item)
+            //console.log(item.keyword_id)
             const keyEntity = await this.searhModel.getkeywrodsEntitybyId(item.keyword_id)
-            console.log(keyEntity)
+            //console.log(keyEntity)
             const data: SearchResEntityDisplay = {
                 id: item.id,
                 keyword_id: item.keyword_id,

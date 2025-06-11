@@ -6,23 +6,30 @@ import { SearhEnginer } from "@/config/searchSetting"
 // import { ToArray } from "@/modules/lib/function"
 import { SearchKeywordModel } from "@/model/SearchKeyword.model"
 import { SearchResultModel } from "@/model/SearchResult.model"
-import { SearchResEntity, SearchDataRun } from "@/entityTypes/scrapeType"
+import { SearchResEntity, ResultParseItemType } from "@/entityTypes/scrapeType"
 //import {SearchTaskdb} from "@/model/searchTaskdb"
 import { SearchtaskEntityNum, SearchtaskItem } from "@/entityTypes/searchControlType"
 import { getEnumKeyByValue, getEnumValueByNumber } from "@/modules/lib/function"
 import * as path from 'path';
 import * as fs from 'fs';
-import {SortBy} from "@/entityTypes/commonType";
+import { SortBy } from "@/entityTypes/commonType";
 import { BaseModule } from "@/modules/baseModule";
 import { SearchTaskProxyModel } from "@/model/SearchTaskProxy.model";
 import { SearchTaskProxyEntity } from "@/entity/SearchTaskProxy.entity";
-import { SearchTaskEntity } from "@/entity/SearchTask.entity";
+//import { SearchTaskEntity } from "@/entity/SearchTask.entity";
+import { SearchAccountModel } from "@/model/SearchAccount.model"
+import { SearchAccountEntity } from "@/entity/SearchAccount.entity";
+import { CookiesType } from "@/entityTypes/cookiesType"
+import { AccountCookiesModule } from "./accountCookiesModule";
+
 export class searhModel extends BaseModule {
-   // private dbpath: string
+    // private dbpath: string
     private taskdbModel: SearchTaskModel
     private serResultModel: SearchResultModel
     private serKeywordModel: SearchKeywordModel
     private searchTaskProxyModel: SearchTaskProxyModel
+    private searchAccountModel: SearchAccountModel
+    private accountCookiesModule: AccountCookiesModule
     constructor() {
         // const tokenService = new Token()
         // const dbpath = tokenService.getValue(USERSDBPATH)
@@ -35,6 +42,8 @@ export class searhModel extends BaseModule {
         this.serResultModel = new SearchResultModel(this.dbpath)
         this.serKeywordModel = new SearchKeywordModel(this.dbpath)
         this.searchTaskProxyModel = new SearchTaskProxyModel(this.dbpath)
+        this.searchAccountModel = new SearchAccountModel(this.dbpath)
+        this.accountCookiesModule = new AccountCookiesModule()
     }
 
     //save search task, call it when user start search keyword
@@ -50,22 +59,30 @@ export class searhModel extends BaseModule {
         if (!enginId) {
             throw new Error("enginerId empty")
         }
-        const taskId = await this.taskdbModel.saveSearchTask(enginId,data.num_pages,data.concurrency,data.notShowBrowser)
+        const taskId = await this.taskdbModel.saveSearchTask(enginId, data.num_pages, data.concurrency, data.notShowBrowser, data.localBrowser)
         //const searshdb = new SearchKeyworddb(this.dbpath)
         for (const keyword of data.keywords) {
             await this.serKeywordModel.saveSearchKeyword(keyword, Number(taskId))
         }
-        if(data.proxys){
+        if (data.proxys) {
             for (const proxy of data.proxys) {
-                const proxyEntity=new SearchTaskProxyEntity()
-                proxyEntity.task_id=Number(taskId)
-              
-                proxyEntity.host=proxy.host
-                proxyEntity.port=proxy.port
-                proxyEntity.user=proxy.user?proxy.user:''
-                proxyEntity.pass=proxy.pass?proxy.pass:''
-            
+                const proxyEntity = new SearchTaskProxyEntity()
+                proxyEntity.task_id = Number(taskId)
+
+                proxyEntity.host = proxy.host
+                proxyEntity.port = proxy.port
+                proxyEntity.user = proxy.user ? proxy.user : ''
+                proxyEntity.pass = proxy.pass ? proxy.pass : ''
+
                 await this.searchTaskProxyModel.create(proxyEntity)
+            }
+        }
+        if (data.accounts) {
+            for (const account of data.accounts) {
+                const accountEntity = new SearchAccountEntity()
+                accountEntity.task_id = Number(taskId)
+                accountEntity.account_id = account
+                await this.searchAccountModel.create(accountEntity)
             }
         }
         return Number(taskId)
@@ -95,40 +112,49 @@ export class searhModel extends BaseModule {
         return enginerName
     }
     //save search result
-    public async saveSearchResult(data: SearchDataRun, taskId: number) {
-        console.log("save search result")
-        const resultsMap = new Map(Object.entries(data.results));
-        console.log(resultsMap);
-        
-        for (const [key, value] of resultsMap) {
-            const keywordId = await this.serKeywordModel.getKeywordId(key, taskId)
-            console.log(value)
-            const resval = new Map(Object.entries(value));
+    public async saveSearchResult(data: Array<ResultParseItemType>, taskId: number) {
+        // console.log("save search result")
+        // console.log(`data: ${data}`);
+        // const resultsMap = new Map(Object.entries(data.results));
+        // console.log(resultsMap);
+        for (const item of data) {
+            // for (const [key, value] of resultsMap) {
+            let keywordId = await this.serKeywordModel.getKeywordId(item.keyword, taskId)
+            if (!keywordId) {
+                //save keyword
+                await this.serKeywordModel.saveSearchKeyword(item.keyword, taskId)
+                keywordId = await this.serKeywordModel.getKeywordId(item.keyword, taskId)
+            }
+            //console.log(value)
+            //const resval = new Map(Object.entries(value));
             const linkearr: Array<string> = []
-            for (const [rvkey, rvvalue] of resval) {
-                console.log(rvkey)
-                console.log(rvvalue.value)
-                if(rvvalue.value){
-                    for (const item of rvvalue.value) {
-                        console.log(item)
-                        if (item.link) {
-                            if (!linkearr.includes(item.link)) {
-                                const reEntity: SearchResEntity = {
-                                    keyword_id: Number(keywordId),
-                                    link: item.link,
-                                    title: item.title,
-                                    snippet: item.snippet,
-                                    visible_link: item.visible_link,
-                                }
-                                await this.serResultModel.saveResult(reEntity)
-                                linkearr.push(item.link)
+            //    for (const [rvkey, rvvalue] of resval) {
+            //console.log(rvkey)
+            //console.log(rvvalue.value)
+            //if(rvvalue.value){
+            if (item.results && item.results.length > 0) {
+                for (const sitem of item.results) {
+                    //    console.log(`item: ${item}`);
+                    if (sitem.link && sitem.link.length > 0) {
+                        if (!linkearr.includes(sitem.link)) {
+                            //    console.log(`item.link: ${sitem.link}`);
+                            const reEntity: SearchResEntity = {
+                                keyword_id: Number(keywordId),
+                                link: sitem.link,
+                                title: sitem.title,
+                                snippet: sitem.snippet,
+                                visible_link: sitem.visible_link,
                             }
+                            const res = await this.serResultModel.saveResult(reEntity)
+                            console.log(`save result is: ${res}`);
+                            linkearr.push(sitem.link)
                         }
                     }
                 }
             }
-            console.log(`Saving result for key: ${key}, value: ${value}`);
         }
+        //console.log(`Saving result for key: ${key}, value: ${value}`);
+        //}
     }
 
     public async saveTaskerrorlog(taskId: number, errorLog: string) {
@@ -141,14 +167,14 @@ export class searhModel extends BaseModule {
         this.taskdbModel.updateTaskLog(taskId, errorLog)
     }
     //return data for search list 
-    public async listSearchtask(page:number,size:number, sortBy?:SortBy): Promise<SearchtaskEntityNum> {
+    public async listSearchtask(page: number, size: number, sortBy?: SortBy): Promise<SearchtaskEntityNum> {
         // const tokenService = new Token()
         // const dbpath = await tokenService.getValue(USERSDBPATH)
         // if (!dbpath) {
         //     throw new Error("user path not exist")
         // }
         //const taskdbModel=new SearchTaskdb(this.dbpath)
-        const tasklist = await this.taskdbModel.listTask(page,size,sortBy)
+        const tasklist = await this.taskdbModel.listTask(page, size, sortBy)
         // const searchKeydb=new SearchKeyworddb(this.dbpath)
         const taskdata: Array<SearchtaskItem> = []
 
@@ -200,17 +226,17 @@ export class searhModel extends BaseModule {
     }
     //update task runtime log and error log path
     public async updateTaskLog(taskId: number, runtimeLog: string, errorLog: string) {
-        if(runtimeLog){
-        await this.taskdbModel.updateRuntimeLog(taskId, runtimeLog)
+        if (runtimeLog) {
+            await this.taskdbModel.updateRuntimeLog(taskId, runtimeLog)
         }
-        if(errorLog){
+        if (errorLog) {
             await this.taskdbModel.updateTaskLog(taskId, errorLog)
         }
     }
     //get task log by task id
-    public async getTaskErrorLog(taskId: number): Promise<string>  {
+    public async getTaskErrorLog(taskId: number): Promise<string> {
         const task = await this.taskdbModel.getTaskEntity(taskId)
-        if(!task){
+        if (!task) {
             throw new Error("task not exist")
         }
         try {
@@ -230,29 +256,50 @@ export class searhModel extends BaseModule {
         return await this.serKeywordModel.getKeywordsEntityById(keywordId)
     }
     //get task entity by id
-    public async getTaskEntityById(taskId: number): Promise< SearchDataParam | null> {
-        const taskEntity=  await this.taskdbModel.getTaskEntity(taskId)
-        if(!taskEntity){
+    public async getTaskEntityById(taskId: number): Promise<SearchDataParam | null> {
+
+        const taskEntity = await this.taskdbModel.getTaskEntity(taskId)
+        if (!taskEntity) {
             return null
         }
-        const keywords=await this.serKeywordModel.getKeywordsEntityByTask(taskId)
-        const proxys=await this.searchTaskProxyModel.getItemsByTaskId(taskId)
-        const data:SearchDataParam={
-            engine:taskEntity.enginer_id,
-            keywords:keywords.map(item=>item.keyword),
-            num_pages:taskEntity.num_pages,
-            concurrency:taskEntity.concurrency,
-            notShowBrowser:taskEntity.notShowBrowser?true:false,
-            proxys:proxys.map(item=>{
+        const keywords = await this.serKeywordModel.getKeywordsEntityByTask(taskId)
+        const proxys = await this.searchTaskProxyModel.getItemsByTaskId(taskId)
+
+        //get accounts by task id
+        const accounts = await this.searchAccountModel.getAccountByTaskId(taskId)
+        const accountList = accounts.map(item => item.account_id)
+
+        const cookiesArray: Array<Array<CookiesType>> = []
+        if (accounts) {
+            for (const account of accountList) {
+                const cookies = await this.accountCookiesModule.getAccountCookies(account)
+                if (cookies) {
+                    const cookiesits: Array<CookiesType> = JSON.parse(cookies.cookies)
+                    cookiesArray.push(cookiesits)
+                }
+            }
+        }
+        //get accounts by task id
+        const data: SearchDataParam = {
+            engine: taskEntity.enginer_id,
+            keywords: keywords.map(item => item.keyword),
+            num_pages: taskEntity.num_pages,
+            concurrency: taskEntity.concurrency,
+            notShowBrowser: taskEntity.notShowBrowser ? true : false,
+            //useLocalbrowserdata:taskEntity.useLocalbrowserdata?true:false,
+            localBrowser: taskEntity.localBrowser ? taskEntity.localBrowser : "",
+            proxys: proxys.map(item => {
                 return {
-                    host:item.host,
-                    port:item.port,
-                    user:item.user,
-                    pass:item.pass
+                    host: item.host,
+                    port: item.port,
+                    user: item.user,
+                    pass: item.pass
                 }
             }),
-            error_log:taskEntity.error_log,
-            run_log:taskEntity.runtime_log
+            error_log: taskEntity.error_log,
+            run_log: taskEntity.runtime_log,
+            accounts: accountList,
+            cookies: cookiesArray
         }
         return data
     }
