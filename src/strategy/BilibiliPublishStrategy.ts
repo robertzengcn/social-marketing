@@ -8,13 +8,13 @@ import { ElementHandle } from 'puppeteer';
 
 export class BilibiliPublishStrategy extends BaseVideoPublishStrategy {
     private readonly BILIBILI_UPLOAD_URL = 'https://member.bilibili.com/platform/upload/video/frame';
-    private readonly BILIBILI_LOGIN_CHECK_SELECTOR = '.upload-wrp'; // This selector should be present when logged in
+    private readonly BILIBILI_LOGIN_CHECK_SELECTOR = '.custom-lazy-img'; // This selector should be present when logged in
 
     private async checkLoginStatus(): Promise<boolean> {
         try {
             // Wait for either the login button or the upload button to appear
             //await this.page.waitForSelector('.upload-wrp', { timeout: 5000 });
-            
+            await this.page.evaluate(() => new Promise(resolve => setTimeout(resolve, 3000))); // Wait for 2 seconds
             // Check if login button exists (which means user is not logged in)
             const usericon = await this.page.$(this.BILIBILI_LOGIN_CHECK_SELECTOR);
             //return !loginButton;
@@ -67,19 +67,30 @@ export class BilibiliPublishStrategy extends BaseVideoPublishStrategy {
             
             // Fill in video details
             if (options.title) {
-                await this.page.type('#textbox', options.title);
+                const titleInput = await this.page.$('input[placeholder="请输入稿件标题"]');
+                if (titleInput) {
+                    await titleInput.type(options.title);
+                }
+               // await this.page.type('#textbox', options.title);
             }
             
             if (options.description) {
                 await this.page.type('.ql-editor', options.description);
             }
-            
+            const moreSettingsButton = await this.page.$('//span[contains(text(), "更多设置")]');
+            if (moreSettingsButton) {
+                await moreSettingsButton[0].click();
+            }
+            await this.page.evaluate(() => new Promise(resolve => setTimeout(resolve, 1000)));
+
             // Set privacy settings
             // if (options.privacy) {
             //     await this.page.click('#privacy-button');
             //     await this.page.click(`[aria-label="${options.privacy}"]`);
             // }
+
             
+            await this.waitforuploadfinish(900000);
             // Click publish button
             await this.page.click('#done-button');
             
@@ -135,75 +146,78 @@ export class BilibiliPublishStrategy extends BaseVideoPublishStrategy {
         }
         
         // Wait for the upload to start and complete
-        await this.page.waitForSelector('.upload-progress', { timeout: 10000 })
+        await this.page.waitForSelector('.file-item-content-progress', { timeout: 10000 })
             .catch(() => console.log('Upload progress indicator not found, continuing anyway'));
             
         // Wait for upload to complete (this selector may need to be adjusted based on Bilibili's UI)
-        await this.page.waitForSelector('.upload-complete', { timeout: 300000 })
-            .catch(() => console.log('Upload complete indicator not found, continuing anyway'));
-        const uploadWrapper = await this.page.waitForSelector('.upload-wrp');
-        if (!uploadWrapper) {
-            throw new Error('Upload wrapper not found');
-        }
+        // await this.page.waitForSelector('.upload-complete', { timeout: 300000 })
+        //     .catch(() => console.log('Upload complete indicator not found, continuing anyway'));
+        // const uploadWrapper = await this.page.waitForSelector('.upload-wrp');
+        // if (!uploadWrapper) {
+        //     throw new Error('Upload wrapper not found');
+        // }
 
-        // Get the bounding box of the upload wrapper
-        const box = await uploadWrapper.boundingBox();
-        if (!box) {
-            throw new Error('Could not get upload wrapper position');
-        }
+        // // Get the bounding box of the upload wrapper
+        // const box = await uploadWrapper.boundingBox();
+        // if (!box) {
+        //     throw new Error('Could not get upload wrapper position');
+        // }
 
-        // Calculate the center point of the upload wrapper
-        const centerX = box.x + box.width / 2;
-        const centerY = box.y + box.height / 2;
+        // // Calculate the center point of the upload wrapper
+        // const centerX = box.x + box.width / 2;
+        // const centerY = box.y + box.height / 2;
 
-        // Create and dispatch the drag and drop events
-        await this.page.evaluate(async (centerX, centerY, filePath) => {
-            const uploadWrapper = document.querySelector('.upload-wrp');
-            if (!uploadWrapper){
-                throw new Error('Upload wrapper not found');
-            }
+        // // Create and dispatch the drag and drop events
+        // await this.page.evaluate(async (centerX, centerY, filePath) => {
+        //     const uploadWrapper = document.querySelector('.upload-wrp');
+        //     if (!uploadWrapper){
+        //         throw new Error('Upload wrapper not found');
+        //     }
 
-            // Read the file data
-            const response = await fetch(filePath);
-            const blob = await response.blob();
+        //     // Read the file data
+        //     const response = await fetch(filePath);
+        //     const blob = await response.blob();
             
-            // Extract file name and extension from the path
-            const fileName = filePath.split('/').pop() || 'video.mp4';
-            const fileExtension = fileName.split('.').pop()?.toLowerCase() || 'mp4';
+        //     // Extract file name and extension from the path
+        //     const fileName = filePath.split('/').pop() || 'video.mp4';
+        //     const fileExtension = fileName.split('.').pop()?.toLowerCase() || 'mp4';
             
-            // Determine the correct MIME type based on file extension
-            let mimeType = 'video/mp4';
-            if (fileExtension === 'webm') mimeType = 'video/webm';
-            else if (fileExtension === 'mov') mimeType = 'video/quicktime';
-            else if (fileExtension === 'avi') mimeType = 'video/x-msvideo';
-            else if (fileExtension === 'mkv') mimeType = 'video/x-matroska';
+        //     // Determine the correct MIME type based on file extension
+        //     let mimeType = 'video/mp4';
+        //     if (fileExtension === 'webm') mimeType = 'video/webm';
+        //     else if (fileExtension === 'mov') mimeType = 'video/quicktime';
+        //     else if (fileExtension === 'avi') mimeType = 'video/x-msvideo';
+        //     else if (fileExtension === 'mkv') mimeType = 'video/x-matroska';
             
-            // Create the file object with the correct name and type
-            const file = new File([blob], fileName, { type: mimeType });
+        //     // Create the file object with the correct name and type
+        //     const file = new File([blob], fileName, { type: mimeType });
             
-            // Create the drag event
-            const dragEvent = new DragEvent('dragenter', {
-                bubbles: true,
-                cancelable: true,
-                dataTransfer: new DataTransfer()
-            });
-            dragEvent.dataTransfer?.items.add(file);
+        //     // Create the drag event
+        //     const dragEvent = new DragEvent('dragenter', {
+        //         bubbles: true,
+        //         cancelable: true,
+        //         dataTransfer: new DataTransfer()
+        //     });
+        //     dragEvent.dataTransfer?.items.add(file);
             
-            // Create the drop event
-            const dropEvent = new DragEvent('drop', {
-                bubbles: true,
-                cancelable: true,
-                dataTransfer: new DataTransfer()
-            });
-            dropEvent.dataTransfer?.items.add(file);
+        //     // Create the drop event
+        //     const dropEvent = new DragEvent('drop', {
+        //         bubbles: true,
+        //         cancelable: true,
+        //         dataTransfer: new DataTransfer()
+        //     });
+        //     dropEvent.dataTransfer?.items.add(file);
 
-            // Dispatch the events
-            uploadWrapper.dispatchEvent(dragEvent);
-            uploadWrapper.dispatchEvent(dropEvent);
-        }, centerX, centerY, videoPath);
+        //     // Dispatch the events
+        //     uploadWrapper.dispatchEvent(dragEvent);
+        //     uploadWrapper.dispatchEvent(dropEvent);
+        // }, centerX, centerY, videoPath);
 
         // Wait for the upload to complete and success message to appear
-        await this.page.waitForSelector('span.success', { timeout: 900000 });
+        //await this.page.waitForSelector('span.success', { timeout: 900000 });
+    }
+    async waitforuploadfinish(timeout:number){
+        await this.page.waitForSelector('span.success', { timeout: timeout });
     }
     async validateOptions(options: PublishOptions): Promise<boolean> {
         // YouTube specific validation
