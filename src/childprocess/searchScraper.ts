@@ -137,8 +137,9 @@ export class SearchScrape implements searchEngineImpl {
                         httpOnly: cookie.httpOnly ?? true,
                         expires: cookie.expirationDate ?? 0
                     };
+                    console.log("prepare to set cookies of",mappedCookie)
                     //console.log("Setting cookie in browser context:", mappedCookie);
-                    
+                    await this.page.setCookie(mappedCookie)
                     // Set cookie in browser context
                     await browserContext.setCookie(mappedCookie);
                     
@@ -149,7 +150,7 @@ export class SearchScrape implements searchEngineImpl {
             }
             
             // Verify cookies were set in both contexts
-            const browserCookies = await browserContext.cookies();
+            //const browserCookies = await browserContext.cookies();
            // const pageCookies = await pageContext.cookies();
             //console.log("Browser context cookies:", browserCookies);
             //console.log("Page context cookies:", pageCookies);

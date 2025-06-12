@@ -503,9 +503,9 @@ export class GoogleScraper extends SearchScrape {
     async wait_for_results() {
         try {
             // Wait for the page to be stable
-            await this.page.waitForFunction(() => {
-                return document.readyState === 'complete';
-            }, { timeout: this.STANDARD_TIMEOUT });
+            // await this.page.waitForFunction(() => {
+            //     return document.readyState === 'complete';
+            // }, { timeout: this.STANDARD_TIMEOUT });
 
             // Wait a bit more to ensure any dynamic content is loaded
             await new Promise(resolve => setTimeout(resolve, 1000));
