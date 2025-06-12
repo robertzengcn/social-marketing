@@ -137,8 +137,9 @@ export class SearchScrape implements searchEngineImpl {
                         httpOnly: cookie.httpOnly ?? true,
                         expires: cookie.expirationDate ?? 0
                     };
+                    console.log("prepare to set cookies of",mappedCookie)
                     //console.log("Setting cookie in browser context:", mappedCookie);
-                    
+                    await this.page.setCookie(mappedCookie)
                     // Set cookie in browser context
                     await browserContext.setCookie(mappedCookie);
                     
