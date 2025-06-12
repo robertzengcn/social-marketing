@@ -73,6 +73,10 @@ export abstract class BaseVideoPublishStrategy implements VideoPublishStrategy {
         if (this.page) {
             await this.page.close();
         }
+    if (this.browser) {
+        await this.browser.close();
+    }
+
     }
 
     abstract publish(video: VideoDownloadEntity, options: PublishOptions): Promise<VideoPublishResultType>;
