@@ -193,6 +193,9 @@ function loadItems({ page, itemsPerPage, sortBy }) {
         ({ data, total }) => {
 
             console.log(total)
+            if(!data){
+                data=[]
+            }
             serverItems.value = data
             totalItems.value = total
             loading.value = false
