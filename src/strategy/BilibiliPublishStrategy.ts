@@ -2,13 +2,28 @@ import { BaseVideoPublishStrategy, PublishOptions } from './VideoPublishStrategy
 import { VideoDownloadEntity } from '@/entity/VideoDownload.entity';
 import {VideoPublishResultType} from "@/entityTypes/videoPublishType"
 import {PublishPlatform,PublishStatus} from "@/entityTypes/videoPublishType"
-//import { Page } from 'puppeteer';
-import { ElementHandle } from 'puppeteer';
+import { Page, ElementHandle } from 'puppeteer';
 
 
 export class BilibiliPublishStrategy extends BaseVideoPublishStrategy {
     private readonly BILIBILI_UPLOAD_URL = 'https://member.bilibili.com/platform/upload/video/frame';
     private readonly BILIBILI_LOGIN_CHECK_SELECTOR = '.custom-lazy-img'; // This selector should be present when logged in
+
+    protected async initializePage(options: PublishOptions): Promise<void> {
+        await super.initializePage(options);
+        
+        // Handle notification permissions
+        this.handleNotificationPermission()
+    }
+    public async handleNotificationPermission(): Promise<void> {
+        await this.page.evaluateOnNewDocument(() => {
+            // Override the Notification permission request
+            const originalQuery = window.Notification.requestPermission;
+            window.Notification.requestPermission = async () => {
+                return 'granted';
+            };
+        });
+    }
 
     private async checkLoginStatus(): Promise<boolean> {
         try {
@@ -62,14 +77,20 @@ export class BilibiliPublishStrategy extends BaseVideoPublishStrategy {
                 throw new Error('User is not logged in. Please provide valid cookies.');
             }
             
+            
             // Upload the video
             await this.uploadVideo(video.savepath);
             
+            //await this.handleNotificationPermission();
             // Fill in video details
             if (options.title) {
                 const titleInput = await this.page.$('input[placeholder="请输入稿件标题"]');
                 if (titleInput) {
-                    await titleInput.type(options.title);
+                    await titleInput.evaluate((el, value) => {
+                        el.value = value;
+                        el.dispatchEvent(new Event('input', { bubbles: true }));
+                    }, options.title);
+                    // await titleInput.type(options.title);
                 }
                // await this.page.type('#textbox', options.title);
             }
@@ -81,9 +102,11 @@ export class BilibiliPublishStrategy extends BaseVideoPublishStrategy {
                 }
                 await this.page.type('.ql-editor', options.description);
             }
-            const moreSettingsButton = await this.page.$('//span[contains(text(), "更多设置")]');
+            // Use CSS selector for More Settings button
+            //DOMException: SyntaxError: Failed to execute 'querySelector' on 'Document': 'span:has-text("更多设置")' is not a valid selector.
+            const moreSettingsButton = await this.page.$('span:has-text("更多设置")');
             if (moreSettingsButton) {
-                await moreSettingsButton[0].click();
+                await moreSettingsButton.click();
             }
             await this.page.evaluate(() => new Promise(resolve => setTimeout(resolve, 1000)));
 
@@ -96,8 +119,12 @@ export class BilibiliPublishStrategy extends BaseVideoPublishStrategy {
             
             await this.waitforuploadfinish(900000);
             // Click publish button
-            await this.page.click('#done-button');
-            
+            //await this.page.click('#done-button');
+            const submitButton = await this.page.$('.submit-add');
+            if (!submitButton) {
+                throw new Error('Submit button not found');
+            }
+            await submitButton.click();
             // Wait for the video URL to be available
             // const videoUrl = await this.page.waitForSelector('.video-url', { timeout: 30000 });
             
@@ -119,7 +146,8 @@ export class BilibiliPublishStrategy extends BaseVideoPublishStrategy {
             //record.platform_video_id = videoId;
             //record.status = PublishStatus.PUBLISHED;
             
-        } catch (error: unknown) {
+        } catch (error) {
+            console.error(error)
             result.publishStatus = PublishStatus.FAILED;
             result.publishError = error instanceof Error ? error.message : 'Unknown error occurred';
         } finally {
