@@ -150,7 +150,7 @@ export class SearchScrape implements searchEngineImpl {
             }
             
             // Verify cookies were set in both contexts
-            const browserCookies = await browserContext.cookies();
+            //const browserCookies = await browserContext.cookies();
            // const pageCookies = await pageContext.cookies();
             //console.log("Browser context cookies:", browserCookies);
             //console.log("Page context cookies:", pageCookies);
