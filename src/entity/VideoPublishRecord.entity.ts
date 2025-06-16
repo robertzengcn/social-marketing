@@ -1,4 +1,4 @@
-import { Entity, Column, ManyToOne, JoinColumn } from "typeorm"
+import { Entity, Column, ManyToOne, JoinColumn, PrimaryGeneratedColumn } from "typeorm"
 import AuditableEntity from "@/entity/Auditable.entity"
 import { VideoDownloadEntity } from "@/entity/VideoDownload.entity"
 import {PublishPlatform,PublishStatus} from "@/entityTypes/videoPublishType"
@@ -7,6 +7,9 @@ import {PublishPlatform,PublishStatus} from "@/entityTypes/videoPublishType"
 
 @Entity("video_publish_record")
 export class VideoPublishRecordEntity extends AuditableEntity {
+    @PrimaryGeneratedColumn()
+    id: number;
+
     @Column("integer")
     video_download_id: number;
 

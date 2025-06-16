@@ -60,7 +60,7 @@ import { PublishOptions } from "@/strategy/VideoPublishStrategy";
 import { PublishPlatform, VideoPublishParam } from "@/entityTypes/videoPublishType";
 import {VideoPublishPlatformConfig} from "@/config/videosetting"
 import { VideoCaptionEntity } from "@/entity/VideoCaption.entity"
-
+import {VideoPublishModule} from "@/modules/VideoPublishModule"
 
 export class videoController {
     private videoDownloadModule: VideoDownloadModule
@@ -75,6 +75,7 @@ export class videoController {
     private videoCaptionModule: VideoCaptionModule
     private videoDownloadTagModule: VideoDownloadTagModule
     private videoDownloadTaskKeywordModule: VideoDownloadTaskKeywordModule
+    private videoPublishModule: VideoPublishModule
     // private videoDownloadTagModel:VideoDownloadTagModel
     constructor() {
         // const tokenService = new Token()
@@ -95,6 +96,7 @@ export class videoController {
         this.videoDownloadTaskKeywordModule = new VideoDownloadTaskKeywordModule()
         this.videoDownloadTaskAccountsModule = new VideoDownloadTaskAccountsModule()  
         this.videoDownloadTaskProxyModule = new VideoDownloadTaskProxyModule()
+        this.videoPublishModule = new VideoPublishModule()
     }
     //get video download tool
     public async getVideoDownloadTool(platform: string): Promise<Video | null> {
@@ -117,7 +119,7 @@ export class videoController {
         return await this.videoDownloadTaskModule.saveVideoDownloadTask(vdteEntity)
     }
 
-    public async processPublishVideo(param: VideoPublishParam){
+    public async processPublishVideo(param: VideoPublishParam,succesCall?:()=>void,errorCall?:(string)=>void){
         const childPath = path.join(__dirname, 'taskCode.js')
         if (!fs.existsSync(childPath)) {
             throw new Error("child js path not exist for the path " + childPath);
@@ -136,11 +138,11 @@ export class videoController {
         })
 
         child.stdout?.on('data', (data) => {
-            
+            console.log("stdout data:",data)
         })
 
         child.stderr?.on('data', (data) => {
-           
+            console.log("stderr data:",data)
 
         })
 
@@ -150,7 +152,9 @@ export class videoController {
                 
             } else {
                 console.log('Child process exited successfully');
-              
+                if(errorCall){
+                    errorCall("publish video failed")
+                }
                 // this.emailSeachTaskModule.updateTaskStatus(taskId,EmailsearchTaskStatus.Complete)
             }
         })
@@ -160,10 +164,17 @@ export class videoController {
             if (childdata.action == "publishVideoMsg") {
                 const getData = childdata.data as VideoPublishMsg
                 if(getData.status){
+                    if(succesCall){
+                        succesCall()
+                    }
                     //save publish record
                     const publishRecord = getData.publishRecord
                     if(publishRecord){
-                        await this.videoPublishRecordModule.savePublishRecord(publishRecord)
+                        await this.videoPublishModule.savePublishRecord(publishRecord)
+                    }
+                }else{
+                    if(errorCall){
+                        errorCall(getData.msg)
                     }
                 }
             }
@@ -545,7 +556,7 @@ export class videoController {
         return { records, num: count }
     }
     //publish video
-    public async publishVideo(videoId: number, platform: PublishPlatform, category: string, accountId: number) {
+    public async publishVideo(videoId: number, platform: PublishPlatform, category: string, accountId: number,succesCall?:()=>void,errorCall?:(string)=>void) {
         //get video platform config by platform name
         const videoPlatformConfig=VideoPublishPlatformConfig.find((value)=>value.name==platform)
         if(!videoPlatformConfig){
@@ -608,7 +619,7 @@ export class videoController {
             videoEntity: videoEntity,
             platform: platform,
             options: options
-        })
+        },succesCall,errorCall)
     }
     //get video download list by task id
     public async videoDownloadlist(taskId: number, page: number, size: number): Promise<ListData<VideoDownloadListDisplay>> {

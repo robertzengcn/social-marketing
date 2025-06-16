@@ -441,7 +441,27 @@ export function registerVideoIpcHandlers() {
             }
 
             const videoCtrl = new videoController();
-            await videoCtrl.publishVideo(qdata.videoId, qdata.platform, qdata.category, qdata.accountId);
+            await videoCtrl.publishVideo(qdata.videoId, qdata.platform, qdata.category, qdata.accountId,()=>{
+                const successMsg: CommonDialogMsg = {
+                    status: true,
+                    code: 200,
+                    data: {
+                        title: "video.publish_success",
+                        content: "video.publish_success_message"
+                    }
+                };
+                event.sender.send(SYSTEM_MESSAGE, successMsg);  
+            },(error)=>{
+                const errorMsg: CommonDialogMsg = {
+                    status: false,
+                    code: 202506161003457,
+                    data: {
+                        title: "video.publish_failed",
+                        content: error
+                    }
+                };
+                event.sender.send(SYSTEM_MESSAGE, errorMsg);
+            });
             
             const successMsg: CommonDialogMsg = {
                 status: true,
