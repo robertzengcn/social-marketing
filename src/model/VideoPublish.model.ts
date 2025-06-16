@@ -22,7 +22,7 @@ export class VideoPublishModel extends BaseDb {
     }
 
     async updatePlatformVideoInfo(publishId: number, platformVideoId: string, platformVideoUrl: string): Promise<number> {
-        const result = await this.repository.update(publishId, { 
+        const result = await this.repository.update(publishId, {
             platform_video_id: platformVideoId,
             platform_video_url: platformVideoUrl
         });
@@ -40,7 +40,7 @@ export class VideoPublishModel extends BaseDb {
     }
 
     async getPublishRecord(id: number): Promise<VideoPublishRecordEntity | null> {
-        return this.repository.findOne({ 
+        return this.repository.findOne({
             where: { id },
             relations: ['video_download']
         });
@@ -73,5 +73,24 @@ export class VideoPublishModel extends BaseDb {
     async deletePublishRecord(id: number): Promise<number> {
         const result = await this.repository.delete(id);
         return result.affected || 0;
+    }
+
+    async countPublishRecords(status?: PublishStatus): Promise<number> {
+        const queryBuilder = this.repository.createQueryBuilder('publish');
+
+        if (status) {
+            queryBuilder.where('publish.status = :status', { status });
+        }
+
+        return queryBuilder.getCount();
+    }
+    async getPublishRecords(): Promise<VideoPublishRecordEntity[]> {
+        return this.repository.find({
+            relations: ['video_download'],
+            order: { id: 'DESC' }
+        });
+    }
+    async getPublishRecordsCount(): Promise<number> {
+        return this.repository.count();
     }
 } 

@@ -4,7 +4,8 @@ import { videoController } from '@/controller/videoController';
 import { CommonDialogMsg, CommonResponse, CommonIdrequest, CommonMessage, CommonIdrequestType } from "@/entityTypes/commonType";
 import { CustomError } from '@/modules/customError';
 import { VideoDownloadTaskEntityType, VideoDownloadQuery, VideoDownloadListDisplay, DownloadVideoControlparam, VideoCaptionGenerateParamWithIds, VideoCompotionEntity, VideoInformationTransParam } from "@/entityTypes/videoType";
-import { VideoPublishRequest } from '@/entityTypes/videoPublishType'
+import { VideoPublishRequest, PublishRecordQuery } from '@/entityTypes/videoPublishType'
+import { VideoPublishRecordEntity } from '@/entity/VideoPublishRecord.entity'
 
 export function registerVideoIpcHandlers() {
     console.log("video download register")
@@ -484,5 +485,29 @@ export function registerVideoIpcHandlers() {
             };
             event.sender.send(SYSTEM_MESSAGE, errorMsg);
         }
+    });
+
+    // Get publish records
+    ipcMain.handle('get-publish-records', async (_, param: PublishRecordQuery) => {
+        const videoCtrl = new videoController();
+        const res = await videoCtrl.getPublishRecords(param);
+        const resp: CommonResponse<VideoPublishRecordEntity> = {
+            status: true,
+            msg: "video.publish_records",
+            data: res
+        };
+        return resp;
+    });
+
+    // Delete publish record
+    ipcMain.handle('delete-publish-record', async (_, id: number) => {
+        const videoCtrl = new videoController();
+        const res = await videoCtrl.deletePublishRecord(id);
+        const resp: CommonMessage<boolean> = {
+            status: true,
+            msg: "video.publish_record_deleted",
+            data: res
+        };
+        return resp;
     });
 }

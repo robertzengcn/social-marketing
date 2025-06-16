@@ -3,15 +3,16 @@
 import { VideoDownloadEntity } from "@/entity/VideoDownload.entity";
 import { PublishOptions } from "@/strategy/VideoPublishStrategy";
 export enum PublishPlatform {
-    YOUTUBE = 'youtube',
-    BILIBILI = 'bilibili',
-    BAIDU = 'baidu'
+    YOUTUBE = "youtube",
+    BILIBILI = "bilibili",
+    BAIDU = "baidu"
 }
 
 export enum PublishStatus {
-    PENDING = 'pending',
-    PUBLISHED = 'published',
-    FAILED = 'failed'
+    PENDING = "pending",
+    PROCESSING = "processing",
+    COMPLETE = "complete",
+    FAILED = "failed"
 }
 
 export interface VideoPublishResultType {
@@ -27,12 +28,15 @@ export interface VideoPublishRequest {
     platform: PublishPlatform;
     category: string;
     accountId: number;
-    title?: string;
-    description?: string;
-    tags?: string[];
-    privacy?: 'public' | 'private' | 'unlisted';
-    scheduleDate?: Date;
 }
+
+export interface PublishRecordQuery {
+    page: number;
+    size: number;
+    status?: PublishStatus;
+    search?: string;
+}
+
 export interface VideoPublishParam {
     videoEntity: VideoDownloadEntity,
      platform: PublishPlatform, 

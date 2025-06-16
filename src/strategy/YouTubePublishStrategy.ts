@@ -116,7 +116,7 @@ export class YouTubePublishStrategy extends BaseVideoPublishStrategy {
                 throw new Error('Video URL is empty');
             }
             
-            result.publishStatus = PublishStatus.PUBLISHED;
+            result.publishStatus = PublishStatus.COMPLETE;
             
         } catch (error: unknown) {
             result.publishStatus = PublishStatus.FAILED;

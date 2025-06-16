@@ -57,10 +57,11 @@ import {VideoPublishService} from "@/service/VideoPublishService"
 import {VideoDownloadEntityType} from "@/entityTypes/videoType"
 import { VideoDownloadTaskUrlsEntity } from "@/entity/VideoDownloadTaskUrls.entity";
 import { PublishOptions } from "@/strategy/VideoPublishStrategy";
-import { PublishPlatform, VideoPublishParam } from "@/entityTypes/videoPublishType";
+import { PublishPlatform, VideoPublishParam, PublishRecordQuery } from "@/entityTypes/videoPublishType";
 import {VideoPublishPlatformConfig} from "@/config/videosetting"
 import { VideoCaptionEntity } from "@/entity/VideoCaption.entity"
 import {VideoPublishModule} from "@/modules/VideoPublishModule"
+import { VideoPublishRecordEntity } from '@/entity/VideoPublishRecord.entity';
 
 export class videoController {
     private videoDownloadModule: VideoDownloadModule
@@ -1193,6 +1194,17 @@ export class videoController {
 
     }
 
+    // Get publish records
+    public async getPublishRecords(param: PublishRecordQuery): Promise<ListData<VideoPublishRecordEntity>> {
+        
+        return await this.videoPublishModule.getPublishRecordsWithCount(param);
+       
+    }
 
+    // Delete publish record
+    public async deletePublishRecord(id: number): Promise<boolean> {
+        const result = await this.videoPublishModule.deletePublishRecord(id);
+        return result > 0;
+    }
 
 }

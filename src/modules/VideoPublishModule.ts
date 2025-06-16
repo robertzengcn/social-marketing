@@ -2,6 +2,8 @@ import { VideoPublishModel } from "@/model/VideoPublish.model";
 import { BaseModule } from "@/modules/baseModule";
 import { VideoPublishRecordEntity } from "@/entity/VideoPublishRecord.entity";
 import { PublishPlatform, PublishStatus } from "@/entityTypes/videoPublishType";
+import { ListData } from "@/entityTypes/commonType";
+import { PublishRecordQuery } from "@/entityTypes/videoPublishType";
 
 export class VideoPublishModule extends BaseModule {
     private videoPublishModel: VideoPublishModel;
@@ -57,5 +59,34 @@ export class VideoPublishModule extends BaseModule {
 
     public async deletePublishRecord(id: number): Promise<number> {
         return await this.videoPublishModel.deletePublishRecord(id);
+    }
+
+    async countPublishRecords(status?: PublishStatus): Promise<number> {
+        return this.videoPublishModel.countPublishRecords(status);
+    }
+    public async getPublishRecords(): Promise<VideoPublishRecordEntity[]> {
+        return await this.videoPublishModel.getPublishRecords();
+    }
+    public async getPublishRecordsWithCount(param: PublishRecordQuery): Promise<ListData<VideoPublishRecordEntity>> {
+        let records: VideoPublishRecordEntity[];
+        let count: number;
+
+        if (param.status) {
+            records = await this.getPublishRecordsByStatus(param.status);
+            count = await this.countPublishRecords(param.status);
+        } else {
+            records = await this.getPublishRecords();
+            count = await this.countPublishRecords();
+        }
+
+        // Apply pagination
+        const start = param.page * param.size;
+        const end = start + param.size;
+        const paginatedRecords = records.slice(start, end);
+
+        return {
+            records: paginatedRecords,
+            num: count
+        };
     }
 } 
