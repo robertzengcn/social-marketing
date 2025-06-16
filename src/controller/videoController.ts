@@ -1,5 +1,5 @@
 import { videoFactory } from "@/modules/video/videoFactory";
-import { VideoDownloadTaskEntityType, processVideoDownloadParam, CookiesProxy, VideoCompotionEntity, VideoCaptionGenerateParam, VideoCaptionDisplay, VideoTranslateItem } from "@/entityTypes/videoType";
+import { VideoDownloadTaskEntityType, processVideoDownloadParam, CookiesProxy, VideoCompotionEntity, VideoCaptionGenerateParam, VideoCaptionDisplay, VideoTranslateItem, VideoPublishMsg } from "@/entityTypes/videoType";
 // import { VideoDownloadTaskdb } from "@/model/videoDownloadTaskdb";
 // import { VideoDownloaddb} from "@/model/videoDownloaddb"
 import { VideoDownloadModule } from "@/modules/VideoDownloadModule"
@@ -18,7 +18,7 @@ import { ProcessMessage } from "@/entityTypes/processMessage-type"
 // import {VideodownloadMsg} from "@/entityTypes/videoType";
 import { LanguageCode, ListData, TaskStatus } from "@/entityTypes/commonType"
 import { VideoDescriptionEntity } from "@/entity/VideoDescription.entity"
-import { VideoDownloadStatus, VideodownloadTaskMsg, VideoDownloadListDisplay, VideodownloadMsg, DownloadVideoControlparam, DownloadType, CookiesType, VideoCaptionItem, VideoCaptionMsg, VideoCaptionEntity, VideoCaptionStatus, VideoCaptionGenerateParamWithIds, VideoInformationTransParam } from "@/entityTypes/videoType"
+import { VideoDownloadStatus, VideodownloadTaskMsg, VideoDownloadListDisplay, VideodownloadMsg, DownloadVideoControlparam, DownloadType, CookiesType, VideoCaptionItem, VideoCaptionMsg, VideoCaptionStatus, VideoCaptionGenerateParamWithIds, VideoInformationTransParam } from "@/entityTypes/videoType"
 import { VideoDownloadTaskDetailEntity } from "@/entity/VideoDownloadTaskDetail.entity"
 import { VideoDescriptionModule } from "@/modules/videoDescriptionModule"
 import { Video } from '@/modules/interface/Video';
@@ -36,7 +36,7 @@ import { VideoCaptionModule } from "@/modules/VideoCaptionModule"
 // import { LanguageEnum } from "@/config/generate"
 // import {LanguageItem} from "@/entityTypes/commonType"
 import { ExtraModuleController } from "@/controller/extramoduleController"
-import { getLanaugebyid } from "@/modules/lib/function"
+//import { getLanaugebyid } from "@/modules/lib/function"
 import { VideoDownloadTagModule } from "@/modules/VideoDownloadTagModule"
 // import { Worker } from "worker_threads";
 import { TransItemsParam } from "@/entityTypes/translateType"
@@ -57,8 +57,11 @@ import {VideoPublishService} from "@/service/VideoPublishService"
 import {VideoDownloadEntityType} from "@/entityTypes/videoType"
 import { VideoDownloadTaskUrlsEntity } from "@/entity/VideoDownloadTaskUrls.entity";
 import { PublishOptions } from "@/strategy/VideoPublishStrategy";
-import { PublishPlatform } from "@/entityTypes/videoPublishType";
+import { PublishPlatform, VideoPublishParam } from "@/entityTypes/videoPublishType";
 import {VideoPublishPlatformConfig} from "@/config/videosetting"
+import { VideoCaptionEntity } from "@/entity/VideoCaption.entity"
+
+
 export class videoController {
     private videoDownloadModule: VideoDownloadModule
     private videoDownloadTaskModule: VideoDownloadTaskModule
@@ -112,6 +115,59 @@ export class videoController {
         vdteEntity.status = vdte.status || 0
         vdteEntity.downloadtype = vdte.downloadtype
         return await this.videoDownloadTaskModule.saveVideoDownloadTask(vdteEntity)
+    }
+
+    public async processPublishVideo(param: VideoPublishParam){
+        const childPath = path.join(__dirname, 'taskCode.js')
+        if (!fs.existsSync(childPath)) {
+            throw new Error("child js path not exist for the path " + childPath);
+        }
+        const { port1, port2 } = new MessageChannelMain()
+        const child = utilityProcess.fork(childPath, [], {
+            stdio: "pipe", execArgv: [], env: {
+                ...process.env,
+                NODE_OPTIONS: ""
+            }
+        })
+
+        child.on("spawn", async () => {
+            child.postMessage(JSON.stringify({ action: "publishVideo", data: param }), [port1])
+            console.log("child process satart, pid is " + child.pid)
+        })
+
+        child.stdout?.on('data', (data) => {
+            
+        })
+
+        child.stderr?.on('data', (data) => {
+           
+
+        })
+
+        child.on("exit", async(code) => {
+            if (code !== 0) {
+                console.error(`Child process exited with code ${code}`);
+                
+            } else {
+                console.log('Child process exited successfully');
+              
+                // this.emailSeachTaskModule.updateTaskStatus(taskId,EmailsearchTaskStatus.Complete)
+            }
+        })
+        child.on('message', async (message) => {
+            console.log('Message from child:', JSON.parse(message));
+            const childdata = JSON.parse(message) as ProcessMessage<any>
+            if (childdata.action == "publishVideoMsg") {
+                const getData = childdata.data as VideoPublishMsg
+                if(getData.status){
+                    //save publish record
+                    const publishRecord = getData.publishRecord
+                    if(publishRecord){
+                        await this.videoPublishRecordModule.savePublishRecord(publishRecord)
+                    }
+                }
+            }
+        });
     }
     public async processDownloadVideo(param: DownloadVideoControlparam, videoTool: Video, taskId: number, startCall?: () => void) {
         // const videoFactoryInstance = new videoFactory()
@@ -497,7 +553,7 @@ export class videoController {
         }
 
         //get video 
-        const videoPublishService = new VideoPublishService();
+        //const videoPublishService = new VideoPublishService();
         //get video entity by video id
         const videoEntity = await this.videoDownloadModule.getVideoDownloaditem(videoId)
         if(!videoEntity){
@@ -520,7 +576,11 @@ export class videoController {
         //     throw new Error("video category not found")
         // }
        // const category = videoCategory.category
-        
+        //get video caption
+        const videoCaption = await this.videoCaptionModule.getCaptionByVidLid(videoId,videoPlatformConfig.language.toString())
+        // if(!videoCaption){
+        //     throw new Error("video caption not found")
+        // }
        //convert account id to cookies
        const cookies = await this.accountCookiesModule.getAccountCookies(accountId)
        if(!cookies){
@@ -537,12 +597,18 @@ export class videoController {
             description: videoDescription.description,
             tags: tags,
             category: category,
+            caption:videoCaption?.caption_path??'',
             cookies: cookiesArray,
             headless: false,
             //accountId: accountId
         }
-        const result = await videoPublishService.publishVideo(videoEntity, platform, options);
-        return result;
+        // const result = await videoPublishService.publishVideo(videoEntity, platform, options);
+        // return result;
+        await this.processPublishVideo({
+            videoEntity: videoEntity,
+            platform: platform,
+            options: options
+        })
     }
     //get video download list by task id
     public async videoDownloadlist(taskId: number, page: number, size: number): Promise<ListData<VideoDownloadListDisplay>> {
@@ -776,8 +842,9 @@ export class videoController {
                         const item: VideoCaptionItem = {
                             videoId: value,
                             videoPath: videoItem.savepath,
-                            isEnglish: data.isEnglish,
-                            savePath: data.savePath
+                            isEnglish: videoItem.language==LanguageCode.EN?true:false,
+                            savePath: data.savePath,
+                            languageCode: videoItem.language as LanguageCode
                         }
                         res.push(item)
                     }
@@ -867,11 +934,16 @@ export class videoController {
 
                     console.log("generate caption success")
                     if (getData.videoId && getData.savepath) {
-                        const vce: VideoCaptionEntity = {
-                            videoId: getData.videoId,
-                            language_id: 0,
-                            caption_path: getData.savepath
-                        }
+                        // const vce: VideoCaptionEntity = {
+                        //     videoId: getData.videoId,
+                        //     language_id: 0,
+                        //     caption_path: getData.savepath
+                        // }
+                        const vce=new VideoCaptionEntity()
+                        vce.video_id=getData.videoId
+                        vce.caption_path=getData.savepath
+                        vce.language=getData.languageCode?getData.languageCode.toString():"en"
+                        vce.record_time=new Date().toISOString()
                         this.videoCaptionModule.create(vce)
                         this.videoDownloadModule.updateVideoCaptionStatus(getData.videoId, VideoCaptionStatus.Finish)
                     }
@@ -908,9 +980,9 @@ export class videoController {
             videoCaption.forEach((value) => {
                 const captionDisplayItem: VideoCaptionDisplay = {
                     id: value.id,
-                    videoId: value.videoId,
-                    language_id: value.language_id,
-                    language: getLanaugebyid(value.language_id),
+                    videoId: value.video_id,
+                    language_id: 0,
+                    language: getLanaugebyCode(value.language as LanguageCode),
                     caption_path: value.caption_path,
                     record_time: value.record_time,
                 }

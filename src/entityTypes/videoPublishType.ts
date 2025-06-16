@@ -1,6 +1,7 @@
 //import {PublishPlatform,PublishStatus} from "@/entity/VideoPublishRecord.entity"
 //import {PublishStatus}
-
+import { VideoDownloadEntity } from "@/entity/VideoDownload.entity";
+import { PublishOptions } from "@/strategy/VideoPublishStrategy";
 export enum PublishPlatform {
     YOUTUBE = 'youtube',
     BILIBILI = 'bilibili',
@@ -31,4 +32,9 @@ export interface VideoPublishRequest {
     tags?: string[];
     privacy?: 'public' | 'private' | 'unlisted';
     scheduleDate?: Date;
+}
+export interface VideoPublishParam {
+    videoEntity: VideoDownloadEntity,
+     platform: PublishPlatform, 
+     options: PublishOptions
 }

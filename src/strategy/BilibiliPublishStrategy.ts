@@ -3,7 +3,7 @@ import { VideoDownloadEntity } from '@/entity/VideoDownload.entity';
 import {VideoPublishResultType} from "@/entityTypes/videoPublishType"
 import {PublishPlatform,PublishStatus} from "@/entityTypes/videoPublishType"
 import { Page, ElementHandle } from 'puppeteer';
-
+import fs from 'fs';
 
 export class BilibiliPublishStrategy extends BaseVideoPublishStrategy {
     private readonly BILIBILI_UPLOAD_URL = 'https://member.bilibili.com/platform/upload/video/frame';
@@ -102,13 +102,105 @@ export class BilibiliPublishStrategy extends BaseVideoPublishStrategy {
                 }
                 await this.page.type('.ql-editor', options.description);
             }
+            const closeButton = await this.page.$('.v-popover-close');
+            if (closeButton) {
+                await closeButton.click();
+            }
+            //submit caption file
+            if(options.caption&&options.caption.length>0){
+                
+                if (!fs.existsSync(options.caption)) {
+                    throw new Error('Caption file does not exist: ' + options.caption);
+                }
             // Use CSS selector for More Settings button
             //DOMException: SyntaxError: Failed to execute 'querySelector' on 'Document': 'span:has-text("更多设置")' is not a valid selector.
-            const moreSettingsButton = await this.page.$('span:has-text("更多设置")');
-            if (moreSettingsButton) {
-                await moreSettingsButton.click();
+            const moreSettingsButton = await this.page.evaluateHandle(() => {
+                return Array.from(document.querySelectorAll('span')).find(
+                    span => span.textContent?.includes('更多设置')
+                );
+            });
+            const element = await moreSettingsButton.asElement() as ElementHandle<HTMLSpanElement>;
+            if (element) {
+                const box = await element.boundingBox();
+                
+                if (box) {
+                    await this.page.evaluate((box) => {
+                        const element = document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2);
+                        if (element) {
+                            (element as HTMLElement).style.border = '2px solid red';
+                            (element as HTMLElement).style.backgroundColor = 'rgba(255, 0, 0, 0.2)';
+                        }
+                    }, box);
+                    await this.page.mouse.move(
+                        box.x + box.width / 2,
+                        box.y + box.height / 2
+                    );
+                    await element.click();
+                }
             }
+            
             await this.page.evaluate(() => new Promise(resolve => setTimeout(resolve, 1000)));
+            await this.page.evaluate(() => {
+                window.scrollTo(0, document.body.scrollHeight);
+            });
+            const subtitleButton = await this.page.evaluateHandle(() => {
+                return Array.from(document.querySelectorAll('div')).find(
+                    div => div.textContent?.includes('上传字幕')
+                );
+            });
+            const subtitleElement = await subtitleButton.asElement() as ElementHandle<HTMLDivElement>;
+            if (subtitleElement) {
+                await subtitleElement.click();
+            }
+            await this.page.waitForSelector('.bcc-dialog', { visible: true });
+            
+            const languageInput = await this.page.$('input[placeholder="选择字幕语言"]');
+            if (!languageInput) {
+                throw new Error('Language input not found');
+            }
+            await languageInput.click();
+            
+            await this.page.evaluate(() => new Promise(resolve => setTimeout(resolve, 1000)));
+
+            if(video.language=="en"){
+                //await this.page.click('span:has-text("English")');
+            const englishSubtitleOption = await this.page.evaluateHandle(() => {
+                return Array.from(document.querySelectorAll('div')).find(
+                    div => div.textContent?.includes('字幕语言：英语（美国)')
+                );
+            });
+            const englishElement = await englishSubtitleOption.asElement() as ElementHandle<HTMLDivElement>;
+            if (englishElement) {
+                await englishElement.click();
+            }
+            }else{
+                //await this.page.click('span:has-text("Chinese")');
+                const chineseSubtitleOption = await this.page.evaluateHandle(() => {
+                    return Array.from(document.querySelectorAll('div')).find(
+                        div => div.textContent?.includes('字幕语言：中文（简体）')
+                    );
+                });
+                const chineseElement = await chineseSubtitleOption.asElement() as ElementHandle<HTMLDivElement>;
+                if (chineseElement) {
+                    await chineseElement.click();
+                }
+            }
+            const uploadButton = await this.page.evaluateHandle(() => {
+                return Array.from(document.querySelectorAll('span')).find(
+                    span => span.textContent?.includes('上传文件')
+                );
+            });
+            const uploadElement = await uploadButton.asElement() as ElementHandle<HTMLSpanElement>;
+            if (uploadElement) {
+                await uploadElement.click();
+            }
+
+            // Wait for file dialog and upload caption file
+            const fileInput = await this.page.waitForSelector('input[type="file"]');
+            if (!fileInput) {
+                throw new Error('File input not found');
+            }
+            await fileInput.uploadFile(options.caption);
 
             // Set privacy settings
             // if (options.privacy) {
@@ -116,11 +208,11 @@ export class BilibiliPublishStrategy extends BaseVideoPublishStrategy {
             //     await this.page.click(`[aria-label="${options.privacy}"]`);
             // }
 
-            
-            await this.waitforuploadfinish(900000);
+            }    
+            await this.waitforuploadfinish(90000000);
             // Click publish button
             //await this.page.click('#done-button');
-            const submitButton = await this.page.$('.submit-add');
+            const submitButton = await this.page.$('span.submit-add');
             if (!submitButton) {
                 throw new Error('Submit button not found');
             }
@@ -249,6 +341,7 @@ export class BilibiliPublishStrategy extends BaseVideoPublishStrategy {
         //await this.page.waitForSelector('span.success', { timeout: 900000 });
     }
     async waitforuploadfinish(timeout:number){
+        
         await this.page.waitForSelector('span.success', { timeout: timeout });
     }
     async validateOptions(options: PublishOptions): Promise<boolean> {

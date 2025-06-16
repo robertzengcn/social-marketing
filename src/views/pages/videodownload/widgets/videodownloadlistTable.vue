@@ -81,14 +81,14 @@
             </v-col>
           </v-row> 
         </row>
-        <row>
+        <!-- <row>
       <v-label>{{ CapitalizeFirstLetter(t('video.is_english_video'))}}:</v-label>
 
       <v-btn-toggle v-model="isEnglish" mandatory class="ml-3">
         <v-btn :value="true" color="primary">{{ t('common.yes') }}</v-btn>
         <v-btn :value="false" color="success">{{ t('common.no') }}</v-btn>
       </v-btn-toggle>
-    </row>
+    </row> -->
    
 
     </v-card-text>
@@ -321,7 +321,7 @@ const itemsPerPage = ref(10);
 const serverItems = ref<Array<VideoDownloadListDisplay>>([]);
 const loading = ref(false);
 const showLangDialog = ref(false);
-const isEnglish = ref<boolean>(true);
+//const isEnglish = ref<boolean>(true);
 const totalItems = ref(0);
 const search = ref('');
 const alert = ref(false);
@@ -470,7 +470,7 @@ const generateCaptions = async () => {
   });
   const data:VideoCaptionGenerateParamWithIds<number>={
     ids:ids,
-    isEnglish:isEnglish.value,
+    //isEnglish:isEnglish.value,
     savePath:captionsavePath.value
   }
   await generateCaption(data)

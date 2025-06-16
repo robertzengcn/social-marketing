@@ -6,7 +6,7 @@ import { VideoDescriptionEntity } from "@/entity/VideoDescription.entity"
 import {VideoDownloadTagEntity} from "@/entity/VideoDownloadTag.entity"
 import {LanguageCode} from '@/entityTypes/commonType'
 import {VideoPublishCategory} from '@/config/videosetting'
-
+import {VideoPublishRecordEntity} from "@/entity/VideoPublishRecord.entity"
 export type videoScraper={
     cookies: string,
     proxy?:Proxy
@@ -223,6 +223,7 @@ export interface VideoCaptionItem{
     savePath:string,
     isEnglish:boolean,
     videoId?:number,
+    languageCode:LanguageCode,
 }
 export type extraFileEntity={
 file: string, 
@@ -232,12 +233,18 @@ model?:string,
 errorCall?: (errorMsg: string) => void, stroutCall?:(message: string) => void,
 successCall?: (outputfile:string) => void
 }
+export type VideoPublishMsg={
+    status:boolean,
+    msg:string,
+    publishRecord?:VideoPublishRecordEntity
+}
 export type VideoCaptionMsg={
     status:boolean,
     msg:string,
     file:string,
     savepath?:string,
     videoId?:number,
+    languageCode?:LanguageCode,
 }
 export type VideoCaptionEntity={
     id?:number,
@@ -250,7 +257,7 @@ export interface VideoCaptionDisplay extends VideoCaptionEntity{
     language?:LanguageItem
 }
 export interface VideoCaptionGenerateParamWithIds<Type> extends CommonIdrequestIds<Type>{
-isEnglish:boolean
+//isEnglish:boolean
 savePath:string
 }
 export type VideoCompotionEntity={

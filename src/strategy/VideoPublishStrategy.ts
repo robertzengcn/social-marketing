@@ -9,6 +9,7 @@ export interface PublishOptions {
     description?: string;
     tags?: string[];
     category?: string;
+    caption?: string;
     privacy?: 'public' | 'private' | 'unlisted';
     scheduleDate?: Date;
     headless?: boolean;
@@ -36,7 +37,8 @@ export class BrowserFactory {
                 '--disable-setuid-sandbox',
                 '--disable-dev-shm-usage',
                 '--disable-accelerated-2d-canvas',
-                '--disable-gpu'
+                '--disable-gpu',
+                '--start-maximized' 
             ]
         };
 
