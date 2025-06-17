@@ -324,6 +324,16 @@ export const constantRoutes: RouteRecordRaw[] = [
           title: 'Video Detail',
           icon: 'list'
         }
+      },
+      {
+        path: 'publish',
+        component: () => import(/* webpackChunkName: "staff-list" */ '@/views/pages/videopublish/list.vue'),
+        name: 'VideoPublishList',
+        meta: {
+          visible: true,
+          title: 'Video Publish Records',
+          icon: 'list'
+        }
       }
     ]
   },

@@ -51,7 +51,7 @@
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
 import { ref, computed, onMounted, reactive } from 'vue'
-import { SearchResult } from '@/views/api/types'
+//import { SearchResult } from '@/views/api/types'
 import { Header } from "@/entityTypes/commonType"
 import { CapitalizeFirstLetter } from "@/views/utils/function"
 import { CommonDialogMsg } from "@/entityTypes/commonType"
@@ -60,7 +60,7 @@ import DeleteDialog from '@/views/components/widgets/deleteDialog.vue'
 import LogDialog from "@/views/components/widgets/logDialog.vue"
 import { PublishPlatform, PublishStatus } from "@/entityTypes/videoPublishType"
 import { VideoPublishRecordEntity } from "@/entity/VideoPublishRecord.entity"
-import { shell } from "electron"
+//import { shell } from "electron"
 import { getPublishRecords, deletePublishRecord, receivePublishRecordMessage } from '@/views/api/videoPublish'
 
 const { t } = useI18n({ inheritLocale: true });
@@ -196,8 +196,11 @@ const loadItems = async ({ page, itemsPerPage, sortBy }) => {
       size: itemsPerPage, 
       search: search.value 
     });
+    if(!response.data){
+      response.data = [];
+    }
     serverItems.value = response.data;
-    totalItems.value = response.total;
+    totalItems.value = response.total || 0;
   } catch (error) {
     console.error('Failed to load publish records:', error);
     setAlert(t('video.load_records_failed'), t('common.error'), "error");
@@ -208,7 +211,7 @@ const loadItems = async ({ page, itemsPerPage, sortBy }) => {
 
 const viewDetails = (item: VideoPublishRecordEntity) => {
   if (item.platform_video_url) {
-    shell.openExternal(item.platform_video_url);
+    //shell.openExternal(item.platform_video_url);
   }
 };
 
@@ -264,17 +267,17 @@ defineProps({
 onMounted(() => {
   loadItems({ page: 1, itemsPerPage: itemsPerPage.value, sortBy: "" });
   
-  receivePublishRecordMessage((res: CommonDialogMsg) => {
-    if (res.status) {
-      if (res.data) {
-        setAlert(t(res.data.content), t('common.success'), "success");
-      }
-    } else {
-      if (res.data) {
-        setAlert(t(res.data.content), t('common.error'), "error");
-      }
-    }
-  });
+  // receivePublishRecordMessage((res: CommonDialogMsg) => {
+  //   if (res.status) {
+  //     if (res.data) {
+  //       setAlert(t(res.data.content), t('common.success'), "success");
+  //     }
+  //   } else {
+  //     if (res.data) {
+  //       setAlert(t(res.data.content), t('common.error'), "error");
+  //     }
+  //   }
+  // });
 });
 </script>
 

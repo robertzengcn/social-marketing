@@ -1,7 +1,8 @@
-import { ipcRenderer } from 'electron';
+//import { ipcRenderer } from 'electron';
 import { SearchResult } from './types';
 import { VideoPublishRecordEntity } from '@/entity/VideoPublishRecord.entity';
 import { CommonDialogMsg } from '@/entityTypes/commonType';
+import {windowReceive,windowInvoke} from '@/views/utils/apirequest'
 
 export interface PublishRecordQuery {
   page: number;
@@ -10,15 +11,14 @@ export interface PublishRecordQuery {
 }
 
 export async function getPublishRecords(param: PublishRecordQuery): Promise<SearchResult<VideoPublishRecordEntity>> {
-  return await ipcRenderer.invoke('get-publish-records', param);
+  return await windowInvoke('get-publish-records', param);
 }
 
 export async function deletePublishRecord(id: number): Promise<boolean> {
-  return await ipcRenderer.invoke('delete-publish-record', id);
+  return await windowInvoke('delete-publish-record', {id});
 }
 
 export function receivePublishRecordMessage(cb: (data: CommonDialogMsg) => void) {
-  ipcRenderer.on('publish-record-message', (_, data) => {
-    cb(data);
-  });
+
+  windowReceive('publish-record-message',cb)
 } 
