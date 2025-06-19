@@ -522,7 +522,7 @@ async function publishVideo(param: VideoPublishParam){
             const message: ProcessMessage<VideoPublishMsg> = {
                 action: "publishVideoMsg",
                 data: {
-                    status: false,
+                    status: true,
                     msg: "",
                     publishRecord: result
                 }

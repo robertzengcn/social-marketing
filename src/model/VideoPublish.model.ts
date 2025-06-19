@@ -35,7 +35,7 @@ export class VideoPublishModel extends BaseDb {
     }
 
     async updatePlatformMetadata(publishId: number, metadata: Record<string, any>): Promise<number> {
-        const result = await this.repository.update(publishId, { platform_metadata: metadata });
+        const result = await this.repository.update(publishId, { platform_metadata: JSON.stringify(metadata) });
         return result.affected || 0;
     }
 
@@ -54,11 +54,13 @@ export class VideoPublishModel extends BaseDb {
         });
     }
 
-    async getPublishRecordsByStatus(status: PublishStatus): Promise<VideoPublishRecordEntity[]> {
+    async getPublishRecordsByStatus(status: PublishStatus,page: number = 0, size: number = 10): Promise<VideoPublishRecordEntity[]> {
         return this.repository.find({
             where: { status },
             relations: ['video_download'],
-            order: { id: 'DESC' }
+            order: { id: 'DESC' },
+            skip: (page-1) * size,
+            take: size
         });
     }
 
@@ -84,12 +86,20 @@ export class VideoPublishModel extends BaseDb {
 
         return queryBuilder.getCount();
     }
-    async getPublishRecords(): Promise<VideoPublishRecordEntity[]> {
+    async getPublishRecords(page: number = 0, size: number = 10): Promise<VideoPublishRecordEntity[]> {
         return this.repository.find({
             relations: ['video_download'],
-            order: { id: 'DESC' }
+            order: { id: 'DESC' },
+            skip: (page-1) * size,
+            take: size
         });
     }
+    // async getPublishRecords(): Promise<VideoPublishRecordEntity[]> {
+    //     return this.repository.find({
+    //         relations: ['video_download'],
+    //         order: { id: 'DESC' }
+    //     });
+    // }
     async getPublishRecordsCount(): Promise<number> {
         return this.repository.count();
     }

@@ -94,6 +94,43 @@ export class BilibiliPublishStrategy extends BaseVideoPublishStrategy {
                 }
                // await this.page.type('#textbox', options.title);
             }
+            //set category
+            const categorySelect = await this.page.$('.video-human-type div .select-controller');
+            if (categorySelect) {
+                await this.page.evaluate((element) => {
+                    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, categorySelect);
+                //await categorySelect.click();
+                await this.page.mouse.move(
+                    (await categorySelect.boundingBox())!.x + (await categorySelect.boundingBox())!.width / 2,
+                    (await categorySelect.boundingBox())!.y + (await categorySelect.boundingBox())!.height / 2
+                );
+                await this.page.mouse.click(
+                    (await categorySelect.boundingBox())!.x + (await categorySelect.boundingBox())!.width / 2,
+                    (await categorySelect.boundingBox())!.y + (await categorySelect.boundingBox())!.height / 2
+                );
+                //await categorySelect.click();
+                await this.page.evaluate(() => new Promise(resolve => setTimeout(resolve, 2000)));
+            
+            const categoryDiv = await this.page.evaluateHandle((category) => {
+                return Array.from(document.querySelectorAll('div')).find(
+                    div => div.title === category
+                );
+            }, options.category);
+            
+            const categoryElement = await categoryDiv.asElement() as ElementHandle<HTMLDivElement>;
+            if (categoryElement) {
+                //await categoryElement.click();
+                await this.page.mouse.move(
+                    (await categoryElement.boundingBox())!.x + (await categoryElement.boundingBox())!.width / 2,
+                    (await categoryElement.boundingBox())!.y + (await categoryElement.boundingBox())!.height / 2
+                );
+                await this.page.mouse.click(
+                    (await categoryElement.boundingBox())!.x + (await categoryElement.boundingBox())!.width / 2,
+                    (await categoryElement.boundingBox())!.y + (await categoryElement.boundingBox())!.height / 2
+                );
+            }
+            }
             
             if (options.description) {
                 const descriptionEditor = await this.page.$('.ql-editor');
@@ -106,12 +143,20 @@ export class BilibiliPublishStrategy extends BaseVideoPublishStrategy {
             if (closeButton) {
                 await closeButton.click();
             }
+                
+            await this.waitforuploadfinish(90000000);
+            
             //submit caption file
             if(options.caption&&options.caption.length>0){
                 
                 if (!fs.existsSync(options.caption)) {
                     throw new Error('Caption file does not exist: ' + options.caption);
                 }
+
+            const closeButton = await this.page.$('.v-popover-close');
+            if (closeButton) {
+                await closeButton.click();
+            }
             // Use CSS selector for More Settings button
             //DOMException: SyntaxError: Failed to execute 'querySelector' on 'Document': 'span:has-text("更多设置")' is not a valid selector.
             const moreSettingsButton = await this.page.evaluateHandle(() => {
@@ -208,15 +253,40 @@ export class BilibiliPublishStrategy extends BaseVideoPublishStrategy {
             //     await this.page.click(`[aria-label="${options.privacy}"]`);
             // }
 
-            }    
-            await this.waitforuploadfinish(90000000);
+            }
+            
             // Click publish button
             //await this.page.click('#done-button');
             const submitButton = await this.page.$('span.submit-add');
             if (!submitButton) {
                 throw new Error('Submit button not found');
             }
-            await submitButton.click();
+            console.log("submitButton",submitButton);
+            //await submitButton.hover();
+            //await submitButton.hover();
+            //await submitButton.click();
+
+            const box = await submitButton.boundingBox();
+                
+                if (box) {
+                    await this.page.evaluate((box) => {
+                        const element = document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2);
+                        if (element) {
+                            (element as HTMLElement).style.border = '2px solid red';
+                            (element as HTMLElement).style.backgroundColor = 'rgba(255, 0, 0, 0.2)';
+                        }
+                    }, box);
+                    await this.page.mouse.move(
+                        box.x + box.width / 2,
+                        box.y + box.height / 2
+                    );
+                await this.page.mouse.click(
+                    box.x + box.width / 2,
+                    box.y + box.height / 2
+                );
+                }
+            await this.page.evaluate(() => new Promise(resolve => setTimeout(resolve, 3000)));
+            //await submitButton.click();
             // Wait for the video URL to be available
             // const videoUrl = await this.page.waitForSelector('.video-url', { timeout: 30000 });
             
@@ -231,17 +301,33 @@ export class BilibiliPublishStrategy extends BaseVideoPublishStrategy {
             // }
             
             //record.platform_video_url = url;
-            const videoId = this.extractVideoId(url);
-            if (!videoId) {
-                throw new Error('Could not extract video ID from URL');
-            }
+            // const videoId = this.extractVideoId(url);
+            // if (!videoId) {
+            //     throw new Error('Could not extract video ID from URL');
+            // }
             //record.platform_video_id = videoId;
             //record.status = PublishStatus.PUBLISHED;
-            
+            result.publishStatus = PublishStatus.COMPLETE;
         } catch (error) {
             console.error(error)
+            
             result.publishStatus = PublishStatus.FAILED;
-            result.publishError = error instanceof Error ? error.message : 'Unknown error occurred';
+            if (options.errorLogpath) {
+                try {
+                    const screenshotPath = `${options.errorLogpath}/bilibili_error_${Date.now()}.png`;
+                    await this.page.screenshot({ 
+                        path: screenshotPath, 
+                        fullPage: true 
+                    });
+                    result.publishError = `${error instanceof Error ? error.message : 'Unknown error occurred'}\nScreenshot saved to: ${screenshotPath}`;
+                } catch (screenshotError) {
+                    console.error('Failed to take error screenshot:', screenshotError);
+                    result.publishError = `${error instanceof Error ? error.message : 'Unknown error occurred'}\nFailed to save screenshot: ${screenshotError instanceof Error ? screenshotError.message : 'Unknown screenshot error'}`;
+                }
+            } else {
+                result.publishError = error instanceof Error ? error.message : 'Unknown error occurred';
+            }
+            //result.publishError = error instanceof Error ? error.message : 'Unknown error occurred';
         } finally {
             await this.cleanup();
         }

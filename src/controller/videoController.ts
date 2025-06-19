@@ -589,7 +589,7 @@ export class videoController {
         // }
        // const category = videoCategory.category
         //get video caption
-        const videoCaption = await this.videoCaptionModule.getCaptionByVidLid(videoId,videoPlatformConfig.language.toString())
+        const videoCaption = await this.videoCaptionModule.getCaptionByVidLid(videoId,videoEntity.language)
         // if(!videoCaption){
         //     throw new Error("video caption not found")
         // }
@@ -614,6 +614,7 @@ export class videoController {
             headless: false,
             //accountId: accountId
         }
+        // const videoPublishService = new VideoPublishService();
         // const result = await videoPublishService.publishVideo(videoEntity, platform, options);
         // return result;
         await this.processPublishVideo({

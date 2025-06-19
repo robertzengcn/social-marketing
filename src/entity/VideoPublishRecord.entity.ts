@@ -14,15 +14,13 @@ export class VideoPublishRecordEntity extends AuditableEntity {
     video_download_id: number;
 
     @Column({
-        type: "enum",
-        enum: PublishPlatform,
+        type: "varchar",
         default: PublishPlatform.YOUTUBE
     })
     platform: PublishPlatform;
 
     @Column({
-        type: "enum",
-        enum: PublishStatus,
+        type: "varchar",
         default: PublishStatus.PENDING
     })
     status: PublishStatus;
@@ -36,8 +34,8 @@ export class VideoPublishRecordEntity extends AuditableEntity {
     @Column("text", { nullable: true })
     error_message: string | null;
 
-    @Column("jsonb", { nullable: true })
-    platform_metadata: Record<string, any> | null;
+    @Column("text", { nullable: true })
+    platform_metadata: string | null;
 
     @ManyToOne(() => VideoDownloadEntity)
     @JoinColumn({ name: "video_download_id" })

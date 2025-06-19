@@ -19,6 +19,7 @@ export interface PublishOptions {
         domain: string;
         path: string;
     }>;
+    errorLogpath?: string;
     [key: string]: any; // Allow platform-specific options
 }
 

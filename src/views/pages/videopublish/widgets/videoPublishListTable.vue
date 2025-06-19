@@ -196,9 +196,10 @@ const loadItems = async ({ page, itemsPerPage, sortBy }) => {
       size: itemsPerPage, 
       search: search.value 
     });
-    if(!response.data){
-      response.data = [];
-    }
+    console.log(response);
+    // if(!response){
+    //   response.data = [];
+    // }
     serverItems.value = response.data;
     totalItems.value = response.total || 0;
   } catch (error) {

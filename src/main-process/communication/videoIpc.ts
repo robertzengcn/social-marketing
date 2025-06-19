@@ -1,5 +1,5 @@
 import { ipcMain } from 'electron';
-import { VIDEODOWNLOAD, VIDEODOWNLOAD_MESSAGE, VIDEODOWNLOAD_TASK_LIST, VIDEODOWNLOAD_LIST, VIDEODOWNLOADTASK_RETRY, VIDEODOWNLOADITEM_RETRY, VIDEODOWNLOAD_ITEM_MESSAGE, VIDEODOWNLOADITEM_EXPLORER, VIDEODOWNLOADITEM_DELETE, VIDEODOWN_TASK_ERROR_LOG_QUERY, VIDEO_CAPTION_GENERATE, VIDEOTASKDOWNLOAD_RETRY_MESSAGE, VIDEODOWNLOAD_LOG_QUERY, VIDEODOWNLOAD_DETAIL_QUERY, VIDEODOWNLOAD_OPEN_CAPTIONFILE, VIDEO_VOICE_TRANSLATE, VIDEO_INFORMATION_TRANSLATE, VIDEO_PUBLISH, SYSTEM_MESSAGE } from '@/config/channellist'
+import { VIDEODOWNLOAD, VIDEODOWNLOAD_MESSAGE, VIDEODOWNLOAD_TASK_LIST, VIDEODOWNLOAD_LIST, VIDEODOWNLOADTASK_RETRY, VIDEODOWNLOADITEM_RETRY, VIDEODOWNLOAD_ITEM_MESSAGE, VIDEODOWNLOADITEM_EXPLORER, VIDEODOWNLOADITEM_DELETE, VIDEODOWN_TASK_ERROR_LOG_QUERY, VIDEO_CAPTION_GENERATE, VIDEOTASKDOWNLOAD_RETRY_MESSAGE, VIDEODOWNLOAD_LOG_QUERY, VIDEODOWNLOAD_DETAIL_QUERY, VIDEODOWNLOAD_OPEN_CAPTIONFILE, VIDEO_VOICE_TRANSLATE, VIDEO_INFORMATION_TRANSLATE, VIDEO_PUBLISH, SYSTEM_MESSAGE, VIDEO_PUBLISH_RECORD_LIST, VIDEO_PUBLISH_RECORD_DELETE, VIDEO_PUBLISH_RECORD_MESSAGE } from '@/config/channellist'
 import { videoController } from '@/controller/videoController';
 import { CommonDialogMsg, CommonResponse, CommonIdrequest, CommonMessage, CommonIdrequestType } from "@/entityTypes/commonType";
 import { CustomError } from '@/modules/customError';
@@ -488,9 +488,10 @@ export function registerVideoIpcHandlers() {
     });
 
     // Get publish records
-    ipcMain.handle('get-publish-records', async (_, param: PublishRecordQuery) => {
+    ipcMain.handle(VIDEO_PUBLISH_RECORD_LIST, async (_, param: string) => {
         const videoCtrl = new videoController();
-        const res = await videoCtrl.getPublishRecords(param);
+        const qdata = JSON.parse(param) as PublishRecordQuery;
+        const res = await videoCtrl.getPublishRecords(qdata);
         const resp: CommonResponse<VideoPublishRecordEntity> = {
             status: true,
             msg: "video.publish_records",
@@ -500,7 +501,7 @@ export function registerVideoIpcHandlers() {
     });
 
     // Delete publish record
-    ipcMain.handle('delete-publish-record', async (_, id: number) => {
+    ipcMain.handle(VIDEO_PUBLISH_RECORD_DELETE, async (_, id: number) => {
         const videoCtrl = new videoController();
         const res = await videoCtrl.deletePublishRecord(id);
         const resp: CommonMessage<boolean> = {

@@ -49,8 +49,8 @@ export class VideoPublishModule extends BaseModule {
         return await this.videoPublishModel.getPublishRecordsByVideoId(videoDownloadId);
     }
 
-    public async getPublishRecordsByStatus(status: PublishStatus): Promise<VideoPublishRecordEntity[]> {
-        return await this.videoPublishModel.getPublishRecordsByStatus(status);
+    public async getPublishRecordsByStatus(status: PublishStatus,page: number = 0, size: number = 10): Promise<VideoPublishRecordEntity[]> {
+        return await this.videoPublishModel.getPublishRecordsByStatus(status,page,size);
     }
 
     public async getPublishRecordsByPlatform(platform: PublishPlatform): Promise<VideoPublishRecordEntity[]> {
@@ -64,28 +64,28 @@ export class VideoPublishModule extends BaseModule {
     async countPublishRecords(status?: PublishStatus): Promise<number> {
         return this.videoPublishModel.countPublishRecords(status);
     }
-    public async getPublishRecords(): Promise<VideoPublishRecordEntity[]> {
-        return await this.videoPublishModel.getPublishRecords();
+    public async getPublishRecords(page: number = 0, size: number = 10): Promise<VideoPublishRecordEntity[]> {
+        return await this.videoPublishModel.getPublishRecords(page, size);
     }
     public async getPublishRecordsWithCount(param: PublishRecordQuery): Promise<ListData<VideoPublishRecordEntity>> {
         let records: VideoPublishRecordEntity[];
         let count: number;
 
         if (param.status) {
-            records = await this.getPublishRecordsByStatus(param.status);
+            records = await this.getPublishRecordsByStatus(param.status,param.page,param.size);
             count = await this.countPublishRecords(param.status);
         } else {
-            records = await this.getPublishRecords();
+            records = await this.getPublishRecords(param.page, param.size);
             count = await this.countPublishRecords();
         }
 
         // Apply pagination
-        const start = param.page * param.size;
-        const end = start + param.size;
-        const paginatedRecords = records.slice(start, end);
+        // const start = param.page * param.size;
+        // const end = start + param.size;
+        // const paginatedRecords = records.slice(start, end);
 
         return {
-            records: paginatedRecords,
+            records: records,
             num: count
         };
     }
