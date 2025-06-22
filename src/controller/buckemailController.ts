@@ -64,7 +64,7 @@ export class BuckemailController {
             error_file: runLogfile
         }
         //create task
-        const taskId = await this.buckEmailTaskMoudule.createTask(entity)
+        const taskId = await this.buckEmailTaskMoudule.create(entity)
 
         const childPath = path.join(__dirname, 'taskCode.js')
         if (!fs.existsSync(childPath)) {
@@ -242,9 +242,9 @@ export class BuckemailController {
     }
     //get buck email task list
     public async getBuckEmailTaskList(page: number, size: number, sort?: SortBy): Promise<{records:Array<BuckEmailListType>,total:number}> {
-        const Taskentity=await this.buckEmailTaskMoudule.getTaskList(page, size, sort)
+        const Taskentity=await this.buckEmailTaskMoudule.listBuckEmailTasks(page, size, sort)
         const data: Array<BuckEmailListType> = []
-        Taskentity.records.forEach(async (element) => {
+        Taskentity.forEach(async (element) => {
             let status = "unkonw"
             if(element.status){
                 status=getStatusName(element.status)
@@ -266,7 +266,7 @@ export class BuckemailController {
         })
         const result = {
             records: data,
-            total: Taskentity.total
+            total: Taskentity.length
         }
         return result
         

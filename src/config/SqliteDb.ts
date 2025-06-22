@@ -31,6 +31,9 @@ import { SearchTaskEntity } from "@/entity/SearchTask.entity";
 import { SearchTaskProxyEntity } from "@/entity/SearchTaskProxy.entity";
 import {SearchAccountEntity} from "@/entity/SearchAccount.entity"
 import {VideoPublishRecordEntity} from "@/entity/VideoPublishRecord.entity"
+import { ScheduleTaskEntity } from "@/entity/ScheduleTask.entity";
+import { ScheduleExecutionLogEntity } from "@/entity/ScheduleExecutionLog.entity";
+import { ScheduleDependencyEntity } from "@/entity/ScheduleDependency.entity";
 // import sqlite3 from "sqlite3"; 
 
 
@@ -73,7 +76,10 @@ export class SqliteDb {
                 VideoDownloadTaskKeywordEntity,
                 SearchTaskProxyEntity,
                 SearchAccountEntity,
-                VideoPublishRecordEntity,    
+                VideoPublishRecordEntity,
+                ScheduleTaskEntity,
+                ScheduleExecutionLogEntity,
+                ScheduleDependencyEntity,
             ],
             synchronize: true, 
             migrations: [],

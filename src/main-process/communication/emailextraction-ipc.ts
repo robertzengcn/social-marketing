@@ -3,7 +3,7 @@ import { EMAILEXTRACTIONAPI, EMAILEXTRACTIONMESSAGE,LISTEMAILSEARCHTASK,EMAILSEA
 import { EmailscFormdata } from '@/entityTypes/emailextraction-type'
 import { CommonDialogMsg } from "@/entityTypes/commonType";
 import { isValidUrl } from "@/views/utils/function"
-import { searhModel } from "@/modules/searchModel"
+import { SearchModule } from "@/modules/searchModule"
 import { EmailextractionController } from "@/controller/emailextractionController"
 import { EmailsControldata,EmailResultDisplay,EmailsearchTaskEntityDisplay,EmailsearchtaskResultquery} from '@/entityTypes/emailextraction-type'
 import { EmailExtractionTypes } from '@/config/emailextraction'
@@ -71,7 +71,7 @@ export function registerEmailextractionIpcHandlers() {
                 event.sender.send(EMAILEXTRACTIONMESSAGE, JSON.stringify(comMsgs))
                 return
             }
-            const searchModel = new searhModel();
+            const searchModel = new SearchModule();
 
             //get result url from search task
             const taskresultNum = await searchModel.countSearchResult(qdata.searchTaskId)

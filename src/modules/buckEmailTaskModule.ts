@@ -5,9 +5,11 @@ import { BuckEmailTaskModel } from "@/model/BuckEmailTask.model"
 import {TaskStatus} from "@/entityTypes/commonType"
 import { SortBy } from "@/entityTypes/commonType"
 import { BaseModule } from "@/modules/baseModule";
+import { BuckemailTaskEntity } from "@/entity/BuckemailTask.entity";
+
 export class BuckEmailTaskModule extends BaseModule{
     //private dbpath: string
-    private buckemailtaskdb: BuckEmailTaskModel
+    private buckEmailTaskModel: BuckEmailTaskModel
     constructor() {
     // const tokenService = new Token()
     // const dbpath = tokenService.getValue(USERSDBPATH)
@@ -16,42 +18,87 @@ export class BuckEmailTaskModule extends BaseModule{
     // }
     super();
     // this.dbpath = dbpath
-    this.buckemailtaskdb = new BuckEmailTaskModel(this.dbpath);
+    this.buckEmailTaskModel = new BuckEmailTaskModel(this.dbpath);
     }
-    //create buck send email task
-    async createTask(task: BuckemailEntity): Promise<number> {
-      
-        return this.buckemailtaskdb.create(task)
+    /**
+     * Create a new buck email task
+     * @param task The buck email task entity
+     * @returns The ID of the created task
+     */
+    async create(task: BuckemailEntity): Promise<number> {
+        return await this.buckEmailTaskModel.create(task);
     }
-    //get buck email task id 
-    async readTask(id: number):Promise<BuckemailEntity |undefined>  {
-        return await this.buckemailtaskdb.read(id)
+    /**
+     * Get a buck email task by ID
+     * @param id The task ID
+     * @returns The buck email task entity
+     */
+    async read(id: number): Promise<BuckemailEntity | undefined> {
+        return await this.buckEmailTaskModel.read(id);
     }
-    //update buck email task
-    async updateTask(id: number, updates: BuckemailEntity): Promise<void> {
-        
-       await this.buckemailtaskdb.update(id,updates);
+    /**
+     * Update a buck email task
+     * @param id The task ID
+     * @param task The buck email task entity to update
+     */
+    async update(id: number, task: BuckemailEntity): Promise<void> {
+        return await this.buckEmailTaskModel.update(id, task);
     }
-
-    async deleteTask(id: string): Promise<void> {
-        await this.buckemailtaskdb.delete(Number(id));
+    /**
+     * Delete a buck email task
+     * @param id The task ID
+     */
+    async delete(id: number): Promise<void> {
+        return await this.buckEmailTaskModel.delete(id);
     }
-    //update task log path
-    async updateTasklog(id: number, log_file: string, error_file: string): Promise<void> {
-        await this.buckemailtaskdb.updateTaskLogfile(id, log_file, error_file)
+    /**
+     * Update task log files
+     * @param id The task ID
+     * @param runtimeLog The runtime log content
+     * @param errorLog The error log content
+     */
+    async updateTaskLogfile(id: number, runtimeLog: string, errorLog: string): Promise<void> {
+        return await this.buckEmailTaskModel.updateTaskLogfile(id, runtimeLog, errorLog);
     }
-    //update task log status
+    /**
+     * Update task status
+     * @param id The task ID
+     * @param status The new status
+     */
     async updateTaskStatus(id: number, status: TaskStatus): Promise<void> {
-        await this.buckemailtaskdb.updateTaskStatus(id, status)
+        return await this.buckEmailTaskModel.updateTaskStatus(id, status);
     }
-    //get buck eamil task for page query
-    async getTaskList(page: number, limit: number, sort?: SortBy): Promise<{records:BuckemailEntity[],total:number}> {
-        const records=await this.buckemailtaskdb.listBuckEmailtask(page, limit, sort)
-        const total=await this.buckemailtaskdb.countBuckEmailTask()
-        return {records,total}
+    /**
+     * List buck email tasks with pagination and sorting
+     * @param page Page number (offset)
+     * @param size Page size (limit)
+     * @param sort Sort parameters (optional)
+     * @returns Array of buck email task entities
+     */
+    async listBuckEmailTasks(page: number, size: number, sort?: SortBy): Promise<BuckemailEntity[]> {
+        return await this.buckEmailTaskModel.listBuckEmailtask(page, size, sort);
     }
-    public async getBuckEmailTypeName(type: BuckEmailType): Promise<string> {
-        return await this.buckemailtaskdb.getBuckEmailTypeName(type)
+    /**
+     * Get total number of buck email tasks
+     * @returns Total count of tasks
+     */
+    async countBuckEmailTasks(): Promise<number> {
+        return await this.buckEmailTaskModel.countBuckEmailTask();
     }
-   
+    /**
+     * Get buck email status name from status enum
+     * @param taskStatus The task status enum value
+     * @returns String representation of the status
+     */
+    getBuckEmailStatusName(taskStatus: TaskStatus): string {
+        return this.buckEmailTaskModel.getBuckEmailStatusName(taskStatus);
+    }
+    /**
+     * Get buck email type name from type enum
+     * @param type The buck email type enum value
+     * @returns String representation of the type
+     */
+    getBuckEmailTypeName(type: BuckEmailType): string {
+        return this.buckEmailTaskModel.getBuckEmailTypeName(type);
+    }
 }

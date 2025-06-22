@@ -4,7 +4,7 @@ import { VideoDownloadTaskAccountsEntity } from "@/entity/VideoDownloadTaskAccou
 
 export class VideoDownloadTaskAccountModel extends BaseDb {
     private repository: Repository<VideoDownloadTaskAccountsEntity>;
-
+    
     constructor(filepath: string) {
         super(filepath);
         this.repository = this.sqliteDb.connection.getRepository(VideoDownloadTaskAccountsEntity);

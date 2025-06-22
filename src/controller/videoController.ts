@@ -100,15 +100,13 @@ export class videoController {
         this.videoPublishModule = new VideoPublishModule()
     }
     //get video download tool
-    public async getVideoDownloadTool(platform: string): Promise<Video | null> {
-        const videoFactoryInstance = new videoFactory()
-        const videoTool = await videoFactoryInstance.getVideotool(platform)
-        return videoTool
-    }
+    // public async getVideoDownloadTool(platform: string): Promise<Video | null> {
+    //     const videoFactoryInstance = new videoFactory()
+    //     const videoTool = await videoFactoryInstance.getVideotool(platform)
+    //     return videoTool
+    // }
     //check video tool requirement
-    public async checkVideoRequirement(videoTool: Video): Promise<boolean> {
-        return await videoTool.checkRequirement()
-    }
+   
     //save video task, get task id
     public async saveVdieoDownloadTask(vdte: VideoDownloadTaskEntityType): Promise<number> {
         const vdteEntity = new VideoDownloadTaskEntity()
@@ -116,7 +114,7 @@ export class videoController {
         vdteEntity.platform = vdte.platform
         vdteEntity.savepath = vdte.savepath
         vdteEntity.status = vdte.status || 0
-        vdteEntity.downloadtype = vdte.downloadtype
+        //vdteEntity.downloadtype = vdte.downloadtype
         return await this.videoDownloadTaskModule.saveVideoDownloadTask(vdteEntity)
     }
 
@@ -181,379 +179,383 @@ export class videoController {
             }
         });
     }
-    public async processDownloadVideo(param: DownloadVideoControlparam, videoTool: Video, taskId: number, startCall?: () => void) {
-        // const videoFactoryInstance = new videoFactory()
-        //get random one from array of param.accountId
-        // const randomItem = param.accountId[Math.floor(Math.random() * param.accountId.length)]
-        // const videoTool = await videoFactoryInstance.getVideotool(param.platform)
-        // console.log("video tool:" + videoTool)
-        // if (!videoTool) {
+    // public async processDownloadVideo(param: DownloadVideoControlparam, videoTool: Video, taskId: number, startCall?: () => void) {
+    //     // const videoFactoryInstance = new videoFactory()
+    //     //get random one from array of param.accountId
+    //     // const randomItem = param.accountId[Math.floor(Math.random() * param.accountId.length)]
+    //     // const videoTool = await videoFactoryInstance.getVideotool(param.platform)
+    //     // console.log("video tool:" + videoTool)
+    //     // if (!videoTool) {
 
-        //     throw new CustomError("video tool not found", 20241205111934)
-        // }
-        // const toolres=videoTool.checkRequirement()
-        // if(!toolres){
-        //     throw new CustomError("video tool check requirement failed", 20241205111934)
-        // }
-        const execFilepath = videoTool.getPackagepath()
+    //     //     throw new CustomError("video tool not found", 20241205111934)
+    //     // }
+    //     // const toolres=videoTool.checkRequirement()
+    //     // if(!toolres){
+    //     //     throw new CustomError("video tool check requirement failed", 20241205111934)
+    //     // }
+    //     const execFilepath = videoTool.getPackagepath()
 
-        //save log to download task table
-        // const videoTaskdb=new VideoDownloadTaskdb(dbpath)
-        // const videoEntity: VideoDownloadTaskEntity = {
-        //     taskName: param.taskName,
-        //     platform: param.platform,
-        //     // url: JSON.stringify(param.link),
-        //     savepath: param.savePath,
-        //     status: TaskStatus.Processing
-        // }
-        // const taskId = this.videoDownloadTaskModule.saveVideoDownloadTask(videoEntity)
-        // if (!taskId) {
-        //     throw new CustomError("video.create_download_task_failuer", 20241206153256)
-        // }
-        // console.log("task id:"+taskId)
-        // const res=videoTool.checkRequirement()
-        // if (startCall) {
-        //     startCall(Number(taskId))
-        // }
+    //     //save log to download task table
+    //     // const videoTaskdb=new VideoDownloadTaskdb(dbpath)
+    //     // const videoEntity: VideoDownloadTaskEntity = {
+    //     //     taskName: param.taskName,
+    //     //     platform: param.platform,
+    //     //     // url: JSON.stringify(param.link),
+    //     //     savepath: param.savePath,
+    //     //     status: TaskStatus.Processing
+    //     // }
+    //     // const taskId = this.videoDownloadTaskModule.saveVideoDownloadTask(videoEntity)
+    //     // if (!taskId) {
+    //     //     throw new CustomError("video.create_download_task_failuer", 20241206153256)
+    //     // }
+    //     // console.log("task id:"+taskId)
+    //     // const res=videoTool.checkRequirement()
+    //     // if (startCall) {
+    //     //     startCall(Number(taskId))
+    //     // }
 
-        // const videoDownloaddb=new VideoDownloaddb(dbpath)
-        // if(res){
-        // let idlinks:videoIdLink[]=[]
-        // for (const link of param.link) {
-        //     const vdentity:videoDownloadEntity={ 
-        //         url:link,
-        //         savepath:param.savePath,
-        //         task_id:Number(taskId),
-        //         status:DownloadStatus.Start
-        //     }
-        //     const downId=this.videoDownloaddb.saveVideoDownload(vdentity)
-        //     const idlinkitem:videoIdLink={
-        //         id:Number(downId),
-        //         link:link
-        //     }
-        //     idlinks.push(idlinkitem)
-        // }
+    //     // const videoDownloaddb=new VideoDownloaddb(dbpath)
+    //     // if(res){
+    //     // let idlinks:videoIdLink[]=[]
+    //     // for (const link of param.link) {
+    //     //     const vdentity:videoDownloadEntity={ 
+    //     //         url:link,
+    //     //         savepath:param.savePath,
+    //     //         task_id:Number(taskId),
+    //     //         status:DownloadStatus.Start
+    //     //     }
+    //     //     const downId=this.videoDownloaddb.saveVideoDownload(vdentity)
+    //     //     const idlinkitem:videoIdLink={
+    //     //         id:Number(downId),
+    //     //         link:link
+    //     //     }
+    //     //     idlinks.push(idlinkitem)
+    //     // }
 
-        const childPath = path.join(__dirname, 'taskCode.js')
-        if (!fs.existsSync(childPath)) {
-            throw new Error("child js path not exist for the path " + childPath);
-        }
-        const { port1, port2 } = new MessageChannelMain()
+    //     const childPath = path.join(__dirname, 'taskCode.js')
+    //     if (!fs.existsSync(childPath)) {
+    //         throw new Error("child js path not exist for the path " + childPath);
+    //     }
+    //     const { port1, port2 } = new MessageChannelMain()
 
-        const tokenService = new Token()
-        // console.log(path.join(__dirname, 'utilityCode.js'))
-        let logpath = tokenService.getValue(USERLOGPATH)
-        if (!logpath) {
-            const useremail = tokenService.getValue(USEREMAIL)
-            //create log path
-            logpath = getApplogspath(useremail)
-        }
-        // console.log(logpath)
-        const uuid = uuidv4({ random: getRandomValues(new Uint8Array(16)) })
-        const errorLogfile = path.join(logpath, 'downloadVideo', taskId.toString() + '_' + uuid + '.error.log')
-        const runLogfile = path.join(logpath, 'downloadVideo', taskId.toString() + '_' + uuid + '.runtime.log')
+    //     const tokenService = new Token()
+    //     // console.log(path.join(__dirname, 'utilityCode.js'))
+    //     let logpath = tokenService.getValue(USERLOGPATH)
+    //     if (!logpath) {
+    //         const useremail = tokenService.getValue(USEREMAIL)
+    //         //create log path
+    //         logpath = getApplogspath(useremail)
+    //     }
+    //     // console.log(logpath)
+    //     const uuid = uuidv4({ random: getRandomValues(new Uint8Array(16)) })
+    //     const errorLogfile = path.join(logpath, 'downloadVideo', taskId.toString() + '_' + uuid + '.error.log')
+    //     const runLogfile = path.join(logpath, 'downloadVideo', taskId.toString() + '_' + uuid + '.runtime.log')
 
-        await this.videoDownloadTaskModule.updateTasklog(taskId, runLogfile)
-        await this.videoDownloadTaskModule.updateTaskErrorlog(taskId, errorLogfile)
-        const cookiesProxies: CookiesProxy[] = []
+    //     await this.videoDownloadTaskModule.updateTasklog(taskId, runLogfile)
+    //     await this.videoDownloadTaskModule.updateTaskErrorlog(taskId, errorLogfile)
+    //     const cookiesProxies: CookiesProxy[] = []
 
-        // const cookies:Array<string>=[]
-        //loop account id to get cookies
-        for (const accountid of param.accountId) {
-            const accountEntity = await this.accountCookiesModule.getAccountCookies(accountid)
-            if (accountEntity && accountEntity.cookies) {
-                // cookies.push(accountEntity.cookies)
-                const cookiesproxy: CookiesProxy = {
-                    cookies: accountEntity.cookies,
-                }
-                if (!param.ProxyOverride) {//not use account proxy
-                    //get proxy
-                    const accResp = await this.socialAccountApi.getAccountdetail(accountid)
-                    if (accResp) {
-                        if (accResp.data && accResp.data.proxy) {
-                            cookiesproxy.proxy = accResp.data.proxy
-                        }
-                    }
-                }
-                cookiesProxies.push(cookiesproxy)
-            }
-            // const cookie=tokenService.getValue(accountid)
-            // if(cookie){
-            //     cookies.push(cookie)
-            // }
-        }
-        const proxyArr: Array<Proxy> = []
-        if (param.proxy.length > 0) {
-            //get proxy from remote
-            const proxyapi = new ProxyApi()
-            param.proxy.forEach(async (value) => {
-                const proxy = await proxyapi.getProxyDetail(value)
-                if (proxy && proxy.status) {
-                    if (proxy.data) {
-                        proxyArr.push(proxy.data)
-                    }
-                }
-            })
-        }
+    //     // const cookies:Array<string>=[]
+    //     //loop account id to get cookies
+    //     for (const accountid of param.accountId) {
+    //         const accountEntity = await this.accountCookiesModule.getAccountCookies(accountid)
+    //         if (accountEntity && accountEntity.cookies) {
+    //             // cookies.push(accountEntity.cookies)
+    //             const cookiesproxy: CookiesProxy = {
+    //                 cookies: accountEntity.cookies,
+    //             }
+    //             if (!param.ProxyOverride) {//not use account proxy
+    //                 //get proxy
+    //                 const accResp = await this.socialAccountApi.getAccountdetail(accountid)
+    //                 if (accResp) {
+    //                     if (accResp.data && accResp.data.proxy) {
+    //                         cookiesproxy.proxy = accResp.data.proxy
+    //                     }
+    //                 }
+    //             }
+    //             cookiesProxies.push(cookiesproxy)
+    //         }
+    //         // const cookie=tokenService.getValue(accountid)
+    //         // if(cookie){
+    //         //     cookies.push(cookie)
+    //         // }
+    //     }
+    //     const proxyArr: Array<Proxy> = []
+    //     if (param.proxy.length > 0) {
+    //         //get proxy from remote
+    //         const proxyapi = new ProxyApi()
+    //         param.proxy.forEach(async (value) => {
+    //             const proxy = await proxyapi.getProxyDetail(value)
+    //             if (proxy && proxy.status) {
+    //                 if (proxy.data) {
+    //                     proxyArr.push(proxy.data)
+    //                 }
+    //             }
+    //         })
+    //     }
 
-        if (startCall) {
-            startCall()
-        }
-        //get the video lnk that already download in the task
-        const alreadsucess = await this.videoDownloadModule.getAllvideoDownloadlist(taskId, VideoDownloadStatus.Finish)
-        const alreadlinks = alreadsucess.map((value) => removeParamsAfterAmpersand(value.url ?? ""))
-        //console.log(alreadlinks)
-        const paramData: processVideoDownloadParam = {
-            exePath: execFilepath,
-            platform: param.platform,
-            link: param.link,
-            keywords: param.keywords,
-            downloadType: param.downloadType,
-            isplaylist: param.isplaylist,
-            cookiesProxy: cookiesProxies,
-            savePath: param.savePath,
-            proxy: proxyArr,
-            BrowserName: param.browserName,
-            videoQuality: param.videoQuality,
-            successlink: alreadlinks,
-            max_page_number: param.maxpagenumber
-        }
-        //console.log(childPath)
-        const child = utilityProcess.fork(childPath, [], {
-            stdio: "pipe", execArgv: ["puppeteer-cluster:*"], env: {
-                ...process.env,
-                NODE_OPTIONS: ""
-            }
-        })
+    //     if (startCall) {
+    //         startCall()
+    //     }
+    //     //get the video lnk that already download in the task
+    //     const alreadsucess = await this.videoDownloadModule.getAllvideoDownloadlist(taskId, VideoDownloadStatus.Finish)
+    //     const alreadlinks = alreadsucess.map((value) => removeParamsAfterAmpersand(value.url ?? ""))
+    //     //console.log(alreadlinks)
+    //     const paramData: processVideoDownloadParam = {
+    //         exePath: execFilepath,
+    //         platform: param.platform,
+    //         link: param.link,
+    //         keywords: param.keywords,
+    //         downloadType: param.downloadType,
+    //         isplaylist: param.isplaylist,
+    //         cookiesProxy: cookiesProxies,
+    //         savePath: param.savePath,
+    //         proxy: proxyArr,
+    //         BrowserName: param.browserName,
+    //         videoQuality: param.videoQuality,
+    //         successlink: alreadlinks,
+    //         max_page_number: param.maxpagenumber
+    //     }
+    //     //console.log(childPath)
+    //     const child = utilityProcess.fork(childPath, [], {
+    //         stdio: "pipe", execArgv: ["puppeteer-cluster:*"], env: {
+    //             ...process.env,
+    //             NODE_OPTIONS: ""
+    //         }
+    //     })
 
-        child.on("spawn", async () => {
+    //     child.on("spawn", async () => {
 
-            console.log("child process satart, pid is " + child.pid)
-            await this.videoDownloadTaskModule.updateVideoDownloadTaskStatus(taskId, TaskStatus.Processing)
-            child.postMessage(JSON.stringify({ action: "downloadVideo", data: paramData }), [port1])
+    //         console.log("child process satart, pid is " + child.pid)
+    //         await this.videoDownloadTaskModule.updateVideoDownloadTaskStatus(taskId, TaskStatus.Processing)
+    //         child.postMessage(JSON.stringify({ action: "downloadVideo", data: paramData }), [port1])
 
-        })
+    //     })
 
-        child.stdout?.on('data', (data) => {
-            console.log(`Received data chunk ${data}`)
-            WriteLog(runLogfile, data)
-            // child.kill()
-        })
+    //     child.stdout?.on('data', (data) => {
+    //         console.log(`Received data chunk ${data}`)
+    //         WriteLog(runLogfile, data)
+    //         // child.kill()
+    //     })
 
-        child.stderr?.on('data', (data) => {
-            const ingoreStr = ["Debugger attached", "Waiting for the debugger to disconnect"]
-            if (!ingoreStr.some((value) => data.includes(value))) {
+    //     child.stderr?.on('data', (data) => {
+    //         const ingoreStr = ["Debugger attached", "Waiting for the debugger to disconnect"]
+    //         if (!ingoreStr.some((value) => data.includes(value))) {
 
-                // seModel.saveTaskerrorlog(taskId,data)
-                console.log(`Received error chunk ${data}`)
-                //console.log('filename'+errorLogfile)
-                WriteLog(errorLogfile, data)
+    //             // seModel.saveTaskerrorlog(taskId,data)
+    //             console.log(`Received error chunk ${data}`)
+    //             //console.log('filename'+errorLogfile)
+    //             WriteLog(errorLogfile, data)
 
-            }
+    //         }
 
-        })
+    //     })
 
-        child.on("exit", async(code) => {
-            if (code !== 0) {
-                console.error(`Child process exited with code ${code}`);
-                await this.videoDownloadTaskModule.updateVideoDownloadTaskStatus(taskId, TaskStatus.Error)
-                // this.emailSeachTaskModule.updateTaskStatus(taskId,EmailsearchTaskStatus.Error)
-            } else {
-                console.log('Child process exited successfully');
-                await this.videoDownloadTaskModule.updateVideoDownloadTaskStatus(taskId, TaskStatus.Complete)
-                // this.emailSeachTaskModule.updateTaskStatus(taskId,EmailsearchTaskStatus.Complete)
-            }
-        })
-        child.on('message', async (message) => {
-            console.log("get message from child")
-            console.log('Message from child:', JSON.parse(message));
-            const childdata = JSON.parse(message) as ProcessMessage<any>
-            if (childdata.action == "singlevideodownloadMsg") {//download single video result
-                const getData = childdata.data as VideodownloadMsg
-                if (getData?.status) {//download success
+    //     child.on("exit", async(code) => {
+    //         if (code !== 0) {
+    //             console.error(`Child process exited with code ${code}`);
+    //             await this.videoDownloadTaskModule.updateVideoDownloadTaskStatus(taskId, TaskStatus.Error)
+    //             // this.emailSeachTaskModule.updateTaskStatus(taskId,EmailsearchTaskStatus.Error)
+    //         } else {
+    //             console.log('Child process exited successfully');
+    //             await this.videoDownloadTaskModule.updateVideoDownloadTaskStatus(taskId, TaskStatus.Complete)
+    //             // this.emailSeachTaskModule.updateTaskStatus(taskId,EmailsearchTaskStatus.Complete)
+    //         }
+    //     })
+    //     child.on('message', async (message) => {
+    //         console.log("get message from child")
+    //         console.log('Message from child:', JSON.parse(message));
+    //         const childdata = JSON.parse(message) as ProcessMessage<any>
+    //         if (childdata.action == "singlevideodownloadMsg") {//download single video result
+    //             const getData = childdata.data as VideodownloadMsg
+    //             if (getData?.status) {//download success
 
-                    //save result
-                    let savepath = ''
-                    if (getData.savepath) {
-                        savepath = getData.savepath
-                    }
-                    // const videoDownloadEntity: VideoDownloadEntity = {
-                    //     url: getData.link,
-                    //     savepath: savepath,
-                    //     task_id: Number(taskId),
-                    //     status: VideoDownloadStatus.Finish,
-                    //     language: param.language_code
-                    // }
-                    const videoDownloadEntity=new VideoDownloadEntity()
-                    videoDownloadEntity.url=getData.link
-                    videoDownloadEntity.savepath=savepath
-                    videoDownloadEntity.task_id=Number(taskId)
-                    videoDownloadEntity.status=VideoDownloadStatus.Finish
-                    videoDownloadEntity.language=param.language_code
-                    //     url: getData.link,
-                    //     savepath: savepath,
-                    //     task_id: Number(taskId),
-                    //     status: VideoDownloadStatus.Finish,
-                    //     language: param.language_code
-                    // }
-                    // this.emailSeachTaskModule.saveSearchResult(taskId,childdata.data)
-                    const videoNum = await this.videoDownloadModule.saveVideoDownload(videoDownloadEntity)
-                    const videoDescriptionEntity = new VideoDescriptionEntity()
-                    videoDescriptionEntity.video_id = videoNum
-                    videoDescriptionEntity.title = getData.title ? getData.title : ''
-                    videoDescriptionEntity.description = getData.description ? getData.description : ''
-                    videoDescriptionEntity.language = param.language_code
+    //                 //save result
+    //                 let savepath = ''
+    //                 if (getData.savepath) {
+    //                     savepath = getData.savepath
+    //                 }
+    //                 // const videoDownloadEntity: VideoDownloadEntity = {
+    //                 //     url: getData.link,
+    //                 //     savepath: savepath,
+    //                 //     task_id: Number(taskId),
+    //                 //     status: VideoDownloadStatus.Finish,
+    //                 //     language: param.language_code
+    //                 // }
+    //                 const videoDownloadEntity=new VideoDownloadEntity()
+    //                 videoDownloadEntity.url=getData.link
+    //                 videoDownloadEntity.savepath=savepath
+    //                 videoDownloadEntity.task_id=Number(taskId)
+    //                 videoDownloadEntity.status=VideoDownloadStatus.Finish
+    //                 videoDownloadEntity.language=param.language_code
+    //                 //     url: getData.link,
+    //                 //     savepath: savepath,
+    //                 //     task_id: Number(taskId),
+    //                 //     status: VideoDownloadStatus.Finish,
+    //                 //     language: param.language_code
+    //                 // }
+    //                 // this.emailSeachTaskModule.saveSearchResult(taskId,childdata.data)
+    //                 const videoNum = await this.videoDownloadModule.saveVideoDownload(videoDownloadEntity)
+    //                 const videoDescriptionEntity = new VideoDescriptionEntity()
+    //                 videoDescriptionEntity.video_id = videoNum
+    //                 videoDescriptionEntity.title = getData.title ? getData.title : ''
+    //                 videoDescriptionEntity.description = getData.description ? getData.description : ''
+    //                 videoDescriptionEntity.language = param.language_code
 
-                    // const videoDescriptionEntity: VideoDescriptionEntity = {
-                    //     video_id: videoNum,
-                    //     title: getData.title ? getData.title : '',
-                    //     description: getData.description ? getData.description : '',
-                    //     language: param.language_code
+    //                 // const videoDescriptionEntity: VideoDescriptionEntity = {
+    //                 //     video_id: videoNum,
+    //                 //     title: getData.title ? getData.title : '',
+    //                 //     description: getData.description ? getData.description : '',
+    //                 //     language: param.language_code
 
-                    // }
-                    //save video Video Description
-                    await this.videoDescriptionModule.saveVideoDescription(videoDescriptionEntity)
-                } else if (getData && (!getData?.status)) {//failure
-                    if (getData.link.length > 0) {
-                        // const videoDownloadEntity: VideoDownloadEntity = {
-                        //     url: getData.link,
-                        //     savepath: '',
-                        //     task_id: Number(taskId),
-                        //     status: VideoDownloadStatus.Error,
-                        //     language: param.language_code
-                        // }
-                        const videoDownloadEntity=new VideoDownloadEntity()
-                        videoDownloadEntity.url=getData.link
-                        videoDownloadEntity.savepath=''
-                        videoDownloadEntity.task_id=Number(taskId)
-                        videoDownloadEntity.status=VideoDownloadStatus.Error
-                        videoDownloadEntity.language=param.language_code
-                        // const videoId = this.videoDownloadModule.saveVideoDownload(videoDownloadEntity)
-                        const videoId=await this.videoDownloadModule.saveVideoDownload(videoDownloadEntity)
-                        if (getData.log) {
-                            this.videoDownloadModule.saveVideoDownloadLog(getData.log, videoId)
-                        }
-                    } else {
-                        //the log belong to task
-                        //this.videoDownloadTaskModule.saveTaskerrorlog(taskId,getData.log)
-                        //this.videoDownloadTaskModule.updateVideoDownloadTaskStatus(taskId, TaskStatus.Error)
-                        if (getData.log) {
-                            WriteLog(errorLogfile, getData.log)
-                        }
-                    }
-                }
-                //child.kill()
-            } else if (childdata.action == "videodownloadTaskMsg") {
-                const res = childdata.data as VideodownloadTaskMsg
-                WriteLog(errorLogfile, res.msg)
-            }
-        });
+    //                 // }
+    //                 //save video Video Description
+    //                 await this.videoDescriptionModule.saveVideoDescription(videoDescriptionEntity)
+    //             } else if (getData && (!getData?.status)) {//failure
+    //                 if (getData.link.length > 0) {
+    //                     // const videoDownloadEntity: VideoDownloadEntity = {
+    //                     //     url: getData.link,
+    //                     //     savepath: '',
+    //                     //     task_id: Number(taskId),
+    //                     //     status: VideoDownloadStatus.Error,
+    //                     //     language: param.language_code
+    //                     // }
+    //                     const videoDownloadEntity=new VideoDownloadEntity()
+    //                     videoDownloadEntity.url=getData.link
+    //                     videoDownloadEntity.savepath=''
+    //                     videoDownloadEntity.task_id=Number(taskId)
+    //                     videoDownloadEntity.status=VideoDownloadStatus.Error
+    //                     videoDownloadEntity.language=param.language_code
+    //                     // const videoId = this.videoDownloadModule.saveVideoDownload(videoDownloadEntity)
+    //                     const videoId=await this.videoDownloadModule.saveVideoDownload(videoDownloadEntity)
+    //                     if (getData.log) {
+    //                         this.videoDownloadModule.saveVideoDownloadLog(getData.log, videoId)
+    //                     }
+    //                 } else {
+    //                     //the log belong to task
+    //                     //this.videoDownloadTaskModule.saveTaskerrorlog(taskId,getData.log)
+    //                     //this.videoDownloadTaskModule.updateVideoDownloadTaskStatus(taskId, TaskStatus.Error)
+    //                     if (getData.log) {
+    //                         WriteLog(errorLogfile, getData.log)
+    //                     }
+    //                 }
+    //             }
+    //             //child.kill()
+    //         } else if (childdata.action == "videodownloadTaskMsg") {
+    //             const res = childdata.data as VideodownloadTaskMsg
+    //             WriteLog(errorLogfile, res.msg)
+    //         }
+    //     });
 
 
-    }
+    // }
     public async downloadVideo(param: DownloadVideoControlparam, startCall?: () => void) {
 
         //get video tool
-        const videoTool = await this.getVideoDownloadTool(param.platform)
-        if (!videoTool) {
-            throw new Error("video tool not found")
-        }
-        //check video tool requirement
-        try{
-            const res = await this.checkVideoRequirement(videoTool)
-            if (!res) {
-                throw new Error("video tool requirement check failed")
-            }
-        } catch (error) {
-            if (error instanceof Error) {
-                throw new Error(error.message)
-            }
-            throw new Error('Unknown error occurred')
-        }
-        //save video task
-        const videoTaskEntity = new VideoDownloadTaskEntity()
-        videoTaskEntity.task_name = param.taskName
-        videoTaskEntity.platform = param.platform
-        videoTaskEntity.savepath = param.savePath
-        videoTaskEntity.status = TaskStatus.Processing
-        videoTaskEntity.downloadtype = param.downloadType
-        const taskId = await this.videoDownloadTaskModule.saveVideoDownloadTask(videoTaskEntity)
-        if (!taskId) {
-            throw new Error("video task save failed")
-        }
-        //save video url
-
-        // const vdetd: VideoDownloadTaskDetailEntity = {
-        //     task_id: taskId,
-        //     download_type: param.isplaylist ? DownloadType.MULTIVIDEO : DownloadType.SINGLEVIDEO,
-        //     cookies_type: param.cookies_type == "browser cookies" ? CookiesType.USEBROWSER : CookiesType.ACCOUNTCOOKIES,
-        //     browser_type: param.browserName ? param.browserName : '',
-        //     proxy_override: param.ProxyOverride,
-        //     video_quality: param.videoQuality ? param.videoQuality : 0,
-        //     language_code: param.language_code,
-        //     max_page_number: param.maxpagenumber ? param.maxpagenumber : 0,
+        // const videoTool = await this.getVideoDownloadTool(param.platform)
+        // if (!videoTool) {
+        //     throw new Error("video tool not found")
         // }
-        const vdetd=new VideoDownloadTaskDetailEntity()
-        vdetd.task_id=taskId
-        vdetd.download_type=param.isplaylist ? DownloadType.MULTIVIDEO : DownloadType.SINGLEVIDEO
-        vdetd.cookies_type=param.cookies_type == "browser cookies" ? CookiesType.USEBROWSER : CookiesType.ACCOUNTCOOKIES
-        vdetd.browser_type=param.browserName ? param.browserName : ''
-        vdetd.proxy_override=param.ProxyOverride ? 1 : 0
-        vdetd.video_quality=param.videoQuality ? param.videoQuality : 0
-       
-        vdetd.max_page_number=param.maxpagenumber ? param.maxpagenumber : 0
-        //save video task detail
-        await this.videoDownloadTaskDetailModule.create(vdetd)
-        //save task accounts
-        if (param.accountId.length > 0) {
+        //check video tool requirement
+        // try{
+        //     const res = await this.checkVideoRequirement(videoTool)
+        //     if (!res) {
+        //         throw new Error("video tool requirement check failed")
+        //     }
+        // } catch (error) {
+        //     if (error instanceof Error) {
+        //         throw new Error(error.message)
+        //     }
+        //     throw new Error('Unknown error occurred')
+        // }
+        //save video task
+        // const videoTaskEntity = new VideoDownloadTaskEntity()
+        // videoTaskEntity.task_name = param.taskName
+        // videoTaskEntity.platform = param.platform
+        // videoTaskEntity.savepath = param.savePath
+        // videoTaskEntity.status = TaskStatus.Processing
+        // //videoTaskEntity.downloadtype = param.downloadType
+        // const taskId = await this.videoDownloadTaskModule.saveVideoDownloadTask(videoTaskEntity)
+        // if (!taskId) {
+        //     throw new Error("video task save failed")
+        // }
+        // //save video url
 
-            for (const accid of param.accountId) {
-                // const taskAccount: VideoDownloadTaskAccountEntity = {
-                //     task_id: taskId,
-                //     account_id: accid
-                // }
-                const taskAccount=new VideoDownloadTaskAccountsEntity()
-                taskAccount.task_id=taskId
-                taskAccount.account_id=accid
-                this.videoDownloadTaskAccountsModule.create(taskAccount)
-            }
-        }
-        if (param.link.length > 0) {
-            //save task url
-            for (const link of param.link) {
-                const videodownloadtaskurl=new VideoDownloadTaskUrlsEntity()
-                videodownloadtaskurl.task_id=taskId
-                videodownloadtaskurl.url=link
-                await this.videoDownloadTaskUrlModule.create(videodownloadtaskurl)
-                // this.videoDownloadTaskUrlModule.create({ task_id: taskId, url: link })
-            }
-        }
-        if (param.keywords.length > 0) {
-            this.videoDownloadTaskKeywordModule.saveKeywords(taskId, param.keywords)
-        }
-        //save proxy id
-        if (param.proxy.length > 0) {
-            param.proxy.forEach((value) => {
-                this.videoDownloadTaskProxyModule.create({ task_id: taskId, proxy_id: value })
-            })
-        }
+       
+        // const vdetd=new VideoDownloadTaskDetailEntity()
+        // vdetd.task_id=taskId
+        // vdetd.download_type=param.isplaylist ? DownloadType.MULTIVIDEO : DownloadType.SINGLEVIDEO
+        // vdetd.cookies_type=param.cookies_type == "browser cookies" ? CookiesType.USEBROWSER : CookiesType.ACCOUNTCOOKIES
+        // vdetd.browser_type=param.browserName ? param.browserName : ''
+        // vdetd.proxy_override=param.ProxyOverride ? 1 : 0
+        // vdetd.video_quality=param.videoQuality ? param.videoQuality : 0
+       
+        // vdetd.max_page_number=param.maxpagenumber ? param.maxpagenumber : 0
+        // //save video task detail
+        // await this.videoDownloadTaskDetailModule.create(vdetd)
+        // //save task accounts
+        // if (param.accountId.length > 0) {
+
+        //     for (const accid of param.accountId) {
+        //         // const taskAccount: VideoDownloadTaskAccountEntity = {
+        //         //     task_id: taskId,
+        //         //     account_id: accid
+        //         // }
+        //         const taskAccount=new VideoDownloadTaskAccountsEntity()
+        //         taskAccount.task_id=taskId
+        //         taskAccount.account_id=accid
+        //         this.videoDownloadTaskAccountsModule.create(taskAccount)
+        //     }
+        // }
+        // if (param.link.length > 0) {
+        //     //save task url
+        //     for (const link of param.link) {
+        //         const videodownloadtaskurl=new VideoDownloadTaskUrlsEntity()
+        //         videodownloadtaskurl.task_id=taskId
+        //         videodownloadtaskurl.url=link
+        //         await this.videoDownloadTaskUrlModule.create(videodownloadtaskurl)
+        //         // this.videoDownloadTaskUrlModule.create({ task_id: taskId, url: link })
+        //     }
+        // }
+        // if (param.keywords.length > 0) {
+        //     this.videoDownloadTaskKeywordModule.saveKeywords(taskId, param.keywords)
+        // }
+        // //save proxy id
+        // if (param.proxy.length > 0) {
+        //     param.proxy.forEach((value) => {
+        //         this.videoDownloadTaskProxyModule.create({ task_id: taskId, proxy_id: value })
+        //     })
+        // }
+        const taskId = await this.videoDownloadTaskModule.saveVideoDownloadInfo(param)
         // param.language_code=param.videoLanguage.code
         //process download video
-        await this.processDownloadVideo(param, videoTool, taskId, startCall)
+        await this.videoDownloadTaskModule.processDownloadVideo(taskId,  startCall)
     }
     //get video download list
     public async videoDownloadtasklist(page: number, size: number): Promise<ListData<VideoDownloadTaskEntityType>> {
         const list = await this.videoDownloadTaskModule.getVideoDownloadTaskList(page, size)
         const count = await this.videoDownloadTaskModule.countVideoDownloadTaskList()
-        const records = list.map(item => ({
-            id: item.id,
-            record_time: item.record_time || '',
-            taskName: item.task_name || '',
-            platform: item.platform || '',
-            savepath: item.savepath || '',
-            status: item.status || 0,
-            downloadtype: item.downloadtype || ''
-        }))
+        // list.forEach(async (item) => {
+        //     const taskDetail = await this.videoDownloadTaskDetailModule.read(item.id)
+        //     if(taskDetail){
+        //         item.downloadtype = this.videoDownloadTaskModule.convertDownloadType(taskDetail.download_type)
+        //     }
+        // })
+        let records:Array<VideoDownloadTaskEntityType>=[]
+        for(const item of list){
+            const taskDetail = await this.videoDownloadTaskDetailModule.read(item.id)
+            const taskEntity:VideoDownloadTaskEntityType={
+                id: item.id,
+                record_time: item.record_time || '',
+                taskName: item.task_name || '',
+                platform: item.platform || '',
+                savepath: item.savepath || '',
+                status: item.status || 0,
+                downloadtype:taskDetail.download_type?this.videoDownloadTaskModule.convertDownloadType(taskDetail.download_type):'' as "playlist" | "singleplay" | "keyword"
+            }
+            records.push(taskEntity)
+        }
+        
         return { records, num: count }
     }
     //publish video
@@ -658,104 +660,104 @@ export class videoController {
     }
     public async retryDownloadvideo(taskId: number, startCall: () => void) {
 
-        const data = await this.getVideoDownloadTaskInfo(taskId)
-        const videoTool = await this.getVideoDownloadTool(data.platform)
-        if (!videoTool) {
-            throw new Error("video tool not found")
-        }
+        // const data = await this.videoDownloadTaskModule.getVideoDownloadParambyTaskId(taskId)
+        // const videoTool = await this.videoDownloadTaskModule.getVideoDownloadTool(data.platform)
+        // if (!videoTool) {
+        //     throw new Error("video tool not found")
+        // }
         //process download video
-        await this.processDownloadVideo(data, videoTool, taskId, startCall)
+        await this.videoDownloadTaskModule.processDownloadVideo(taskId, startCall)
 
 
     }
-    public async getVideoDownloadTaskInfo(taskId: number): Promise<DownloadVideoControlparam> {
-        //get task info
-        const taskInfo = await this.videoDownloadTaskModule.getVideoDownloadTask(taskId)
-        if (!taskInfo) {
-            throw new Error("task info not found")
-        }
-        //get task detail
-        const taskDetail = await this.videoDownloadTaskDetailModule.getByTaskId(taskId)
-        if (!taskDetail) {
-            throw new Error("task detail not found")
-        }
+    // public async getVideoDownloadTaskInfo(taskId: number): Promise<DownloadVideoControlparam> {
+    //     //get task info
+    //     const taskInfo = await this.videoDownloadTaskModule.getVideoDownloadTask(taskId)
+    //     if (!taskInfo) {
+    //         throw new Error("task info not found")
+    //     }
+    //     //get task detail
+    //     const taskDetail = await this.videoDownloadTaskDetailModule.getByTaskId(taskId)
+    //     if (!taskDetail) {
+    //         throw new Error("task detail not found")
+    //     }
 
-        //get video tool
-        if(!taskInfo.platform){
-            throw new Error("task platform not found")
-        }
-        const videoTool = await this.getVideoDownloadTool(taskInfo.platform)
+    //     //get video tool
+    //     if(!taskInfo.platform){
+    //         throw new Error("task platform not found")
+    //     }
+    //     const videoTool = await this.videoDownloadTaskModule.getVideoDownloadTool(taskInfo.platform)
         
-        if (!videoTool) {
-            throw new Error("video tool not found")
-        }
-        //check video tool requirement
-        const res = this.checkVideoRequirement(videoTool)
-        if (!res) {
-            throw new Error("video tool requirement check failed")
-        }
-        let accountIds: Array<number> = []
-        if (taskDetail.cookies_type == CookiesType.ACCOUNTCOOKIES) {
-            //get account id
-            const taskAccounts = await this.videoDownloadTaskAccountsModule.getAccountByTaskId(taskId)
-            if (taskAccounts.length > 0) {
-                accountIds = taskAccounts.map((value) => value.account_id)
-                //process download video
-                //await this.processDownloadVideo({taskName:taskInfo.taskName,platform:taskInfo.platform,link:[],savePath:taskInfo.savepath,isplaylist:taskDetail.download_type==DownloadType.MULTIVIDEO,accountId:accountIds,cookies_type:taskDetail.cookies_type==CookiesType.ACCOUNTCOOKIES?"account cookies":"browser cookies",browserName:taskDetail.browser_type?taskDetail.browser_type:"",videoQuality:""}, videoTool, taskId)
-            }
+    //     if (!videoTool) {
+    //         throw new Error("video tool not found")
+    //     }
+    //     //check video tool requirement
+    //     //const res = this.checkVideoRequirement(videoTool)
+    //     // if (!res) {
+    //     //     throw new Error("video tool requirement check failed")
+    //     // }
+    //     let accountIds: Array<number> = []
+    //     if (taskDetail.cookies_type == CookiesType.ACCOUNTCOOKIES) {
+    //         //get account id
+    //         const taskAccounts = await this.videoDownloadTaskAccountsModule.getAccountByTaskId(taskId)
+    //         if (taskAccounts.length > 0) {
+    //             accountIds = taskAccounts.map((value) => value.account_id)
+    //             //process download video
+    //             //await this.processDownloadVideo({taskName:taskInfo.taskName,platform:taskInfo.platform,link:[],savePath:taskInfo.savepath,isplaylist:taskDetail.download_type==DownloadType.MULTIVIDEO,accountId:accountIds,cookies_type:taskDetail.cookies_type==CookiesType.ACCOUNTCOOKIES?"account cookies":"browser cookies",browserName:taskDetail.browser_type?taskDetail.browser_type:"",videoQuality:""}, videoTool, taskId)
+    //         }
 
-        }
+    //     }
 
-        //get task url
-        const taskUrls = await this.videoDownloadTaskUrlModule.getItemsByTaskId(taskId)
+    //     //get task url
+    //     const taskUrls = await this.videoDownloadTaskUrlModule.getItemsByTaskId(taskId)
 
-        let proxys: Array<number> = []
+    //     let proxys: Array<number> = []
 
-        //get proxy lists
-        const proxylists = await this.videoDownloadTaskUrlModule.getItemsByTaskId(taskId)
-        if (proxylists.length > 0) {
-            proxylists.forEach((value) => {
-                if (value.id) {
-                    proxys.push(value.id)
-                }
-            })
-        }
-        let links: Array<string> = []
-        if (taskUrls.length > 0) {
-            links = taskUrls.map((value) => value.url ?? "")
-        }
-        //get task keywords
-        let keywords: Array<string> = []
-        const taskKeywords = await this.videoDownloadTaskKeywordModule.getTaskKeywords(taskId)
-        //loop taskKeywords, push to keywords
-        if (taskKeywords && taskKeywords.length > 0) {
-            taskKeywords.forEach((value) => {
-                if (value.keyword) {
-                    keywords.push(value.keyword)
-                }
-            })
-        }
-        //reconstruct download type
-        const data: DownloadVideoControlparam = {
-            taskName: taskInfo.task_name || '',
-            accountId: accountIds,
-            downloadType: taskInfo.downloadtype as "playlist" | "singleplay" | "keyword",
-            platform: taskInfo.platform || '',
-            link: links,
-            savePath: taskInfo.savepath || '',
-            keywords: keywords,
-            isplaylist: taskDetail.download_type == DownloadType.MULTIVIDEO,
-            proxy: proxys,
-            ProxyOverride: taskDetail.proxy_override === 1,
-            cookies_type: taskDetail.cookies_type == CookiesType.ACCOUNTCOOKIES ? "account cookies" : "browser cookies",
-            browserName: taskDetail.browser_type ? taskDetail.browser_type : "",
-            videoQuality: taskDetail.video_quality ?? undefined,
-            language_code: taskDetail.video_language ?? "en",
-            maxpagenumber: taskDetail.max_page_number ?? undefined
-        }
-        return data
+    //     //get proxy lists
+    //     const proxylists = await this.videoDownloadTaskUrlModule.getItemsByTaskId(taskId)
+    //     if (proxylists.length > 0) {
+    //         proxylists.forEach((value) => {
+    //             if (value.id) {
+    //                 proxys.push(value.id)
+    //             }
+    //         })
+    //     }
+    //     let links: Array<string> = []
+    //     if (taskUrls.length > 0) {
+    //         links = taskUrls.map((value) => value.url ?? "")
+    //     }
+    //     //get task keywords
+    //     let keywords: Array<string> = []
+    //     const taskKeywords = await this.videoDownloadTaskKeywordModule.getTaskKeywords(taskId)
+    //     //loop taskKeywords, push to keywords
+    //     if (taskKeywords && taskKeywords.length > 0) {
+    //         taskKeywords.forEach((value) => {
+    //             if (value.keyword) {
+    //                 keywords.push(value.keyword)
+    //             }
+    //         })
+    //     }
+    //     //reconstruct download type
+    //     const data: DownloadVideoControlparam = {
+    //         taskName: taskInfo.task_name || '',
+    //         accountId: accountIds,
+    //         downloadType: taskInfo.downloadtype as "playlist" | "singleplay" | "keyword",
+    //         platform: taskInfo.platform || '',
+    //         link: links,
+    //         savePath: taskInfo.savepath || '',
+    //         keywords: keywords,
+    //         isplaylist: taskDetail.download_type == DownloadType.MULTIVIDEO,
+    //         proxy: proxys,
+    //         ProxyOverride: taskDetail.proxy_override === 1,
+    //         cookies_type: taskDetail.cookies_type == CookiesType.ACCOUNTCOOKIES ? "account cookies" : "browser cookies",
+    //         browserName: taskDetail.browser_type ? taskDetail.browser_type : "",
+    //         videoQuality: taskDetail.video_quality ?? undefined,
+    //         language_code: taskDetail.video_language ?? "en",
+    //         maxpagenumber: taskDetail.max_page_number ?? undefined
+    //     }
+    //     return data
 
-    }
+    // }
     //try to redownload video by video id
     public async redownloadItembyId(Videoid: number, startCall: () => void) {
 
@@ -765,7 +767,7 @@ export class videoController {
         }
 
         //get video task info
-        const data = await this.getVideoDownloadTaskInfo(videoInfo.task_id)
+        const data = await this.videoDownloadTaskModule.getVideoDownloadParambyTaskId(videoInfo.task_id)
         let links: Array<string> = []
         if (data.link.length > 0) {
             if(videoInfo.url){
@@ -775,14 +777,11 @@ export class videoController {
             throw new Error("video item url not found")
         }
         data.link = links
-        const videoTool = await this.getVideoDownloadTool(data.platform)
-        if (!videoTool) {
-            throw new Error("video tool not found")
-        }
+        
         data.isplaylist = false
         this.videoDownloadModule.updateVideoDownloadStatus(VideoDownloadStatus.Start, Videoid)
         //process download video
-        await this.processDownloadVideo(data, videoTool, videoInfo.task_id, startCall)
+        await this.videoDownloadTaskModule.processDownloadVideo(videoInfo.task_id, startCall)
 
     }
     //show file in explorer

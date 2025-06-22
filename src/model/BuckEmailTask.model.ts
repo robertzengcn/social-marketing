@@ -61,6 +61,12 @@ export class BuckEmailTaskModel extends BaseDb {
         return getStatusName(taskStatus);
     }
 
+    // async updateTaskStatusById(id: number, status: TaskStatus): Promise<void> {
+    //     const entity = await this.repository.findOne({ where: { id } });
+    //     if (!entity) return;
+    //     entity.status = status;
+    //     await this.repository.save(entity);
+    // }
     async updateTaskLogfile(id: number, runtimeLog: string, errorLog: string): Promise<void> {
         const entity = await this.repository.findOne({ where: { id } });
         if (!entity) return;
