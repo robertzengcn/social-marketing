@@ -9,6 +9,12 @@ export class BuckemailTaskEntity extends AuditableEntity {
   @Column({ type: 'integer' })
   type: number;
 
+  @Column({ type: 'integer', nullable: true })
+  emailtaskentityId: number;
+
+  @Column({ type: 'integer', nullable: true })
+  notduplicate: number;
+
   @Column({ type: 'text', nullable: true })
   record_time: string;
 

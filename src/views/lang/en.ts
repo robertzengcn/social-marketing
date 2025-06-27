@@ -284,6 +284,13 @@ export default {
         create_template:"create template",
         SEARCHRESULT:"serach result",
         EMAIL_EXTRA_TASK_LIST:"email extraction task list",
+        remove_email_template_error:"remove email template error",
+        template_id_is_required:"template id is required",
+        create_email_service_error:"create email service error",
+        template_item_notexist:"template item does not exist",
+        update_email_template_error:"update email template error",
+        update_email_filter_error:"update email filter error",
+        service_list_error:"service list error",
     },
     emailfilter:{
         id:"id",

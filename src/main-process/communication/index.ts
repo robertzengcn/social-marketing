@@ -10,6 +10,7 @@ import {registeProxyIpcHandlers} from "@/main-process/communication/proxy-ipc";
 import {registerEmailextractionIpcHandlers} from "@/main-process/communication/emailextraction-ipc";
 import {registerEmailMarketingIpcHandlers} from "@/main-process/communication/emailMarketingIpc";
 import {registerBuckEmailIpcHandlers} from "@/main-process/communication/buckEmail-ipc";
+import {registerEmailTemplateIpcHandlers} from "@/main-process/communication/emailTemplate-ipc";
 import {registerSocialAccountIpcHandlers} from "@/main-process/communication/socialaccount-ipc";
 import {registerSystemSettingIpcHandlers} from "@/main-process/communication/systemSettingIpc";
 import {registerUserIpcHandlers} from "@/main-process/communication/userIpc";
@@ -23,6 +24,7 @@ export function registerCommunicationIpcHandlers(win: BrowserWindow) {
     registerEmailextractionIpcHandlers()
     registerEmailMarketingIpcHandlers()
     registerBuckEmailIpcHandlers()
+    registerEmailTemplateIpcHandlers()
     registerSocialAccountIpcHandlers(win)
     registerSystemSettingIpcHandlers()
     registerUserIpcHandlers()

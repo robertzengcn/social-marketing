@@ -78,5 +78,29 @@ export default {
             name:"openai-whisper",
             describe:"openai-whisper is a module for text generation" 
         }
+    },
+    emailmarketing:{
+        id:"ID",
+        index:"索引",
+        marketingtype:"营销类型",
+        use_email_source:"使用邮件来源",
+        title:"邮件标题",
+        title_hint:"输入邮件标题",
+        content:"邮件内容",
+        content_hint:"输入邮件内容",
+        email_template_deleted:"您确定要删除此邮件模板吗？",
+        confirm_delete_email_template:"邮件模板删除确认",
+        template_id_require:"模板ID是必需的",
+        preview:"预览",
+        create_template:"创建模板",
+        SEARCHRESULT:"搜索结果",
+        EMAIL_EXTRA_TASK_LIST:"邮件提取任务列表",
+        remove_email_template_error:"删除邮件模板错误",
+        template_id_is_required:"模板ID是必需的",
+        create_email_service_error:"创建邮件服务错误",
+        template_item_notexist:"模板项目不存在",
+        update_email_template_error:"更新邮件模板错误",
+        update_email_filter_error:"更新邮件过滤器错误",
+        service_list_error:"服务列表错误",
     }
 }

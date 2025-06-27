@@ -7,10 +7,11 @@ import {
 } from "@/config/channellist";
 import { ItemSearchparam } from "@/entityTypes/commonType"
 import { CommonResponse, CommonMessage, CommonIdrequest, CommonDialogMsg } from "@/entityTypes/commonType"
-import { EmailTemplateRespdata, EmailTemplatedata, EmailFilterdata, EmailServiceListdata, EmailServiceEntitydata, EmailSendParam } from "@/entityTypes/emailmarketingType"
-
+import { EmailTemplatedata, EmailFilterdata, EmailServiceListdata, EmailServiceEntitydata, EmailSendParam } from "@/entityTypes/emailmarketingType"
+import { EmailTemplateEntity } from "@/entity/EmailTemplate.entity"
+import { EmailFilterEntity } from "@/entity/EmailFilter.entity"
 export function registerEmailMarketingIpcHandlers() {
- 
+
   ipcMain.handle(EMAILMARKETINGTEMPLIST, async (event, arg) => {
     const qdata = JSON.parse(arg) as ItemSearchparam;
     if (!Object.prototype.hasOwnProperty.call(qdata, "page")) {
@@ -21,20 +22,20 @@ export function registerEmailMarketingIpcHandlers() {
     }
     const emailmarketCon = new EmailMarketingController()
     const res = await emailmarketCon.listEmailTemplate(qdata.page, qdata.size, qdata.search)
-    if (res.status) {
-      if (res.data) {
-        const resp: CommonResponse<EmailTemplateRespdata> = {
+    if (res) {
+      if (res.records) {
+        const resp: CommonResponse<EmailTemplateEntity> = {
           status: true,
           msg: "",
           data: {
-            records: res.data.records,
-            num: res.data.num
+            records: res.records,
+            num: res.num
           }
         }
         return resp
       } else {
         //data empty
-        const resp: CommonResponse<EmailTemplateRespdata> = {
+        const resp: CommonResponse<EmailTemplateEntity> = {
           status: true,
           msg: "",
           data: {
@@ -45,9 +46,9 @@ export function registerEmailMarketingIpcHandlers() {
         return resp
       }
     } else {
-      const resp: CommonResponse<EmailTemplateRespdata> = {
+      const resp: CommonResponse<EmailTemplateEntity> = {
         status: false,
-        msg: res.msg,
+        msg: "list_email_template_error",
         data: null
       }
       return resp
@@ -60,51 +61,51 @@ export function registerEmailMarketingIpcHandlers() {
     if (!qdata.id) {
       const resp: CommonMessage<number> = {
         status: false,
-        msg: "Template id is required",
+        msg: "emailmarketing.template_id_is_required",
       }
       return resp
     }
     const emailmarketCon = new EmailMarketingController()
     const res = await emailmarketCon.removeEmailTemplate(Number(qdata.id))
-    if (res.status) {
-      const resp: CommonMessage<CommonIdrequest<number>> = {
-        status: true,
-        msg: "",
-        data: res.data
-      }
-      return resp
-    } else {
-      const resp: CommonMessage<CommonIdrequest<number>> = {
-        status: false,
-        msg: res.msg,
-
-      }
-      return resp
+    // if (res) {
+    const resp: CommonMessage<CommonIdrequest<number>> = {
+      status: true,
+      msg: "",
+      data: { id: Number(qdata.id) }
     }
+    return resp
+    // } else {
+    //   const resp: CommonMessage<CommonIdrequest<number>> = {
+    //     status: false,
+    //     msg: "emailmarketing.remove_email_template_error",
+
+    //   }
+    //   return resp
+    // }
   });
   //get email template by id
   ipcMain.handle(EMAILMARKETINGTEMPDETAIL, async (event, arg) => {
     const qdata = JSON.parse(arg) as CommonIdrequest<string>;
     if (!qdata.id) {
-      const resp: CommonMessage<EmailTemplateRespdata> = {
+      const resp: CommonMessage<EmailTemplateEntity> = {
         status: false,
-        msg: "template_id_require",
+        msg: "emailmarketing.template_id_require",
       }
       return resp
     }
     const emailmarketCon = new EmailMarketingController()
     const res = await emailmarketCon.getEmailTemplateDetail(Number(qdata.id))
-    if (res.status) {
-      const resp: CommonMessage<EmailTemplateRespdata> = {
+    if (res) {
+      const resp: CommonMessage<EmailTemplateEntity> = {
         status: true,
         msg: "",
-        data: res.data
+        data: res
       }
       return resp
     } else {
-      const resp: CommonMessage<EmailTemplateRespdata> = {
+      const resp: CommonMessage<EmailTemplateEntity> = {
         status: false,
-        msg: res.msg,
+        msg: "emailmarketing.template_item_notexist",
       }
       return resp
     }
@@ -114,17 +115,17 @@ export function registerEmailMarketingIpcHandlers() {
     const qdata = JSON.parse(arg) as EmailTemplatedata;
     const emailmarketCon = new EmailMarketingController()
     const res = await emailmarketCon.updateEmailtemplate(qdata)
-    if (res.status) {
+    if (res) {
       const resp: CommonMessage<CommonIdrequest<number>> = {
         status: true,
         msg: "",
-        data: res.data
+        data: { id: res }
       }
       return resp
     } else {
       const resp: CommonMessage<CommonIdrequest<number>> = {
         status: false,
-        msg: res.msg,
+        msg: "emailmarketing.update_email_template_error",
 
       }
       return resp
@@ -141,37 +142,30 @@ export function registerEmailMarketingIpcHandlers() {
     const emailmarketCon = new EmailMarketingController()
     const res = await emailmarketCon.listEmailFilter(qdata.page, qdata.size, qdata.search)
     // console.log(res)
-    if (res.status) {
-      if (res.data) {
-        const resp: CommonResponse<EmailFilterdata> = {
-          status: true,
-          msg: "",
-          data: {
-            records: res.data.records,
-            num: res.data.num
-          }
+    if (res) {
+      //if (res.data) {
+      const resp: CommonResponse<EmailFilterEntity> = {
+        status: true,
+        msg: "",
+        data: {
+          records: res.records,
+          num: res.num
         }
-        return resp
-      } else {
-        //data empty
-        const resp: CommonResponse<EmailFilterdata> = {
-          status: true,
-          msg: "",
-          data: {
-            records: [],
-            num: 0
-          }
-        }
-        return resp
-
-      }
-    } else {
-      const resp: CommonResponse<EmailFilterdata> = {
-        status: false,
-        msg: res.msg,
-        data: null
       }
       return resp
+    } else {
+      //data empty
+      const resp: CommonResponse<EmailFilterdata> = {
+        status: true,
+        msg: "",
+        data: {
+          records: [],
+          num: 0
+        }
+      }
+      return resp
+
+      //}
     }
 
   })
@@ -186,11 +180,11 @@ export function registerEmailMarketingIpcHandlers() {
     }
     const emailmarketCon = new EmailMarketingController()
     const resp = await emailmarketCon.getEmailFilterDetail(Number(qdata.id))
-    if (resp.status) {
+    if (resp) {
       const resdata: CommonMessage<EmailFilterdata> = {
         status: true,
         msg: "",
-        data: resp.data
+        data: resp
       }
       return resdata
     } else {
@@ -208,17 +202,17 @@ export function registerEmailMarketingIpcHandlers() {
     const emailmarketCon = new EmailMarketingController()
     const res = await emailmarketCon.updateEmailFilter(qdata)
     console.log(res)
-    if (res.status) {
+    if (res) {
       const resp: CommonMessage<CommonIdrequest<number>> = {
         status: true,
         msg: "",
-        data: res.data
+        data: {id:res}
       }
       return resp
     } else {
       const resp: CommonMessage<CommonIdrequest<number>> = {
         status: false,
-        msg: res.msg,
+        msg: "emailmarketing.update_email_filter_error",
 
       }
       return resp
@@ -240,13 +234,13 @@ export function registerEmailMarketingIpcHandlers() {
       const resp: CommonMessage<CommonIdrequest<number>> = {
         status: true,
         msg: "",
-        data: res.data
+        data: {id:res}
       }
       return resp
     } else {
       const resp: CommonMessage<CommonIdrequest<number>> = {
         status: false,
-        msg: res.msg,
+        msg: "emailmarketing.delete_email_filter_error",
 
       }
       return resp
@@ -266,14 +260,14 @@ export function registerEmailMarketingIpcHandlers() {
     const emailmarketCon = new EmailMarketingController()
     const res = await emailmarketCon.getEmailServiceList(qdata.page, qdata.size, qdata.search)
     console.log(res)
-    if (res.status) {
-      if (res.data) {
+    if (res) {
+      if (res.records) {
         const resp: CommonResponse<EmailServiceListdata> = {
           status: true,
           msg: "",
           data: {
-            records: res.data.records,
-            num: res.data.num
+            records: res.records,
+            num: res.num
           }
         }
         return resp
@@ -292,7 +286,7 @@ export function registerEmailMarketingIpcHandlers() {
     } else {
       const resp: CommonResponse<EmailServiceListdata> = {
         status: false,
-        msg: res.msg,
+        msg: "emailmarketing.service_list_error",
         data: null
       }
       return resp
@@ -310,17 +304,17 @@ export function registerEmailMarketingIpcHandlers() {
     }
     const emailmarketCon = new EmailMarketingController()
     const res = await emailmarketCon.getEmailServiceDetail(Number(qdata.id))
-    if (res.status) {
+    if (res) {
       const resp: CommonMessage<EmailServiceEntitydata> = {
         status: true,
         msg: "",
-        data: res.data
+        data: res
       }
       return resp
     } else {
       const resp: CommonMessage<EmailServiceEntitydata> = {
         status: false,
-        msg: res.msg,
+        msg: "emailmarketing.service_item_notexist",
       }
       return resp
     }
@@ -331,17 +325,17 @@ export function registerEmailMarketingIpcHandlers() {
     const emailmarketCon = new EmailMarketingController()
     const res = await emailmarketCon.createuEmailService(qdata)
     console.log(res)
-    if (res.status) {
+    if (res) {
       const resp: CommonMessage<CommonIdrequest<number>> = {
         status: true,
         msg: "",
-        data: res.data
+        data: { id: res }
       }
       return resp
     } else {
       const resp: CommonMessage<CommonIdrequest<number>> = {
         status: false,
-        msg: res.msg,
+        msg: "emailmarketing.create_email_service_error",
 
       }
       return resp
@@ -359,22 +353,9 @@ export function registerEmailMarketingIpcHandlers() {
       return resp
     }
     const emailmarketCon = new EmailMarketingController()
-    const res = await emailmarketCon.deleteEmailService(Number(qdata.id))
-    if (res.status) {
-      const resp: CommonMessage<CommonIdrequest<number>> = {
-        status: true,
-        msg: "",
-        data: res.data
-      }
-      return resp
-    } else {
-      const resp: CommonMessage<CommonIdrequest<number>> = {
-        status: false,
-        msg: res.msg,
 
-      }
-      return resp
-    }
+    const res = await emailmarketCon.deleteEmailService(Number(qdata.id))
+
   });
 
   //SEND test email
@@ -384,7 +365,7 @@ export function registerEmailMarketingIpcHandlers() {
 
 
     // try {
-      const emailmarketCon = new EmailMarketingController()
+    const emailmarketCon = new EmailMarketingController()
     await emailmarketCon.sendEmail(qdata, (errorMessage: string) => {
       console.log(errorMessage)
       const resp: CommonDialogMsg = {

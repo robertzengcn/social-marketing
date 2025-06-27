@@ -25,6 +25,7 @@ export type EmailTemplatedata={
     TplId?:number
     TplTitle:string
     TplContent:string
+    Description?:string
 }
 export type EmailFilterdata={
     id?:number
@@ -67,7 +68,8 @@ export type EmailItem={
 }
 export type Buckemailstruct={
     EmailBtype:BuckEmailType //email source type
-    EmailList:Array<EmailItem>
+    EmailtaskentityId?:number
+    //EmailList:Array<EmailItem>
     EmailTemplateslist:Array<number>
     EmailFilterlist:Array<number>
     EmailServicelist:Array<number>

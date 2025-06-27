@@ -53,14 +53,15 @@ export function registerBuckEmailIpcHandlers() {
                 }
                 const bucketEmailData: Buckemailstruct = {
                     EmailBtype: BuckEmailType.EXTRACTEMAIL,
-                    EmailList: emailList,
+                    //EmailList: emailList,
+                    EmailtaskentityId: qdata.emailtaskentityId,
                     EmailTemplateslist: qdata.EmailTemplateslist,
                     EmailFilterlist: qdata.EmailFilterlist,
                     EmailServicelist: qdata.EmailServicelist,
                     NotDuplicate: qdata.NotDuplicate
                 }
 
-                const taskid = await buckemailCon.buckEmailsend(bucketEmailData)
+                const taskid = await buckemailCon.startBuckEmailTask(bucketEmailData)
                 const comMsgs: CommonDialogMsg = {
                     status: true,
                     code: 20241108151239,

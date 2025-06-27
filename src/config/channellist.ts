@@ -39,6 +39,14 @@ export const EMAILSERVICEDETAIL='email:service:detail'
 export const EMAILSERVICELIST='email:service:list'
 export const EMAILSERVICEDELETE='email:service:delete'
 
+//email template
+export const EMAILTEMPLATE_LIST='email:template:list'
+export const EMAILTEMPLATE_DETAIL='email:template:detail'
+export const EMAILTEMPLATE_CREATE='email:template:create'
+export const EMAILTEMPLATE_UPDATE='email:template:update'
+export const EMAILTEMPLATE_DELETE='email:template:delete'
+export const EMAILTEMPLATE_BY_TASK='email:template:by:task'
+
 //buck email send
 export const BUCKEMAILSEND='buck:email:send'
 export const BUCKEMAILSENDMESSAGE='buck:email:send:message'
