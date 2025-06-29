@@ -1,9 +1,9 @@
 import { BaseModule } from "@/modules/baseModule";
 import { EmailFilterModel } from "@/model/EmailFilter.model";
-import { EmailFilterEntity } from "@/model/emailFilterTaskdb";
+//import { EmailFilterEntity } from "@/model/emailFilterTaskdb";
 import { SortBy } from "@/entityTypes/commonType";
 import { EmailFilterModuleInterface } from "@/modules/interface/EmailFilterModuleInterface";
-
+import { EmailFilterEntity } from "@/entity/EmailFilter.entity";
 export class EmailFilterModule extends BaseModule implements EmailFilterModuleInterface {
     private emailFilterModel: EmailFilterModel;
 
@@ -63,8 +63,8 @@ export class EmailFilterModule extends BaseModule implements EmailFilterModuleIn
      * @param sort Sort parameters (optional)
      * @returns Array of email filter entities
      */
-    async listEmailFilters(page: number, size: number, sort?: SortBy): Promise<EmailFilterEntity[]> {
-        return await this.emailFilterModel.listEmailFilters(page, size, sort);
+    async listEmailFilters(page: number, size: number, search?: string,sort?: SortBy): Promise<EmailFilterEntity[]> {
+        return await this.emailFilterModel.listEmailFilters(page, size, search,sort);
     }
 
     /**

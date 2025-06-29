@@ -7,12 +7,14 @@ import {
 } from "@/config/channellist";
 import { ItemSearchparam } from "@/entityTypes/commonType"
 import { CommonResponse, CommonMessage, CommonIdrequest, CommonDialogMsg } from "@/entityTypes/commonType"
-import { EmailTemplatedata, EmailFilterdata, EmailServiceListdata, EmailServiceEntitydata, EmailSendParam } from "@/entityTypes/emailmarketingType"
+import { EmailTemplatedata, EmailFilterdata, EmailServiceListdata, EmailServiceEntitydata, EmailSendParam, EmailFilterDetialdata } from "@/entityTypes/emailmarketingType"
 import { EmailTemplateEntity } from "@/entity/EmailTemplate.entity"
 import { EmailFilterEntity } from "@/entity/EmailFilter.entity"
+import { EmailTemplateRespdata } from "@/entityTypes/emailmarketingType"
+import { EmailFilterDetailEntity } from "@/entity/EmailFilterDetail.entity";
 export function registerEmailMarketingIpcHandlers() {
 
-  ipcMain.handle(EMAILMARKETINGTEMPLIST, async (event, arg) => {
+  ipcMain.handle(EMAILMARKETINGTEMPLIST, async (event, arg): Promise<CommonResponse<EmailTemplateRespdata>> => {
     const qdata = JSON.parse(arg) as ItemSearchparam;
     if (!Object.prototype.hasOwnProperty.call(qdata, "page")) {
       qdata.page = 0;
@@ -24,18 +26,28 @@ export function registerEmailMarketingIpcHandlers() {
     const res = await emailmarketCon.listEmailTemplate(qdata.page, qdata.size, qdata.search)
     if (res) {
       if (res.records) {
-        const resp: CommonResponse<EmailTemplateEntity> = {
+        const respdata:EmailTemplateRespdata[]=[]
+        res.records.forEach((item:EmailTemplateEntity)=>{
+          respdata.push({
+            TplId:item.id,
+            TplTitle:item.title,
+            TplContent:item.content,
+            TplRecord:item.updatedAt?.toDateString(),
+            Status:item.status
+          })
+        })
+        const resp: CommonResponse<EmailTemplateRespdata> = {
           status: true,
           msg: "",
           data: {
-            records: res.records,
+            records: respdata,
             num: res.num
           }
         }
         return resp
       } else {
         //data empty
-        const resp: CommonResponse<EmailTemplateEntity> = {
+        const resp: CommonResponse<EmailTemplateRespdata> = {
           status: true,
           msg: "",
           data: {
@@ -46,9 +58,9 @@ export function registerEmailMarketingIpcHandlers() {
         return resp
       }
     } else {
-      const resp: CommonResponse<EmailTemplateEntity> = {
+      const resp: CommonResponse<EmailTemplateRespdata> = {
         status: false,
-        msg: "list_email_template_error",
+        msg: "emailmarketing.list_email_template_error",
         data: null
       }
       return resp
@@ -56,7 +68,7 @@ export function registerEmailMarketingIpcHandlers() {
   });
 
   //remove email template
-  ipcMain.handle(EMAILMARKETINGTEMPREMOVE, async (event, arg) => {
+  ipcMain.handle(EMAILMARKETINGTEMPREMOVE, async (event, arg): Promise<CommonMessage<number>> => {
     const qdata = JSON.parse(arg) as CommonIdrequest<string>;
     if (!qdata.id) {
       const resp: CommonMessage<number> = {
@@ -68,10 +80,10 @@ export function registerEmailMarketingIpcHandlers() {
     const emailmarketCon = new EmailMarketingController()
     const res = await emailmarketCon.removeEmailTemplate(Number(qdata.id))
     // if (res) {
-    const resp: CommonMessage<CommonIdrequest<number>> = {
+    const resp: CommonMessage<number> = {
       status: true,
       msg: "",
-      data: { id: Number(qdata.id) }
+      data: Number(qdata.id)
     }
     return resp
     // } else {
@@ -84,10 +96,10 @@ export function registerEmailMarketingIpcHandlers() {
     // }
   });
   //get email template by id
-  ipcMain.handle(EMAILMARKETINGTEMPDETAIL, async (event, arg) => {
+  ipcMain.handle(EMAILMARKETINGTEMPDETAIL, async (event, arg): Promise<CommonMessage<EmailTemplateRespdata>> => {
     const qdata = JSON.parse(arg) as CommonIdrequest<string>;
     if (!qdata.id) {
-      const resp: CommonMessage<EmailTemplateEntity> = {
+      const resp: CommonMessage<EmailTemplateRespdata> = {
         status: false,
         msg: "emailmarketing.template_id_require",
       }
@@ -96,14 +108,22 @@ export function registerEmailMarketingIpcHandlers() {
     const emailmarketCon = new EmailMarketingController()
     const res = await emailmarketCon.getEmailTemplateDetail(Number(qdata.id))
     if (res) {
-      const resp: CommonMessage<EmailTemplateEntity> = {
+      //convert to EmailTemplateRespdata
+      const respdata:EmailTemplateRespdata={
+        TplId:res.id,
+        TplTitle:res.title,
+        TplContent:res.content,
+        TplRecord:res.updatedAt?.toDateString(),
+        Status:res.status
+      }
+      const resp: CommonMessage<EmailTemplateRespdata> = {
         status: true,
         msg: "",
-        data: res
+        data: respdata
       }
       return resp
     } else {
-      const resp: CommonMessage<EmailTemplateEntity> = {
+      const resp: CommonMessage<EmailTemplateRespdata> = {
         status: false,
         msg: "emailmarketing.template_item_notexist",
       }
@@ -111,7 +131,7 @@ export function registerEmailMarketingIpcHandlers() {
     }
   });
   //update email template data
-  ipcMain.handle(EMAILMARKETINGTEMPUPDATE, async (event, arg) => {
+  ipcMain.handle(EMAILMARKETINGTEMPUPDATE, async (event, arg): Promise<CommonMessage<CommonIdrequest<number>>> => {
     const qdata = JSON.parse(arg) as EmailTemplatedata;
     const emailmarketCon = new EmailMarketingController()
     const res = await emailmarketCon.updateEmailtemplate(qdata)
@@ -131,7 +151,7 @@ export function registerEmailMarketingIpcHandlers() {
       return resp
     }
   })
-  ipcMain.handle(EMAILMARKETINGFILTERLIST, async (event, arg) => {
+  ipcMain.handle(EMAILMARKETINGFILTERLIST, async (event, arg): Promise<CommonResponse<EmailFilterdata>> => {
     const qdata = JSON.parse(arg) as ItemSearchparam;
     if (!Object.prototype.hasOwnProperty.call(qdata, "page")) {
       qdata.page = 0;
@@ -144,11 +164,31 @@ export function registerEmailMarketingIpcHandlers() {
     // console.log(res)
     if (res) {
       //if (res.data) {
-      const resp: CommonResponse<EmailFilterEntity> = {
+      const respdata:EmailFilterdata[]=[]
+      
+      for (let i = 0; i < res.records.length; i++) {
+        const item: EmailFilterEntity = res.records[i];
+        //get filter details
+        const filterdetails:EmailFilterDetialdata[]=[]
+        for (let j = 0; j < item.filterDetails.length; j++) {
+          const detail: EmailFilterDetailEntity = item.filterDetails[j];
+          filterdetails.push({
+            id: detail.id,
+            content: detail.content
+          })
+        }
+        respdata.push({
+          id: item.id,
+          name: item.name,
+          description: item.description ? item.description : "",
+          filter_details: filterdetails
+        });
+      }
+      const resp: CommonResponse<EmailFilterdata> = {
         status: true,
         msg: "",
         data: {
-          records: res.records,
+          records: respdata,
           num: res.num
         }
       }
@@ -169,7 +209,7 @@ export function registerEmailMarketingIpcHandlers() {
     }
 
   })
-  ipcMain.handle(EMAILMARKETFILTERDETAIL, async (event, arg) => {
+  ipcMain.handle(EMAILMARKETFILTERDETAIL, async (event, arg): Promise<CommonMessage<EmailFilterdata>> => {
     const qdata = JSON.parse(arg) as CommonIdrequest<string>;
     if (!qdata.id) {
       const resp: CommonMessage<EmailFilterdata> = {
@@ -181,23 +221,37 @@ export function registerEmailMarketingIpcHandlers() {
     const emailmarketCon = new EmailMarketingController()
     const resp = await emailmarketCon.getEmailFilterDetail(Number(qdata.id))
     if (resp) {
+      //convert to EmailFilterdata
+      const respdata:EmailFilterdata={
+        id:resp.id,
+        name:resp.name,
+        description:resp.description?resp.description:"",
+        filter_details:[]
+      }
+      for (let i = 0; i < resp.filterDetails.length; i++) {
+        const detail: EmailFilterDetailEntity = resp.filterDetails[i];
+        respdata.filter_details.push({
+          id: detail.id,
+          content: detail.content
+        })
+      }
       const resdata: CommonMessage<EmailFilterdata> = {
         status: true,
         msg: "",
-        data: resp
+        data: respdata
       }
       return resdata
     } else {
       const resdata: CommonMessage<EmailFilterdata> = {
         status: false,
-        msg: resp.msg,
+        msg: "emailmarketing.filter_item_notexist",
       }
       return resdata
     }
 
   })
   //update email filter
-  ipcMain.handle(EMAILMARKETFILTERUPDATE, async (event, arg) => {
+  ipcMain.handle(EMAILMARKETFILTERUPDATE, async (event, arg): Promise<CommonMessage<CommonIdrequest<number>>> => {
     const qdata = JSON.parse(arg) as EmailFilterdata;
     const emailmarketCon = new EmailMarketingController()
     const res = await emailmarketCon.updateEmailFilter(qdata)
@@ -219,7 +273,7 @@ export function registerEmailMarketingIpcHandlers() {
     }
   })
   //delete email filter
-  ipcMain.handle(EMAILFILTERDELETE, async (event, arg) => {
+  ipcMain.handle(EMAILFILTERDELETE, async (event, arg): Promise<CommonMessage<number>> => {
     const qdata = JSON.parse(arg) as CommonIdrequest<string>;
     if (!qdata.id) {
       const resp: CommonMessage<number> = {
@@ -229,19 +283,18 @@ export function registerEmailMarketingIpcHandlers() {
       return resp
     }
     const emailmarketCon = new EmailMarketingController()
-    const res = await emailmarketCon.deleteEmailFilter(Number(qdata.id))
-    if (res.status) {
-      const resp: CommonMessage<CommonIdrequest<number>> = {
+    try{
+      const res = await emailmarketCon.deleteEmailFilter(Number(qdata.id))
+      const resp: CommonMessage<number> = {
         status: true,
         msg: "",
-        data: {id:res}
+        data: Number(qdata.id)
       }
       return resp
-    } else {
-      const resp: CommonMessage<CommonIdrequest<number>> = {
+    }catch(error) {
+      const resp: CommonMessage<number> = {
         status: false,
         msg: "emailmarketing.delete_email_filter_error",
-
       }
       return resp
     }
@@ -249,7 +302,7 @@ export function registerEmailMarketingIpcHandlers() {
 
   //email service
   //get email service list
-  ipcMain.handle(EMAILSERVICELIST, async (event, arg) => {
+  ipcMain.handle(EMAILSERVICELIST, async (event, arg): Promise<CommonResponse<EmailServiceListdata>> => {
     const qdata = JSON.parse(arg) as ItemSearchparam;
     if (!Object.prototype.hasOwnProperty.call(qdata, "page")) {
       qdata.page = 0;
@@ -293,7 +346,7 @@ export function registerEmailMarketingIpcHandlers() {
     }
   });
   //email service detail
-  ipcMain.handle(EMAILSERVICEDETAIL, async (event, arg) => {
+  ipcMain.handle(EMAILSERVICEDETAIL, async (event, arg): Promise<CommonMessage<EmailServiceEntitydata>> => {
     const qdata = JSON.parse(arg) as CommonIdrequest<string>;
     if (!qdata.id) {
       const resp: CommonMessage<EmailServiceEntitydata> = {
@@ -320,10 +373,10 @@ export function registerEmailMarketingIpcHandlers() {
     }
   });
   //create or update email service
-  ipcMain.handle(EMAILSERVICEUPDATE, async (event, arg) => {
+  ipcMain.handle(EMAILSERVICEUPDATE, async (event, arg): Promise<CommonMessage<CommonIdrequest<number>>> => {
     const qdata = JSON.parse(arg) as EmailServiceEntitydata;
     const emailmarketCon = new EmailMarketingController()
-    const res = await emailmarketCon.createuEmailService(qdata)
+    const res = await emailmarketCon.createEmailService(qdata)
     console.log(res)
     if (res) {
       const resp: CommonMessage<CommonIdrequest<number>> = {
@@ -343,7 +396,7 @@ export function registerEmailMarketingIpcHandlers() {
   })
 
   //delete email service
-  ipcMain.handle(EMAILSERVICEDELETE, async (event, arg) => {
+  ipcMain.handle(EMAILSERVICEDELETE, async (event, arg): Promise<CommonMessage<number>> => {
     const qdata = JSON.parse(arg) as CommonIdrequest<string>;
     if (!qdata.id) {
       const resp: CommonMessage<number> = {
@@ -355,15 +408,18 @@ export function registerEmailMarketingIpcHandlers() {
     const emailmarketCon = new EmailMarketingController()
 
     const res = await emailmarketCon.deleteEmailService(Number(qdata.id))
-
+    const resp: CommonMessage<number> = {
+      status: true,
+      msg: "",
+      data: Number(qdata.id)
+    }
+    return resp
   });
 
   //SEND test email
 
-  ipcMain.on(SENDTESTEMAIL, async (event, arg) => {
+  ipcMain.on(SENDTESTEMAIL, async (event, arg): Promise<void> => {
     const qdata = JSON.parse(arg) as EmailSendParam;
-
-
     // try {
     const emailmarketCon = new EmailMarketingController()
     await emailmarketCon.sendEmail(qdata, (errorMessage: string) => {

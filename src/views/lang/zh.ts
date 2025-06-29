@@ -102,5 +102,7 @@ export default {
         update_email_template_error:"更新邮件模板错误",
         update_email_filter_error:"更新邮件过滤器错误",
         service_list_error:"服务列表错误",
+        delete_email_filter_error:"删除邮件过滤器错误",
+        list_email_template_error:"列出邮件模板错误",
     }
 }

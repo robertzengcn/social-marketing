@@ -44,9 +44,11 @@ export class EmailServiceModel extends BaseDb {
         await this.repository.save(entity);
     }
 
-    async listEmailServices(page: number, size: number, sort?: SortBy): Promise<EmailServiceEntity[]> {
+    async listEmailServices(page: number, size: number, search?: string,sort?: SortBy): Promise<EmailServiceEntity[]> {
         let queryBuilder = this.repository.createQueryBuilder('service');
-
+        if (search) {
+            queryBuilder = queryBuilder.where('service.name LIKE :search', { search: `%${search}%` });
+        }
         if (sort?.key && sort?.order) {
             const lowsersortkey = sort.key.toLowerCase();
             const lowsersortorder = sort.order.toLowerCase();

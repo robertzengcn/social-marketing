@@ -291,6 +291,8 @@ export default {
         update_email_template_error:"update email template error",
         update_email_filter_error:"update email filter error",
         service_list_error:"service list error",
+        delete_email_filter_error:"delete email filter error",
+        list_email_template_error:"list email template error",
     },
     emailfilter:{
         id:"id",

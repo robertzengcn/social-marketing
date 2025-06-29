@@ -1,5 +1,7 @@
-import { EmailFilterEntity } from "@/model/emailFilterTaskdb";
+//import { EmailFilterEntity } from "@/model/emailFilterTaskdb";
+
 import { SortBy } from "@/entityTypes/commonType";
+import { EmailFilterEntity } from "@/entity/EmailFilter.entity";
 
 export interface EmailFilterModuleInterface {
     /**
@@ -43,7 +45,7 @@ export interface EmailFilterModuleInterface {
      * @param sort Sort parameters (optional)
      * @returns Array of email filter entities
      */
-    listEmailFilters(page: number, size: number, sort?: SortBy): Promise<EmailFilterEntity[]>;
+    listEmailFilters(page: number, size: number, search?: string,sort?: SortBy): Promise<EmailFilterEntity[]>;
 
     /**
      * Get total number of email filters

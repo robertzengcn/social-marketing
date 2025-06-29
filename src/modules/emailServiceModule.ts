@@ -3,8 +3,9 @@ import { EmailServiceModel } from "@/model/EmailService.model";
 import { EmailServiceEntity } from "@/entity/EmailService.entity";
 import { SortBy } from "@/entityTypes/commonType";
 import { ListData } from "@/entityTypes/commonType";
+import { EmailServiceModuleInterface } from "@/modules/interface/EmailServiceModuleInterface";
 
-export class EmailServiceModule extends BaseModule {
+export class EmailServiceModule extends BaseModule implements EmailServiceModuleInterface {
     private emailServiceModel: EmailServiceModel;
 
     constructor() {
@@ -57,11 +58,11 @@ export class EmailServiceModule extends BaseModule {
         }
     }
 
-    async listEmailServices(page: number, size: number, sort?: SortBy): Promise<ListData<EmailServiceEntity>> {
+    async listEmailServices(page: number, size: number, search?: string,sort?: SortBy): Promise<ListData<EmailServiceEntity>> {
         try {
-            const records = await this.emailServiceModel.listEmailServices(page, size, sort);
+            const records = await this.emailServiceModel.listEmailServices(page, size, search,sort);
             const num = await this.emailServiceModel.countEmailServices();
-            
+           
             return {
                 records,
                 num

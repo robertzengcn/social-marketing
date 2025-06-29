@@ -7,6 +7,7 @@ import {AccountCookiesEntity} from "@/entity/AccountCookies.entity"
 import {BuckemailTaskEntity} from "@/entity/BuckemailTask.entity"
 import {EmailTemplateEntity} from "@/entity/EmailTemplate.entity"
 import {EmailFilterEntity} from "@/entity/EmailFilter.entity"
+import {EmailFilterDetailEntity} from "@/entity/EmailFilterDetail.entity"
 import {EmailTemplateTaskRelationEntity} from "@/entity/EmailTemplateTaskRelation.entity"
 import {EmailFilterTaskRelationEntity} from "@/entity/EmailFilterTaskRelation.entity"
 import {EmailServiceEntity} from "@/entity/EmailService.entity"
@@ -88,6 +89,7 @@ export class SqliteDb {
                 ScheduleDependencyEntity,
                 EmailTemplateEntity,
                 EmailFilterEntity,
+                EmailFilterDetailEntity,
                 EmailTemplateTaskRelationEntity,
                 EmailFilterTaskRelationEntity,
                 EmailServiceEntity,
