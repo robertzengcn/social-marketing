@@ -64,7 +64,7 @@ export class VideoDownloadTaskModule extends BaseModule {
     this.socialAccountApi = new SocialAccountApi()
     this.videoDescriptionModule = new VideoDescriptionModule()
     this.videoDownloadModule = new VideoDownloadModule()
-    this.videoDownloadTaskModule = new VideoDownloadTaskModule()
+    //this.videoDownloadTaskModule = new VideoDownloadTaskModule()
     this.videoDownloadTaskAccountModule = new VideoDownloadTaskAccountsModule()
     this.videoDownloadTaskDetailModule = new VideoDownloadTaskDetailModule()
     this.videoDownloadTaskUrlModule = new VideoDownloadTaskUrlModule()
@@ -317,7 +317,7 @@ export class VideoDownloadTaskModule extends BaseModule {
     child.on("spawn", async () => {
 
       console.log("child process satart, pid is " + child.pid)
-      await this.videoDownloadTaskModule.updateVideoDownloadTaskStatus(taskId, TaskStatus.Processing)
+      await this.updateVideoDownloadTaskStatus(taskId, TaskStatus.Processing)
       child.postMessage(JSON.stringify({ action: "downloadVideo", data: paramData }), [port1])
 
     })
@@ -344,11 +344,11 @@ export class VideoDownloadTaskModule extends BaseModule {
     child.on("exit", async (code) => {
       if (code !== 0) {
         console.error(`Child process exited with code ${code}`);
-        await this.videoDownloadTaskModule.updateVideoDownloadTaskStatus(taskId, TaskStatus.Error)
+        await this.updateVideoDownloadTaskStatus(taskId, TaskStatus.Error)
         // this.emailSeachTaskModule.updateTaskStatus(taskId,EmailsearchTaskStatus.Error)
       } else {
         console.log('Child process exited successfully');
-        await this.videoDownloadTaskModule.updateVideoDownloadTaskStatus(taskId, TaskStatus.Complete)
+        await this.updateVideoDownloadTaskStatus(taskId, TaskStatus.Complete)
         // this.emailSeachTaskModule.updateTaskStatus(taskId,EmailsearchTaskStatus.Complete)
       }
     })
@@ -447,7 +447,7 @@ export class VideoDownloadTaskModule extends BaseModule {
         videoTaskEntity.savepath = param.savePath
         videoTaskEntity.status = TaskStatus.Processing
         //videoTaskEntity.downloadtype = param.downloadType
-        const taskId = await this.videoDownloadTaskModule.saveVideoDownloadTask(videoTaskEntity)
+        const taskId = await this.saveVideoDownloadTask(videoTaskEntity)
         if (!taskId) {
             throw new Error("video task save failed")
         }
