@@ -10,6 +10,7 @@ export type EmailTemplateRespdata={
     TplId?:number
     TplTitle:string
     TplContent:string
+    TplDescription?:string
     TplRecord?:string
     Status?:number
 }
@@ -25,13 +26,14 @@ export type EmailTemplatedata={
     TplId?:number
     TplTitle:string
     TplContent:string
-    Description?:string
+    TplDescription?:string
 }
 export type EmailFilterdata={
     id?:number
     name:string
     description:string
     filter_details:Array<EmailFilterDetialdata>
+    created_time:string
 }
 export type EmailFilterDetialdata={
     id?:number

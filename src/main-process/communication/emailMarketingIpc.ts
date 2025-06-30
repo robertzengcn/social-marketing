@@ -114,7 +114,8 @@ export function registerEmailMarketingIpcHandlers() {
         TplTitle:res.title,
         TplContent:res.content,
         TplRecord:res.updatedAt?.toDateString(),
-        Status:res.status
+        Status:res.status,
+        TplDescription:res.description?res.description:""
       }
       const resp: CommonMessage<EmailTemplateRespdata> = {
         status: true,
@@ -132,7 +133,7 @@ export function registerEmailMarketingIpcHandlers() {
   });
   //update email template data
   ipcMain.handle(EMAILMARKETINGTEMPUPDATE, async (event, arg): Promise<CommonMessage<CommonIdrequest<number>>> => {
-    const qdata = JSON.parse(arg) as EmailTemplatedata;
+    const qdata = JSON.parse(arg) as EmailTemplateRespdata;
     const emailmarketCon = new EmailMarketingController()
     const res = await emailmarketCon.updateEmailtemplate(qdata)
     if (res) {
@@ -170,6 +171,7 @@ export function registerEmailMarketingIpcHandlers() {
         const item: EmailFilterEntity = res.records[i];
         //get filter details
         const filterdetails:EmailFilterDetialdata[]=[]
+        if(item.filterDetails){
         for (let j = 0; j < item.filterDetails.length; j++) {
           const detail: EmailFilterDetailEntity = item.filterDetails[j];
           filterdetails.push({
@@ -177,11 +179,14 @@ export function registerEmailMarketingIpcHandlers() {
             content: detail.content
           })
         }
+      }
         respdata.push({
           id: item.id,
           name: item.name,
           description: item.description ? item.description : "",
-          filter_details: filterdetails
+          filter_details: filterdetails,
+          created_time: item.createdAt ? item.createdAt.toISOString().split('T')[0] : ""
+          // created_time: item.createdAt ? item.createdAt.toDateString() : ""
         });
       }
       const resp: CommonResponse<EmailFilterdata> = {
@@ -221,20 +226,25 @@ export function registerEmailMarketingIpcHandlers() {
     const emailmarketCon = new EmailMarketingController()
     const resp = await emailmarketCon.getEmailFilterDetail(Number(qdata.id))
     if (resp) {
+      //get filter details by filter id
+      const filterdetails=await emailmarketCon.getEmailFilterDetailByFilterId(Number(qdata.id))
       //convert to EmailFilterdata
       const respdata:EmailFilterdata={
         id:resp.id,
         name:resp.name,
         description:resp.description?resp.description:"",
-        filter_details:[]
+        filter_details:[],
+        created_time:resp.createdAt?resp.createdAt.toDateString():""
       }
-      for (let i = 0; i < resp.filterDetails.length; i++) {
-        const detail: EmailFilterDetailEntity = resp.filterDetails[i];
+      if(filterdetails){
+      for (let i = 0; i < filterdetails.length; i++) {
+        const detail: EmailFilterDetailEntity = filterdetails[i];
         respdata.filter_details.push({
           id: detail.id,
           content: detail.content
         })
       }
+    }
       const resdata: CommonMessage<EmailFilterdata> = {
         status: true,
         msg: "",

@@ -18,6 +18,7 @@ import { EmailFilterDetailEntity } from "@/entity/EmailFilterDetail.entity"
 import { EmailFilterDetailModuleInterface } from "@/modules/interface/EmailFilterDetailModuleInterface"
 import { EmailFilterDetailModule } from "@/modules/EmailFilterDetailModule"
 import { EmailServiceEntity } from "@/entity/EmailService.entity"
+import { EmailTemplateRespdata } from "@/entityTypes/emailmarketingType"
 export class EmailMarketingController {
     emailTemplateModule: EmailTemplateModuleInterface;
     emailFilterTaskRelationModule: EmailFilterTaskRelationModuleInterface;
@@ -54,20 +55,22 @@ export class EmailMarketingController {
         return await this.emailTemplateModule.delete(id);
     }
     //update email template
-    public async updateEmailtemplate(param: EmailTemplatedata): Promise<number> {
+    public async updateEmailtemplate(param: EmailTemplateRespdata): Promise<number> {
 
         if (param.TplId) {
             const entity = new EmailTemplateEntity();
             entity.content = param.TplContent;
-            entity.description = param.Description ?? null;
+            entity.description = param.TplDescription ?? null;
             entity.title = param.TplTitle;
+            //entity.description = param.Description  ;
             await this.emailTemplateModule.update(param.TplId, entity);
             return param.TplId;
         } else {
             const entity = new EmailTemplateEntity();
             entity.content = param.TplContent;
-            entity.description = param.Description ?? null;
+            entity.description = param.TplDescription ?? null;
             entity.title = param.TplTitle;
+            //entity.description=param.Description?;
             return await this.emailTemplateModule.create(entity);
         }
     }
@@ -83,6 +86,11 @@ export class EmailMarketingController {
     // get email filter
     public async getEmailFilterDetail(id: number): Promise<EmailFilterEntity | undefined> {
         return await this.emailFilterModule.read(id);
+    }
+    //get email filter detail by fileter id
+    public async getEmailFilterDetailByFilterId(filterId: number): Promise<EmailFilterDetailEntity[] | undefined> {
+        const listdata = await this.emailFilterDetailModule.getEmailFilterDetailsByFilterId(filterId);
+        return listdata;
     }
     //update email filter
     public async updateEmailFilter(param: EmailFilterdata): Promise<number> {
