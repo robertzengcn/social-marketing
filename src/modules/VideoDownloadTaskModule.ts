@@ -23,7 +23,9 @@ import { VideoDescriptionModule } from "@/modules/videoDescriptionModule";
 import { VideoDownloadModule } from "@/modules/VideoDownloadModule";
 import { SocialAccountApi } from "@/api/socialAccountApi"
 import { Proxy } from "@/entityTypes/proxyType"
-import { ProxyApi } from "@/api/proxyApi"
+//import { ProxyApi } from "@/api/proxyApi"
+import {IProxyApi} from "@/modules/interface/IProxyApi"
+import {ProxyModule} from "@/modules/ProxyModule"
 import { ProcessMessage } from "@/entityTypes/processMessage-type"
 import { VideoDownloadEntity } from "@/entity/VideoDownload.entity";
 import { VideoDescriptionEntity } from "@/entity/VideoDescription.entity"
@@ -273,7 +275,7 @@ export class VideoDownloadTaskModule extends BaseModule {
     const proxyArr: Array<Proxy> = []
     if (param.proxy.length > 0) {
       //get proxy from remote
-      const proxyapi = new ProxyApi()
+      const proxyapi:IProxyApi = new ProxyModule()
       param.proxy.forEach(async (value) => {
         const proxy = await proxyapi.getProxyDetail(value)
         if (proxy && proxy.status) {

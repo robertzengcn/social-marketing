@@ -171,6 +171,7 @@ export class TaskExecutorService {
             if (!buckEmailTask) {
                 throw new Error(`Bulk email task ${taskId} not found`);
             }
+            await this.buckEmailTaskModel.buckEmailsend(taskId)
 
             // Execute the bulk email task using the existing buck email functionality
             // This would integrate with the existing buck email system

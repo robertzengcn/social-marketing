@@ -1,4 +1,4 @@
-import { Scraperdb } from "./scraperdb";
+//import { Scraperdb } from "./scraperdb";
 import { Database } from 'better-sqlite3';
 import {SqliteDb} from "@/config/SqliteDb"
 export abstract class BaseDb {

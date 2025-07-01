@@ -26,7 +26,7 @@ import { VideoDownloadTaskAccountsModule } from "@/modules/VideoDownloadTaskAcco
 import { VideoDownloadTaskUrlModule } from "@/modules/VideoDownloadTaskUrlModule"
 import { VideoDownloadTaskProxyModule } from "@/modules/VideoDownloadTaskProxyModule"
 import { Proxy } from "@/entityTypes/proxyType"
-import { ProxyApi } from "@/api/proxyApi"
+//import { ProxyApi } from "@/api/proxyApi"
 import { shell } from "electron"
 //import { VideoCaptionFactory } from "@/modules/videoCaption/VideoCaptionFactory"
 import { CustomError } from '@/modules/customError'
@@ -66,7 +66,7 @@ export class VideoController {
     private videoDownloadTaskDetailModule: VideoDownloadTaskDetailModule
     private videoDownloadTaskAccountsModule: VideoDownloadTaskAccountsModule
     private videoDownloadTaskUrlModule: VideoDownloadTaskUrlModule
-    private videoDownloadTaskProxyModule: VideoDownloadTaskProxyModule
+    //private videoDownloadTaskProxyModule: VideoDownloadTaskProxyModule
     private videoCaptionModule: VideoCaptionModule
     private videoDownloadTagModule: VideoDownloadTagModule
     private videoDownloadTaskKeywordModule: VideoDownloadTaskKeywordModule
@@ -90,7 +90,7 @@ export class VideoController {
         this.videoDownloadTagModule = new VideoDownloadTagModule()
         this.videoDownloadTaskKeywordModule = new VideoDownloadTaskKeywordModule()
         this.videoDownloadTaskAccountsModule = new VideoDownloadTaskAccountsModule()  
-        this.videoDownloadTaskProxyModule = new VideoDownloadTaskProxyModule()
+        //this.videoDownloadTaskProxyModule = new VideoDownloadTaskProxyModule()
         this.videoPublishModule = new VideoPublishModule()
     }
     
