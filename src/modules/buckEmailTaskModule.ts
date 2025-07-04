@@ -22,7 +22,7 @@ import { EmailSendResult } from "@/entityTypes/emailmarketingType"
 import { SendStatus } from "@/model/emailMarketingSendLog.model"
 import { EmailMarketingSendLogEntity } from "@/entity/EmailMarketingSendLog.entity"
 import { EmailMarketingSendLogModule } from "@/modules/emailMarketingSendLogModule";
-import { EmailSearchTaskModule } from "@/modules/emailSearchTaskModule";
+import { EmailSearchTaskModule } from "@/modules/EmailSearchTaskModule";
 import {EmailTemplateTaskRelationModule} from "@/modules/EmailTemplateTaskRelationModule"
 import { EmailTemplateTaskRelationEntity } from "@/entity/EmailTemplateTaskRelation.entity";
 import { EmailFilterTaskRelationEntity } from "@/entity/EmailFilterTaskRelation.entity";

@@ -3,13 +3,21 @@ import { Scraperdb } from "@/model/scraperdb";
 import { getRecorddatetime } from "@/modules/lib/function";
 import {EmailExtractionTypes} from "@/config/emailextraction"
 import { SortBy } from "@/entityTypes/commonType"
+import { ProxyEntity } from '@/entity/Proxy.entity';
 export interface EmailsearchTaskEntity {
     id?: number,
+    search_result_id?:number,
     error_log?:string,
     runtime_log?:string,
     record_time?:string,
     type_id: EmailExtractionTypes,
     status: EmailsearchTaskStatus,
+    processTimeout:number,
+    maxPageNumber:number,
+    page_length:number,
+    concurrency:number,
+    //proxys:Array<ProxyEntity>,
+    is_active:boolean,
 }
 export enum EmailsearchTaskStatus {
     Processing = 1,

@@ -267,7 +267,17 @@ export default {
         url:"url",
         title:"title",
         process_timeout:"process timeout minutes",
-       
+        failed:"Email extraction failed",
+        searchResult_empty:"No search results found for email extraction",
+    },
+    emailscrape:{
+        failed:"Email scrape failed",
+        url_empty:"URL list is empty",
+        url_invalid:"No valid URLs found",
+        searchTaskId_empty:"Search task ID is empty",
+        searchResult_empty:"No search results found",
+        action_error:"Invalid action type",
+        emailsearch_task_start:"Email search task started successfully",
     },
     emailmarketing:{
         id:"id",

@@ -183,23 +183,31 @@ This document outlines the complete implementation plan for adding a scheduling 
 
 ## Phase 4: Controller Layer Implementation
 
-### 4.1 Create ScheduleController
-- **Status**: ⏳ Pending
+### 4.1 Create ScheduleController ✅
+- **Status**: ✅ Completed
 - **File**: `src/controller/ScheduleController.ts`
-- **Description**: Controller for handling schedule-related requests:
-  - `createSchedule(scheduleData: ScheduleCreateRequest): Promise<number>`
-  - `updateSchedule(id: number, scheduleData: ScheduleUpdateRequest): Promise<void>`
-  - `deleteSchedule(id: number): Promise<void>`
-  - `enableSchedule(id: number): Promise<void>`
-  - `disableSchedule(id: number): Promise<void>`
-  - `runScheduleNow(id: number): Promise<void>`
-  - `getScheduleList(page: number, size: number, sort?: SortBy): Promise<ScheduleListResponse>`
-  - `getExecutionHistory(scheduleId: number, page: number, size: number): Promise<ExecutionHistoryResponse>`
-  - `getScheduleById(id: number): Promise<ScheduleDetailResponse>`
-  - `addDependency(parentId: number, childId: number, dependencyData: DependencyCreateRequest): Promise<number>`
-  - `removeDependency(parentId: number, childId: number): Promise<void>`
-  - `getDependencyGraph(scheduleId: number): Promise<DependencyGraphResponse>`
-  - `validateDependencies(scheduleId: number): Promise<DependencyValidationResponse>`
+- **Description**: Controller for handling schedule-related requests with comprehensive functionality:
+  - `createSchedule(scheduleData: ScheduleCreateRequest): Promise<number>` - Create new schedule with validation
+  - `updateSchedule(id: number, scheduleData: ScheduleUpdateRequest): Promise<void>` - Update existing schedule
+  - `deleteSchedule(id: number): Promise<void>` - Delete schedule and clean up dependencies
+  - `enableSchedule(id: number): Promise<void>` - Enable a schedule
+  - `disableSchedule(id: number): Promise<void>` - Disable a schedule
+  - `pauseSchedule(id: number): Promise<void>` - Pause a schedule
+  - `resumeSchedule(id: number): Promise<void>` - Resume a schedule
+  - `runScheduleNow(id: number): Promise<void>` - Execute schedule immediately
+  - `getScheduleList(page: number, size: number, sort?: SortBy): Promise<ScheduleListResponse>` - Get paginated schedule list
+  - `getScheduleById(id: number): Promise<ScheduleDetailResponse>` - Get schedule details with execution history and dependencies
+  - `getExecutionHistory(scheduleId: number, page: number, size: number): Promise<ExecutionHistoryResponse>` - Get execution history
+  - `addDependency(parentId: number, childId: number, dependencyData: DependencyCreateRequest): Promise<number>` - Add job dependency
+  - `removeDependency(parentId: number, childId: number): Promise<void>` - Remove job dependency
+  - `getDependencyGraph(scheduleId: number): Promise<DependencyGraphResponse>` - Get visual dependency graph
+  - `validateDependencies(scheduleId: number): Promise<DependencyValidationResponse>` - Validate dependency chain
+  - `getSchedulerStatus(): SchedulerStatus` - Get current scheduler status
+  - `startScheduler(): Promise<void>` - Start the scheduler
+  - `stopScheduler(): Promise<void>` - Stop the scheduler
+  - `getSchedulesByTaskType(taskType: TaskType): Promise<ScheduleTaskEntity[]>` - Get schedules by task type
+  - `getRecentExecutions(limit: number): Promise<any[]>` - Get recent executions across all schedules
+  - `getExecutionStatistics(scheduleId: number): Promise<any>` - Get execution statistics
 
 ## Phase 5: Type Definitions
 

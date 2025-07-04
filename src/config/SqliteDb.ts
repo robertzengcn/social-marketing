@@ -28,7 +28,8 @@ import {EmailSearchResultEntity} from "@/entity/EmailSearchResult.entity"
 import {EmailSearchResultDetailEntity} from "@/entity/EmailSearchResultDetail.entity"
 import {EmailSearchTaskEntity} from "@/entity/EmailSearchTask.entity"
 import {EmailSearchTaskUrlEntity} from "@/entity/EmailSearchTaskUrl.entity"
-import {EmailSearchUrlEntity} from "@/entity/EmailSearchUrl.entity"
+import {EmailSearchTaskProxyEntity} from "@/entity/EmailSearchTaskProxy.entity"
+//import {EmailSearchUrlEntity} from "@/entity/EmailSearchTaskUrl.entity"
 import {ExtraModuleEntity} from "@/entity/ExtraModule.entity"
 import {ProxyCheckEntity} from "@/entity/ProxyCheck.entity"
 import {ProxyEntity} from "@/entity/Proxy.entity"
@@ -64,7 +65,8 @@ export class SqliteDb {
                 EmailSearchResultDetailEntity,
                 EmailSearchTaskEntity,
                 EmailSearchTaskUrlEntity,
-                EmailSearchUrlEntity,
+                EmailSearchTaskProxyEntity,
+                //EmailSearchUrlEntity,
                 ExtraModuleEntity,
                 ProxyCheckEntity,
                 ProxyEntity,

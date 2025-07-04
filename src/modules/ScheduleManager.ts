@@ -1,12 +1,17 @@
 import { BaseDb } from "@/model/Basedb";
-import { ScheduleTaskModel } from "@/model/ScheduleTask.model";
+//import { ScheduleTaskModel } from "@/model/ScheduleTask.model";
+import { ScheduleTaskModule } from "@/modules/ScheduleTaskModule";
+import {ScheduleTaskModuleInterface} from "@/modules/interface/ScheduleTaskModuleInterface"
 import { ScheduleExecutionLogModel } from "@/model/ScheduleExecutionLog.model";
-import { ScheduleDependencyModel } from "@/model/ScheduleDependency.model";
+//import { ScheduleDependencyModel } from "@/model/ScheduleDependency.model";
 import { ScheduleTaskEntity, TaskType, ScheduleStatus, TriggerType, DependencyCondition } from "@/entity/ScheduleTask.entity";
 import { ExecutionStatus, TriggerType as LogTriggerType } from "@/entity/ScheduleExecutionLog.entity";
 import { TaskExecutorService } from "./TaskExecutorService";
 import { CronJob } from 'cron';
-
+import {ScheduleExecutionLogInterface} from "@/modules/interface/ScheduleExecutionLogInterface"
+import { ScheduleExecutionLogModule } from "./ScheduleExecutionLogModule";
+import { ScheduleDependencyModule } from "./ScheduleDependencyModule";
+import { ScheduleDependencyInterface } from "./interface/ScheduleDependencyInterface";
 export interface SchedulerStatus {
     isRunning: boolean;
     activeSchedules: number;
@@ -15,22 +20,26 @@ export interface SchedulerStatus {
     nextCheckTime: Date;
 }
 
-export class ScheduleManager extends BaseDb {
-    private scheduleTaskModel: ScheduleTaskModel;
-    private scheduleExecutionLogModel: ScheduleExecutionLogModel;
-    private scheduleDependencyModel: ScheduleDependencyModel;
-    private taskExecutorService: TaskExecutorService;
+export class ScheduleManager {
+    // private scheduleTaskModel: ScheduleTaskModel;
+    // private scheduleExecutionLogModel: ScheduleExecutionLogModel;
+    // private scheduleDependencyModel: ScheduleDependencyModel;
+    // private taskExecutorService: TaskExecutorService;
     private cronJobs: Map<number, CronJob> = new Map();
     private isInitialized: boolean = false;
     private isRunning: boolean = false;
     private checkInterval: NodeJS.Timeout | null = null;
+    private scheduleTaskModule: ScheduleTaskModuleInterface;
+    private scheduleExecutionLogModule: ScheduleExecutionLogInterface;
+    private scheduleDependencyModule: ScheduleDependencyInterface;
+    private taskExecutorModule: TaskExecutorService;
 
-    constructor(filepath: string) {
-        super(filepath);
-        this.scheduleTaskModel = new ScheduleTaskModel(filepath);
-        this.scheduleExecutionLogModel = new ScheduleExecutionLogModel(filepath);
-        this.scheduleDependencyModel = new ScheduleDependencyModel(filepath);
-        this.taskExecutorService = new TaskExecutorService();
+    constructor() {
+        //super();
+        this.scheduleTaskModule = new ScheduleTaskModule();
+        this.scheduleExecutionLogModule = new ScheduleExecutionLogModule();
+        this.scheduleDependencyModule = new ScheduleDependencyModule();
+        this.taskExecutorModule = new TaskExecutorService();
     }
 
     /**
@@ -43,7 +52,7 @@ export class ScheduleManager extends BaseDb {
 
         try {
             // Load all active schedules
-            const activeSchedules = await this.scheduleTaskModel.getActiveSchedules();
+            const activeSchedules = await this.scheduleTaskModule.getActiveSchedules();
             
             // Add each schedule to the scheduler
             for (const schedule of activeSchedules) {
@@ -120,7 +129,7 @@ export class ScheduleManager extends BaseDb {
      */
     async executeSchedule(scheduleId: number): Promise<void> {
         try {
-            const schedule = await this.scheduleTaskModel.getScheduleById(scheduleId);
+            const schedule = await this.scheduleTaskModule.getScheduleById(scheduleId);
             if (!schedule) {
                 throw new Error(`Schedule ${scheduleId} not found`);
             }
@@ -133,7 +142,7 @@ export class ScheduleManager extends BaseDb {
             console.log(`Executing schedule ${scheduleId} (${schedule.name})`);
 
             // Log execution start
-            const executionId = await this.scheduleExecutionLogModel.logExecution(
+            const executionId = await this.scheduleExecutionLogModule.logExecution(
                 scheduleId,
                 ExecutionStatus.RUNNING,
                 'Execution started',
@@ -146,13 +155,13 @@ export class ScheduleManager extends BaseDb {
 
             try {
                 // Execute the task
-                const taskOutputId = await this.taskExecutorService.executeScheduledTask(schedule);
+                const taskOutputId = await this.taskExecutorModule.executeScheduledTask(schedule);
 
                 // Calculate duration
                 const duration = Date.now() - startTime;
 
                 // Update execution log with success
-                await this.scheduleExecutionLogModel.updateExecutionStatus(
+                await this.scheduleExecutionLogModule.updateExecutionStatus(
                     executionId,
                     ExecutionStatus.SUCCESS,
                     'Task executed successfully',
@@ -160,12 +169,12 @@ export class ScheduleManager extends BaseDb {
                 );
 
                 // Update schedule statistics
-                await this.scheduleTaskModel.incrementExecutionCount(scheduleId, true);
-                await this.scheduleTaskModel.updateLastRunTime(scheduleId, new Date());
+                await this.scheduleTaskModule.incrementExecutionCount(scheduleId, true);
+                await this.scheduleTaskModule.updateLastRunTime(scheduleId, new Date());
 
                 // Calculate and update next run time
                 const nextRunTime = this.calculateNextRunTime(schedule.cron_expression);
-                await this.scheduleTaskModel.updateNextRunTime(scheduleId, nextRunTime);
+                await this.scheduleTaskModule.updateNextRunTime(scheduleId, nextRunTime);
 
                 console.log(`Schedule ${scheduleId} executed successfully in ${duration}ms`);
 
@@ -177,7 +186,7 @@ export class ScheduleManager extends BaseDb {
                 const errorMessage = error instanceof Error ? error.message : 'Unknown error';
 
                 // Update execution log with failure
-                await this.scheduleExecutionLogModel.updateExecutionStatus(
+                await this.scheduleExecutionLogModule.updateExecutionStatus(
                     executionId,
                     ExecutionStatus.FAILED,
                     errorMessage,
@@ -185,8 +194,8 @@ export class ScheduleManager extends BaseDb {
                 );
 
                 // Update schedule statistics
-                await this.scheduleTaskModel.incrementExecutionCount(scheduleId, false);
-                await this.scheduleTaskModel.updateLastErrorMessage(scheduleId, errorMessage);
+                await this.scheduleTaskModule.incrementExecutionCount(scheduleId, false);
+                await this.scheduleTaskModule.updateLastErrorMessage(scheduleId, errorMessage);
 
                 console.error(`Schedule ${scheduleId} execution failed:`, error);
 
@@ -238,7 +247,7 @@ export class ScheduleManager extends BaseDb {
      * @param scheduleId The schedule ID to pause
      */
     async pauseSchedule(scheduleId: number): Promise<void> {
-        await this.scheduleTaskModel.pauseSchedule(scheduleId);
+        await this.scheduleTaskModule.pauseSchedule(scheduleId);
         await this.removeSchedule(scheduleId);
         console.log(`Schedule ${scheduleId} paused`);
     }
@@ -248,8 +257,8 @@ export class ScheduleManager extends BaseDb {
      * @param scheduleId The schedule ID to resume
      */
     async resumeSchedule(scheduleId: number): Promise<void> {
-        await this.scheduleTaskModel.resumeSchedule(scheduleId);
-        const schedule = await this.scheduleTaskModel.getScheduleById(scheduleId);
+        await this.scheduleTaskModule.resumeSchedule(scheduleId);
+        const schedule = await this.scheduleTaskModule.getScheduleById(scheduleId);
         if (schedule && schedule.is_active) {
             await this.addSchedule(schedule);
         }
@@ -270,13 +279,13 @@ export class ScheduleManager extends BaseDb {
         delayMinutes: number = 0
     ): Promise<void> {
         // Check for circular dependencies
-        const hasCircular = await this.scheduleDependencyModel.checkCircularDependency(parentId, childId);
+        const hasCircular = await this.scheduleDependencyModule.checkCircularDependency(parentId, childId);
         if (hasCircular) {
             throw new Error('Circular dependency detected');
         }
 
         // Create the dependency
-        await this.scheduleDependencyModel.createDependency(parentId, childId, condition, delayMinutes);
+        await this.scheduleDependencyModule.createDependency(parentId, childId, condition, delayMinutes);
         console.log(`Added dependency: ${parentId} -> ${childId} (${condition})`);
     }
 
@@ -286,7 +295,7 @@ export class ScheduleManager extends BaseDb {
      * @param childId The child schedule ID
      */
     async removeDependency(parentId: number, childId: number): Promise<void> {
-        await this.scheduleDependencyModel.deleteDependencyByParentChild(parentId, childId);
+        await this.scheduleDependencyModule.deleteDependencyByParentChild(parentId, childId);
         console.log(`Removed dependency: ${parentId} -> ${childId}`);
     }
 
@@ -298,7 +307,7 @@ export class ScheduleManager extends BaseDb {
     async executeDependentJobs(parentExecutionId: number, parentStatus: ExecutionStatus): Promise<void> {
         try {
             // Get the parent execution to find the schedule
-            const parentExecution = await this.scheduleExecutionLogModel.getExecutionById(parentExecutionId);
+            const parentExecution = await this.scheduleExecutionLogModule.getExecutionById(parentExecutionId);
             if (!parentExecution) {
                 return;
             }
@@ -306,7 +315,7 @@ export class ScheduleManager extends BaseDb {
             const parentScheduleId = parentExecution.schedule_id;
 
             // Get all dependencies for this parent
-            const dependencies = await this.scheduleDependencyModel.getDependenciesByParent(parentScheduleId);
+            const dependencies = await this.scheduleDependencyModule.getDependenciesByParent(parentScheduleId);
 
             for (const dependency of dependencies) {
                 // Check if the dependency condition matches the parent status
@@ -347,7 +356,7 @@ export class ScheduleManager extends BaseDb {
      */
     async validateDependencyChain(scheduleId: number): Promise<boolean> {
         try {
-            const validation = await this.scheduleDependencyModel.validateDependencies(scheduleId);
+            const validation = await this.scheduleDependencyModule.validateDependencies(scheduleId);
             return validation.isValid;
         } catch (error) {
             console.error('Failed to validate dependency chain:', error);
@@ -418,17 +427,17 @@ export class ScheduleManager extends BaseDb {
     private async processDependencyQueue(): Promise<void> {
         try {
             // Get all dependency-based schedules that are ready to execute
-            const dependencySchedules = await this.scheduleTaskModel.getSchedulesByTriggerType(TriggerType.DEPENDENCY);
+            const dependencySchedules = await this.scheduleTaskModule.getSchedulesByTriggerType(TriggerType.DEPENDENCY);
             
             for (const schedule of dependencySchedules) {
                 if (!schedule.is_active) continue;
 
                 // Check if parent schedules have completed
-                const parentSchedules = await this.scheduleDependencyModel.getParentSchedules(schedule.id);
+                const parentSchedules = await this.scheduleDependencyModule.getParentSchedules(schedule.id);
                 let allParentsCompleted = true;
 
                 for (const parentId of parentSchedules) {
-                    const parentSchedule = await this.scheduleTaskModel.getScheduleById(parentId);
+                    const parentSchedule = await this.scheduleTaskModule.getScheduleById(parentId);
                     if (parentSchedule && parentSchedule.status === ScheduleStatus.ACTIVE) {
                         allParentsCompleted = false;
                         break;

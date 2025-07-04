@@ -49,7 +49,10 @@ export interface ScheduleListResponse {
 export interface ScheduleDetailResponse {
     schedule: any;
     execution_history?: any[];
-    dependencies?: any[];
+    dependencies?: {
+        children: any[];
+        parents: any[];
+    };
 }
 
 export interface ExecutionHistoryResponse {
@@ -80,4 +83,13 @@ export enum SchedulerStatus {
     STOPPED = 'stopped',
     PAUSED = 'paused',
     ERROR = 'error'
+}
+
+// Scheduler status response interface
+export interface SchedulerStatusResponse {
+    isRunning: boolean;
+    activeSchedules: number;
+    totalSchedules: number;
+    lastCheckTime: Date;
+    nextCheckTime: Date;
 } 

@@ -1,5 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from "typeorm";
 import AuditableEntity from "@/entity/Auditable.entity";
+import { EmailSearchTaskProxyEntity } from "@/entity/EmailSearchTaskProxy.entity";
 
 @Entity("proxy")
 export class ProxyEntity extends AuditableEntity {
@@ -26,4 +27,7 @@ export class ProxyEntity extends AuditableEntity {
     
     @Column("text", { nullable: true })
     addtime?: string;
+    
+    @OneToMany(() => EmailSearchTaskProxyEntity, taskProxy => taskProxy.proxy)
+    taskProxies: EmailSearchTaskProxyEntity[];
 } 

@@ -5,6 +5,8 @@ import { ScheduleExecutionLogModel } from "@/model/ScheduleExecutionLog.model";
 import { ScheduleTaskEntity, TaskType, ScheduleStatus, TriggerType } from "@/entity/ScheduleTask.entity";
 import { ExecutionStatus, TriggerType as LogTriggerType } from "@/entity/ScheduleExecutionLog.entity";
 import { TaskExecutorService } from "./TaskExecutorService";
+import { ScheduleTaskModuleInterface } from "@/modules/interface/ScheduleTaskModuleInterface";
+import { ScheduleTaskModule } from "@/modules/ScheduleTaskModule";
 
 export interface SchedulerStatus {
     isRunning: boolean;
@@ -52,7 +54,7 @@ export interface DetailedStats {
 
 export class BackgroundScheduler extends BaseDb {
     private scheduleManager: ScheduleManager;
-    private scheduleTaskModel: ScheduleTaskModel;
+    private scheduleTaskModel: ScheduleTaskModuleInterface;
     private scheduleExecutionLogModel: ScheduleExecutionLogModel;
     private taskExecutorService: TaskExecutorService;
     
@@ -79,8 +81,8 @@ export class BackgroundScheduler extends BaseDb {
 
     constructor(filepath: string) {
         super(filepath);
-        this.scheduleManager = new ScheduleManager(filepath);
-        this.scheduleTaskModel = new ScheduleTaskModel(filepath);
+        this.scheduleManager = new ScheduleManager();
+        this.scheduleTaskModel = new ScheduleTaskModule();
         this.scheduleExecutionLogModel = new ScheduleExecutionLogModel(filepath);
         this.taskExecutorService = new TaskExecutorService();
     }

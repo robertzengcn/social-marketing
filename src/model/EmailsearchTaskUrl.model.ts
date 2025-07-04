@@ -1,18 +1,18 @@
 import { BaseDb } from "@/model/Basedb";
 import { Repository } from "typeorm";
-import { EmailSearchUrlEntity } from "@/entity/EmailSearchUrl.entity";
+import { EmailSearchTaskUrlEntity } from "@/entity/EmailSearchTaskUrl.entity";
 import { EmailsearchUrlEntity } from "./emailsearchUrldb";
 
-export class EmailsearchUrlModel extends BaseDb {
-    private repository: Repository<EmailSearchUrlEntity>;
+export class EmailsearchTaskUrlModel extends BaseDb {
+    private repository: Repository<EmailSearchTaskUrlEntity>;
 
     constructor(filepath: string) {
         super(filepath);
-        this.repository = this.sqliteDb.connection.getRepository(EmailSearchUrlEntity);
+        this.repository = this.sqliteDb.connection.getRepository(EmailSearchTaskUrlEntity);
     }
 
     async create(emailsearchUrl: EmailsearchUrlEntity): Promise<number> {
-        const entity = new EmailSearchUrlEntity();
+        const entity = new EmailSearchTaskUrlEntity();
         entity.task_id = emailsearchUrl.task_id;
         entity.url = emailsearchUrl.url;
 
@@ -56,6 +56,17 @@ export class EmailsearchUrlModel extends BaseDb {
             where: { task_id: taskId },
             skip: page,
             take: size
+        });
+
+        return entities.map(entity => ({
+            id: entity.id,
+            task_id: entity.task_id,
+            url: entity.url
+        }));
+    }
+    async getAllUrlsByTaskId(taskId: number): Promise<EmailsearchUrlEntity[]> {
+        const entities = await this.repository.find({
+            where: { task_id: taskId }
         });
 
         return entities.map(entity => ({

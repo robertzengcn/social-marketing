@@ -1,54 +1,16 @@
-//import ConcurrencyImplementation from 'puppeteer-cluster/dist/concurrency/ConcurrencyImplementation';
-//import ConcurrencyImplementation from 'puppeteer-cluster/dist/concurrency/ConcurrencyImplementation';
 import { WorkerInstance } from 'puppeteer-cluster/dist/concurrency/ConcurrencyImplementation';
-// const debug = require('debug')('se-scraper:CustomConcurrency');
 import * as puppeteer from 'puppeteer';
-// import debug from 'debug';
 import { timeoutExecute } from 'puppeteer-cluster/dist/util';
-// import {WorkerInstance} from 'puppeteer-cluster/dist/concurrency/ConcurrencyImplementation'
 import {Browser} from 'puppeteer-cluster/dist/concurrency/builtInConcurrency';
-import { detectBrowserPlatform, install, canDownload, Browser as PuppeteerBrowser, getInstalledBrowsers, resolveBuildId } from '@puppeteer/browsers';
-import * as path from 'path';
-//import { app } from 'electron';
-import * as os from 'os';
-//import puppeteerExtra from 'puppeteer-extra';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
-//import AdblockerPlugin from 'puppeteer-extra-plugin-adblocker';
 import RecaptchaPlugin from 'puppeteer-extra-plugin-recaptcha';
 import vanillaPuppeteer from 'puppeteer';
 import {addExtra} from 'puppeteer-extra';
-import * as fs from 'fs';
-//import { execSync } from 'child_process';
-//import { executablePath } from 'puppeteer';
+import { browserManager } from './browserManager';
+
 const BROWSER_TIMEOUT = 5000;
 
-// Use Puppeteer's built-in Chrome version
-// Use a specific Chrome version that's compatible with Puppeteer
-let CHROME_BUILD_ID = '136.0.7103.94';
-
-// Function to get the correct cache directory path
-function getCacheDir(): string {
-    const homeDir = os.homedir();
-    return path.join(homeDir, '.cache', 'puppeteer');
-}
-
-// Function to get the latest Chrome version
-async function getLatestChromeVersion(): Promise<string> {
-    //return CHROME_BUILD_ID;
-    try {
-        const platform = await detectBrowserPlatform();
-        if (platform) {
-            const browser = 'chrome' as PuppeteerBrowser;
-            const latestBuildId = await resolveBuildId(browser, platform, 'latest');
-            return latestBuildId;
-        }
-    } catch (error) {
-        console.error('Failed to resolve latest Chrome version:', error);
-    }
-    return CHROME_BUILD_ID; // Fallback to default version if resolution fails
-}
-
-//puppeteerExtra.use(StealthPlugin());
+// Browser management is now handled by browserManager
 
 export class CustomConcurrency extends Browser {
 
@@ -61,94 +23,9 @@ export class CustomConcurrency extends Browser {
 
     async workerInstance(perBrowserOptions: puppeteer.LaunchOptions | undefined):Promise<WorkerInstance> {
         const options = perBrowserOptions || this.options;
-        const cacheDir = getCacheDir();
         
-        // Try to find local Chrome installation
-        let executablePath: string | undefined;
-        const localBrowserPath = process.env.LOCAL_BROWSER_EXCUTE_PATH;
-        console.log("localBrowserPath", localBrowserPath);
-        if (localBrowserPath && fs.existsSync(localBrowserPath)) {
-            executablePath = localBrowserPath;
-            console.log('Using local browser installation:', executablePath);
-        } else {
-            try {
-                const platform = await detectBrowserPlatform();
-                if (platform) {
-                    const browser = 'chrome' as PuppeteerBrowser;
-                    
-                    // Get the latest Chrome version
-                    //CHROME_BUILD_ID = await getLatestChromeVersion();
-                    console.log('Using Chrome version:', CHROME_BUILD_ID);
-                    
-                    // Check cache directory for installed browsers
-                    const installedBrowsers = await getInstalledBrowsers({ cacheDir });
-                    const chromeInstallation = installedBrowsers.find(
-                        installed => installed.browser === browser
-                    );
-                    
-                    if (chromeInstallation) {
-                        executablePath = chromeInstallation.executablePath;
-                        console.log('Using cached Chrome installation:', executablePath);
-                    } else {
-                        console.log('No Chrome installation found, will download browser');
-                        const canDownloadBrowser = await canDownload({
-                            browser,
-                            buildId: CHROME_BUILD_ID,
-                            platform,
-                            cacheDir
-                        });
-                        
-                        if (canDownloadBrowser) {
-                            await install({
-                                browser,
-                                buildId: CHROME_BUILD_ID,
-                                platform,
-                                cacheDir
-                            });
-                        }
-                    }
-                }
-            } catch (error) {
-                console.error('Failed to detect/install Chrome:', error);
-            }
-        }
-        // Add configuration for packaged environment
-        const launchOptions:puppeteer.LaunchOptions = {
-            ...options,
-            executablePath,
-            //product: executablePath?.includes('firefox') ? 'firefox' : 'chrome',
-            //userDataDir: process.env.USEDATADIR && process.env.USEDATADIR.trim() !== '' ? process.env.USEDATADIR : undefined,
-            args: [
-                ...((options as any).args || []),
-                '--no-sandbox',
-                '--disable-setuid-sandbox',
-                '--disable-dev-shm-usage',
-                // '--enable-webgl',
-                // '--window-position=0,0',
-                '--ignore-certifcate-errors',
-                '--ignore-certifcate-errors-spki-list',
-                //'--use-gl=swiftshader',
-                //'--use-gl=angle',
-                '--disable-blink-features=AutomationControlled',
-                // '--disable-features=IsolateOrigins,site-per-process',
-                // '--disable-site-isolation-trials',
-                // '--disable-web-security',
-                // '--disable-features=BlockInsecurePrivateNetworkRequests',
-                // //'--disable-features=IsolateOrigins',
-                // '--disable-site-isolation-trials'
-            ],
-            //...(process.env.USEDATADIR && process.env.USEDATADIR.trim() !== '' ? {} : {
-                //ignoreDefaultArgs: ['--password-store=basic','--use-mock-keychain'],
-            //}),
-            // defaultViewport: {
-            //     width: 1280 + Math.floor(Math.random() * 100),
-            //     height: 768 + Math.floor(Math.random() * 100),
-            //     deviceScaleFactor: 1,
-            //     hasTouch: false,
-            //     isLandscape: true,
-            //     isMobile: false
-            // }
-        };
+        // Use browser manager to get executable path and create launch options
+        const launchOptions = await browserManager.createLaunchOptions(options);
         console.log('launchOptions', launchOptions);
         const puppeteers = addExtra(vanillaPuppeteer);
         puppeteers.use(StealthPlugin());
@@ -192,8 +69,13 @@ export class CustomConcurrency extends Browser {
         return {
             jobInstance: async () => {
                 await timeoutExecute(BROWSER_TIMEOUT, (async () => {
-                    context = await chrome.createBrowserContext();
-                    page = await context.newPage();
+                    try {
+                        context = await chrome.createBrowserContext();
+                        page = await context.newPage();
+                    } catch (error) {
+                        console.error('Failed to create browser context or page:', error);
+                        throw error; // Re-throw to let the timeout handler deal with it
+                    }
                     
                     // Additional anti-detection measures
                     await page.evaluateOnNewDocument(() => {
@@ -334,32 +216,68 @@ export class CustomConcurrency extends Browser {
                     },
 
                     close: async () => {
-                        await timeoutExecute(BROWSER_TIMEOUT, context.close());
+                        try {
+                            await timeoutExecute(BROWSER_TIMEOUT, context.close());
+                        } catch (error) {
+                            console.error('Failed to close browser context:', error);
+                            // Force close if timeout occurs
+                            try {
+                                await context.close();
+                            } catch (forceCloseError) {
+                                console.error('Failed to force close browser context:', forceCloseError);
+                            }
+                        }
                     },
                 };
             },
 
             close: async () => {
-                // if(page){
-                //     page.close();
-                // }
-                await chrome.close();
+                try {
+                    await timeoutExecute(BROWSER_TIMEOUT, chrome.close());
+                } catch (error) {
+                    console.error('Failed to close browser:', error);
+                    // Force close if timeout occurs
+                    try {
+                        await chrome.close();
+                    } catch (forceCloseError) {
+                        console.error('Failed to force close browser:', forceCloseError);
+                    }
+                }
             },
 
             repair: async () => {
                 // debug('Starting repair');
                 try {
                     // will probably fail, but just in case the repair was not necessary
-                    // await chrome.close();
                     await timeoutExecute(BROWSER_TIMEOUT, chrome.close());
                 } catch (e) {
                     // debug('Failed to close chrome: %o', e);
-                    // just relaunch as there is only one page per browser
-                    chrome = await puppeteer.launch(options);
+                    // Browser already closed or failed to close, continue with relaunch
                 }
 
-                // just relaunch as there is only one page per browser
-                chrome = await puppeteer.launch(options);
+                // Relaunch with the same enhanced puppeteer instance
+                const puppeteers = addExtra(vanillaPuppeteer);
+                puppeteers.use(StealthPlugin());
+                
+                // Only add reCAPTCHA plugin if token exists and is not empty
+                if (process.env.TWOCAPTCHA_TOKEN && process.env.TWOCAPTCHA_TOKEN.trim() !== '') {
+                    puppeteers.use(
+                        RecaptchaPlugin({
+                            provider: {
+                                id: '2captcha',
+                                token: process.env.TWOCAPTCHA_TOKEN,
+                            },
+                            visualFeedback: true,
+                            solveInViewportOnly: true,
+                            solveScoreBased: true,
+                            solveInactiveChallenges: true,
+                        })
+                    );
+                }
+                
+                // Use browser manager to get updated launch options
+                const repairLaunchOptions = await browserManager.createLaunchOptions(options);
+                chrome = await puppeteers.launch(repairLaunchOptions) as puppeteer.Browser;
             },
         };
     }

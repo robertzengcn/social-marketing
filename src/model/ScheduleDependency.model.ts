@@ -1,8 +1,9 @@
 import { BaseDb } from "@/model/Basedb";
 import { Repository } from "typeorm";
 import { ScheduleDependencyEntity, DependencyCondition } from "@/entity/ScheduleDependency.entity";
+import { ScheduleDependencyModelInterface, DependencyStatistics, DependencyValidationResult } from "@/modules/interface/ScheduleDependencyModelInterface";
 
-export class ScheduleDependencyModel extends BaseDb {
+export class ScheduleDependencyModel extends BaseDb implements ScheduleDependencyModelInterface {
     private repository: Repository<ScheduleDependencyEntity>;
 
     constructor(filepath: string) {
@@ -294,12 +295,7 @@ export class ScheduleDependencyModel extends BaseDb {
      * Get dependency statistics
      * @returns Object with dependency statistics
      */
-    async getDependencyStatistics(): Promise<{
-        total: number;
-        active: number;
-        inactive: number;
-        byCondition: Record<string, number>;
-    }> {
+    async getDependencyStatistics(): Promise<DependencyStatistics> {
         const total = await this.repository.count();
         const active = await this.repository.count({ where: { is_active: true } });
         const inactive = await this.repository.count({ where: { is_active: false } });
@@ -331,12 +327,7 @@ export class ScheduleDependencyModel extends BaseDb {
      * @param scheduleId The schedule ID to validate
      * @returns Object with validation results
      */
-    async validateDependencies(scheduleId: number): Promise<{
-        isValid: boolean;
-        circularDependencies: number[];
-        orphanedDependencies: number[];
-        errors: string[];
-    }> {
+    async validateDependencies(scheduleId: number): Promise<DependencyValidationResult> {
         const errors: string[] = [];
         const circularDependencies: number[] = [];
         const orphanedDependencies: number[] = [];

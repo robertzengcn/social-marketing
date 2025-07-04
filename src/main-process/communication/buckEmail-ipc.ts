@@ -4,7 +4,7 @@ import { ipcMain } from 'electron';
 import { EmailMarketingsubdata, EmailItem } from '@/entityTypes/emailmarketingType'
 import { CommonDialogMsg } from "@/entityTypes/commonType";
 import { BUCKEMAILSENDMESSAGE, BUCKEMAILTASKLIST, BUCKEMAILTASKSENDLOG } from "@/config/channellist"
-import { EmailSearchTaskModule } from "@/modules/emailSearchTaskModule"
+import { EmailSearchTaskModule } from "@/modules/EmailSearchTaskModule"
 import { Buckemailstruct } from "@/entityTypes/emailmarketingType"
 import { BuckEmailType } from "@/model/buckEmailTaskdb"
 import { ItemSearchparam } from "@/entityTypes/commonType"

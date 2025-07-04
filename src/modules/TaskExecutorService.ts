@@ -11,6 +11,7 @@ import {SearchTaskModule} from "@/modules/SearchTaskModule"
 import {EmailMarketingTaskModule} from "@/modules/EmailMarketingTaskModule"
 import {BuckEmailTaskModule} from "@/modules/buckEmailTaskModule"
 import {VideoDownloadTaskModule} from "@/modules/VideoDownloadTaskModule"
+import { EmailSearchTaskModule } from "./EmailSearchTaskModule";
 //import {getStatusName} from "@/modules/lib/function"
 // export enum TaskStatus {
 //     PENDING = 'pending',
@@ -22,19 +23,22 @@ import {VideoDownloadTaskModule} from "@/modules/VideoDownloadTaskModule"
 
 export class TaskExecutorService {
     private searchTaskModel: SearchTaskModule;
-    private emailMarketingTaskModel: EmailMarketingTaskModule;
+    //private emailMarketingTaskModel: EmailMarketingTaskModule;
     private buckEmailTaskModel: BuckEmailTaskModule;    
     private videoDownloadTaskModel: VideoDownloadTaskModule;
     private searchModel: SearchModule;
+    private emailSeachTaskModule:EmailSearchTaskModule
     //private socialTaskModel: SocialTaskModel;
 
     constructor() {
         //super();
         this.searchTaskModel = new SearchTaskModule();
-        this.emailMarketingTaskModel = new EmailMarketingTaskModule();
+        //this.emailMarketingTaskModel = new EmailMarketingTaskModule();
         this.buckEmailTaskModel = new BuckEmailTaskModule();
         this.videoDownloadTaskModel = new VideoDownloadTaskModule();
         this.searchModel = new SearchModule();
+        this.emailSeachTaskModule=new EmailSearchTaskModule()
+
         //this.socialTaskModel = new SocialTaskModel(filepath);
     }
 
@@ -55,7 +59,7 @@ export class TaskExecutorService {
                     taskOutputId = await this.executeSearchTask(schedule.task_id);
                     break;
                 case TaskType.EMAIL_EXTRACT:
-                    taskOutputId = await this.executeEmailMarketingTask(schedule.task_id);
+                    taskOutputId = await this.executeEmailExtractionTask(schedule.task_id);
                     break;
                 case TaskType.BUCK_EMAIL:
                     taskOutputId = await this.executeBuckEmailTask(schedule.task_id);
@@ -131,15 +135,16 @@ export class TaskExecutorService {
      * @param taskId The email marketing task ID
      * @returns The task output ID
      */
-    async executeEmailMarketingTask(taskId: number): Promise<number> {
+    async executeEmailExtractionTask(taskId: number): Promise<number> {
         try {
             console.log(`Executing email marketing task ${taskId}`);
 
             // Get the email marketing task entity
-            const emailTask = await this.emailMarketingTaskModel.read(taskId);
+            const emailTask = await this.emailSeachTaskModule.getTaskDetail(taskId);
             if (!emailTask) {
                 throw new Error(`Email marketing task ${taskId} not found`);
             }
+            await this.emailSeachTaskModule.searchEmail(taskId)
 
             // Execute the email marketing task using the existing email functionality
             // This would integrate with the existing email marketing system
@@ -267,7 +272,7 @@ export class TaskExecutorService {
                     status = searchTask?.status || undefined;
                     break;
                 case TaskType.EMAIL_EXTRACT:
-                    const emailTask = await this.emailMarketingTaskModel.read(taskId);
+                    const emailTask = await this.emailSeachTaskModule.getTaskDetail(taskId);
                     status = emailTask?.status || undefined;
                     break;
                 case TaskType.BUCK_EMAIL:
@@ -330,10 +335,10 @@ export class TaskExecutorService {
                     break;
                 case TaskType.EMAIL_EXTRACT:
                     // Update email marketing task status
-                    const emailTask = await this.emailMarketingTaskModel.read(taskId);
+                    const emailTask = await this.emailSeachTaskModule.getTaskDetail(taskId);
                     if (emailTask) {
                         emailTask.status = TaskStatus.Cancel;
-                        await this.emailMarketingTaskModel.updateTaskStatusById(taskId, emailTask.status);
+                        await this.emailSeachTaskModule.updateTaskStatus(taskId, emailTask.status);
                     }
                     break;
                 case TaskType.BUCK_EMAIL:
@@ -451,7 +456,7 @@ export class TaskExecutorService {
                     taskExists = !!searchTask;
                     break;
                 case TaskType.EMAIL_EXTRACT:
-                    const emailTask = await this.emailMarketingTaskModel.read(taskId);
+                    const emailTask = await this.emailSeachTaskModule.getTaskDetail(taskId);
                     taskExists = !!emailTask;
                     break;
                 case TaskType.BUCK_EMAIL:
