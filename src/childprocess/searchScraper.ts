@@ -141,11 +141,11 @@ export class SearchScrape implements searchEngineImpl {
                     //console.log("Setting cookie in browser context:", mappedCookie);
                     await this.page.setCookie(mappedCookie)
                     // Set cookie in browser context
-                    await browserContext.setCookie(mappedCookie);
+                    //await browserContext.setCookie(mappedCookie);
                     
                     // Also set cookie in page context
                     console.log("Setting cookie in page context:", mappedCookie);
-                    await pageContext.browser().setCookie(mappedCookie);
+                    //await pageContext.browser().setCookie(mappedCookie);
                 }
             }
             

@@ -515,7 +515,9 @@ export class GoogleScraper extends SearchScrape {
                 this.logger.warn("Google detected unusual traffic");
                 //throw new CustomError("Google detected unusual traffic", 202405301120304);
                 if (process.env.TWOCAPTCHA_TOKEN && process.env.TWOCAPTCHA_TOKEN.trim() !== '') {
-                    await this.page.solveRecaptchas()
+                    // The recaptcha plugin should handle this automatically
+                    // If manual solving is needed, use type assertion
+                    await (this.page as any).solveRecaptchas?.()
                 } else {
                     if (this.config.headless === false) {
                         this.logger.info(`Browser is not headless. Waiting for manual captcha solving...`);
