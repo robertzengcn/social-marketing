@@ -1,8 +1,10 @@
 export { };
 import { HttpClient } from "@/modules/lib/httpclient";
 import { ProxylistResp, ProxyEntity, SaveProxyResp, ProxyParseItem, ImportProxyResp, GetProxyCountResp, ProxyListEntity } from "@/entityTypes/proxyType";
-import { CommonApiresp } from "@/entityTypes/commonType"
-export class ProxyApi {
+import { CommonApiresp } from "@/entityTypes/commonType";
+import { IProxyApi } from "@/modules/interface/IProxyApi";
+
+export class ProxyApi implements IProxyApi {
   private _httpClient: HttpClient;
   constructor() {
     this._httpClient = new HttpClient();

@@ -107,7 +107,8 @@ export enum TaskStatus {
     Notstart = 0,
     Processing = 1,
     Complete = 2,
-    Error = 3
+    Error = 3,
+    Cancel = 4
   }
   export interface CommonIdrequestIds<Type> {
    ids:Array<Type>,

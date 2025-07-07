@@ -52,6 +52,7 @@ export type EmailResultDisplay = {
 }
 export type EmailsControldata = {
   validUrls: Array<string>,
+  searchResultId?:number,
   concurrency: number,
   pagelength: number,
   notShowBrowser: boolean,

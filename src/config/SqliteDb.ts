@@ -5,6 +5,13 @@ import {SystemSettingEntity} from "@/entity/SystemSetting.entity"
 import {SystemSettingOptionEntity} from "@/entity/SystemSettingOption.entity"
 import {AccountCookiesEntity} from "@/entity/AccountCookies.entity"
 import {BuckemailTaskEntity} from "@/entity/BuckemailTask.entity"
+import {EmailTemplateEntity} from "@/entity/EmailTemplate.entity"
+import {EmailFilterEntity} from "@/entity/EmailFilter.entity"
+import {EmailFilterDetailEntity} from "@/entity/EmailFilterDetail.entity"
+import {EmailTemplateTaskRelationEntity} from "@/entity/EmailTemplateTaskRelation.entity"
+import {EmailFilterTaskRelationEntity} from "@/entity/EmailFilterTaskRelation.entity"
+import {EmailServiceEntity} from "@/entity/EmailService.entity"
+import {EmailServiceTaskRelationEntity} from "@/entity/EmailServiceTaskRelation.entity"
 import {VideoCaptionEntity} from "@/entity/VideoCaption.entity"
 import {VideoDescriptionEntity} from "@/entity/VideoDescription.entity"
 import {VideoDownloadEntity} from "@/entity/VideoDownload.entity"
@@ -20,9 +27,12 @@ import {EmailMarketingTaskDetailEntity} from "@/entity/EmailMarketingTaskDetail.
 import {EmailSearchResultEntity} from "@/entity/EmailSearchResult.entity"
 import {EmailSearchResultDetailEntity} from "@/entity/EmailSearchResultDetail.entity"
 import {EmailSearchTaskEntity} from "@/entity/EmailSearchTask.entity"
-import {EmailSearchUrlEntity} from "@/entity/EmailSearchUrl.entity"
+import {EmailSearchTaskUrlEntity} from "@/entity/EmailSearchTaskUrl.entity"
+import {EmailSearchTaskProxyEntity} from "@/entity/EmailSearchTaskProxy.entity"
+//import {EmailSearchUrlEntity} from "@/entity/EmailSearchTaskUrl.entity"
 import {ExtraModuleEntity} from "@/entity/ExtraModule.entity"
 import {ProxyCheckEntity} from "@/entity/ProxyCheck.entity"
+import {ProxyEntity} from "@/entity/Proxy.entity"
 import {SearchKeywordEntity} from "@/entity/SearchKeyword.entity"
 import {SearchResultEntity} from "@/entity/SearchResult.entity"
 import {TaskRunEntity} from "@/entity/TaskRun.entity"
@@ -31,6 +41,9 @@ import { SearchTaskEntity } from "@/entity/SearchTask.entity";
 import { SearchTaskProxyEntity } from "@/entity/SearchTaskProxy.entity";
 import {SearchAccountEntity} from "@/entity/SearchAccount.entity"
 import {VideoPublishRecordEntity} from "@/entity/VideoPublishRecord.entity"
+import { ScheduleTaskEntity } from "@/entity/ScheduleTask.entity";
+import { ScheduleExecutionLogEntity } from "@/entity/ScheduleExecutionLog.entity";
+import { ScheduleDependencyEntity } from "@/entity/ScheduleDependency.entity";
 // import sqlite3 from "sqlite3"; 
 
 
@@ -51,9 +64,12 @@ export class SqliteDb {
                 EmailSearchResultEntity,
                 EmailSearchResultDetailEntity,
                 EmailSearchTaskEntity,
-                EmailSearchUrlEntity,
+                EmailSearchTaskUrlEntity,
+                EmailSearchTaskProxyEntity,
+                //EmailSearchUrlEntity,
                 ExtraModuleEntity,
                 ProxyCheckEntity,
+                ProxyEntity,
                 SearchKeywordEntity,
                 SearchResultEntity,
                 TaskRunEntity,
@@ -73,7 +89,17 @@ export class SqliteDb {
                 VideoDownloadTaskKeywordEntity,
                 SearchTaskProxyEntity,
                 SearchAccountEntity,
-                VideoPublishRecordEntity,    
+                VideoPublishRecordEntity,
+                ScheduleTaskEntity,
+                ScheduleExecutionLogEntity,
+                ScheduleDependencyEntity,
+                EmailTemplateEntity,
+                EmailFilterEntity,
+                EmailFilterDetailEntity,
+                EmailTemplateTaskRelationEntity,
+                EmailFilterTaskRelationEntity,
+                EmailServiceEntity,
+                EmailServiceTaskRelationEntity,
             ],
             synchronize: true, 
             migrations: [],

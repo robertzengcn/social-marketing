@@ -1,7 +1,7 @@
 import { SearchDataParam } from "@/entityTypes/scrapeType"
 import { SearchTaskModel, SearchTaskStatus } from "@/model/SearchTask.model"
-import { Token } from "@/modules/token"
-import { USERSDBPATH } from '@/config/usersetting';
+//import { Token } from "@/modules/token"
+//import { USERSDBPATH } from '@/config/usersetting';
 import { SearhEnginer } from "@/config/searchSetting"
 // import { ToArray } from "@/modules/lib/function"
 import { SearchKeywordModel } from "@/model/SearchKeyword.model"
@@ -21,8 +21,13 @@ import { SearchAccountModel } from "@/model/SearchAccount.model"
 import { SearchAccountEntity } from "@/entity/SearchAccount.entity";
 import { CookiesType } from "@/entityTypes/cookiesType"
 import { AccountCookiesModule } from "./accountCookiesModule";
+import {Usersearchdata } from "@/entityTypes/searchControlType"
+import { utilityProcess, MessageChannelMain} from "electron";
+import { SystemSettingGroupModule } from '@/modules/SystemSettingGroupModule';
+import { twocaptchagroup,twocaptchatoken,twocaptcha_enabled,chrome_path,firefox_path,external_system} from '@/config/settinggroupInit'
+import {WriteLog,getChromeExcutepath,getFirefoxExcutepath} from "@/modules/lib/function"
 
-export class searhModel extends BaseModule {
+export class SearchModule extends BaseModule {
     // private dbpath: string
     private taskdbModel: SearchTaskModel
     private serResultModel: SearchResultModel
@@ -30,6 +35,7 @@ export class searhModel extends BaseModule {
     private searchTaskProxyModel: SearchTaskProxyModel
     private searchAccountModel: SearchAccountModel
     private accountCookiesModule: AccountCookiesModule
+    private systemSettingGroupModule: SystemSettingGroupModule
     constructor() {
         // const tokenService = new Token()
         // const dbpath = tokenService.getValue(USERSDBPATH)
@@ -44,6 +50,156 @@ export class searhModel extends BaseModule {
         this.searchTaskProxyModel = new SearchTaskProxyModel(this.dbpath)
         this.searchAccountModel = new SearchAccountModel(this.dbpath)
         this.accountCookiesModule = new AccountCookiesModule()
+        this.systemSettingGroupModule = new SystemSettingGroupModule()
+    }
+
+    //run search function
+    public async runSearchTask(taskId:number):Promise<void>{
+
+        //get error log and run log
+        const taskEntity=await this.getTaskEntityById(taskId)
+        if(!taskEntity){
+            throw new Error("task not exist")
+        }
+        const errorLogfile=taskEntity.error_log
+        if(!errorLogfile){
+            throw new Error("error log not exist")
+        }
+        const runLogfile=taskEntity.run_log
+        if(!runLogfile){
+            throw new Error("run log not exist")
+        }
+        // Get parent path of errorLogfile
+        const errorLogDir = path.dirname(errorLogfile);
+        
+        // Ensure the directory exists
+        if (!fs.existsSync(errorLogDir)) {
+            fs.mkdirSync(errorLogDir, { recursive: true });
+        }
+        
+       
+        const data:Usersearchdata={
+            searchEnginer:taskEntity.engine,
+            keywords:taskEntity.keywords,
+            num_pages:taskEntity.num_pages??1,
+            concurrency:taskEntity.concurrency??1,
+            notShowBrowser:taskEntity.notShowBrowser??false,
+            proxys:taskEntity.proxys,
+            debug_log_path:errorLogDir,
+            //useLocalbrowserdata:taskEntity.useLocalbrowserdata?true:false,
+            localBrowser:taskEntity.localBrowser?taskEntity.localBrowser:"",
+            cookies:taskEntity.cookies
+        }
+
+        const childPath = path.join(__dirname, 'taskCode.js')
+        if (!fs.existsSync(childPath)) {
+            throw new Error("child js path not exist for the path " + childPath);
+        }
+        const { port1, port2 } = new MessageChannelMain()
+       // const tokenService=new Token()
+       let twoCaptchaTokenvalue=""
+       const twoCaptchaToken=await this.systemSettingGroupModule.getGroupItembyName(twocaptchagroup)
+       if(twoCaptchaToken){
+        //find 2captcha enable key
+        const twocaptchenable=twoCaptchaToken.settings.find((item)=>item.key===twocaptcha_enabled)
+        if(twocaptchenable){
+        const token=twoCaptchaToken.settings.find((item)=>item.key===twocaptchatoken)
+        if(token){
+            twoCaptchaTokenvalue=token.value
+        }
+       }
+    }
+    let localBrowserexcutepath:string=""
+    if(data.localBrowser&&data.localBrowser.length>0){
+        const external_system_group=await this.systemSettingGroupModule.getGroupItembyName(external_system)
+        if(external_system_group){
+            const chromePath=external_system_group.settings.find((item)=>item.key===chrome_path)
+            if(chromePath){
+                localBrowserexcutepath=chromePath.value
+            }
+            const firefoxPath=external_system_group.settings.find((item)=>item.key===firefox_path)
+            if(firefoxPath){
+                localBrowserexcutepath=firefoxPath.value
+            }
+        }
+        if(data.localBrowser=="chrome"&&!localBrowserexcutepath){
+            
+            const localBrowserexcutepathresult=getChromeExcutepath()
+            if(localBrowserexcutepathresult){
+                localBrowserexcutepath=localBrowserexcutepathresult
+            }
+
+        }else if(data.localBrowser=="firefox"&&!localBrowserexcutepath){
+            const localBrowserexcutepathresult=getFirefoxExcutepath()
+            if(localBrowserexcutepathresult){
+                localBrowserexcutepath=localBrowserexcutepathresult
+            }
+        }
+        if(!localBrowserexcutepath){
+            throw new Error("local browser excute path not exist")
+        }
+    }
+    //let userDataDir=""
+    // if(data.useLocalbrowserdata){
+    //     userDataDir=getChromeUserDataDir()
+    //     if(!userDataDir){
+    //         throw new Error("user data dir not exist")
+    //     }
+    // }
+       //console.log("two captcha token value is "+twoCaptchaTokenvalue)
+       //console.log("local browser excute path is "+localBrowserexcutepath)
+       //console.log("user data dir is "+userDataDir)
+        const child = utilityProcess.fork(childPath, [],{stdio:"pipe",execArgv:["puppeteer-cluster:*"],env:{
+            ...process.env,
+            NODE_OPTIONS: "",
+            TWOCAPTCHA_TOKEN: twoCaptchaTokenvalue,
+            LOCAL_BROWSER_EXCUTE_PATH: localBrowserexcutepath,
+            //USEDATADIR: userDataDir
+        }} )
+        child.on("spawn", () => {
+            console.log("child process satart, pid is"+child.pid)
+            this.updateTaskStatus(taskId,SearchTaskStatus.Processing)
+            child.postMessage(JSON.stringify({action:"searchscraper",data:data}),[port1])
+           // this.searhModel.updateTaskLog(taskId,runLogfile,errorLogfile)
+        })
+        
+        child.stdout?.on('data', (data) => {
+            console.log(`Received data chunk ${data}`)
+            WriteLog(runLogfile,data)
+           // child.kill()
+        })
+        child.stderr?.on('data', (data) => {
+            const ingoreStr=["Debugger attached","Waiting for the debugger to disconnect","Most NODE_OPTIONs are not supported in packaged apps"]
+            if(!ingoreStr.some((value)=>data.includes(value))){
+                    
+            // seModel.saveTaskerrorlog(taskId,data)
+            console.log(`Received error chunk ${data}`)
+            WriteLog(errorLogfile,data)
+            this.updateTaskStatus(taskId,SearchTaskStatus.Error)
+            //child.kill()
+            }
+            
+        })
+        child.on("exit", (code) => {
+            if (code !== 0) {
+                console.error(`Child process exited with code ${code}`);
+                this.updateTaskStatus(taskId,SearchTaskStatus.Error)
+            } else {
+                this.updateTaskStatus(taskId,SearchTaskStatus.Complete)
+                console.log('Child process exited successfully');
+            }
+        })
+        child.on('message', (message) => {
+            console.log("get message from child")
+            console.log('Message from child:', JSON.parse(message));
+            const childdata=JSON.parse(message)
+            if(childdata.action=="savesearchresult"){
+                //save result
+                this.saveSearchResult(childdata.data,taskId)
+                this.updateTaskStatus(taskId,SearchTaskStatus.Complete)
+                child.kill()
+            }
+        });
     }
 
     //save search task, call it when user start search keyword

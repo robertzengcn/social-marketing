@@ -1,7 +1,7 @@
 import {windowInvoke,windowSend,windowReceive} from '@/views/utils/apirequest'
 import {SearchResult} from "./types"
 import {ProxyEntity,ProxyParseItem,ProxyListEntity} from "@/entityTypes/proxyType"
-import {CHECKALLPROXY,CHECKALLPROXYMESSAGE,PROXYLIST,REMOVEFAILUREPROXY,REMOVEFAILUREPROXY_MESSAGE} from "@/config/channellist";
+import {CHECKALLPROXY,CHECKALLPROXYMESSAGE,PROXYLIST,PROXYDETAIL,REMOVEFAILUREPROXY,REMOVEFAILUREPROXY_MESSAGE, PROXYDELETE, PROXYSAVE, PROXYCHECK, PROXYIMPORT} from "@/config/channellist";
 // import { CommonMessage,NumProcessdata } from "@/entityTypes/commonType"
 import {ItemSearchparam} from "@/entityTypes/commonType"
 export async function getProxyList(data: ItemSearchparam): Promise<SearchResult<ProxyListEntity>> {
@@ -10,6 +10,7 @@ export async function getProxyList(data: ItemSearchparam): Promise<SearchResult<
     if(!resp){
        throw new Error("unknow error")
     }
+    console.log(resp)
     const sr:SearchResult<ProxyListEntity>={
         data:resp.records,
         total:resp.total,
@@ -18,7 +19,7 @@ export async function getProxyList(data: ItemSearchparam): Promise<SearchResult<
     // return resp as Array<Proxy>;
 }
 export async function deleteProxy(data: number): Promise<any> {
-    const resp=await windowInvoke('proxy:delete',{id:data});
+    const resp=await windowInvoke(PROXYDELETE,{id:data});
         
     // if(!resp){ 
     //    throw new Error("unknow error")
@@ -28,7 +29,7 @@ export async function deleteProxy(data: number): Promise<any> {
 }
 //get proxy detail
 export async function getProxy(data: number): Promise<ProxyEntity> {
-    const resp=await windowInvoke('proxy:detail',{id:data});
+    const resp=await windowInvoke(PROXYDETAIL,{id:data});
     if(!resp){ 
        throw new Error("unknow error")
     }
@@ -37,7 +38,7 @@ export async function getProxy(data: number): Promise<ProxyEntity> {
 }
 //save proxy
 export async function saveProxy(data: ProxyEntity): Promise<any> {
-    const resp=await windowInvoke('proxy:save',data);
+    const resp=await windowInvoke(PROXYSAVE,data);
     if(!resp){ 
        throw new Error("unknow error")
     }
@@ -46,7 +47,7 @@ export async function saveProxy(data: ProxyEntity): Promise<any> {
 }
 //check proxy valid
 export async function checkProxy(data: ProxyEntity): Promise<any> {
-    const resp=await windowInvoke('proxy:check',data);
+    const resp=await windowInvoke(PROXYCHECK,data);
     if(!resp){ 
        throw new Error("unknow error")
     }
@@ -54,7 +55,7 @@ export async function checkProxy(data: ProxyEntity): Promise<any> {
     return resp;
 }
 export async function importProxydata(data: Array<ProxyParseItem>): Promise<boolean> {
-    const resp=await windowInvoke('proxy:import',data);
+    const resp=await windowInvoke(PROXYIMPORT,data);
     // if(!resp){ 
     //    throw new Error("unknow error")
     // }

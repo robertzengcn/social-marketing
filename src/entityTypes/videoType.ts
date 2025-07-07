@@ -182,6 +182,7 @@ export type DownloadVideoControlparam={
 export enum DownloadType {
     SINGLEVIDEO = 1,
     MULTIVIDEO = 2,
+    KEYWORD = 3,
 }
 export enum CookiesType {
     USEBROWSER = 1,

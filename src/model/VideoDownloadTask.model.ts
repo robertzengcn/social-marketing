@@ -52,7 +52,7 @@ export class VideoDownloadTaskModel extends BaseDb {
     async getVideoDownloadTask(taskId: number): Promise<VideoDownloadTaskEntity | null> {
         return this.repository.findOne({
             where: { id: taskId },
-            select: ['id', 'task_name', 'platform', 'savepath', 'record_time', 'status', 'error_log', 'runtime_log', 'downloadtype']
+            select: ['id', 'task_name', 'platform', 'savepath', 'record_time', 'status', 'error_log', 'runtime_log']
         });
     }
 } 

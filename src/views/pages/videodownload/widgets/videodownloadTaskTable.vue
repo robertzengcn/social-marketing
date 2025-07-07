@@ -71,9 +71,15 @@ const FakeAPI = {
     async fetch(fetchparam: Fetchparam): Promise<SearchResult<VideoDownloadTaskEntityType>> {
         // console.log(fetchparam.search)
         const fpage = (fetchparam.page - 1) * fetchparam.itemsPerPage
+        
         const res = await getVideoTasklist({ page: fpage, size: fetchparam.itemsPerPage, sortby: fetchparam.sortBy, search: fetchparam.search })
         console.log(res)
         return res
+        // const resp:SearchResult<VideoDownloadTaskEntityType>={
+        //     data:[],
+        //     total:0
+        // }
+        // return resp
     }
 }
 

@@ -8,7 +8,7 @@ export class SearchResultEntity extends AuditableEntity {
     
     @Column("integer", { default: 0 })
     task_id: number;
-    
+
     @Column("text", { nullable: true })
     title: string;
     

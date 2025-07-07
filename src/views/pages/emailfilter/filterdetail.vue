@@ -160,6 +160,7 @@ async function onSubmit() {
       name: filteName.value,
       description: description.value,
       filter_details: filterDetailArr.value,
+      created_time:new Date().toISOString().split('T')[0]
     };
 
 

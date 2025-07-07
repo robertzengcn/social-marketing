@@ -1,6 +1,7 @@
 import { Database } from 'better-sqlite3';
 import { Scraperdb } from "@/model/scraperdb";
 import { getRecorddatetime } from "@/modules/lib/function";
+import { TaskStatus } from "@/entityTypes/commonType";
 export enum EmailMarketingTaskStatus {
     Processing = 1,
     Complete = 2,
@@ -8,7 +9,7 @@ export enum EmailMarketingTaskStatus {
   }
 export interface EmailMarketingTaskdbEntity {
     id?: number;
-    status: EmailMarketingTaskStatus;
+    status: TaskStatus;
     record_time?: string;   
 }
 
