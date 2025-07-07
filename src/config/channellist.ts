@@ -98,3 +98,39 @@ export const EMAILSEARCHTASK_ERROR_LOG_DOWNLOAD='email:search:task:error:log:dow
 export const SYSTEM_MESSAGE='system:message'
 export const RETRYSEARCHTASK='search:retry_task'
 export const CHOOSEFILEDIALOG='choose:file:dialog'
+
+// Schedule Management Channels
+export const SCHEDULE_CREATE = 'schedule:create'
+export const SCHEDULE_UPDATE = 'schedule:update'
+export const SCHEDULE_DELETE = 'schedule:delete'
+export const SCHEDULE_ENABLE = 'schedule:enable'
+export const SCHEDULE_DISABLE = 'schedule:disable'
+export const SCHEDULE_PAUSE = 'schedule:pause'
+export const SCHEDULE_RESUME = 'schedule:resume'
+export const SCHEDULE_RUN_NOW = 'schedule:run_now'
+export const SCHEDULE_LIST = 'schedule:list'
+export const SCHEDULE_DETAIL = 'schedule:detail'
+export const SCHEDULE_BY_TASK_TYPE = 'schedule:by_task_type'
+export const SCHEDULE_SEARCH = 'schedule:search'
+export const SCHEDULE_EXPORT = 'schedule:export'
+export const SCHEDULE_IMPORT = 'schedule:import'
+
+// Execution Management Channels
+export const EXECUTION_HISTORY = 'schedule:execution:history'
+export const EXECUTION_STATISTICS = 'schedule:execution:statistics'
+export const EXECUTION_RECENT = 'schedule:execution:recent'
+
+// Dependency Management Channels
+export const DEPENDENCY_ADD = 'schedule:dependency:add'
+export const DEPENDENCY_REMOVE = 'schedule:dependency:remove'
+export const DEPENDENCY_GRAPH = 'schedule:dependency:graph'
+export const DEPENDENCY_VALIDATE = 'schedule:dependency:validate'
+
+// Scheduler Management Channels
+export const SCHEDULER_STATUS = 'scheduler:status'
+export const SCHEDULER_START = 'scheduler:start'
+export const SCHEDULER_STOP = 'scheduler:stop'
+export const SCHEDULER_RELOAD = 'scheduler:reload'
+
+// Utility Channels
+export const CRON_VALIDATE = 'cron:validate'

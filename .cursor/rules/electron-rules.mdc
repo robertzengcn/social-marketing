@@ -49,7 +49,7 @@ globs: **/*.{js,jsx,ts,tsx,html,css,scss,mjs,cjs}
 │   ├── controller    # controller folder
 │   ├── entity        # entity for database
 │   ├── entityTypes   # type defined for the project
-│   ├── main-process  # ipcMain folder
+│   ├── main-process  # ipcMain folder when add api in front end, it should add ipc function in the folder        
 │   ├── model         # model folder
 │   ├── modules       # modules folder
 │   ├── preload.ts    # preload scripts
