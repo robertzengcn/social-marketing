@@ -19,8 +19,6 @@
     "builds": "tsc --build",
     "clean": "tsc --build --clean",
     "dev": "vite",
-    "electron:build": "vue-cli-service electron:build",
-    "electron:serve": "vue-cli-service electron:serve",
     "init": "ts-node src/runcli.ts -a sqlinit",
     "login": "ts-node src/runcli.ts -a login -c",
     "make": "electron-forge make",
