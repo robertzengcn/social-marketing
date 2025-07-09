@@ -115,22 +115,14 @@ export class UserController {
         });
         return jwtuser;
     }
-
-    public openLoginPage() {
-        // Open login page with shell
+    public getLoginPageUrl(): string {
         const loginUrl = import.meta.env.VITE_LOGIN_URL as string;
-        // Get app name from package.json
         const appName = app.getName() || "";
-        const finalapp=appName.replace(/-/g, '');
-        // try {
-        //     appName = packageJson.name || "";
-        //     console.log(`Using app name from package.json: ${appName}`);
-        // } catch (error) {
-        //     console.error("Could not read package.json:", error);
-        // }
-
+        const finalapp = appName.replace(/-/g, '');
+        
         // Build the login URL with app name
-        const finalloginUrl=loginUrl.replace(/\/$/, '') + '/login?app='+finalapp
+        const finalloginUrl = loginUrl.replace(/\/$/, '') + '/login?app=' + finalapp;
+        
         if (!finalloginUrl) {
             throw new Error("Login URL is not defined in environment variables");
         }
@@ -151,6 +143,46 @@ export class UserController {
         if (!urlPattern.test(finalloginUrl)) {
             throw new Error(`Invalid login URL format: ${finalloginUrl}`);
         }
+        
+        return finalloginUrl;
+    }
+
+    public openLoginPage() {
+        // Open login page with shell
+        // const loginUrl = import.meta.env.VITE_LOGIN_URL as string;
+        // // Get app name from package.json
+        // const appName = app.getName() || "";
+        // const finalapp=appName.replace(/-/g, '');
+        // // try {
+        // //     appName = packageJson.name || "";
+        // //     console.log(`Using app name from package.json: ${appName}`);
+        // // } catch (error) {
+        // //     console.error("Could not read package.json:", error);
+        // // }
+
+        // // Build the login URL with app name
+        // const finalloginUrl=loginUrl.replace(/\/$/, '') + '/login?app='+finalapp
+        // if (!finalloginUrl) {
+        //     throw new Error("Login URL is not defined in environment variables");
+        // }
+        
+        // // Check URL is valid
+        // const urlPattern = new RegExp(
+        //     '^(https?:\\/\\/)?' + // protocol
+        //     '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+        //     '((\\d{1,3}\\.){3}\\d{1,3})|' + // OR ip (v4) address
+        //     'localhost|' + // OR localhost
+        //     '127\\.0\\.0\\.1)' + // OR 127.0.0.1
+        //     '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+        //     '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+        //     '(\\#[-a-z\\d_]*)?$', // fragment locator
+        //     'i'
+        // );
+        
+        // if (!urlPattern.test(finalloginUrl)) {
+        //     throw new Error(`Invalid login URL format: ${finalloginUrl}`);
+        // }
+        const finalloginUrl=this.getLoginPageUrl()
         
         try {
             // Open the URL in default browser
