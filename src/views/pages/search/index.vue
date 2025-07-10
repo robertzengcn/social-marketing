@@ -1,5 +1,5 @@
 <template>
-  <v-sheet class="mx-auto" rounded>
+  <v-sheet class="mx-auto px-6" rounded>
     <v-form ref="form" @submit.prevent="onSubmit">
       <h3>{{ t('search.use_hint') }}</h3>
       <v-textarea class="mt-3" v-model="keywords" :label="t('search.input_keywords_hint')"></v-textarea>
@@ -18,30 +18,27 @@
       <div v-if="proxytableshow" class="mt-3">
         <ProxyTableselected @change="handleSelectedChanged" />
       </div>
-      <v-container>
-        <p class="mt-5">{{ capletter(t('search.use_local_browser')) }}:</p>
+     
         <v-row>
-          <v-col cols="12" md="12">
+          <v-col cols="6" md="6">
+            <p class="mt-5">{{ capletter(t('search.use_local_browser')) }}:</p>
             <v-btn-toggle v-model="useLocalBrowser" mandatory class="mt-3">
               <v-btn :value=false color="primary">No</v-btn>
               <v-btn :value=true color="success">Yes</v-btn>
             </v-btn-toggle>
           </v-col>
         </v-row>
-      </v-container>
-      <v-container v-if="useLocalBrowser == true">
-        <v-row>
-          <v-col cols="12" md="12">
+      
+      
+        <v-row v-if="useLocalBrowser == true">
+          <v-col cols="6" md="6">
             <v-select v-model="localBrowser" :items="LocalBrowerList" :label="t('search.choose_local_browser')" required
               :readonly="loading" :rules="[rules.required]"></v-select>
           </v-col>
         </v-row>
-      </v-container>
-
-
-      <v-container>
-        <p class="mt-5">{{ capletter(t('search.use_search_enginer_account')) }}:</p>
+     
         <v-row>
+          <p class="mt-5">{{ capletter(t('search.use_search_enginer_account')) }}:</p>
           <v-col cols="12" md="12">
             <v-btn-toggle v-model="useAccount" mandatory class="mt-3">
               <v-btn :value="false" color="primary">No</v-btn>
@@ -49,7 +46,7 @@
             </v-btn-toggle>
           </v-col>
         </v-row>
-      </v-container>
+    
 
       <v-container v-if="useAccount == true">
         <AccountSelectedTable :accountSource="enginer" @change="handleAccountChange" />

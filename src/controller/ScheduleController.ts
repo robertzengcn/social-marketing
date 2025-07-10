@@ -522,6 +522,23 @@ export class ScheduleController {
     }
 
     /**
+     * Calculate the next run time for a cron expression
+     * @param cronExpression The cron expression
+     * @returns The next run time
+     */
+    public calculateNextRunTime(cronExpression: string): Date {
+        try {
+            return this.scheduleManager.calculateNextRunTime(cronExpression);
+        } catch (error) {
+            console.error('Failed to calculate next run time:', error);
+            // Return a default time (1 hour from now) if calculation fails
+            const defaultTime = new Date();
+            defaultTime.setHours(defaultTime.getHours() + 1);
+            return defaultTime;
+        }
+    }
+
+    /**
      * Map schedule entity to response format
      * @param schedule The schedule entity
      * @returns Mapped schedule object

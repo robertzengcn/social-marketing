@@ -135,3 +135,4 @@ export const SCHEDULER_RELOAD = 'scheduler:reload'
 
 // Utility Channels
 export const CRON_VALIDATE = 'cron:validate'
+export const CRON_NEXT_RUN_TIME = 'cron:next_run_time'

@@ -6,7 +6,7 @@
         <v-col cols="12">
           <h3 class="text-h6 mb-4">
             <v-icon class="mr-2">mdi-information</v-icon>
-            Basic Information
+            {{ t('schedule.basic_information') }}
           </h3>
         </v-col>
       </v-row>
@@ -15,17 +15,17 @@
         <v-col cols="12" md="6">
           <v-text-field
             v-model="formData.name"
-            label="Schedule Name"
+            :label="t('schedule.schedule_name')"
             required
             :rules="[rules.required]"
-            placeholder="Enter a descriptive name for this schedule"
+            :placeholder="t('schedule.schedule_name_placeholder')"
           />
         </v-col>
         <v-col cols="12" md="6">
           <v-select
             v-model="formData.task_type"
             :items="taskTypeOptions"
-            label="Task Type"
+            :label="t('schedule.task_type')"
             required
             :rules="[rules.required]"
             @update:model-value="handleTaskTypeChange"
@@ -33,23 +33,38 @@
         </v-col>
       </v-row>
 
+      <v-row v-if="formData.task_type==TaskType.SEARCH" >
+        <!-- show search result table -->
+        <SearchResultSelectTable @change="handleSearchtaskChanged" />
+      </v-row>
+      <v-row v-if="formData.task_type==TaskType.EMAIL_EXTRACT">
+        <!-- <EmailExtractSelectTable @change="handleEmailExtractChanged" /> -->
+       
+      <EmailresultTable :isSelectedtable="true" @change="handleEmailsourceChanged" />
+          
+      </v-row>
+      <v-row v-if="formData.task_type==TaskType.BUCK_EMAIL">
+<EmailSendtaskTable :isSelectedtable="true" @change="handleEmailsendtaskChanged" />
+      </v-row>
+
       <v-row>
         <v-col cols="12" md="6">
           <v-text-field
             v-model="formData.task_id"
-            label="Task ID"
+            :label="t('schedule.task_id')"
             type="number"
+            :readonly="true"
             required
             :rules="[rules.required, rules.positive]"
-            placeholder="Enter the ID of the task to schedule"
+            :placeholder="t('schedule.task_id_placeholder')"
           />
         </v-col>
         <v-col cols="12" md="6">
           <v-textarea
             v-model="formData.description"
-            label="Description"
+            :label="t('schedule.description')"
             rows="2"
-            placeholder="Optional description of what this schedule does"
+            :placeholder="t('schedule.description_placeholder')"
           />
         </v-col>
       </v-row>
@@ -59,7 +74,7 @@
         <v-col cols="12">
           <h3 class="text-h6 mb-4">
             <v-icon class="mr-2">mdi-trigger</v-icon>
-            Trigger Configuration
+            {{ t('schedule.trigger_configuration') }}
           </h3>
         </v-col>
       </v-row>
@@ -69,7 +84,7 @@
           <v-select
             v-model="formData.trigger_type"
             :items="triggerTypeOptions"
-            label="Trigger Type"
+            :label="t('schedule.trigger_type')"
             required
             :rules="[rules.required]"
             @update:model-value="handleTriggerTypeChange"
@@ -78,7 +93,7 @@
         <v-col cols="12" md="6">
           <v-switch
             v-model="formData.is_active"
-            label="Active"
+            :label="t('schedule.active')"
             color="success"
             hide-details
           />
@@ -90,10 +105,10 @@
         <v-col cols="12" md="8">
           <v-text-field
             v-model="formData.cron_expression"
-            label="Cron Expression"
+            :label="t('schedule.cron_expression')"
             required
             :rules="[rules.required, rules.cron]"
-            placeholder="e.g., 0 0 * * * (daily at midnight)"
+            :placeholder="t('schedule.cron_expression_placeholder')"
             :error-messages="cronValidationError"
             @update:model-value="validateCronExpression"
           />
@@ -109,19 +124,19 @@
           <v-select
             v-model="formData.parent_schedule_id"
             :items="availableParentSchedules"
-            label="Parent Schedule"
+            :label="t('schedule.parent_schedule')"
             required
             :rules="[rules.required]"
             item-title="name"
             item-value="id"
-            placeholder="Select parent schedule"
+            :placeholder="t('schedule.parent_schedule_placeholder')"
           />
         </v-col>
         <v-col cols="12" md="6">
           <v-select
             v-model="formData.dependency_condition"
             :items="dependencyConditionOptions"
-            label="Dependency Condition"
+            :label="t('schedule.dependency_condition')"
             required
             :rules="[rules.required]"
           />
@@ -132,11 +147,11 @@
         <v-col cols="12" md="6">
           <v-text-field
             v-model="formData.delay_minutes"
-            label="Delay (minutes)"
+            :label="t('schedule.delay_minutes')"
             type="number"
             min="0"
             :rules="[rules.nonNegative]"
-            placeholder="Delay after parent completes (optional)"
+            :placeholder="t('schedule.delay_placeholder')"
           />
         </v-col>
       </v-row>
@@ -153,13 +168,13 @@
               <v-icon>mdi-clock</v-icon>
             </template>
             <div class="d-flex justify-space-between align-center">
-              <span>Next run time: {{ nextRunTime }}</span>
+              <span>{{ t('schedule.next_run_time', { time: nextRunTime }) }}</span>
               <v-btn
                 size="small"
                 variant="outlined"
                 @click="calculateNextRunTime"
               >
-                Refresh
+                {{ t('schedule.refresh') }}
               </v-btn>
             </div>
           </v-alert>
@@ -175,7 +190,7 @@
             @click="$emit('cancel')"
             class="mr-2"
           >
-            Cancel
+            {{ t('schedule.cancel') }}
           </v-btn>
           <v-btn
             color="primary"
@@ -183,7 +198,7 @@
             :loading="loading"
             :disabled="!isFormValid"
           >
-            {{ isEdit ? 'Update' : 'Create' }} Schedule
+            {{ isEdit ? t('schedule.update_schedule') : t('schedule.create_schedule') }}
           </v-btn>
         </v-col>
       </v-row>
@@ -195,10 +210,15 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import CronExpressionBuilder from './CronExpressionBuilder.vue'
-import { validateCronExpression as validateCron } from '@/views/api/schedule'
+import { validateCronExpression as validateCron, calculateNextRunTime as calculateNextRunTimeAPI } from '@/views/api/schedule'
 import { ScheduleCreateRequest, ScheduleUpdateRequest } from '@/entityTypes/schedule-type'
 import { TaskType, ScheduleStatus, TriggerType, DependencyCondition } from '@/entity/ScheduleTask.entity'
-
+import {SearchtaskItem } from "@/entityTypes/searchControlType"
+import EmailresultTable from '@/views/pages/emailextraction/widgets/EmailResultTable.vue'
+import SearchResultSelectTable from "@/views/pages/search/widgets/SearchResultSelectTable.vue";
+import { EmailsearchTaskEntityDisplay } from '@/entityTypes/emailextraction-type'
+import EmailSendtaskTable from '@/views/pages/emailsendtask/widgets/EmailSendtaskTable.vue'
+import {BuckEmailListType} from "@/entityTypes/buckemailType"
 const { t } = useI18n()
 
 // Props
@@ -231,8 +251,8 @@ const formData = ref<ScheduleCreateRequest>({
   cron_expression: '',
   is_active: true,
   trigger_type: TriggerType.CRON,
-  parent_schedule_id: null,
-  dependency_condition: null,
+  parent_schedule_id: 0,
+  dependency_condition: undefined,
   delay_minutes: 0
 })
 
@@ -245,34 +265,34 @@ const availableParentSchedules = ref<any[]>([])
 
 // Validation rules
 const rules = {
-  required: (value: any) => !!value || 'This field is required',
-  positive: (value: number) => value > 0 || 'Must be a positive number',
-  nonNegative: (value: number) => value >= 0 || 'Must be non-negative',
+  required: (value: any) => !!value || t('schedule.this_field_required'),
+  positive: (value: number) => value > 0 || t('schedule.must_be_positive'),
+  nonNegative: (value: number) => value >= 0 || t('schedule.must_be_non_negative'),
   cron: (value: string) => {
     if (!value) return true
-    return /^(\*|([0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])|\*\/([0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])) (\*|([0-9]|1[0-9]|2[0-3])|\*\/([0-9]|1[0-9]|2[0-3])) (\*|([1-9]|1[0-9]|2[0-9]|3[0-1])|\*\/([1-9]|1[0-9]|2[0-9]|3[0-1])) (\*|([1-9]|1[0-2])|\*\/([1-9]|1[0-2])) (\*|([0-6])|\*\/([0-6]))$/.test(value) || 'Invalid cron expression'
+    return /^(\*|([0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])|\*\/([0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])) (\*|([0-9]|1[0-9]|2[0-3])|\*\/([0-9]|1[0-9]|2[0-3])) (\*|([1-9]|1[0-9]|2[0-9]|3[0-1])|\*\/([1-9]|1[0-9]|2[0-9]|3[0-1])) (\*|([1-9]|1[0-2])|\*\/([1-9]|1[0-2])) (\*|([0-6])|\*\/([0-6]))$/.test(value) || t('schedule.invalid_cron_expression')
   }
 }
 
 // Options for selects
 const taskTypeOptions = [
-  { title: 'Search Task', value: TaskType.SEARCH },
-  { title: 'Email Marketing', value: TaskType.EMAIL_MARKETING },
-  { title: 'Bulk Email', value: TaskType.BULK_EMAIL },
-  { title: 'Video Download', value: TaskType.VIDEO_DOWNLOAD },
-  { title: 'Social Task', value: TaskType.SOCIAL_TASK }
+  { title: t('schedule.search_task'), value: TaskType.SEARCH },
+  { title: t('schedule.email_extract'), value: TaskType.EMAIL_EXTRACT },
+  { title: t('schedule.bulk_email'), value: TaskType.BUCK_EMAIL },
+  { title: t('schedule.video_download'), value: TaskType.VIDEO_DOWNLOAD },
+ 
 ]
 
 const triggerTypeOptions = [
-  { title: 'Cron Schedule', value: TriggerType.CRON },
-  { title: 'Dependency', value: TriggerType.DEPENDENCY },
-  { title: 'Manual Only', value: TriggerType.MANUAL }
+  { title: t('schedule.cron_schedule'), value: TriggerType.CRON },
+  { title: t('schedule.dependency'), value: TriggerType.DEPENDENCY },
+  { title: t('schedule.manual_only'), value: TriggerType.MANUAL }
 ]
 
 const dependencyConditionOptions = [
-  { title: 'On Success', value: DependencyCondition.ON_SUCCESS },
-  { title: 'On Completion', value: DependencyCondition.ON_COMPLETION },
-  { title: 'On Failure', value: DependencyCondition.ON_FAILURE }
+  { title: t('schedule.on_success'), value: DependencyCondition.ON_SUCCESS },
+  { title: t('schedule.on_completion'), value: DependencyCondition.ON_COMPLETION },
+  { title: t('schedule.on_failure'), value: DependencyCondition.ON_FAILURE }
 ]
 
 // Computed properties
@@ -292,6 +312,37 @@ const isFormValid = computed(() => {
   
   return isValid
 })
+const handleSearchtaskChanged = (newValue: SearchtaskItem[]|undefined) => {
+  // console.log(`selectedProxy changed to ${newValue}`);
+  // proxyValue.value=[];
+  console.log("search change")
+  console.log(newValue)
+  if(newValue&& newValue.length > 0){
+    if (newValue[0] && newValue[0].id) {
+      formData.value.task_id=newValue[0].id;
+    console.log("search task id is"+formData.value.task_id)
+    }
+  }else{
+    formData.value.task_id=0;
+  }
+};
+const handleEmailsourceChanged = (newValue: Array<EmailsearchTaskEntityDisplay>|undefined) => {
+  //console.warn(newValue)
+  //email task selected change
+  if(newValue){
+    formData.value.task_id = newValue[0].id
+  }
+  //console.log(emailsourcesdata.value)
+}
+
+const handleEmailsendtaskChanged = (newValue: Array<BuckEmailListType>|undefined) => {
+  //console.warn(newValue)
+  //email task selected change
+  if(newValue){
+    formData.value.task_id = newValue[0].TaskId
+  }
+  //console.log(emailsourcesdata.value)
+}
 
 // Methods
 const handleTaskTypeChange = () => {
@@ -303,15 +354,15 @@ const handleTriggerTypeChange = () => {
   // Reset trigger-specific fields when trigger type changes
   if (formData.value.trigger_type === TriggerType.CRON) {
     formData.value.cron_expression = ''
-    formData.value.parent_schedule_id = null
-    formData.value.dependency_condition = null
+    formData.value.parent_schedule_id = 0
+    formData.value.dependency_condition = undefined
     formData.value.delay_minutes = 0
   } else if (formData.value.trigger_type === TriggerType.DEPENDENCY) {
     formData.value.cron_expression = ''
   } else {
     formData.value.cron_expression = ''
-    formData.value.parent_schedule_id = null
-    formData.value.dependency_condition = null
+    formData.value.parent_schedule_id = 0
+    formData.value.dependency_condition = undefined
     formData.value.delay_minutes = 0
   }
 }
@@ -333,25 +384,23 @@ const validateCronExpression = async () => {
       cronValidationError.value = ''
       calculateNextRunTime()
     } else {
-      cronValidationError.value = result.error || 'Invalid cron expression'
+      cronValidationError.value = result.errors.join(',')  || t('schedule.invalid_cron_expression')
     }
   } catch (error) {
-    cronValidationError.value = 'Failed to validate cron expression'
+    cronValidationError.value = t('schedule.failed_validate_cron')
   }
 }
 
-const calculateNextRunTime = () => {
+const calculateNextRunTime = async () => {
   if (formData.value.trigger_type === TriggerType.CRON && formData.value.cron_expression) {
-    // This would typically call an API to calculate the next run time
-    // For now, we'll show a placeholder
-    nextRunTime.value = 'Calculating...'
-    
-    // Simulate API call
-    setTimeout(() => {
-      const now = new Date()
-      now.setHours(now.getHours() + 1)
-      nextRunTime.value = now.toLocaleString()
-    }, 500)
+    try {
+      nextRunTime.value = t('schedule.calculating')
+      const nextRun = await calculateNextRunTimeAPI(formData.value.cron_expression)
+      nextRunTime.value = nextRun.toLocaleString()
+    } catch (error) {
+      console.error('Failed to calculate next run time:', error)
+      nextRunTime.value = t('schedule.calculation_failed')
+    }
   }
 }
 
@@ -379,11 +428,11 @@ const handleSubmit = () => {
   submitData.delay_minutes = Number(submitData.delay_minutes)
   
   // Convert nullable fields
-  if (submitData.parent_schedule_id === '') {
-    submitData.parent_schedule_id = null
+  if (submitData.parent_schedule_id === 0) {
+    submitData.parent_schedule_id = undefined
   }
-  if (submitData.dependency_condition === '') {
-    submitData.dependency_condition = null
+  if (submitData.dependency_condition === undefined) {
+    submitData.dependency_condition = undefined
   }
 
   emit('submit', submitData)

@@ -5,16 +5,16 @@ import {SearchResult} from '@/views/api/types'
 import {EmailTemplateRespdata,EmailTemplatePreviewdata} from "@/entityTypes/emailmarketingType"
 import {ItemSearchparam,CommonIdrequest,ListData} from "@/entityTypes/commonType"
 import { EmailTemplateEntity } from "@/entity/EmailTemplate.entity"
-export async function getEmailtemplatelist(data: ItemSearchparam):Promise<SearchResult<EmailTemplateEntity>>{
+export async function getEmailtemplatelist(data: ItemSearchparam):Promise<SearchResult<EmailTemplateRespdata>>{
      
-    const resp=await windowInvoke(EMAILMARKETINGTEMPLIST,data) as ListData<EmailTemplateEntity>;
+    const resp=await windowInvoke(EMAILMARKETINGTEMPLIST,data) as ListData<EmailTemplateRespdata>;
     
    
     if(!resp){
        throw new Error("unknow error")
     }
 
-    const resdata:SearchResult<EmailTemplateEntity>={
+    const resdata:SearchResult<EmailTemplateRespdata>={
             data:resp.records,
             total:resp.num,
     }
