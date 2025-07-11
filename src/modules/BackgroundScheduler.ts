@@ -81,7 +81,7 @@ export class BackgroundScheduler extends BaseDb {
 
     constructor(filepath: string) {
         super(filepath);
-        this.scheduleManager = new ScheduleManager();
+        this.scheduleManager = ScheduleManager.getInstance();
         this.scheduleTaskModel = new ScheduleTaskModule();
         this.scheduleExecutionLogModel = new ScheduleExecutionLogModel(filepath);
         this.taskExecutorService = new TaskExecutorService();

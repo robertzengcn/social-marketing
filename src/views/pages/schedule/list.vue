@@ -244,8 +244,8 @@ import {
   getSchedulerStatus,
   startScheduler,
   stopScheduler,
-  exportSchedules,
-  importSchedules
+  exportSchedules as exportSchedulesApi,
+  importSchedules as importSchedulesApi
 } from '@/views/api/schedule'
 import { ScheduleListResponse } from '@/entityTypes/schedule-type'
 import { TaskType, ScheduleStatus, TriggerType } from '@/entity/ScheduleTask.entity'
@@ -297,15 +297,15 @@ const statusOptions = [
   { title: 'Active', value: ScheduleStatus.ACTIVE },
   { title: 'Inactive', value: ScheduleStatus.INACTIVE },
   { title: 'Paused', value: ScheduleStatus.PAUSED },
-  { title: 'Error', value: ScheduleStatus.ERROR }
+  // { title: 'Error', value: ScheduleStatus.ERROR }
 ]
 
 const taskTypeOptions = [
   { title: 'Search Task', value: TaskType.SEARCH },
-  { title: 'Email Marketing', value: TaskType.EMAIL_MARKETING },
-  { title: 'Bulk Email', value: TaskType.BULK_EMAIL },
+  { title: 'Email Extract', value: TaskType.EMAIL_EXTRACT },
+  { title: 'Bulk Email', value: TaskType.BUCK_EMAIL },
   { title: 'Video Download', value: TaskType.VIDEO_DOWNLOAD },
-  { title: 'Social Task', value: TaskType.SOCIAL_TASK }
+  // { title: 'Social Task', value: TaskType.SOCIAL_TASK }
 ]
 
 const triggerTypeOptions = [
@@ -320,9 +320,9 @@ const loadSchedules = async () => {
     loading.value = true
     const filters = {
       search: searchQuery.value,
-      status: statusFilter.value,
-      taskType: taskTypeFilter.value,
-      triggerType: triggerTypeFilter.value
+      status: statusFilter.value || undefined,
+      taskType: taskTypeFilter.value || undefined,
+      triggerType: triggerTypeFilter.value || undefined
     }
     
     const response: ScheduleListResponse = await getScheduleList(
@@ -495,11 +495,11 @@ const exportSchedules = async () => {
   try {
     const filters = {
       search: searchQuery.value,
-      status: statusFilter.value,
-      taskType: taskTypeFilter.value,
-      triggerType: triggerTypeFilter.value
+      status: statusFilter.value || undefined,
+      taskType: taskTypeFilter.value || undefined,
+      triggerType: triggerTypeFilter.value || undefined
     }
-    const data = await exportSchedules(filters)
+    const data = await exportSchedulesApi(filters)
     // Handle file download
     showAlert('Success', 'Schedules exported successfully', 'success')
   } catch (error) {

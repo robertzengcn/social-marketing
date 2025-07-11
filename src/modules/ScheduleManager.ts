@@ -12,6 +12,9 @@ import {ScheduleExecutionLogInterface} from "@/modules/interface/ScheduleExecuti
 import { ScheduleExecutionLogModule } from "./ScheduleExecutionLogModule";
 import { ScheduleDependencyModule } from "./ScheduleDependencyModule";
 import { ScheduleDependencyInterface } from "./interface/ScheduleDependencyInterface";
+import { SchedulerStatusModel } from "@/model/SchedulerStatus.model";
+import { Token } from "@/modules/token";
+import { USERSDBPATH } from '@/config/usersetting';
 export interface SchedulerStatus {
     isRunning: boolean;
     activeSchedules: number;
@@ -21,10 +24,7 @@ export interface SchedulerStatus {
 }
 
 export class ScheduleManager {
-    // private scheduleTaskModel: ScheduleTaskModel;
-    // private scheduleExecutionLogModel: ScheduleExecutionLogModel;
-    // private scheduleDependencyModel: ScheduleDependencyModel;
-    // private taskExecutorService: TaskExecutorService;
+    private static instance: ScheduleManager;
     private cronJobs: Map<number, CronJob> = new Map();
     private isInitialized: boolean = false;
     private isRunning: boolean = false;
@@ -33,13 +33,29 @@ export class ScheduleManager {
     private scheduleExecutionLogModule: ScheduleExecutionLogInterface;
     private scheduleDependencyModule: ScheduleDependencyInterface;
     private taskExecutorModule: TaskExecutorService;
+    private schedulerStatusModel: SchedulerStatusModel;
+    private dbpath: string;
 
-    constructor() {
-        //super();
+    private constructor() {
+        const tokenService = new Token();
+        const dbpath = tokenService.getValue(USERSDBPATH);
+        if (!dbpath) {
+            throw new Error("Database path not found");
+        }
+        this.dbpath = dbpath;
+        
         this.scheduleTaskModule = new ScheduleTaskModule();
         this.scheduleExecutionLogModule = new ScheduleExecutionLogModule();
         this.scheduleDependencyModule = new ScheduleDependencyModule();
         this.taskExecutorModule = new TaskExecutorService();
+        this.schedulerStatusModel = new SchedulerStatusModel(this.dbpath);
+    }
+
+    public static getInstance(): ScheduleManager {
+        if (!ScheduleManager.instance) {
+            ScheduleManager.instance = new ScheduleManager();
+        }
+        return ScheduleManager.instance;
     }
 
     /**
@@ -397,6 +413,9 @@ export class ScheduleManager {
             await this.processDependencyQueue();
         }, 30000); // Check every 30 seconds
 
+        // Persist running status to database
+        await this.persistRunningStatus();
+
         console.log('ScheduleManager started');
     }
 
@@ -417,6 +436,9 @@ export class ScheduleManager {
             clearInterval(this.checkInterval);
             this.checkInterval = null;
         }
+
+        // Persist stopped status to database
+        await this.persistStoppedStatus();
 
         console.log('ScheduleManager stopped');
     }
@@ -458,6 +480,130 @@ export class ScheduleManager {
      */
     async handleAppShutdown(): Promise<void> {
         console.log('Shutting down ScheduleManager...');
+        await this.persistStoppedStatus();
         await this.stop();
+    }
+
+    /**
+     * Initialize scheduler with database status
+     */
+    async initializeWithDatabaseStatus(): Promise<void> {
+        try {
+            await this.schedulerStatusModel.initializeStatus();
+            const shouldAutoStart = await this.schedulerStatusModel.shouldAutoStart();
+            
+            if (shouldAutoStart) {
+                console.log('Auto-starting scheduler based on database status');
+                await this.start();
+            } else {
+                console.log('Scheduler auto-start disabled based on database status');
+            }
+        } catch (error) {
+            console.error('Failed to initialize with database status:', error);
+            // Continue without auto-start if database operations fail
+        }
+    }
+
+    /**
+     * Persist running status to database
+     */
+    async persistRunningStatus(): Promise<void> {
+        try {
+            const status = this.getSchedulerStatus();
+            await this.schedulerStatusModel.updateStatus({
+                is_running: true,
+                active_schedules: status.activeSchedules,
+                total_schedules: status.totalSchedules,
+                last_check_time: status.lastCheckTime,
+                next_check_time: status.nextCheckTime,
+                last_start_time: new Date(),
+                last_error_message: undefined
+            });
+        } catch (error) {
+            console.error('Failed to persist running status:', error);
+        }
+    }
+
+    /**
+     * Persist stopped status to database
+     */
+    async persistStoppedStatus(): Promise<void> {
+        try {
+            await this.schedulerStatusModel.updateStatus({
+                is_running: false,
+                last_stop_time: new Date(),
+                last_error_message: undefined
+            });
+        } catch (error) {
+            console.error('Failed to persist stopped status:', error);
+        }
+    }
+
+    /**
+     * Load status from database
+     */
+    async loadStatusFromDatabase(): Promise<void> {
+        try {
+            const status = await this.schedulerStatusModel.getStatus();
+            if (status) {
+                this.isRunning = status.is_running;
+                console.log(`Loaded scheduler status from database: running=${this.isRunning}`);
+            }
+        } catch (error) {
+            console.error('Failed to load status from database:', error);
+        }
+    }
+
+    /**
+     * Check if scheduler should auto-start
+     */
+    async shouldAutoStart(): Promise<boolean> {
+        return await this.schedulerStatusModel.shouldAutoStart();
+    }
+
+    /**
+     * Recover from database status
+     */
+    async recoverFromDatabase(): Promise<void> {
+        try {
+            await this.loadStatusFromDatabase();
+            if (this.isRunning) {
+                console.log('Recovering scheduler from database status');
+                await this.start();
+            }
+        } catch (error) {
+            console.error('Failed to recover from database:', error);
+        }
+    }
+
+    /**
+     * Validate database status consistency
+     */
+    async validateDatabaseStatus(): Promise<boolean> {
+        try {
+            const status = await this.schedulerStatusModel.getStatus();
+            if (!status) {
+                return false;
+            }
+            
+            // Basic validation - could be enhanced
+            return typeof status.is_running === 'boolean';
+        } catch (error) {
+            console.error('Failed to validate database status:', error);
+            return false;
+        }
+    }
+
+    /**
+     * Reset database status
+     */
+    async resetDatabaseStatus(): Promise<void> {
+        try {
+            await this.schedulerStatusModel.resetStatus();
+            console.log('Database status reset successfully');
+        } catch (error) {
+            console.error('Failed to reset database status:', error);
+            throw error;
+        }
     }
 } 

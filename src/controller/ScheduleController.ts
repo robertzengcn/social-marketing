@@ -35,7 +35,7 @@ export class ScheduleController {
         this.scheduleTaskModule = new ScheduleTaskModule();
         this.scheduleExecutionLogModule = new ScheduleExecutionLogModule();
         this.scheduleDependencyModule = new ScheduleDependencyModule();
-        this.scheduleManager = new ScheduleManager();
+        this.scheduleManager = ScheduleManager.getInstance();
         this.taskExecutorService = new TaskExecutorService();
         this.scheduleDependencyModule = new ScheduleDependencyModule();
     }
@@ -441,6 +441,7 @@ export class ScheduleController {
     public getSchedulerStatus(): SchedulerStatusResponse {
         try {
             const status = this.scheduleManager.getSchedulerStatus();
+            console.log('Scheduler status:', status);
             return {
                 isRunning: status.isRunning,
                 activeSchedules: status.activeSchedules,

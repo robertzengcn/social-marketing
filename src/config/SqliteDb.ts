@@ -44,6 +44,7 @@ import {VideoPublishRecordEntity} from "@/entity/VideoPublishRecord.entity"
 import { ScheduleTaskEntity } from "@/entity/ScheduleTask.entity";
 import { ScheduleExecutionLogEntity } from "@/entity/ScheduleExecutionLog.entity";
 import { ScheduleDependencyEntity } from "@/entity/ScheduleDependency.entity";
+import { SchedulerStatusEntity } from "@/entity/SchedulerStatus.entity";
 // import sqlite3 from "sqlite3"; 
 
 
@@ -93,6 +94,7 @@ export class SqliteDb {
                 ScheduleTaskEntity,
                 ScheduleExecutionLogEntity,
                 ScheduleDependencyEntity,
+                SchedulerStatusEntity,
                 EmailTemplateEntity,
                 EmailFilterEntity,
                 EmailFilterDetailEntity,

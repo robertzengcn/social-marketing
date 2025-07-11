@@ -166,6 +166,7 @@ export async function validateDependencies(scheduleId: number): Promise<Dependen
 // Scheduler Management
 export async function getSchedulerStatus(): Promise<SchedulerStatusResponse> {
     const response = await windowInvoke(SCHEDULER_STATUS)
+    console.log('Scheduler status response:', response);
     return response
 }
 
