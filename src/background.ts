@@ -17,6 +17,7 @@ import { TOKENNAME } from '@/config/usersetting';
 import { UserController } from '@/controller/UserController';
 import {NATIVATECOMMAND} from '@/config/channellist'
 import {NativateDatatype} from '@/entityTypes/commonType'
+import { ScheduleManager } from '@/modules/ScheduleManager';
 // import { createProtocol } from 'electron';
 const isDevelopment = process.env.NODE_ENV !== 'production'
 declare const MAIN_WINDOW_VITE_DEV_SERVER_URL: string;
@@ -172,6 +173,17 @@ function initialize() {
     }
   })
 
+  // Handle application shutdown
+  app.on('before-quit', async () => {
+    try {
+      const scheduleManager = ScheduleManager.getInstance();
+      await scheduleManager.handleAppShutdown();
+      log.info('ScheduleManager shutdown completed');
+    } catch (error) {
+      log.error('Failed to shutdown ScheduleManager:', error);
+    }
+  })
+
   app.on('activate', () => {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
@@ -209,6 +221,7 @@ function initialize() {
 
     const userdataPath = tokenService.getValue(USERSDBPATH)
     if (userdataPath && userdataPath.length > 0) {
+      console.log('userdataPath:', userdataPath)
       // Check if the user data path exists, create it if not
       try {
         if (!fs.existsSync(userdataPath)) {
@@ -224,6 +237,15 @@ function initialize() {
       const appDataSource = SqliteDb.getInstance(userdataPath)
       if (!appDataSource.connection.isInitialized) {
         await appDataSource.connection.initialize()
+      }
+      
+      // Initialize ScheduleManager with auto-start functionality
+      try {
+        const scheduleManager = ScheduleManager.getInstance();
+        await scheduleManager.initializeWithDatabaseStatus();
+        log.info('ScheduleManager initialized with auto-start functionality');
+      } catch (error) {
+        log.error('Failed to initialize ScheduleManager:', error);
       }
     }
     if(win){

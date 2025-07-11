@@ -13,10 +13,10 @@
           <div>
             <h2 class="text-h4 font-weight-bold">
               <v-icon class="mr-2">mdi-plus-circle</v-icon>
-              Create New Schedule
+              {{ t('schedule.create_new_schedule') }}
             </h2>
             <p class="text-subtitle-1 text-medium-emphasis">
-              Set up automated task scheduling with cron expressions or dependencies
+              {{ t('schedule.create_description') }}
             </p>
           </div>
         </div>
@@ -65,9 +65,12 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import ScheduleForm from './widgets/ScheduleForm.vue'
 import { createSchedule } from '@/views/api/schedule'
-import { ScheduleCreateRequest } from '@/entityTypes/schedule-type'
+import { ScheduleCreateRequest, ScheduleUpdateRequest } from '@/entityTypes/schedule-type'
+
+const { t } = useI18n()
 
 const router = useRouter()
 
@@ -85,22 +88,24 @@ const alertDialog = ref({
 })
 
 // Methods
-const handleSubmit = async (data: ScheduleCreateRequest) => {
+const handleSubmit = async (data: ScheduleCreateRequest | ScheduleUpdateRequest) => {
+  // Cast to ScheduleCreateRequest since this is a create page
+  const createData = data as ScheduleCreateRequest
   try {
     loading.value = true
-    const scheduleId = await createSchedule(data)
+    const scheduleId = await createSchedule(createData)
     
     showAlert(
-      'Success',
-      `Schedule "${data.name}" created successfully with ID: ${scheduleId}`,
+      t('common.success'),
+      t('schedule.schedule_created_success', { name: createData.name, id: scheduleId }),
       'success',
-      'View Schedule',
+      t('schedule.view_schedule'),
       () => router.push(`/schedule/detail/${scheduleId}`)
     )
   } catch (error) {
     showAlert(
-      'Error',
-      `Failed to create schedule: ${error}`,
+      t('common.error'),
+      t('schedule.create_schedule_failed', { error: String(error) }),
       'error'
     )
   } finally {
@@ -124,8 +129,8 @@ const showAlert = (
     title,
     message,
     type,
-    actionText: actionText || 'OK',
-    action
+    actionText: actionText || t('common.ok'),
+    action: action || null
   }
 }
 

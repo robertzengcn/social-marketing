@@ -5,7 +5,7 @@ export {};
 // import {ipcRenderer as ipc} from 'electron-better-ipc'
 import {Iresponse} from '@/views/api/types'
 import {windowInvoke,windowSend,windowReceive} from '@/views/utils/apirequest'
-import {QUERY_USER_INFO} from "@/config/channellist";
+import {QUERY_USER_INFO, GET_LOGIN_URL} from "@/config/channellist";
 import {UserInfoType} from "@/entityTypes/userType"
 import {OPENLOGINPAGE} from "@/config/channellist";
 import {NativateDatatype} from "@/entityTypes/commonType"
@@ -52,4 +52,15 @@ export const openPage = async() => {
 export function receiveRedirectevent(channel:string,cb:(data:NativateDatatype)=>void){
    
   windowReceive(channel,cb)
+}
+
+// Function to get login URL from backend controller
+export async function getLoginUrl(): Promise<string> {
+  const response = await windowInvoke(GET_LOGIN_URL)
+  //if (response.status && response.data) {
+  console.log(response)  
+  return response
+  // } else {
+  //   throw new Error(response.msg || 'Failed to get login URL')
+  // }
 }
