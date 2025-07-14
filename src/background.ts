@@ -1,7 +1,7 @@
 'use strict'
 import 'reflect-metadata';
 // import {ipcMain as ipc} from 'electron-better-ipc';
-import { app, BrowserWindow, dialog } from 'electron'
+import { app, BrowserWindow, dialog,autoUpdater } from 'electron'
 // import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 import { registerCommunicationIpcHandlers } from "./main-process/communication/";
@@ -18,6 +18,7 @@ import { UserController } from '@/controller/UserController';
 import {NATIVATECOMMAND} from '@/config/channellist'
 import {NativateDatatype} from '@/entityTypes/commonType'
 import { ScheduleManager } from '@/modules/ScheduleManager';
+
 // import { createProtocol } from 'electron';
 const isDevelopment = process.env.NODE_ENV !== 'production'
 declare const MAIN_WINDOW_VITE_DEV_SERVER_URL: string;
@@ -157,6 +158,13 @@ function initialize() {
       await win.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL as string)
       if (!process.env.IS_TEST) win.webContents.openDevTools()
     } else {
+  //check update
+  const server = import.meta.env.UPDATESERVER as string;
+  if(server){
+    const url = `${server}/update/${process.platform}/${app.getVersion()}`
+    autoUpdater.setFeedURL({ url })
+    autoUpdater.checkForUpdates()
+  }
       // console.log('app://./index.html')
       // createProtocol('app')
       // Load the index.html when not in development
