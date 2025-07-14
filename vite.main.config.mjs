@@ -84,10 +84,10 @@ function platformCopyPlugin() {
             } else if (process.platform === 'darwin') {
                 console.log('Copying macOS templates...');
                 // Copy macOS templates
-                fs.copyFileSync(
-                    'node_modules/protocol-registry/src/macos/templates/desktop.ejs',
-                    '.vite/build/templates/desktop.ejs'
-                );
+                // fs.copyFileSync(
+                //     'node_modules/protocol-registry/src/macos/templates/desktop.ejs',
+                //     '.vite/build/templates/desktop.ejs'
+                // );
                 fs.copyFileSync(
                     'node_modules/protocol-registry/src/macos/templates/script.ejs',
                     '.vite/build/templates/script.ejs'
