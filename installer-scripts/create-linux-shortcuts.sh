@@ -6,7 +6,7 @@
 set -e
 
 # Default values
-APP_NAME="Social Marketing"
+APP_NAME="SocialMarketing"
 APP_EXEC="social-marketing"
 INSTALL_DIR="/opt/social-marketing"
 DESKTOP_FILE_NAME="social-marketing.desktop"

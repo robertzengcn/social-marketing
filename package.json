@@ -1,7 +1,7 @@
 {
   "name": "social-marketing",
   "version": "1.0.11",
-  "description": "A module using puppeteer to do social marketing",
+  "description": "A software for social marketing",
   "author": "Robert Zeng",
   "main": ".vite/build/background.js",
   "build": {

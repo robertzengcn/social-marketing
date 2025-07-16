@@ -114,7 +114,7 @@ module.exports={
     {
       name: '@electron-forge/maker-squirrel',
       config: {
-        name: process.env.APP_NAME || 'Social Marketing',
+        name: process.env.APP_NAME || 'SocialMarketing',
         certificateFile: './cert.pfx',
         certificatePassword: process.env.CERTIFICATE_PASSWORD,
         iconUrl: './src/assets/images/icon.png',
