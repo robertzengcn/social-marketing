@@ -111,7 +111,47 @@ export class BilibiliPublishStrategy extends BaseVideoPublishStrategy {
                 );
                 //await categorySelect.click();
                 await this.page.evaluate(() => new Promise(resolve => setTimeout(resolve, 2000)));
-            
+            const dropListContainer = await this.page.$('.drop-list-v2-container');
+            if (dropListContainer) {
+                const boundingBox = await dropListContainer.boundingBox();
+                if (boundingBox) {
+                    await this.page.mouse.move(
+                        boundingBox.x + boundingBox.width / 2,
+                        boundingBox.y + boundingBox.height / 2
+                    );
+                }
+            // Scroll the mouse wheel until the category element is visible
+            let categoryVisible = false;
+            let scrollAttempts = 0;
+            const maxScrollAttempts = 20;
+            while (!categoryVisible && scrollAttempts < maxScrollAttempts) {
+                categoryVisible = await this.page.evaluate((category) => {
+                    const divs = Array.from(document.querySelectorAll('div'));
+                    const target = divs.find(div => div.title === category);
+                    if (!target) return false;
+                    const rect = target.getBoundingClientRect();
+                    return (
+                        rect.top >= 0 &&
+                        rect.left >= 0 &&
+                        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+                        rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+                    );
+                }, options.category);
+
+                if (!categoryVisible) {
+                    // Scroll the drop list container
+                    await this.page.evaluate(() => {
+                        const container = document.querySelector('.drop-list-v2-container');
+                        if (container) {
+                            container.scrollBy({ top: 80, behavior: 'smooth' });
+                        }
+                    });
+                    await this.page.evaluate(() => new Promise(resolve => setTimeout(resolve, 200)));
+                }
+                scrollAttempts++;
+            }
+            }
+
             const categoryDiv = await this.page.evaluateHandle((category) => {
                 return Array.from(document.querySelectorAll('div')).find(
                     div => div.title === category
