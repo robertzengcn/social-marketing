@@ -51,6 +51,7 @@ jobs:
           echo "NODE_ENV=test" >> .env
           echo "VITE_REMOTEADD=${{ secrets.VITE_REMOTEADD_TEST }}" >> .env
           echo "VITE_LOGIN_URL=${{ secrets.VITE_LOGIN_URL_TEST }}" >> .env
+          echo "UPDATESERVER=${{ secrets.UPDATESERVER }}" >> .env
           cat .env
 
       - name: Install dependencies
@@ -132,6 +133,7 @@ jobs:
           echo "NODE_ENV=test" >> .env
           echo "VITE_REMOTEADD=${{ secrets.VITE_REMOTEADD_TEST }}" >> .env
           echo "VITE_LOGIN_URL=${{ secrets.VITE_LOGIN_URL_TEST }}" >> .env
+          echo "UPDATESERVER=${{ secrets.UPDATESERVER }}" >> .env
           cat .env
 
       - name: Install setuptools

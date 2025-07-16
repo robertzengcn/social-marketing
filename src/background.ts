@@ -101,6 +101,7 @@ function initialize() {
   async function createWindow() {
     // Create the browser window.
     win = new BrowserWindow({
+      icon: path.join(__dirname, '/icon.png'),
       width: 800,
       height: 600,
       webPreferences: {
