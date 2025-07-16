@@ -6,7 +6,7 @@
 set -e
 
 # Default values
-APP_NAME="Social Marketing"
+APP_NAME="SocialMarketing"
 INSTALL_DIR="/Applications"
 APP_PATH="$INSTALL_DIR/$APP_NAME.app"
 

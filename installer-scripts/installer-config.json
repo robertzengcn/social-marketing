@@ -1,6 +1,6 @@
 {
   "installer": {
-    "appName": "Social Marketing",
+    "appName": "SocialMarketing",
     "appVersion": "1.0.11",
     "manufacturer": "Robert Zeng",
     "description": "A module using puppeteer to do social marketing",

@@ -7,7 +7,7 @@ const { execSync } = require('child_process');
  * This script is called by the WiX installer after the application is installed
  */
 
-function createShortcuts(installDir, appName = 'Social Marketing') {
+function createShortcuts(installDir, appName = 'SocialMarketing') {
   try {
     console.log('Creating shortcuts for:', appName);
     console.log('Install directory:', installDir);
@@ -111,7 +111,7 @@ if (typeof module !== 'undefined' && module.exports) {
 // If running directly (for testing)
 if (require.main === module) {
   const installDir = process.argv[2] || 'C:\\Program Files\\SocialMarketing';
-  const appName = process.argv[3] || 'Social Marketing';
+  const appName = process.argv[3] || 'SocialMarketing';
   
   console.log('Running shortcut creation script...');
   createShortcuts(installDir, appName);
