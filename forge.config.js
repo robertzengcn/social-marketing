@@ -142,7 +142,11 @@ module.exports={
         registry: {
           key: 'Software\\SocialMarketing',
           name: 'InstallLocation'
-        }
+        },
+        // Uninstall configuration
+        uninstallIcon: './src/assets/images/icon.ico',
+        // Custom uninstall script
+        uninstallScript: './installer-scripts/uninstall-windows.js'
       },
     },
     {
@@ -156,7 +160,7 @@ module.exports={
           icon: './src/assets/images/icon.png',
           // Custom installer options for Linux
           maintainer: 'Robert Zeng',
-          homepage: 'https://github.com/your-repo/social-marketing',
+          homepage: 'https://github.com/robertzengcn/social-marketing',
           categories: ['Utility', 'Network', 'Web'],
           // Allow users to choose installation directory
           section: 'utils',
@@ -183,7 +187,7 @@ module.exports={
           icon: './src/assets/images/icon.png',
           // Custom installer options for RPM
           maintainer: 'Robert Zeng',
-          homepage: 'https://github.com/your-repo/social-marketing',
+          homepage: 'https://github.com/robertzengcn/social-marketing',
           categories: ['Utility', 'Network', 'Web'],
           // Allow users to choose installation directory
           section: 'utils',
@@ -216,8 +220,8 @@ module.exports={
           // Show license agreement
           license: './LICENSE',
           // Custom banner and dialog images
-          banner: './src/assets/images/installer-banner.png',
-          dialog: './src/assets/images/installer-dialog.png',
+          // banner: './src/assets/images/installer-banner.png',
+          // dialog: './src/assets/images/installer-dialog.png',
           // Installation directory options
           installDir: 'C:\\Program Files\\SocialMarketing',
           // Create desktop shortcut
@@ -254,6 +258,16 @@ module.exports={
             name: 'CreateShortcuts',
             description: 'Create desktop and start menu shortcuts',
             script: './installer-scripts/create-shortcuts.js'
+          }
+        ],
+        // Uninstall configuration
+        uninstallIcon: './src/assets/images/icon.ico',
+        // Uninstall custom actions
+        uninstallCustomActions: [
+          {
+            name: 'RemoveShortcuts',
+            description: 'Remove desktop and start menu shortcuts',
+            script: './installer-scripts/uninstall-windows.js'
           }
         ]
       }
