@@ -261,7 +261,7 @@ module.exports={
           }
         ],
         // Uninstall configuration
-        uninstallIcon: './src/assets/images/icon.ico',
+        uninstallIcon: './src/assets/images/uninstall.ico',
         // Uninstall custom actions
         uninstallCustomActions: [
           {
