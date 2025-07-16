@@ -68,7 +68,10 @@
     "prepackage": "npm run rebuild-sqlite3",
     "rebuild-sqlite3": "electron-rebuild -f -w sqlite3",
     "type-check": "vue-tsc --noEmit --watch",
-    "test-installer": "node installer-scripts/test-installer.js"
+    "test-installer": "node installer-scripts/test-installer.js",
+    "uninstall-win": "node installer-scripts/uninstall-windows.js",
+    "uninstall-mac": "./installer-scripts/uninstall-macos.sh",
+    "uninstall-linux": "./installer-scripts/uninstall-linux.sh"
   },
   "dependencies": {
     "@langchain/core": "^0.3.42",

@@ -42,6 +42,10 @@ project/
 │   ├── create-shortcuts.js            # Windows shortcut creation
 │   ├── create-macos-shortcuts.sh      # macOS shortcut creation
 │   ├── create-linux-shortcuts.sh      # Linux shortcut creation
+│   ├── uninstall-windows.js           # Windows uninstall script
+│   ├── uninstall-macos.sh             # macOS uninstall script
+│   ├── uninstall-linux.sh             # Linux uninstall script
+│   ├── UNINSTALL_GUIDE.md             # Uninstall documentation
 │   └── test-installer.js              # Configuration validation
 └── src/assets/images/                 # Installer assets
     ├── icon.ico                       # Windows icon
@@ -161,6 +165,9 @@ customActions: [
 | `yarn make-mac:prod` | Build macOS installer (production) |
 | `yarn make-linux:prod` | Build Linux installer (production) |
 | `yarn make-installer` | Build all platforms (production) |
+| `yarn uninstall-win` | Uninstall Windows application |
+| `yarn uninstall-mac` | Uninstall macOS application |
+| `yarn uninstall-linux` | Uninstall Linux application |
 
 ## 🔍 Testing
 
@@ -229,6 +236,7 @@ Your Social Marketing application now has a professional custom installer that:
 ✅ **Follows platform conventions**  
 ✅ **Includes proper dependency management**  
 ✅ **Provides professional installation experience**  
+✅ **Includes comprehensive uninstall functionality**  
 
 ## 🚀 Next Steps
 
