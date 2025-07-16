@@ -14,16 +14,16 @@ export class VideoCaptionModel extends BaseDb {
     /**
      * Create or update video caption
      */
-    async create(videoCaption: VideoCaptionType): Promise<number> {
-        const existingCaption = await this.getCaptionByVidLid(videoCaption.videoId, videoCaption.language_id);
+    async create(videoCaption: VideoCaptionEntity): Promise<number> {
+        const existingCaption = await this.getCaptionByVidLid(videoCaption.video_id, videoCaption.language);
         
         if (existingCaption && existingCaption.id) {
             await this.update(existingCaption.id, videoCaption);
             return existingCaption.id;
         } else {
             const newCaption = new VideoCaptionEntity();
-            newCaption.video_id = videoCaption.videoId;
-            newCaption.language_id = videoCaption.language_id;
+            newCaption.video_id = videoCaption.video_id;
+            newCaption.language = videoCaption.language;
             newCaption.caption_path = videoCaption.caption_path;
             newCaption.record_time = new Date().toISOString();
             
@@ -35,17 +35,17 @@ export class VideoCaptionModel extends BaseDb {
     /**
      * Read video caption by id
      */
-    async read(id: number): Promise<VideoCaptionType | null> {
-        return this.repository.findOne({ where: { id } }) as unknown as Promise<VideoCaptionType | null>;
+    async read(id: number): Promise<VideoCaptionEntity | null> {
+        return this.repository.findOne({ where: { id } }) as unknown as Promise<VideoCaptionEntity | null>;
     }
 
     /**
      * Update video caption
      */
-    async update(id: number, videoCaption: VideoCaptionType): Promise<void> {
+    async update(id: number, videoCaption: VideoCaptionEntity): Promise<void> {
         await this.repository.update(id, {
-            video_id: videoCaption.videoId,
-            language_id: videoCaption.language_id,
+            video_id: videoCaption.video_id,
+            language: videoCaption.language,
             caption_path: videoCaption.caption_path,
             record_time: new Date().toISOString()
         });
@@ -61,19 +61,19 @@ export class VideoCaptionModel extends BaseDb {
     /**
      * Get caption by video id and language id
      */
-    async getCaptionByVidLid(videoId: number, languageId: number): Promise<VideoCaptionType | null> {
+    async getCaptionByVidLid(videoId: number, languageCode: string): Promise<VideoCaptionEntity | null> {
         return this.repository.findOne({
-            where: { video_id: videoId, language_id: languageId }
-        }) as unknown as Promise<VideoCaptionType | null>;
+            where: { video_id: videoId, language: languageCode }
+        }) as unknown as Promise<VideoCaptionEntity | null>;
     }
 
     /**
      * Get all captions by video id
      */
-    async getCaptionByVid(videoId: number): Promise<VideoCaptionType[]> {
+    async getCaptionByVid(videoId: number): Promise<VideoCaptionEntity[]> {
         return this.repository.find({
             where: { video_id: videoId }
-        }) as unknown as Promise<VideoCaptionType[]>;
+        }) as unknown as Promise<VideoCaptionEntity[]>;
     }
 
     /**

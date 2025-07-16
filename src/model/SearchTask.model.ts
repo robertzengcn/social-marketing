@@ -9,7 +9,8 @@ import { SortBy } from "@/entityTypes/commonType";
 export enum SearchTaskStatus {
   Processing = 1,
   Complete = 2,
-  Error = 3
+  Error = 3,
+  NotStart = 4
 }
 
 export class SearchTaskModel extends BaseDb {
@@ -25,12 +26,17 @@ export class SearchTaskModel extends BaseDb {
    * @param enginerId The search engine ID
    * @returns The ID of the created task
    */
-  async saveSearchTask(enginerId: number): Promise<number> {
+  async saveSearchTask(enginerId: number,num_pages?:number,concurrency?:number,notShowBrowser?:boolean,localBrowser?:string,accounts?:Array<number>): Promise<number> {
     const taskEntity = new SearchTaskEntity();
     taskEntity.enginer_id = enginerId.toString();
     taskEntity.record_time = getRecorddatetime();
-    taskEntity.status = SearchTaskStatus.Processing;
-    
+    taskEntity.status = SearchTaskStatus.NotStart;
+    taskEntity.num_pages = num_pages?num_pages:1;
+    taskEntity.concurrency = concurrency?concurrency:1;
+    taskEntity.notShowBrowser = notShowBrowser ? 1 : 0;
+    //taskEntity.useLocalbrowserdata = useLocalbrowserdata ? 1 : 0;
+    taskEntity.localBrowser = localBrowser?localBrowser:"";
+    //taskEntity.accounts = accounts?accounts:[];
     const savedTask = await this.repository.save(taskEntity);
     return savedTask.id;
   }
@@ -123,6 +129,8 @@ export class SearchTaskModel extends BaseDb {
    */
   taskStatusToString(status: SearchTaskStatus): string {
     switch (status) {
+      case SearchTaskStatus.NotStart:
+        return "Not Start";
       case SearchTaskStatus.Processing:
         return "Processing";
       case SearchTaskStatus.Complete:
@@ -139,10 +147,10 @@ export class SearchTaskModel extends BaseDb {
    * @param taskId The task ID
    * @returns The task entity
    */
-  async getTaskEntity(taskId: number): Promise<SearchtaskdbEntity | null> {
+  async getTaskEntity(taskId: number): Promise<SearchTaskEntity | null> {
     return this.repository.findOne({
       where: { id: taskId }
-    }) as unknown as Promise<SearchtaskdbEntity | null>;
+    }) 
   }
 
   /**

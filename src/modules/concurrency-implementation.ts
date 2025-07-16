@@ -1,30 +1,16 @@
-//import ConcurrencyImplementation from 'puppeteer-cluster/dist/concurrency/ConcurrencyImplementation';
-//import ConcurrencyImplementation from 'puppeteer-cluster/dist/concurrency/ConcurrencyImplementation';
 import { WorkerInstance } from 'puppeteer-cluster/dist/concurrency/ConcurrencyImplementation';
-// const debug = require('debug')('se-scraper:CustomConcurrency');
 import * as puppeteer from 'puppeteer';
-// import debug from 'debug';
 import { timeoutExecute } from 'puppeteer-cluster/dist/util';
-// import {WorkerInstance} from 'puppeteer-cluster/dist/concurrency/ConcurrencyImplementation'
 import {Browser} from 'puppeteer-cluster/dist/concurrency/builtInConcurrency';
-import { detectBrowserPlatform, install, canDownload, Browser as PuppeteerBrowser, getInstalledBrowsers } from '@puppeteer/browsers';
-import * as path from 'path';
-//import { app } from 'electron';
-import * as os from 'os';
+import StealthPlugin from 'puppeteer-extra-plugin-stealth';
+import RecaptchaPlugin from 'puppeteer-extra-plugin-recaptcha';
+import vanillaPuppeteer from 'puppeteer';
+import {addExtra} from 'puppeteer-extra';
+import { browserManager } from './browserManager';
+
 const BROWSER_TIMEOUT = 5000;
 
-// Use Puppeteer's built-in Chrome version
-// Use a specific Chrome version that's compatible with Puppeteer
-const CHROME_BUILD_ID = '126.0.6478.182';
-
-// Use Puppeteer's built-in Chrome version
-//const CHROME_BUILD_ID = 'chrome'; // This will use the version that comes with Puppeteer
-
-// Function to get the correct cache directory path
-function getCacheDir(): string {
-    const homeDir = os.homedir();
-    return path.join(homeDir, '.cache', 'puppeteer');
-}
+// Browser management is now handled by browserManager
 
 export class CustomConcurrency extends Browser {
 
@@ -37,67 +23,191 @@ export class CustomConcurrency extends Browser {
 
     async workerInstance(perBrowserOptions: puppeteer.LaunchOptions | undefined):Promise<WorkerInstance> {
         const options = perBrowserOptions || this.options;
-        const cacheDir = getCacheDir();
         
-        // Try to install Chrome if not found
-        try {
-            const platform = await detectBrowserPlatform();
-            if (platform) {
-                const browser = 'chrome' as PuppeteerBrowser;
-                
-                // Check if Chrome is already installed
-                const installedBrowsers = await getInstalledBrowsers({ cacheDir });
-                const isChromeInstalled = installedBrowsers.some(
-                    installed => installed.browser === browser
-                );
-
-                if (!isChromeInstalled) {
-                    const canDownloadBrowser = await canDownload({
-                        browser,
-                        buildId: CHROME_BUILD_ID,
-                        platform,
-                        cacheDir
-                    });
-                    
-                    if (canDownloadBrowser) {
-                        await install({
-                            browser,
-                            buildId: CHROME_BUILD_ID,
-                            platform,
-                            cacheDir
-                        });
-                    }
-                }
-            }
-        } catch (error) {
-            console.error('Failed to install Chrome:', error);
+        // Use browser manager to get executable path and create launch options
+        const launchOptions = await browserManager.createLaunchOptions(options);
+        console.log('launchOptions', launchOptions);
+        const puppeteers = addExtra(vanillaPuppeteer);
+        puppeteers.use(StealthPlugin());
+        // puppeteers.use(AdblockerPlugin({
+        //     // Block trackers
+        //     blockTrackers: true
+        // }));
+        // Only add reCAPTCHA plugin if token exists and is not empty
+        if (process.env.TWOCAPTCHA_TOKEN && process.env.TWOCAPTCHA_TOKEN.trim() !== '') {
+            puppeteers.use(
+                RecaptchaPlugin({
+                    provider: {
+                        id: '2captcha',
+                        token: process.env.TWOCAPTCHA_TOKEN,
+                    },
+                    visualFeedback: true,
+                    solveInViewportOnly: true,
+                    solveScoreBased: true,
+                    solveInactiveChallenges: true,
+                })
+            );
         }
+        // Add reCAPTCHA solver
+        // puppeteers.use(
+        //     RecaptchaPlugin({
+        //         provider: {
+        //             id: '2captcha',
+        //             token: process.env.TWOCAPTCHA_TOKEN || '', // Your 2captcha API token
+        //         },
+        //         visualFeedback: true, // Show a visual feedback when solving a CAPTCHA
+        //         solveInViewportOnly: true, // Only solve CAPTCHAs that are in the viewport
+        //         solveScoreBased: true, // Solve score-based CAPTCHAs
+        //         solveInactiveChallenges: true, // Solve inactive challenges
+        //     })
+        // );
         
-        // Add configuration for packaged environment
-        const launchOptions: puppeteer.PuppeteerLaunchOptions = {
-            ...options,
-            args: [
-                ...((options as any).args || []),
-                '--no-sandbox',
-                '--disable-setuid-sandbox',
-                '--disable-dev-shm-usage',
-                '--disable-accelerated-2d-canvas',
-                '--disable-gpu',
-                '--window-size=1280,768'
-            ]
-        };
-
-        let chrome = await this.puppeteer.launch(launchOptions) as puppeteer.Browser;
+        let chrome = await puppeteers.launch(launchOptions) as puppeteer.Browser;
         let page: puppeteer.Page;
         let context;
 
         return {
             jobInstance: async () => {
                 await timeoutExecute(BROWSER_TIMEOUT, (async () => {
-                    //context = await chrome.createIncognitoBrowserContext();
-                    context = await chrome.createBrowserContext();
-                    page = await context.newPage();
-                    //page = await context.Page();
+                    try {
+                        context = await chrome.createBrowserContext();
+                        page = await context.newPage();
+                    } catch (error) {
+                        console.error('Failed to create browser context or page:', error);
+                        throw error; // Re-throw to let the timeout handler deal with it
+                    }
+                    
+                    // Additional anti-detection measures
+                    await page.evaluateOnNewDocument(() => {
+                        // Overwrite the 'navigator.webdriver' property
+                        // Object.defineProperty(navigator, 'webdriver', {
+                        //     get: () => undefined
+                        // });
+                        
+                        // Overwrite the 'plugins' property
+                        // Object.defineProperty(navigator, 'plugins', {
+                        //     get: () => {
+                        //         const plugins = [
+                        //             {
+                        //                 name: 'Chrome PDF Plugin',
+                        //                 filename: 'internal-pdf-viewer',
+                        //                 description: 'Portable Document Format',
+                        //                 version: '1.0.0'
+                        //             },
+                        //             {
+                        //                 name: 'Chrome PDF Viewer',
+                        //                 filename: 'mhjfbmdgcfjbbpaeojofohoefgiehjai',
+                        //                 description: 'Portable Document Format',
+                        //                 version: '1.0.0'
+                        //             },
+                        //             {
+                        //                 name: 'Native Client',
+                        //                 filename: 'internal-nacl-plugin',
+                        //                 description: 'Native Client Executable',
+                        //                 version: '1.0.0'
+                        //             }
+                        //         ];
+
+                        //         const pluginArray = {
+                        //             length: plugins.length,
+                        //             refresh: () => {},
+                        //             item: (index: number) => plugins[index],
+                        //             namedItem: (name: string) => plugins.find(p => p.name === name),
+                        //             [Symbol.iterator]: function* () {
+                        //                 for (let i = 0; i < plugins.length; i++) {
+                        //                     yield plugins[i];
+                        //                 }
+                        //             }
+                        //         };
+
+                        //         // Add numeric properties
+                        //         plugins.forEach((plugin, index) => {
+                        //             Object.defineProperty(pluginArray, index, {
+                        //                 value: plugin,
+                        //                 enumerable: true
+                        //             });
+                        //         });
+
+                        //         return pluginArray;
+                        //     }
+                        // });
+                        
+                        // Overwrite the 'languages' property
+                        Object.defineProperty(navigator, 'languages', {
+                            get: () => ['en-US', 'en']
+                        });
+
+                        // Add permissions API
+                        // Object.defineProperty(navigator, 'permissions', {
+                        //     get: () => ({
+                        //         query: async (permissionDesc: { name: string }) => {
+                        //             const permissionStates = {
+                        //                 'geolocation': 'prompt',
+                        //                 'notifications': 'prompt',
+                        //                 'push': 'prompt',
+                        //                 'midi': 'prompt',
+                        //                 'camera': 'prompt',
+                        //                 'microphone': 'prompt',
+                        //                 'speaker': 'prompt',
+                        //                 'device-info': 'prompt',
+                        //                 'background-fetch': 'prompt',
+                        //                 'background-sync': 'prompt',
+                        //                 'bluetooth': 'prompt',
+                        //                 'persistent-storage': 'prompt',
+                        //                 'ambient-light-sensor': 'prompt',
+                        //                 'accelerometer': 'prompt',
+                        //                 'gyroscope': 'prompt',
+                        //                 'magnetometer': 'prompt',
+                        //                 'clipboard-read': 'prompt',
+                        //                 'clipboard-write': 'prompt',
+                        //                 'payment-handler': 'prompt'
+                        //             };
+                                    
+                        //             return {
+                        //                 state: permissionStates[permissionDesc.name] || 'prompt',
+                        //                 onchange: null
+                        //             };
+                        //         }
+                        //     })
+                        // });
+
+                        // Set WebGL vendor and renderer
+                        // const getParameter = WebGLRenderingContext.prototype.getParameter;
+                        // WebGLRenderingContext.prototype.getParameter = function(parameter) {
+                        //     // UNMASKED_VENDOR_WEBGL
+                        //     if (parameter === 37445) {
+                        //         return 'Intel Inc.';
+                        //     }
+                        //     // UNMASKED_RENDERER_WEBGL
+                        //     if (parameter === 37446) {
+                        //         return 'Intel Iris OpenGL Engine';
+                        //     }
+                        //     return getParameter.apply(this, [parameter]);
+                        // };
+                        
+                        // Add Chrome-specific properties
+                        (window as any).chrome = {
+                            runtime: {},
+                            loadTimes: function() {},
+                            csi: function() {},
+                            app: {}
+                        };
+                    });
+                    
+                    // Set a realistic user agent
+                    //await page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36');
+                    
+                    // Enable JavaScript
+                    await page.setJavaScriptEnabled(true);
+                    
+                    // Set extra HTTP headers
+                    // await page.setExtraHTTPHeaders({
+                    //     'Accept-Language': 'en-US,en;q=0.9',
+                    //     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+                    //     'Accept-Encoding': 'gzip, deflate, br',
+                    //     'Connection': 'keep-alive',
+                    //     'Upgrade-Insecure-Requests': '1'
+                    // });
                 })());
 
                 return {
@@ -106,32 +216,68 @@ export class CustomConcurrency extends Browser {
                     },
 
                     close: async () => {
-                        await timeoutExecute(BROWSER_TIMEOUT, context.close());
+                        try {
+                            await timeoutExecute(BROWSER_TIMEOUT, context.close());
+                        } catch (error) {
+                            console.error('Failed to close browser context:', error);
+                            // Force close if timeout occurs
+                            try {
+                                await context.close();
+                            } catch (forceCloseError) {
+                                console.error('Failed to force close browser context:', forceCloseError);
+                            }
+                        }
                     },
                 };
             },
 
             close: async () => {
-                // if(page){
-                //     page.close();
-                // }
-                await chrome.close();
+                try {
+                    await timeoutExecute(BROWSER_TIMEOUT, chrome.close());
+                } catch (error) {
+                    console.error('Failed to close browser:', error);
+                    // Force close if timeout occurs
+                    try {
+                        await chrome.close();
+                    } catch (forceCloseError) {
+                        console.error('Failed to force close browser:', forceCloseError);
+                    }
+                }
             },
 
             repair: async () => {
                 // debug('Starting repair');
                 try {
                     // will probably fail, but just in case the repair was not necessary
-                    // await chrome.close();
                     await timeoutExecute(BROWSER_TIMEOUT, chrome.close());
                 } catch (e) {
                     // debug('Failed to close chrome: %o', e);
-                    // just relaunch as there is only one page per browser
-                    chrome = await this.puppeteer.launch(options);
+                    // Browser already closed or failed to close, continue with relaunch
                 }
 
-                // just relaunch as there is only one page per browser
-                chrome = await this.puppeteer.launch(options);
+                // Relaunch with the same enhanced puppeteer instance
+                const puppeteers = addExtra(vanillaPuppeteer);
+                puppeteers.use(StealthPlugin());
+                
+                // Only add reCAPTCHA plugin if token exists and is not empty
+                if (process.env.TWOCAPTCHA_TOKEN && process.env.TWOCAPTCHA_TOKEN.trim() !== '') {
+                    puppeteers.use(
+                        RecaptchaPlugin({
+                            provider: {
+                                id: '2captcha',
+                                token: process.env.TWOCAPTCHA_TOKEN,
+                            },
+                            visualFeedback: true,
+                            solveInViewportOnly: true,
+                            solveScoreBased: true,
+                            solveInactiveChallenges: true,
+                        })
+                    );
+                }
+                
+                // Use browser manager to get updated launch options
+                const repairLaunchOptions = await browserManager.createLaunchOptions(options);
+                chrome = await puppeteers.launch(repairLaunchOptions) as puppeteer.Browser;
             },
         };
     }

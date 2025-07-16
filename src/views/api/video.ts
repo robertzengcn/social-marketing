@@ -2,11 +2,12 @@
 export { };
 import { windowInvoke, windowSend, windowReceive } from '@/views/utils/apirequest'
 import { OPENDIRECTORY, VIDEODOWNLOAD_MESSAGE, VIDEODOWNLOAD, VIDEODOWNLOAD_TASK_LIST,VIDEODOWNLOAD_LIST,VIDEODOWNLOADTASK_RETRY,VIDEODOWNLOADITEM_RETRY,VIDEODOWNLOAD_ITEM_MESSAGE,VIDEODOWNLOADITEM_EXPLORER,VIDEODOWNLOADITEM_DELETE,VIDEODOWN_TASK_ERROR_LOG_QUERY,VIDEO_CAPTION_GENERATE,VIDEO_CAPTION_GENERATE_MESSAGE,
-VIDEOTASKDOWNLOAD_RETRY_MESSAGE,VIDEODOWNLOAD_LOG_QUERY,VIDEODOWNLOAD_DETAIL_QUERY,VIDEODOWNLOAD_OPEN_CAPTIONFILE,VIDEO_INFORMATION_TRANSLATE,VIDEODOWNLOAD_ERROR_LOG_DOWNLOAD   
- } from "@/config/channellist";
+VIDEOTASKDOWNLOAD_RETRY_MESSAGE,VIDEODOWNLOAD_LOG_QUERY,VIDEODOWNLOAD_DETAIL_QUERY,VIDEODOWNLOAD_OPEN_CAPTIONFILE,VIDEO_INFORMATION_TRANSLATE, VIDEO_PUBLISH, SYSTEM_MESSAGE   
+} from "@/config/channellist";
 import { DownloadVideoControlparam, VideoDownloadTaskEntityType,VideoDownloadQuery,VideoDownloadListDisplay,VideoCaptionGenerateParamWithIds,VideoCompotionEntity,VideoInformationTransParam } from "@/entityTypes/videoType"
 import { CommonDialogMsg,ItemSearchparam,CommonIdrequestType,CommonIdrequest } from "@/entityTypes/commonType";
 import {SearchResult } from '@/views/api/types'
+import { VideoPublishRequest } from '@/entityTypes/videoPublishType'
 
 
 
@@ -29,6 +30,13 @@ export async function getVideoTasklist(param: ItemSearchparam): Promise<SearchRe
         total: resp.num,
     }
     return resdata;
+    // const resp:SearchResult<VideoDownloadTaskEntityType>={
+    //     data:[],
+    //     total:0
+    // }
+    // console.log("getVideoTasklist")
+    // console.log(resp)
+    // return resp
 }
 //get video list by task id
 export async function getVideolistbyTaskId(param: VideoDownloadQuery): Promise<SearchResult<VideoDownloadListDisplay>> {
@@ -92,16 +100,16 @@ export async function translateInformation(data:VideoInformationTransParam<numbe
 export async function updateVideotranslate(id:number){
     windowSend(VIDEO_INFORMATION_TRANSLATE)
 }
-export async function downloadErrorLog(id:number):Promise<string>{
-    try {
-        const querydata:CommonIdrequestType<number>={id:id, type:"errorlog"}
-        const res = await windowInvoke(VIDEODOWNLOAD_ERROR_LOG_DOWNLOAD, querydata)
-        if (!res.status) {
-            throw new Error(res.msg || 'Failed to download error log')
-        }
-        return res.data
-    } catch (error) {
-        console.error('Error downloading log:', error)
-        throw error
-    }
+
+export async function publishVideo(request: VideoPublishRequest) {
+    windowSend(VIDEO_PUBLISH, request)
+}
+
+export function receiveVideoPublishMessage(cb: (data: CommonDialogMsg) => void) {
+    windowReceive(SYSTEM_MESSAGE, cb)
+}
+
+export async function downloadErrorLog(id: number) {
+    const querydata: CommonIdrequestType<number> = { id: id, type: "errorlog" }
+    return await windowInvoke(VIDEODOWNLOAD_LOG_QUERY, querydata)
 }

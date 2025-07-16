@@ -10,7 +10,7 @@ import { VideoDownloadFactory } from "@/modules/videodownload/VideoDownloadFacto
 import { VideodoanloadSuccessCall, VideoCaptionGenerateParam, CookiesProxy, processVideoDownloadParam, VideodownloadMsg, VideodownloadTaskMsg } from "@/entityTypes/videoType"
 import { VideoCaptionFactory } from "@/modules/videoCaption/VideoCaptionFactory"
 import { VideoCaptionImpl } from '@/modules/interface/VideoCaptionImpl';
-import { extraFileEntity, VideoCaptionMsg } from "@/entityTypes/videoType";
+import { extraFileEntity, VideoCaptionMsg,VideoPublishMsg } from "@/entityTypes/videoType";
 import { TransItemsParam } from "@/entityTypes/translateType"
 import { VideoTranslateItem } from "@/entityTypes/videoType";
 import { TranslateProducer } from "@/modules/TranslateProducer"
@@ -18,7 +18,9 @@ import { VideoDownloadTagEntity } from "@/entity/VideoDownloadTag.entity"
 import { CommonMessage } from "@/entityTypes/commonType"
 import { Usersearchdata } from "@/entityTypes/searchControlType"
 import { UserSearch } from "@/childprocess/userSearch"
-import { SearchDataRun } from "@/entityTypes/scrapeType"
+import { ResultParseItemType } from "@/entityTypes/scrapeType"
+import { VideoPublishParam } from "./entityTypes/videoPublishType";
+import { VideoPublishService } from "./service/VideoPublishService";
 
 
 process.parentPort.on('message', async (e) => {
@@ -33,14 +35,22 @@ process.parentPort.on('message', async (e) => {
                 return
             }
             const userSer = new UserSearch()
-            const res = await userSer.searchData(userSearchdata)
+            //const res = await userSer.searchData(userSearchdata)
             //console.log(res)
-            const message: ProcessMessage<SearchDataRun> = {
-                action: "saveres",
-                data: res
-            }
+            // const message: ProcessMessage<SearchDataRun> = {
+            //     action: "saveres",
+            //     data: res
+            // }
+            await userSer.searchData(userSearchdata,function(result){
+                console.log(result)
+                const message:ProcessMessage<ResultParseItemType>={
+                    action:"savesearchresult",
+                    data:result
+                }
+                process.parentPort.postMessage(JSON.stringify(message))
+            })
             //console.log(port)
-            process.parentPort.postMessage(JSON.stringify(message))
+            //process.parentPort.postMessage(JSON.stringify(message))
             //});
             break;
         }
@@ -151,6 +161,10 @@ process.parentPort.on('message', async (e) => {
         }
         case 'translateVideoInfo': {
             await translateVideoinfo(pme.data as TransItemsParam<VideoTranslateItem>)
+            break;
+        }
+        case 'publishVideo': {
+            await publishVideo(pme.data as VideoPublishParam)
             break;
         }
 
@@ -358,7 +372,8 @@ async function generateCaption(param: VideoCaptionGenerateParam) {
                 status: false,
                 msg: "video list is empty",
                 file: "",
-                videoId: 0
+                videoId: 0,
+
             }
         }
 
@@ -404,7 +419,8 @@ async function generateCaption(param: VideoCaptionGenerateParam) {
                         msg: "",
                         file: element.videoPath,
                         savepath: outputfile,
-                        videoId: element.videoId
+                        videoId: element.videoId,
+                        languageCode: element.languageCode
                     }
                 }
 
@@ -496,5 +512,43 @@ async function translateVideoinfo(data: TransItemsParam<VideoTranslateItem>) {
         }
         process.parentPort.postMessage(JSON.stringify(message))
 
+    }
+}
+async function publishVideo(param: VideoPublishParam){
+    const videoPublishService = new VideoPublishService();
+    try{
+        const result = await videoPublishService.publishVideo(param.videoEntity, param.platform, param.options);
+        if(result){
+            const message: ProcessMessage<VideoPublishMsg> = {
+                action: "publishVideoMsg",
+                data: {
+                    status: true,
+                    msg: "",
+                    publishRecord: result
+                }
+            
+            }
+            process.parentPort.postMessage(JSON.stringify(message))
+           
+        }else{
+            const message: ProcessMessage<VideoPublishMsg> = {
+                action: "publishVideoMsg",
+                data: {
+                    status: false,
+                    msg: "publish video failed"
+                }
+            }
+            process.parentPort.postMessage(JSON.stringify(message))
+        }
+    }catch(error){
+        console.error(error)
+        const message: ProcessMessage<VideoPublishMsg> = {
+            action: "publishVideoMsg",
+            data: {
+                status: false,
+                msg: error instanceof Error ? error.message : "unknown error"
+            }
+        }
+        process.parentPort.postMessage(JSON.stringify(message))
     }
 }

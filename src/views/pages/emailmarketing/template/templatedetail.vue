@@ -16,23 +16,36 @@
             :hint="t('emailmarketing.content_hint')" :rules="[rules.required]" :readonly="loading" clearable rows="10"
             required auto-grow></v-textarea>
         </v-col>
+        <v-col cols="12" md="1">
+          <v-textarea 
+            v-model="tplDescription" 
+            :label="t('emailmarketing.description')+' (' + t('common.optional') + ')'" 
+            :hint="t('emailmarketing.description_hint') + ' (' + t('common.optional') + ')'" 
+            :readonly="loading" 
+            clearable 
+            rows="3"
+            auto-grow
+            optional
+          ></v-textarea>
+        </v-col>
         <v-col cols="12" md="3">
           <!-- Content for the 1/3 column -->
           <v-btn @click="insertVariable('{$send_time}')" color="primary" class="mb-2 ml-2" rounded="lg" size="small">
-            Insert Time Variable
+            {{ t('emailmarketing.insert_time_variable') }}
           </v-btn>
           <v-btn @click="insertVariable('{$sender}')" color="primary" class="mb-2 ml-2" rounded="lg" size="small">
-            Insert Sender Variable
+            {{ t('emailmarketing.insert_sender_variable') }}
           </v-btn>
           <v-btn @click="insertVariable('{$receiver_email}')" color="primary" class="mb-2 ml-2" rounded="lg" size="small">
-            Insert Receiver Variable
+            {{ t('emailmarketing.insert_receiver_variable') }}
           </v-btn>
           <v-btn @click="insertVariable('{$url}')" color="primary" class="mb-2 ml-2" rounded="lg" size="small">
-            Insert the source
+            {{ t('emailmarketing.insert_source') }}
           </v-btn>
           <v-btn @click="insertVariable('{$description}')" color="primary" class="mb-2 ml-2" rounded="lg" size="small">
-            Insert the description
+            {{ t('emailmarketing.insert_description') }}
           </v-btn>
+            
         </v-col>
       </v-row>
       <v-alert v-model="alert" border="start" variant="tonal" closable close-label="Close Alert" title="Information"
@@ -127,6 +140,7 @@ const FakeAPI = {
 const form = ref<HTMLFormElement>();
 const tplTitle = ref<string>(""); //template title
 const tplcontent = ref<string>(""); //template
+const tplDescription = ref<string>(""); //template description
 const previewdialog = ref<boolean>(false);
 const loading = ref<boolean>(false);
 const alert = ref<boolean>(false);
@@ -161,9 +175,10 @@ const initialize = async () => {
     FakeAPI.fetch(parseInt(templateId.value.toString())).then((res) => {
       //set value
       if (res) {
+        console.log(res)
         tplTitle.value = res.TplTitle;
         tplcontent.value = res.TplContent;
-
+        tplDescription.value = res.TplDescription || "";
       }
     });
   } else {
@@ -235,6 +250,7 @@ async function onSubmit() {
 
       TplTitle: tplTitle.value,
       TplContent: tplcontent.value,
+      TplDescription: tplDescription.value,
     };
 
 

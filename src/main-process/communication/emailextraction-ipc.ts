@@ -3,7 +3,7 @@ import { EMAILEXTRACTIONAPI, EMAILEXTRACTIONMESSAGE,LISTEMAILSEARCHTASK,EMAILSEA
 import { EmailscFormdata } from '@/entityTypes/emailextraction-type'
 import { CommonDialogMsg } from "@/entityTypes/commonType";
 import { isValidUrl } from "@/views/utils/function"
-import { searhModel } from "@/modules/searchModel"
+//import { SearchModule } from "@/modules/searchModule"
 import { EmailextractionController } from "@/controller/emailextractionController"
 import { EmailsControldata,EmailResultDisplay,EmailsearchTaskEntityDisplay,EmailsearchtaskResultquery} from '@/entityTypes/emailextraction-type'
 import { EmailExtractionTypes } from '@/config/emailextraction'
@@ -11,7 +11,9 @@ import {ItemSearchparam} from "@/entityTypes/commonType"
 import { CommonResponse } from "@/entityTypes/commonType"
 import { CommonIdrequestType } from "@/entityTypes/commonType"
 import { CommonMessage } from "@/entityTypes/commonType"
-
+import {SearchResultModule} from "@/modules/SearchResultModule"
+import {ISearchResultApi} from "@/modules/interface/ISearchResultApi"
+import { EmailSearchTaskModule } from '@/modules/EmailSearchTaskModule'
 export function registerEmailextractionIpcHandlers() {
     // const searchModel = new searhModel();
     // const emailCon = new EmailextractionController();
@@ -71,19 +73,34 @@ export function registerEmailextractionIpcHandlers() {
                 event.sender.send(EMAILEXTRACTIONMESSAGE, JSON.stringify(comMsgs))
                 return
             }
-            const searchModel = new searhModel();
-
-            //get result url from search task
-            const taskresultNum = await searchModel.countSearchResult(qdata.searchTaskId)
-            const step = 100
-            for (let i = 0; i < taskresultNum; i = i + step) {
-                const taskresult = await searchModel.listSearchResult(qdata.searchTaskId, i, step)
-                if (taskresult.length > 0) {
-                    taskresult.map((item) => {
-                        validUrls.push(item.link)
-                    })
+            //const searchModel = new SearchModule();
+            //get search task
+            const searchResultModule:ISearchResultApi = new SearchResultModule()
+            const searchResult = await searchResultModule.getSearchResultsByTaskId(qdata.searchTaskId)
+            if(!searchResult){
+                const comMsgs: CommonDialogMsg = {
+                    status: false,
+                    code: 20240705103811,
+                    data: {
+                        action: "error",
+                        title: "emailscrape.failed",
+                        content: "emailscrape.searchResult_empty"
+                    }
                 }
+                event.sender.send(EMAILEXTRACTIONMESSAGE, JSON.stringify(comMsgs))
+                return
             }
+            //get result url from search task
+            //const taskresultNum = await searchModel.countSearchResult(qdata.searchTaskId)
+            //const step = 100
+            // for (let i = 0; i < taskresultNum; i = i + step) {
+            //     const taskresult = await searchModel.listSearchResult(qdata.searchTaskId, i, step)
+            //     if (taskresult.length > 0) {
+            //         taskresult.map((item) => {
+            //             validUrls.push(item.link)
+            //         })
+            //     }
+            // }
         } else {//error action
             const comMsgs: CommonDialogMsg = {
                 status: false,
@@ -98,36 +115,40 @@ export function registerEmailextractionIpcHandlers() {
             return
 
         }
-        if (validUrls.length === 0) {
-            const comMsgs: CommonDialogMsg = {
-                status: false,
-                code: 20240705103811,
-                data: {
-                    action: "",
-                    title: "emailscrape.failed",
-                    content: "emailscrape.url_empty"
-                }
-            }
-            event.sender.send(EMAILEXTRACTIONMESSAGE, JSON.stringify(comMsgs))
-            return
-        }
+        // if (validUrls.length === 0) {
+        //     const comMsgs: CommonDialogMsg = {
+        //         status: false,
+        //         code: 20240705103811,
+        //         data: {
+        //             action: "",
+        //             title: "emailscrape.failed",
+        //             content: "emailscrape.url_empty"
+        //         }
+        //     }
+        //     event.sender.send(EMAILEXTRACTIONMESSAGE, JSON.stringify(comMsgs))
+        //     return
+        // }
         const datas: EmailsControldata = {
+            searchResultId:qdata.searchTaskId?qdata.searchTaskId:0,
             validUrls: validUrls,
             concurrency: qdata.concurrency,
             pagelength: qdata.pagelength,
             notShowBrowser: qdata.notShowBrowser,
             proxys: qdata.proxys,
             type: extraType,
-            processTimeout:Number(qdata.processTimeout)
+            processTimeout:Number(qdata.processTimeout),
+            maxPageNumber:qdata.maxPageNumber
         }
             
     const emailCon = new EmailextractionController();
-        emailCon.searchEmail(datas);
+        emailCon.searchEmail(datas)
+        // const emailSearchTaskModule=new EmailSearchTaskModule()
+        // emailSearchTaskModule.searchEmail(datas.searchResultId)
         const comMsgs: CommonDialogMsg = {
             status: true,
             code: 0,
             data: {
-                action: "emailsearch_task _start",
+                action: "emailscrape.emailsearch_task _start",
                 title: "",
                 content: ""
             }

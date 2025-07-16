@@ -20,6 +20,7 @@ test('google-scraper', async function () {
     const searchDataParam:SearchDataParam={
     keywords:keywords,
     engine:"google",
+    //useLocalbrowserdata:false,
     }
     const results=await scraper.searchdata(searchDataParam)
     console.log(results)

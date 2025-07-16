@@ -1,4 +1,31 @@
-import { computed} from 'vue'
+//import { computed} from 'vue'
+
+export enum LanguageName {
+  ENGLISH = 'English',
+  SPANISH = 'Spanish',
+  FRENCH = 'French',
+  GERMAN = 'German',
+  CHINESE = 'Chinese',
+  JAPANESE = 'Japanese',
+  KOREAN = 'Korean',
+  RUSSIAN = 'Russian',
+  PORTUGUESE = 'Portuguese',
+  ITALIAN = 'Italian'
+}
+
+export enum LanguageCode {
+  EN = 'en',
+  ES = 'es',
+  FR = 'fr',
+  DE = 'de',
+  ZH = 'zh',
+  JA = 'ja',
+  KO = 'ko',
+  RU = 'ru',
+  PT = 'pt',
+  IT = 'it'
+}
+
 export type PageSearch={
     page:number,
     size:number
@@ -37,6 +64,12 @@ export type SortBy={
     key:string
     order:string
 }
+export type CookiesType={
+name: string
+value: string
+domain: string
+path: string
+}
 export type ItemSearchparam={
     page:number
     size:number
@@ -74,15 +107,16 @@ export enum TaskStatus {
     Notstart = 0,
     Processing = 1,
     Complete = 2,
-    Error = 3
+    Error = 3,
+    Cancel = 4
   }
   export interface CommonIdrequestIds<Type> {
    ids:Array<Type>,
 }
 export type LanguageItem={
     id:number,
-    name:string
-    code:string
+    name:LanguageName
+    code:LanguageCode
 }
 export enum InputTypeEnum {
     INPUT = 'input',

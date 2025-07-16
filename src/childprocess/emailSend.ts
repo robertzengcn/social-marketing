@@ -9,11 +9,13 @@ export class EmailSend {
 
     public async send(param: Buckemailremotedata, successCallback?: (receiver: string, title: string, content: string) => void | undefined | null, errorCallback?: (receiver: string, info: string, title: string, content: string) => void | undefined | null): Promise<any> {
         const totalfilter: string[] = []
-        if (param.Emailfilterlist) {
+        if (param.Emailfilterlist&&param.Emailfilterlist.length>0) {
             param.Emailfilterlist.forEach((item) => {
+                if(item.filter_details&&item.filter_details.length>0){
                 item.filter_details.forEach((filterdetail) => {
-                    totalfilter.push(filterdetail.content)
-                })
+                        totalfilter.push(filterdetail.content)
+                    })
+                }
             })
         }
 

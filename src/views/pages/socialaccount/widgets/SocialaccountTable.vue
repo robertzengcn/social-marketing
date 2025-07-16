@@ -1,5 +1,5 @@
 <template>
-    <div class="search_bar mt-4 d-flex jsb">
+    <div class="search_bar mt-4 mb-4 d-flex jsb">
         <div class="d-flex jsb search_tool">
             <div class="search_wrap mr-4">
                 <v-text-field rounded class="elevation-0" density="compact" variant="solo" label="Search"
@@ -193,6 +193,9 @@ function loadItems({ page, itemsPerPage, sortBy }) {
         ({ data, total }) => {
 
             console.log(total)
+            if(!data){
+                data=[]
+            }
             serverItems.value = data
             totalItems.value = total
             loading.value = false

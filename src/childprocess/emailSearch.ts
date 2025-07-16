@@ -37,6 +37,7 @@ export class EmailSearch{
             },
             page_length:data.pagelength,
             proxies: proxyStrList,
+            maxPageNumber:data.maxPageNumber?data.maxPageNumber:0
         }
         const emailCluster=new EmailCluster(smConfig)
         const sedata:EmailDatascraper={

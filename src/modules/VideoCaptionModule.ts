@@ -1,7 +1,7 @@
 import { BaseModule } from "@/modules/baseModule";
 import { VideoCaptionModel } from "@/model/VideoCaption.model";
-import { VideoCaptionEntity } from "@/entityTypes/videoType";
-
+//import { VideoCaptionEntity } from "@/entityTypes/videoType";
+import { VideoCaptionEntity } from "@/entity/VideoCaption.entity";
 
 export class VideoCaptionModule extends BaseModule {
     private videoCaptionModel: VideoCaptionModel;
@@ -31,7 +31,7 @@ export class VideoCaptionModule extends BaseModule {
         return await this.videoCaptionModel.getCaptionByVid(vid);
     }
 
-    async getCaptionByVidLid(videoId: number, languageId: number): Promise<VideoCaptionEntity | null> {
-        return await this.videoCaptionModel.getCaptionByVidLid(videoId, languageId);
+    async getCaptionByVidLid(videoId: number, languageCode: string): Promise<VideoCaptionEntity | null> {
+        return await this.videoCaptionModel.getCaptionByVidLid(videoId, languageCode);
     }
 }

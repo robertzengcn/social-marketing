@@ -3,7 +3,7 @@ import { SEARCHSCRAPERAPI } from '@/config/channellist'
 import { SearchtaskItem,SearchResultFetchparam } from "@/entityTypes/searchControlType"
 import { SearchResult} from '@/views/api/types'
 import { windowInvoke,windowReceive,windowSend } from '@/views/utils/apirequest'
-import {LISTSESARCHRESUT,TASKSEARCHRESULTLIST,SAVESEARCHERRORLOG} from "@/config/channellist";
+import {LISTSESARCHRESUT,TASKSEARCHRESULTLIST,SAVESEARCHERRORLOG,RETRYSEARCHTASK} from "@/config/channellist";
 import {SearchResEntityDisplay} from "@/entityTypes/scrapeType"
 import {ItemSearchparam} from "@/entityTypes/commonType"
 //import {CommonDialogMsg} from "@/entityTypes/commonType";
@@ -49,6 +49,11 @@ export async function gettaskresult(res:SearchResultFetchparam):Promise<SearchRe
 export async function Errorlogquery(id:number){
     const res=await windowInvoke(SAVESEARCHERRORLOG,{id:id})
     return res
+}
+
+export async function retrySearchTask(id: number) {
+    await windowSend(RETRYSEARCHTASK, { id: id });
+    // return res;
 }
 
 

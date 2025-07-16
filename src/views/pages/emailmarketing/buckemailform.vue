@@ -261,6 +261,7 @@ const stepComplete=(step:number) =>{
           if(obj.data.action=="success"){
             //jump to list page
             console.log("success send buck email data")
+            router.push({path: "/emailmarketing/buckemailtask/list/" })
           }
         }
       }
@@ -320,7 +321,7 @@ const  Submitdata=()=> {
     EmailServicelist:emailserviceidlist
   }
   if (useemailsource.value?.key == 1) {
-    console.log(310)
+    // console.log(310)
     emailformdata.emailtaskentityId=emailsourcesdata.value?.id
   }
   console.log(emailformdata)

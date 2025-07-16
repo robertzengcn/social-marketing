@@ -10,6 +10,7 @@ export type EmailTemplateRespdata={
     TplId?:number
     TplTitle:string
     TplContent:string
+    TplDescription?:string
     TplRecord?:string
     Status?:number
 }
@@ -25,12 +26,14 @@ export type EmailTemplatedata={
     TplId?:number
     TplTitle:string
     TplContent:string
+    TplDescription?:string
 }
 export type EmailFilterdata={
     id?:number
     name:string
     description:string
     filter_details:Array<EmailFilterDetialdata>
+    created_time:string
 }
 export type EmailFilterDetialdata={
     id?:number
@@ -67,7 +70,8 @@ export type EmailItem={
 }
 export type Buckemailstruct={
     EmailBtype:BuckEmailType //email source type
-    EmailList:Array<EmailItem>
+    EmailtaskentityId?:number
+    //EmailList:Array<EmailItem>
     EmailTemplateslist:Array<number>
     EmailFilterlist:Array<number>
     EmailServicelist:Array<number>

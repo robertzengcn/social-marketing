@@ -198,8 +198,59 @@ export const constantRoutes: RouteRecordRaw[] = [
           icon: 'list'
         }
       },
-     
-    ],
+    ]
+  },
+  {
+    path: '/schedule',
+    name: 'schedule',
+    meta: {
+      visible: true,
+      title: 'Schedule',
+      icon: 'mdi-clock-outline'
+    },
+    component: Layout,
+    children: [
+      {
+        path: 'list',
+        component: () => import('@/views/pages/schedule/list.vue'),
+        name: 'ScheduleList',
+        meta: {
+          visible: true,
+          title: 'Schedule List',
+          icon: 'list'
+        }
+      },
+      {
+        path: 'create',
+        component: () => import('@/views/pages/schedule/create.vue'),
+        name: 'CreateSchedule',
+        meta: {
+          visible: false,
+          title: 'Create Schedule',
+          icon: 'add'
+        }
+      },
+      {
+        path: 'edit/:id(\\d+)',
+        component: () => import('@/views/pages/schedule/edit.vue'),
+        name: 'EditSchedule',
+        meta: {
+          visible: false,
+          title: 'Edit Schedule',
+          icon: 'edit'
+        }
+      },
+      {
+        path: 'detail/:id(\\d+)',
+        component: () => import('@/views/pages/schedule/detail.vue'),
+        name: 'ScheduleDetail',
+        meta: {
+          visible: false,
+          title: 'Schedule Detail',
+          icon: 'view'
+        }
+      }
+    ]
   },
   {
     path: '/proxy',
@@ -322,6 +373,16 @@ export const constantRoutes: RouteRecordRaw[] = [
         meta: {
           visible: false,
           title: 'Video Detail',
+          icon: 'list'
+        }
+      },
+      {
+        path: 'publish',
+        component: () => import(/* webpackChunkName: "staff-list" */ '@/views/pages/videopublish/list.vue'),
+        name: 'VideoPublishList',
+        meta: {
+          visible: true,
+          title: 'Video Publish Records',
           icon: 'list'
         }
       }
