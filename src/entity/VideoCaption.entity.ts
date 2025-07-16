@@ -10,7 +10,7 @@ export class VideoCaptionEntity extends AuditableEntity {
     @Column("integer")
     video_id: number;
 
-    @Column("integer")
+    @Column("integer",{ nullable: true,default:0 })
     language_id: number;
 
     @Column("text",{ nullable: true, default: "en" })

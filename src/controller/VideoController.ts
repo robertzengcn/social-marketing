@@ -257,14 +257,14 @@ export class VideoController {
             headless: false,
             //accountId: accountId
         }
-        // const videoPublishService = new VideoPublishService();
-        // const result = await videoPublishService.publishVideo(videoEntity, platform, options);
+        const videoPublishService = new VideoPublishService();
+        const result = await videoPublishService.publishVideo(videoEntity, platform, options);
         // return result;
-        await this.processPublishVideo({
-            videoEntity: videoEntity,
-            platform: platform,
-            options: options
-        },succesCall,errorCall)
+        // await this.processPublishVideo({
+        //     videoEntity: videoEntity,
+        //     platform: platform,
+        //     options: options
+        // },succesCall,errorCall)
     }
     //get video download list by task id
     public async videoDownloadlist(taskId: number, page: number, size: number): Promise<ListData<VideoDownloadListDisplay>> {
