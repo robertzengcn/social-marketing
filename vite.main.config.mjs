@@ -26,9 +26,9 @@ function emptyModulesPlugin() {
         'typeorm-aurora-data-api-driver',
         '@google-cloud/spanner',
         'mysql', 'mysql2',
-        'pg', 'pg-query-stream','pg-native',
+        'pg', 'pg-query-stream', 'pg-native',
         'mongodb', 'mssql', 'oracledb',
-         'hdb-pool','redis','ioredis','sql.js' 
+        'hdb-pool', 'redis', 'ioredis', 'sql.js'
     ];
 
     return {
@@ -54,12 +54,44 @@ function platformCopyPlugin() {
         name: 'platform-copy',
         buildStart() {
             console.log('Platform detected:', process.platform);
-            
+
             // Ensure templates directory exists
             const templatesDir = '.vite/build/templates';
             if (!fs.existsSync(templatesDir)) {
                 fs.mkdirSync(templatesDir, { recursive: true });
             }
+            // Copy icons to build folder
+            console.log('Copying icons to build folder...');
+            const iconSourceDir = 'src/assets/images';
+            const iconDestDir = '.vite/build';
+
+            // Ensure icon destination directory exists
+            if (!fs.existsSync(iconDestDir)) {
+                fs.mkdirSync(iconDestDir, { recursive: true });
+            }
+
+            
+            // Copy platform-specific icons
+            if (process.platform === 'win32') {
+                // Copy Windows icon (.ico)
+                if (fs.existsSync(`${iconSourceDir}/icon.ico`)) {
+                    fs.copyFileSync(`${iconSourceDir}/icon.ico`, `${iconDestDir}/icon.ico`);
+                    console.log('Copied Windows icon (icon.ico)');
+                }
+            } else if (process.platform === 'darwin') {
+                // Copy macOS icon (.icns)
+                if (fs.existsSync(`${iconSourceDir}/icon.icns`)) {
+                    fs.copyFileSync(`${iconSourceDir}/icon.icns`, `${iconDestDir}/icon.icns`);
+                    console.log('Copied macOS icon (icon.icns)');
+                }
+            } else if (process.platform === 'linux') {
+                // Copy PNG icon for Linux
+                if (fs.existsSync(`${iconSourceDir}/icon.png`)) {
+                    fs.copyFileSync(`${iconSourceDir}/icon.png`, `${iconDestDir}/icon.png`);
+                    console.log('Copied Linux icon (icon.png)');
+                }
+            }
+
 
             // Copy platform-specific files
             if (process.platform === 'linux') {
@@ -100,7 +132,7 @@ function platformCopyPlugin() {
                     'node_modules/protocol-registry/src/macos/templates/url-app.ejs',
                     '.vite/build/templates/url-app.ejs'
                 );
-                
+
                 // Copy macOS scripts
                 fs.copyFileSync(
                     'node_modules/protocol-registry/src/macos/defaultAppExist.sh',
@@ -114,7 +146,7 @@ function platformCopyPlugin() {
                     'node_modules/protocol-registry/src/macos/plistMutator.js',
                     '.vite/build/plistMutator.js'
                 );
-            }else if(process.platform === 'win32'){
+            } else if (process.platform === 'win32') {
                 console.log('Copying Windows templates...');
                 // Copy Windows templates
                 fs.copyFileSync(
@@ -130,8 +162,8 @@ function platformCopyPlugin() {
                     '.vite/build/registry.js'
                 );
 
+            }
         }
-    }
     };
 }
 
@@ -141,12 +173,12 @@ function platformCopyPlugin() {
 //         name: 'ejs-template-processor',
 //         writeBundle() {
 //             console.log('Processing EJS templates for platform:', process.platform);
-            
+
 //             // Process script.ejs based on platform
 //             const scriptPath = '.vite/build/templates/script.ejs';
 //             if (fs.existsSync(scriptPath)) {
 //                 let content = fs.readFileSync(scriptPath, 'utf8');
-                
+
 //                 if (process.platform === 'linux') {
 //                     console.log('Processing Linux script.ejs...');
 //                     // Linux template uses different variables - only add checks for Linux variables
@@ -164,7 +196,7 @@ function platformCopyPlugin() {
 //                     content = content.replace(/<%- plistMutator %>/g, '<%- typeof plistMutator !== "undefined" ? plistMutator : "" %>');
 //                     content = content.replace(/<%= protocol %>/g, '<%= typeof protocol !== "undefined" ? protocol : "" %>');
 //                 }
-                
+
 //                 fs.writeFileSync(scriptPath, content);
 //             }
 
@@ -216,7 +248,7 @@ export default ({ mode }) => {
             }),
             platformCopyPlugin(),
             // ejsTemplateProcessorPlugin(),
-                
+
         ],
         resolve: {
             alias: {

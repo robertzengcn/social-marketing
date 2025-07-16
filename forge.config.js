@@ -39,6 +39,7 @@ const envFile = `.env.${env}`;
 dotenv.config({ path: path.resolve(__dirname, envFile) });
 module.exports={
   packagerConfig: {
+    icon: './src/assets/images/icon',
     // asar: {
     //   // This ensures native modules are unpacked
     //   unpack: "**/node_modules/better-sqlite3/**",
@@ -113,29 +114,148 @@ module.exports={
     {
       name: '@electron-forge/maker-squirrel',
       config: {
-        name: process.env.APP_NAME || 'electron_quick_start',
+        name: process.env.APP_NAME || 'Social Marketing',
         certificateFile: './cert.pfx',
-        certificatePassword: process.env.CERTIFICATE_PASSWORD
+        certificatePassword: process.env.CERTIFICATE_PASSWORD,
+        iconUrl: './src/assets/images/icon.png',
+        setupIcon: './src/assets/images/icon.ico',
+        // Custom installer options
+        loadingGif: './src/assets/images/installer-loading.gif', // Optional: Add a loading gif
+        setupExe: 'SocialMarketingSetup.exe',
+        // Allow users to choose installation directory
+        allowDirectorySelection: true,
+        // Create desktop shortcut
+        createDesktopIcon: true,
+        // Create start menu shortcut
+        createStartMenuShortcut: true,
+        // Install for all users (requires admin)
+        installForAllUsers: false,
+        // Custom installation directory
+        defaultInstallLocation: '%LOCALAPPDATA%\\SocialMarketing',
+        // Additional options
+        noMsi: true,
+        // Custom installer text
+        title: 'Social Marketing Installer',
+        description: 'Install Social Marketing application',
+        authors: 'Robert Zeng',
+        // Registry entries for uninstall
+        registry: {
+          key: 'Software\\SocialMarketing',
+          name: 'InstallLocation'
+        }
       },
     },
     {
       name: '@electron-forge/maker-zip',
       platforms: ['darwin'],
-      config: {},
     },
     {
       name: '@electron-forge/maker-deb',
-      config: {},
+      config: {
+        options: {
+          icon: './src/assets/images/icon.png',
+          // Custom installer options for Linux
+          maintainer: 'Robert Zeng',
+          homepage: 'https://github.com/your-repo/social-marketing',
+          categories: ['Utility', 'Network', 'Web'],
+          // Allow users to choose installation directory
+          section: 'utils',
+          priority: 'optional',
+          // Create desktop shortcut
+          desktop: {
+            Name: 'Social Marketing',
+            Comment: 'Social Marketing Application',
+            GenericName: 'Social Marketing',
+            Categories: 'Utility;Network;Web;',
+            Keywords: 'social;marketing;automation;'
+          },
+          // Custom installation directory
+          installDir: '/opt/social-marketing',
+          // Additional options
+          depends: ['nodejs', 'libgtk-3-0', 'libnotify4', 'libnss3', 'libxss1', 'libxtst6', 'xdg-utils', 'libatspi2.0-0', 'libdrm2', 'libxkbcommon0', 'libxcomposite1', 'libxdamage1', 'libxfixes3', 'libxrandr2', 'libgbm1', 'libasound2']
+        },
+      },
     },
     {
       name: '@electron-forge/maker-rpm',
-      config: {},
+      config: {
+        options: {
+          icon: './src/assets/images/icon.png',
+          // Custom installer options for RPM
+          maintainer: 'Robert Zeng',
+          homepage: 'https://github.com/your-repo/social-marketing',
+          categories: ['Utility', 'Network', 'Web'],
+          // Allow users to choose installation directory
+          section: 'utils',
+          priority: 'optional',
+          // Create desktop shortcut
+          desktop: {
+            Name: 'Social Marketing',
+            Comment: 'Social Marketing Application',
+            GenericName: 'Social Marketing',
+            Categories: 'Utility;Network;Web;',
+            Keywords: 'social;marketing;automation;'
+          },
+          // Custom installation directory
+          installDir: '/opt/social-marketing',
+          // Additional options
+          depends: ['nodejs', 'gtk3', 'libnotify', 'nss', 'libXScrnSaver', 'libXtst', 'xdg-utils', 'atk', 'libdrm', 'libxkbcommon', 'libXcomposite', 'libXdamage', 'libXfixes', 'libXrandr', 'mesa-libgbm', 'alsa-lib']
+        }
+      },
     },
     {
       name: '@electron-forge/maker-wix',
       config: {
         language: 1033,
-        manufacturer: 'My Awesome Company'
+        manufacturer: 'Robert Zeng',
+        icon: './src/assets/images/icon.ico',
+        // Custom WiX installer options
+        ui: {
+          // Enable custom UI for installation location selection
+          chooseDirectory: true,
+          // Show license agreement
+          license: './LICENSE',
+          // Custom banner and dialog images
+          banner: './src/assets/images/installer-banner.png',
+          dialog: './src/assets/images/installer-dialog.png',
+          // Installation directory options
+          installDir: 'C:\\Program Files\\SocialMarketing',
+          // Create desktop shortcut
+          createDesktopShortcut: true,
+          // Create start menu shortcut
+          createStartMenuShortcut: true,
+          // Install for all users
+          perMachine: false,
+          // Additional features
+          features: {
+            // Main application feature
+            main: {
+              title: 'Social Marketing Application',
+              description: 'Main application files',
+              level: 1
+            },
+            // Desktop shortcut feature
+            desktopShortcut: {
+              title: 'Desktop Shortcut',
+              description: 'Create a shortcut on the desktop',
+              level: 1
+            },
+            // Start menu shortcut feature
+            startMenuShortcut: {
+              title: 'Start Menu Shortcut',
+              description: 'Create a shortcut in the start menu',
+              level: 1
+            }
+          }
+        },
+        // Custom actions for post-installation
+        customActions: [
+          {
+            name: 'CreateShortcuts',
+            description: 'Create desktop and start menu shortcuts',
+            script: './installer-scripts/create-shortcuts.js'
+          }
+        ]
       }
     }
   ],
