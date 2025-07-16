@@ -4,7 +4,7 @@ import { ipcMain } from 'electron';
 import { EmailMarketingsubdata, EmailItem } from '@/entityTypes/emailmarketingType'
 import { CommonDialogMsg } from "@/entityTypes/commonType";
 import { BUCKEMAILSENDMESSAGE, BUCKEMAILTASKLIST, BUCKEMAILTASKSENDLOG } from "@/config/channellist"
-import { EmailSearchTaskModule } from "@/modules/emailSearchTaskModule"
+import { EmailSearchTaskModule } from "@/modules/EmailSearchTaskModule"
 import { Buckemailstruct } from "@/entityTypes/emailmarketingType"
 import { BuckEmailType } from "@/model/buckEmailTaskdb"
 import { ItemSearchparam } from "@/entityTypes/commonType"
@@ -53,14 +53,15 @@ export function registerBuckEmailIpcHandlers() {
                 }
                 const bucketEmailData: Buckemailstruct = {
                     EmailBtype: BuckEmailType.EXTRACTEMAIL,
-                    EmailList: emailList,
+                    //EmailList: emailList,
+                    EmailtaskentityId: qdata.emailtaskentityId,
                     EmailTemplateslist: qdata.EmailTemplateslist,
                     EmailFilterlist: qdata.EmailFilterlist,
                     EmailServicelist: qdata.EmailServicelist,
                     NotDuplicate: qdata.NotDuplicate
                 }
 
-                const taskid = await buckemailCon.buckEmailsend(bucketEmailData)
+                const taskid = await buckemailCon.startBuckEmailTask(bucketEmailData)
                 const comMsgs: CommonDialogMsg = {
                     status: true,
                     code: 20241108151239,

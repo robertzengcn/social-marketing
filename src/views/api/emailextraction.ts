@@ -1,6 +1,6 @@
 import {EmailscFormdata,EmailResultDisplay,EmailsearchtaskResultquery} from '@/entityTypes/emailextraction-type'
 import { windowInvoke,windowReceive,windowSend } from '@/views/utils/apirequest'
-import {EMAILEXTRACTIONAPI} from '@/config/channellist'
+import {EMAILEXTRACTIONAPI, EMAILSEARCHTASK_ERROR_LOG_DOWNLOAD} from '@/config/channellist'
 import { SearchResult} from '@/views/api/types'
 import {ItemSearchparam} from "@/entityTypes/commonType"
 import {LISTEMAILSEARCHTASK,EMAILSEARCHTASKRESULT} from "@/config/channellist";
@@ -44,4 +44,17 @@ export async function getEmailtaskdetail(data: EmailsearchtaskResultquery){
 export function receiveSearchEmailevent(channel:string,cb:(data:any)=>void){
    
     windowReceive(channel,cb)
+}
+
+export async function downloadErrorLog(id: number): Promise<string> {
+    try {
+        const querydata = { id: id }
+        const res = await windowInvoke(EMAILSEARCHTASK_ERROR_LOG_DOWNLOAD, querydata)
+        console.log(res)
+        return res
+        
+    } catch (error) {
+        console.error('Error downloading log:', error)
+        throw error
+    }
 }

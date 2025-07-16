@@ -10,13 +10,15 @@ import { ProxyParseItem, ProxyCheckres, ProxylistResp } from "@/entityTypes/prox
 import { ProxyCheckModel, proxyCheckStatus } from "@/model/ProxyCheck.model";
 import { Token } from "@/modules/token"
 import { USERSDBPATH } from '@/config/usersetting';
-import { ProxyApi } from "@/api/proxyApi"
+//import { ProxyApi } from "@/api/proxyApi"
 import { SocksProxyAgent } from 'socks-proxy-agent';
 // import { Request, Response } from "express";
 // import { ProxyModel } from "@/model/Proxy.model";
 // import { getRecorddatetime } from "@/modules/lib/function";
 // import { ProxyEntity } from "@/entity/Proxy.entity";
 import { ProxyCheckEntity } from "@/entity/ProxyCheck.entity";
+import {IProxyApi} from "@/modules/interface/IProxyApi"
+import {ProxyModule} from "@/modules/ProxyModule"
 export class ProxyController {
     //import proxy from csv file
     // public async importProxyfile(filename: string) {
@@ -32,7 +34,7 @@ export class ProxyController {
     //         }
     //     });
     private proxyCheckdb: ProxyCheckModel
-    private proxyapi: ProxyApi
+    private proxyapi: IProxyApi
     constructor() {
         const tokenService = new Token()
         const dbpath = tokenService.getValue(USERSDBPATH)
@@ -41,7 +43,7 @@ export class ProxyController {
         }
 
         this.proxyCheckdb = new ProxyCheckModel(dbpath)
-        this.proxyapi = new ProxyApi()
+        this.proxyapi = new ProxyModule()
     }
     //     //return proxy list
     //     const response = await fetch(filename);

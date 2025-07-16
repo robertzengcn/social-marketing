@@ -1,10 +1,10 @@
 import { BaseDb } from "@/model/Basedb";
 import { Repository } from "typeorm";
 import { EmailSearchTaskEntity } from "@/entity/EmailSearchTask.entity";
-import { EmailsearchTaskEntity, EmailsearchTaskStatus } from "./emailsearchTaskdb";
+//import { EmailsearchTaskEntity, EmailsearchTaskStatus } from "./emailsearchTaskdb";
 import { EmailExtractionTypes } from "@/config/emailextraction";
-import { SortBy } from "@/entityTypes/commonType";
-import { getRecorddatetime } from "@/modules/lib/function";
+import { SortBy, TaskStatus } from "@/entityTypes/commonType";
+//import { getRecorddatetime } from "@/modules/lib/function";
 
 export class EmailsearchTaskModel extends BaseDb {
     private repository: Repository<EmailSearchTaskEntity>;
@@ -14,36 +14,29 @@ export class EmailsearchTaskModel extends BaseDb {
         this.repository = this.sqliteDb.connection.getRepository(EmailSearchTaskEntity);
     }
 
-    async createTask(task: EmailsearchTaskEntity): Promise<number> {
-        if (!task.record_time) {
-            task.record_time = getRecorddatetime();
-        }
-        const entity = new EmailSearchTaskEntity();
-        entity.error_log = task.error_log?task.error_log:"";
-        entity.runtime_log = task.runtime_log?task.runtime_log:"";
-        entity.record_time = task.record_time;
-        entity.type_id = task.type_id;
-        entity.status = task.status;
+    async createTask(task: EmailSearchTaskEntity): Promise<number> {
+        // if (!task.record_time) {
+        //     task.record_time = getRecorddatetime();
+        // }
+        // const entity = new EmailSearchTaskEntity();
+        // entity.error_log = task.error_log?task.error_log:"";
+        // entity.runtime_log = task.runtime_log?task.runtime_log:"";
+        // entity.record_time = task.record_time;
+        // entity.type_id = task.type_id;
+        // entity.status = task.status;
 
-        const savedEntity = await this.repository.save(entity);
+        const savedEntity = await this.repository.save(task);
         return savedEntity.id;
     }
 
-    async getTaskById(id: number): Promise<EmailsearchTaskEntity | undefined> {
+    async getTaskById(id: number): Promise<EmailSearchTaskEntity | undefined> {
         const entity = await this.repository.findOne({ where: { id } });
         if (!entity) return undefined;
 
-        return {
-            id: entity.id,
-            error_log: entity.error_log,
-            runtime_log: entity.runtime_log,
-            record_time: entity.record_time,
-            type_id: entity.type_id,
-            status: entity.status
-        };
+        return entity;
     }
 
-    async updateTask(task: EmailsearchTaskEntity): Promise<boolean> {
+    async updateTask(task: EmailSearchTaskEntity): Promise<boolean> {
         if (!task.id) {
             throw new Error("Task ID is required for update");
         }
@@ -65,7 +58,7 @@ export class EmailsearchTaskModel extends BaseDb {
         return result.affected ? true : false;
     }
 
-    async updateTaskStatus(id: number, status: EmailsearchTaskStatus): Promise<boolean> {
+    async updateTaskStatus(id: number, status: TaskStatus): Promise<boolean> {
         const entity = await this.repository.findOne({ where: { id } });
         if (!entity) return false;
 
@@ -92,7 +85,7 @@ export class EmailsearchTaskModel extends BaseDb {
         return !!result;
     }
 
-    async listSearchtask(page: number, size: number, sort?: SortBy): Promise<{ records: EmailsearchTaskEntity[], total: number }> {
+    async listSearchtask(page: number, size: number, sort?: SortBy): Promise<{ records: EmailSearchTaskEntity[], total: number }> {
         const queryBuilder = this.repository.createQueryBuilder("task");
 
         if (sort?.key && sort?.order) {
@@ -119,14 +112,7 @@ export class EmailsearchTaskModel extends BaseDb {
             .getManyAndCount();
 
         return {
-            records: records.map(entity => ({
-                id: entity.id,
-                error_log: entity.error_log,
-                runtime_log: entity.runtime_log,
-                record_time: entity.record_time,
-                type_id: entity.type_id,
-                status: entity.status
-            })),
+            records: records,
             total
         };
     }
@@ -135,13 +121,13 @@ export class EmailsearchTaskModel extends BaseDb {
         return this.repository.count();
     }
 
-    statusConvert(status: EmailsearchTaskStatus): string {
+    statusConvert(status: TaskStatus): string {
         switch (status) {
-            case EmailsearchTaskStatus.Processing:
+            case TaskStatus.Processing:
                 return 'Processing';
-            case EmailsearchTaskStatus.Complete:
+                case TaskStatus.Complete:
                 return 'Complete';
-            case EmailsearchTaskStatus.Error:
+            case TaskStatus.Error:
                 return 'Error';
             default:
                 return 'Unknown';

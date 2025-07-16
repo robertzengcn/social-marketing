@@ -20,6 +20,14 @@
 
       <v-text-field v-model="concurrent_quantity" :label="t('search.concurrent_quantity')" clearable
         class="mt-3"></v-text-field>
+        <v-number-input
+          :label="t('emailextraction.max_page_number')"
+          control-variant="default"
+          v-model="maxPageNumber"
+          :max="1000"
+          :min="0"
+          :default="100"
+        ></v-number-input>
       
         <v-number-input
         :label="t('emailextraction.process_timeout')"
@@ -43,17 +51,18 @@
       </v-btn-toggle>
 
 
-
-
-      <div class="d-flex flex-column">
-        <v-btn color="success" class="mt-4" block type="submit" :loading="loading">
-          Submit
+      <div class="d-flex justify-space-between mt-4 mb-4">
+        <v-btn color="success" type="submit" :loading="loading" class="flex-grow-1 mr-2">
+          {{ t('common.submit') }}
         </v-btn>
 
-        <v-btn color="error" class="mt-4" block @click="router.go(-1)">
-          Return
+        <v-btn color="error" @click="router.go(-1)" class="flex-grow-1 ml-2">
+          {{ t('common.return') }}
         </v-btn>
       </div>
+
+
+     
 
     </v-form>
     <div>
@@ -103,6 +112,7 @@ const rules = {
   required: (value) => !!value || "Field is required",
 };
 const processTimeout = ref<number>(10);
+const maxPageNumber = ref<number>(100);
 type EmailOption = {
   key: string;
   name: string;
@@ -253,6 +263,11 @@ async function onSubmit() {
       //check url is valid
       isValidUrl(item)?validateurl.push(item):null
     })
+    // Check if there are any valid URLs after validation
+    if (validateurl.length === 0) {
+      setAlert(t('emailextraction.no_valid_urls'), "Warning", "warning");
+      return;
+    }
 
   }else if(emailtype.value?.index==1){
     extratype=emailtype.value.key;
@@ -262,6 +277,7 @@ async function onSubmit() {
   }
 
 }
+
    const scraperData:EmailscFormdata={
     extratype:extratype,
     urls:validateurl,
@@ -270,7 +286,8 @@ async function onSubmit() {
     notShowBrowser:!convertNumberToBoolean(showinbrwoser.value),
     proxys:proxyValue.value,
     searchTaskId:searchtaskId.value,
-    processTimeout:processTimeout.value
+    processTimeout:processTimeout.value,
+    maxPageNumber:maxPageNumber.value
    }
    console.log(scraperData)
    submitScraper(scraperData).catch(function (err) {

@@ -8,6 +8,7 @@ import { convertCookiesToNetscapeFile, generateRandomUniqueString, proxyEntityTo
 import { CookiesType} from "@/entityTypes/cookiesType"
 import * as fs from 'fs';
 import puppeteer, { ElementHandle } from 'puppeteer';
+import { browserManager } from "@/modules/browserManager"
 // import { Page, Browser} from 'puppeteer';
 
 // import * as fs from 'fs';
@@ -192,9 +193,11 @@ export class YoutubeDownload implements VideoDownloadImpl {
     async getPlaylist(url:string):Promise<Array<string>|null>{
         const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
         try{
-        const browser = await puppeteer.launch({
-            //headless: false, 
+        // Use browserManager to create launch options
+        const launchOptions = await browserManager.createLaunchOptions({
+            headless: true,
         });
+        const browser = await puppeteer.launch(launchOptions);
         const page = await browser.newPage();
         await page.goto(url, { timeout: 90000, waitUntil: 'networkidle2' });
         await page.setViewport({width: 1080, height: 1024});
@@ -271,6 +274,7 @@ export class YoutubeDownload implements VideoDownloadImpl {
                 }
             }
         }
+        await closePuppeteer(page, browser);
         return resultUrls
     } catch (error) {
         if(error instanceof Error){
@@ -284,13 +288,17 @@ export class YoutubeDownload implements VideoDownloadImpl {
         const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
         //const keywordString = keyword.join(', ');
         try {
-          // Launch browser with appropriate options
-          const browser = await puppeteer.launch({
-            //headless: false, // Use new headless mode
-            args: proxy ? [
-              `--proxy-server=${proxy.protocol}://${proxy.host}:${proxy.port}`
-            ] : []
+          // Use browserManager to create launch options with proxy support
+          const customArgs = proxy ? [
+            `--proxy-server=${proxy.protocol}://${proxy.host}:${proxy.port}`
+          ] : [];
+          
+          const launchOptions = await browserManager.createLaunchOptions({
+            headless: true,
+            args: customArgs
           });
+          
+          const browser = await puppeteer.launch(launchOptions);
           
           // Set up authentication for proxy if needed
           if (proxy && proxy.username && proxy.password) {

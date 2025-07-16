@@ -6,7 +6,7 @@ import 'nprogress/nprogress.css'
 import { UserModule } from '@/views/store/modules/user'
 import { PermissionModule } from '@/views/store/modules/permission'
 // import i18n from '@/lang' // Internationalization
-import settings from '@/settings'
+import settings from '@/views/settings'
 
 // NProgress.configure({ showSpinner: false })
 

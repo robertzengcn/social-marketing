@@ -14,8 +14,8 @@ export class VideoDownloadTaskEntity extends AuditableEntity {
 
     @Column("text", { nullable: true })
     savepath: string | null;
-    @Column("text", { nullable: true })
-    downloadtype: string | null;
+    // @Column("text", { nullable: true })
+    // downloadtype: string | null;
 
     @Column("text", { nullable: true })
     record_time: string | null;

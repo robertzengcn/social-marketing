@@ -16,6 +16,9 @@
       <v-btn class="btn ml-3" variant="flat" prepend-icon="mdi-plus" color="green" @click="showTranslateInfroDialog=true">
         {{ CapitalizeFirstLetter(t('video.translate_information')) }}
       </v-btn>
+      <v-btn class="btn ml-3" variant="flat" prepend-icon="mdi-cloud-upload" color="purple" @click="showPublishDialog=true">
+        {{ CapitalizeFirstLetter(t('video.publish_video')) }}
+      </v-btn>
     </div>
     <div>
     </div>
@@ -46,11 +49,14 @@
         mdi-delete
       </v-icon>
       <v-icon size="small" class="me-2" @click="showitemLog(item)" v-if="item.status.toString() == '3'">
-                mdi-file-document
-            </v-icon>
-            <v-icon size="small" @click="openDetail(item)">
-              mdi-information
-            </v-icon>
+        mdi-file-document
+      </v-icon>
+      <v-icon size="small" class="me-2" @click="downloadErrorLog(item)" v-if="item.status.toString() == '3'">
+        mdi-download
+      </v-icon>
+      <v-icon size="small" @click="openDetail(item)">
+        mdi-information
+      </v-icon>
     </template>
     <template v-slot:[`item.url`]="{ item }">
 
@@ -75,14 +81,14 @@
             </v-col>
           </v-row> 
         </row>
-        <row>
+        <!-- <row>
       <v-label>{{ CapitalizeFirstLetter(t('video.is_english_video'))}}:</v-label>
 
       <v-btn-toggle v-model="isEnglish" mandatory class="ml-3">
         <v-btn :value="true" color="primary">{{ t('common.yes') }}</v-btn>
         <v-btn :value="false" color="success">{{ t('common.no') }}</v-btn>
       </v-btn-toggle>
-    </row>
+    </row> -->
    
 
     </v-card-text>
@@ -146,6 +152,51 @@
       </v-card-actions>
     </v-card>
   </v-dialog>
+  <v-dialog v-model="showPublishDialog" max-width="500px"> 
+    <v-card>
+      <v-card-title class="headline">{{ CapitalizeFirstLetter(t('video.publish_video')) }}</v-card-title>
+      <v-card-text>
+        <v-row>
+          <v-col cols="12" md="12">
+            <v-label>{{ CapitalizeFirstLetter(t('video.select_platform')) }}:</v-label>
+            <v-select
+              v-model="selectedPlatform"
+              :items="platformOptions"
+              :label="t('video.select_platform')"
+              item-title="name"
+              item-value="value"
+              return-object
+              class="mt-2"
+              :rules="[rules.required]"
+            ></v-select>
+          </v-col>
+        </v-row>
+        <v-row v-if="selectedPlatform">
+          <v-col cols="12" md="12">
+            <v-label>{{ CapitalizeFirstLetter(t('video.select_category')) }}:</v-label>
+            <v-select
+              v-model="selectedCategory"
+              :items="getCategoriesForPlatform(selectedPlatform.value)"
+              :label="t('video.select_category')"
+              class="mt-2"
+              :rules="[rules.required]"
+            ></v-select>
+          </v-col>
+        </v-row>
+        <v-row v-if="selectedPlatform">
+          <v-col cols="12" md="12">
+            <v-label>{{ CapitalizeFirstLetter(t('video.select_account')) }}:</v-label>
+            <AccountSelectedTable :accountSource="selectedPlatform.value" @change="handleAccountChange" />
+          </v-col>
+        </v-row>
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn color="blue darken-1" @click="showPublishDialog=false">{{ t('common.cancel') }}</v-btn>
+        <v-btn color="blue darken-1" @click="publishVideo">{{ t('common.confirm') }}</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script setup lang="ts">
@@ -154,7 +205,7 @@ import { ref, computed, onMounted, reactive, onUnmounted } from 'vue'
 import { SearchResult } from '@/views/api/types'
 import { useRoute } from "vue-router";
 import { getVideolistbyTaskId, retryVideoDownloadId, receiveVideoItemDownloadMessage, openFileexplor, deleteVideoDownItem, generateCaption,
-  receiveVideoCaptionGenerateMessage,queryVideoItemdownloadlog,translateInformation } from "@/views/api/video";
+  receiveVideoCaptionGenerateMessage,queryVideoItemdownloadlog,translateInformation, downloadErrorLog as downloadErrorLogApi } from "@/views/api/video";
 import { VideoDownloadListDisplay,VideoCaptionGenerateParamWithIds,VideoInformationTransParam } from "@/entityTypes/videoType";
 import router from '@/views/router';
 import { CapitalizeFirstLetter } from "@/views/utils/function"
@@ -167,6 +218,11 @@ import { opendialog} from "@/views/api/video";
 import LogDialog from "@/views/components/widgets/logDialog.vue"
 import {LanguageConfig} from "@/config/LanguageConfig"
 import {LanguageItem} from '@/entityTypes/commonType'
+import { PublishPlatform, VideoPublishRequest } from "@/entityTypes/videoPublishType";
+import { publishVideo as publishVideoApi } from "@/views/api/video";
+import { VideoPublishPlatformConfig } from "@/config/videosetting";
+import AccountSelectedTable from "@/views/pages/socialaccount/widgets/AccountSelectedTable.vue";
+import { SocialAccountListData } from '@/entityTypes/socialaccount-type';
 const selected = ref<Array<VideoDownloadListDisplay>>([]);
 const headers = ref<Array<Header>>([])
 const $route = useRoute();
@@ -265,7 +321,7 @@ const itemsPerPage = ref(10);
 const serverItems = ref<Array<VideoDownloadListDisplay>>([]);
 const loading = ref(false);
 const showLangDialog = ref(false);
-const isEnglish = ref<boolean>(true);
+//const isEnglish = ref<boolean>(true);
 const totalItems = ref(0);
 const search = ref('');
 const alert = ref(false);
@@ -279,7 +335,7 @@ const showDeleteModal = ref(false);
 let refreshInterval: ReturnType<typeof setInterval> | undefined;
 const options = reactive({
   page: 1, // Initial page
-  itemsPerPage: 10, // Items per page
+  itemsPerPage: 100, // Items per page
 });
 const showTranslateInfroDialog=ref(false);
 const logdiaContent = ref("");
@@ -288,7 +344,7 @@ const logdiastatus = ref(false);
 // const showDeleteModal = ref(false);
 // const deleteId=ref(0);
 // const alertext=ref("");
-const props = defineProps({
+defineProps({
   isSelectedtable: {
     type: Boolean,
 
@@ -414,7 +470,7 @@ const generateCaptions = async () => {
   });
   const data:VideoCaptionGenerateParamWithIds<number>={
     ids:ids,
-    isEnglish:isEnglish.value,
+    //isEnglish:isEnglish.value,
     savePath:captionsavePath.value
   }
   await generateCaption(data)
@@ -459,7 +515,75 @@ const translateVideoInfo=async()=>{
   await translateInformation(data)
   showTranslateInfroDialog.value=false;
 }
+const downloadErrorLog = async (item: VideoDownloadListDisplay) => {
+  try {
+    if(item.id){
+      await downloadErrorLogApi(item.id)
+    }else{
+      setAlert(t('video.select_video_error'), t('common.error'), "error");
+    }
+  } catch (error) {
+    console.error('Failed to download error log:', error)
+    setAlert(error instanceof Error ? error.message : 'Failed to download error log', t('common.error'), "error")
+  }
+}
+const showPublishDialog = ref(false);
+const selectedPlatform = ref<{ name: string; value: PublishPlatform } | null>(null);
+const selectedCategory = ref<string>('');
+const selectedAccount = ref<SocialAccountListData[]>([]);
 
+const platformOptions = [
+  { name: 'YouTube', value: PublishPlatform.YOUTUBE },
+  { name: 'Bilibili', value: PublishPlatform.BILIBILI },
+  { name: 'Baidu', value: PublishPlatform.BAIDU }
+];
+
+const getCategoriesForPlatform = (platform: PublishPlatform) => {
+  const platformConfig = VideoPublishPlatformConfig.find(p => p.name === platform);
+  return platformConfig?.videoCategories || [];
+};
+
+const handleAccountChange = (accounts: SocialAccountListData[]) => {
+  selectedAccount.value = accounts;
+};
+
+const publishVideo = async () => {
+  if (!selectedPlatform.value || !selectedCategory.value) {
+    setAlert(t('video.select_platform_and_category'), t('common.error'), "error");
+    return;
+  }
+
+  if (selected.value.length === 0) {
+    setAlert(t('Please select a video'), t('common.error'), "error");
+    return;
+  }
+
+  if (selectedAccount.value.length === 0) {
+    setAlert(t('video.select_account_error'), t('common.error'), "error");
+    return;
+  }
+
+  const videoId = selected.value[0].id;
+  if (!videoId) {
+    setAlert(t('Invalid video selection'), t('common.error'), "error");
+    return;
+  }
+
+  const request: VideoPublishRequest = {
+    videoId: videoId,
+    platform: selectedPlatform.value.value,
+    category: selectedCategory.value,
+    accountId: selectedAccount.value[0].id
+  };
+
+  try {
+    await publishVideoApi(request);
+    showPublishDialog.value = false;
+    setAlert(t('video.publish_started'), t('common.success'), "success");
+  } catch (error: any) {
+    setAlert(error.message || t('video.publish_failed'), t('common.error'), "error");
+  }
+};
 onMounted(() => {
   receiveVideoItemDownloadMessage((res: CommonDialogMsg) => {
     console.log(res)

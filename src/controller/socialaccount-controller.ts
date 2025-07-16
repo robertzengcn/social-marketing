@@ -147,7 +147,7 @@ export class SocialAccountController {
                         secure: cookie.secure,
                         httpOnly: cookie.httpOnly || false,
                         expirationDate: cookie.expirationDate,
-                        sameSite: cookie.sameSite,
+                        sameSite: cookie.sameSite === 'None' ? 'no_restriction' : cookie.sameSite,
                         hostOnly: cookie.hostOnly
                     };
                     //check whether cookies value start with __Host-
@@ -163,6 +163,7 @@ export class SocialAccountController {
          
                     }
                     try {
+                        console.log(cookieDetails)
                         await ses.cookies.set(cookieDetails)
                     } catch (error) {
                         console.error(`Failed to set cookie: ${cookie.name}`, error);

@@ -9,7 +9,7 @@ export interface CookiesType{
     session?:boolean,  
     name:string,
     value:string,
-    sameSite?: ('unspecified' | 'no_restriction' | 'lax' | 'strict');
+    sameSite?: ('unspecified' | 'no_restriction' | 'lax' | 'strict'|'None');
 }
 export type RequireCookiesParam={
  id:number

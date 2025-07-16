@@ -3,11 +3,11 @@ import {EMAILMARKETINGTEMPLIST,EMAILMARKETINGTEMPDETAIL,EMAILMARKETINGTEMPREMOVE
     EMAILMARKETINGTEMPPREVIEW,EMAILMARKETINGTEMPUPDATE} from "@/config/channellist";
 import {SearchResult} from '@/views/api/types'
 import {EmailTemplateRespdata,EmailTemplatePreviewdata} from "@/entityTypes/emailmarketingType"
-import {ItemSearchparam,CommonIdrequest} from "@/entityTypes/commonType"
-
+import {ItemSearchparam,CommonIdrequest,ListData} from "@/entityTypes/commonType"
+import { EmailTemplateEntity } from "@/entity/EmailTemplate.entity"
 export async function getEmailtemplatelist(data: ItemSearchparam):Promise<SearchResult<EmailTemplateRespdata>>{
      
-    const resp=await windowInvoke(EMAILMARKETINGTEMPLIST,data);
+    const resp=await windowInvoke(EMAILMARKETINGTEMPLIST,data) as ListData<EmailTemplateRespdata>;
     
    
     if(!resp){
@@ -22,7 +22,7 @@ export async function getEmailtemplatelist(data: ItemSearchparam):Promise<Search
 }
 //get email template by id
 export async function getEmailtemplatebyid(id:string):Promise<EmailTemplateRespdata>{
-    const resp=await windowInvoke(EMAILMARKETINGTEMPDETAIL,{id:id});
+    const resp=await windowInvoke(EMAILMARKETINGTEMPDETAIL,{id:id}) as EmailTemplateRespdata;
     if(!resp){
         throw new Error("unknow error")
     }

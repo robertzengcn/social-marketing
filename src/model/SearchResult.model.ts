@@ -56,6 +56,56 @@ export class SearchResultModel extends BaseDb {
     }
 
     /**
+     * Get search results by specific task ID
+     */
+    async getSearchResultsByTaskId(taskId: number, page: number = 0, size: number = 10): Promise<{ results: SearchResEntity[], total: number }> {
+        // Get total count for pagination
+        const total = await this.repository.count({
+            where: { task_id: taskId }
+        });
+
+        // Get paginated results
+        const results = await this.repository.find({
+            where: { task_id: taskId },
+            skip: page * size,
+            take: size,
+            order: { record_time: 'DESC' }
+        });
+
+        // Convert to SearchResEntity format
+        const searchResults: SearchResEntity[] = results.map(result => ({
+            keyword_id: result.task_id,
+            link: result.link,
+            title: result.title,
+            snippet: result.snippet,
+            visible_link: result.domain
+        }));
+
+        return {
+            results: searchResults,
+            total: total
+        };
+    }
+
+    /**
+     * Get all search results by task ID without pagination
+     */
+    async getAllSearchResultsByTaskId(taskId: number): Promise<SearchResEntity[]> {
+        const results = await this.repository.find({
+            where: { task_id: taskId },
+            order: { record_time: 'DESC' }
+        });
+
+        return results.map(result => ({
+            keyword_id: result.task_id,
+            link: result.link,
+            title: result.title,
+            snippet: result.snippet,
+            visible_link: result.domain
+        }));
+    }
+
+    /**
      * Truncate the database table
      */
     async truncatedb(): Promise<void> {

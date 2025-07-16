@@ -14,30 +14,23 @@ export class BuckEmailTaskModel extends BaseDb {
         this.repository = this.sqliteDb.connection.getRepository(BuckemailTaskEntity);
     }
 
-    async create(task: BuckemailEntity): Promise<number> {
-        const entity = new BuckemailTaskEntity();
-        entity.type = task.type;
-        entity.status = task.status || TaskStatus.Processing;
-        entity.record_time = task.record_time || getRecorddatetime();
-        entity.log_file = task.log_file;
-        entity.error_file = task.error_file;
+    async create(task: BuckemailTaskEntity): Promise<number> {
+        // const entity = new BuckemailTaskEntity();
+        // entity.type = task.type;
+        // entity.status = task.status || TaskStatus.Processing;
+        // entity.record_time = task.record_time || getRecorddatetime();
+        // entity.log_file = task.log_file;
+        // entity.error_file = task.error_file;
 
-        const savedEntity = await this.repository.save(entity);
+        const savedEntity = await this.repository.save(task);
         return savedEntity.id;
     }
 
-    async read(id: number): Promise<BuckemailEntity | undefined> {
+    async read(id: number): Promise<BuckemailTaskEntity | undefined> {
         const entity = await this.repository.findOne({ where: { id } });
         if (!entity) return undefined;
 
-        return {
-            id: entity.id,
-            type: entity.type,
-            record_time: entity.record_time,
-            log_file: entity.log_file,
-            error_file: entity.error_file,
-            status: entity.status
-        };
+        return entity;
     }
 
     async update(id: number, task: BuckemailEntity): Promise<void> {
@@ -61,6 +54,12 @@ export class BuckEmailTaskModel extends BaseDb {
         return getStatusName(taskStatus);
     }
 
+    // async updateTaskStatusById(id: number, status: TaskStatus): Promise<void> {
+    //     const entity = await this.repository.findOne({ where: { id } });
+    //     if (!entity) return;
+    //     entity.status = status;
+    //     await this.repository.save(entity);
+    // }
     async updateTaskLogfile(id: number, runtimeLog: string, errorLog: string): Promise<void> {
         const entity = await this.repository.findOne({ where: { id } });
         if (!entity) return;

@@ -1,6 +1,8 @@
 import { Page } from 'puppeteer';
 import winston from "winston"
 import {ProxyServer} from "@/entityTypes/proxyType"
+import {ProxyEntity} from '@/entityTypes/proxyType'
+import {CookiesType} from "@/entityTypes/cookiesType"
 
 export type SMconfig = {
   logger: winston.Logger;
@@ -41,6 +43,8 @@ export type SMconfig = {
   throw_on_detection?: boolean;
   output_file?: string;
   page_length?;number
+  debug_log_path?:string;
+  save_html?:boolean;
 }
 export type pluginType = {
   results: object,
@@ -133,22 +137,35 @@ export type SMstruct = {
   headless: boolean,
   num_pages?: number,
   page_length?: number,
-  logger?: winston.Logger
+  logger?: winston.Logger,
+  debug_log_path?:string,
   // taskid?: number,
   // taskrunId?: number
+  save_html?:boolean,
+  maxPageNumber?:number
 }
 export type SearchDataParam = {
   keywords: Array<string>,
   engine: string,
+  num_pages?: number,
+  concurrency?: number,
+  notShowBrowser?: boolean,
+  proxys?: Array<ProxyEntity>,
+  error_log?:string,
+  run_log?:string,
+  debug_log_path?:string,
+  //useLocalbrowserdata:boolean,
+  localBrowser?:string
+  accounts?:Array<number>
+  cookies?: Array<Array<CookiesType>>;
 }
 export interface clusterData {
   page: Page
 }
 export interface ClusterSearchData {
-  proxyServer?:ProxyServer|null
-//import {ProxyServer} from "@/entityTypes/proxyType"
-
-  keywords: Array<string>
+  keywords: string[];
+  proxyServer?: ProxyServer | null;
+  cookies?: Array<CookiesType>;
 }
 export type ClusterFunctionparam = {
   page: Page,
@@ -182,6 +199,11 @@ export type ParseType = {
 }
 export type ResultParseType = {
   [key: string]: ParseType
+}
+export type ResultParseItemType = {
+  keyword: string,
+  page: number,
+  results?: Array<SearchResult>
 }
 
 export type SearchResult = {

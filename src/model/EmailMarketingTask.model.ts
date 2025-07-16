@@ -3,7 +3,7 @@ import { Repository } from "typeorm";
 import { EmailMarketingTaskEntity } from "@/entity/EmailMarketingTask.entity";
 import { EmailMarketingTaskdbEntity, EmailMarketingTaskStatus } from "./emailMarketingTaskdb";
 import { getRecorddatetime } from "@/modules/lib/function";
-
+import { TaskStatus } from "@/entityTypes/commonType";
 export class EmailMarketingTaskModel extends BaseDb {
     private repository: Repository<EmailMarketingTaskEntity>;
 
@@ -43,6 +43,13 @@ export class EmailMarketingTaskModel extends BaseDb {
         entity.status = task.status;
         entity.record_time = task.record_time || getRecorddatetime();
 
+        await this.repository.save(entity);
+    }
+    //update task status by id
+    async updateTaskStatusById(id: number, status: TaskStatus): Promise<void> {
+        const entity = await this.repository.findOne({ where: { id } });
+        if (!entity) return;
+        entity.status = status;
         await this.repository.save(entity);
     }
 
