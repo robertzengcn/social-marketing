@@ -156,6 +156,30 @@ module.exports={
       platforms: ['darwin'],
     },
     {
+      name: '@electron-forge/maker-dmg',
+      config: {
+        format: 'ULFO',
+        icon: './src/assets/images/icon.icns',
+        background: './src/assets/images/dmg-background.png',
+        contents: [
+          {
+            x: 130,
+            y: 220
+          },
+          {
+            x: 410,
+            y: 220,
+            type: 'link',
+            path: '/Applications'
+          }
+        ],
+        window: {
+          width: 540,
+          height: 380
+        }
+      }
+    },
+    {
       name: '@electron-forge/maker-deb',
       config: {
         options: {

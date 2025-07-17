@@ -139,6 +139,8 @@ jobs:
               
       - name: Install dependencies
         run: yarn install
+      - name: Install DMG maker
+        run: yarn add --dev @electron-forge/maker-dmg
       - name: Download Electron headers
         run: |
           npx electron-rebuild --force --types prod,dev,optional --module-dir .
@@ -153,6 +155,15 @@ jobs:
         run: yarn electron-rebuild   
       - name: Build application
         run: yarn make-mac:test
+  
+      - name: Debug - List out directory contents
+        run: |
+          echo "=== Contents of out directory ==="
+          ls -la out/
+          echo "=== Contents of out/make directory ==="
+          ls -la out/make/ || echo "out/make directory does not exist"
+          echo "=== Contents of out directory recursively ==="
+          find out/ -type f -name "*.dmg" -o -name "*.zip" -o -name "*.app" || echo "No DMG, ZIP, or APP files found"
   
       - name: Upload artifact
         uses: actions/upload-artifact@v4
