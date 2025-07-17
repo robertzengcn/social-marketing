@@ -89,6 +89,8 @@ jobs:
           echo "CC=clang" >> $GITHUB_ENV
           echo "CFLAGS=-std=c++20" >> $GITHUB_ENV
           echo "LDFLAGS=-std=c++20" >> $GITHUB_ENV
+          echo "npm_config_target_platform=darwin" >> $GITHUB_ENV
+          echo "npm_config_target_arch=x64" >> $GITHUB_ENV
 
       # Make sure to use a recent Xcode version
       - name: List available Xcode versions
@@ -160,10 +162,20 @@ jobs:
           yarn clean || echo "Clean command not available"
       - name: Configure npm for C++20
         run: |
-          npm config set target_platform "darwin"
-          npm config set target_arch "x64"
           echo "npm config list:"
           npm config list
+      - name: Verify environment setup
+        run: |
+          echo "=== Verifying environment setup ==="
+          echo "CXXFLAGS: $CXXFLAGS"
+          echo "CXX: $CXX"
+          echo "CC: $CC"
+          echo "CFLAGS: $CFLAGS"
+          echo "LDFLAGS: $LDFLAGS"
+          echo "npm_config_target_platform: $npm_config_target_platform"
+          echo "npm_config_target_arch: $npm_config_target_arch"
+          echo "Platform: $(uname -s)"
+          echo "Architecture: $(uname -m)"
       - name: Update native modules to latest versions
         run: |
           echo "=== Updating native modules ==="
@@ -176,10 +188,14 @@ jobs:
           export CC="clang"
           export CFLAGS="-std=c++20"
           export LDFLAGS="-std=c++20"
+          export npm_config_target_platform="darwin"
+          export npm_config_target_arch="x64"
           echo "Environment variables set:"
           echo "CXXFLAGS: $CXXFLAGS"
           echo "CXX: $CXX"
           echo "CC: $CC"
+          echo "npm_config_target_platform: $npm_config_target_platform"
+          echo "npm_config_target_arch: $npm_config_target_arch"
       - name: Download Electron headers
         run: |
           CXXFLAGS="-std=c++20" npx electron-rebuild --force --types prod,dev,optional --module-dir .
