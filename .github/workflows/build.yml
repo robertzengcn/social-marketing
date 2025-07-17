@@ -86,6 +86,12 @@ jobs:
         run: |
           echo "CXXFLAGS=-std=c++20" >> $GITHUB_ENV
           echo "npm_config_cxxflags=-std=c++20" >> $GITHUB_ENV
+          echo "CXX=clang++" >> $GITHUB_ENV
+          echo "CC=clang" >> $GITHUB_ENV
+          echo "CFLAGS=-std=c++20" >> $GITHUB_ENV
+          echo "LDFLAGS=-std=c++20" >> $GITHUB_ENV
+          echo "export CXXFLAGS=-std=c++20" >> $GITHUB_ENV
+          echo "export npm_config_cxxflags=-std=c++20" >> $GITHUB_ENV
 
       # Make sure to use a recent Xcode version
       - name: List available Xcode versions
@@ -93,6 +99,14 @@ jobs:
     
       - name: Select available Xcode version
         run: sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+      
+      - name: Verify Xcode setup
+        run: |
+          xcode-select --print-path
+          clang++ --version
+          echo "C++ standard library version:"
+          clang++ -E -x c++ - -o - <<< '#include <version>' | grep -i "c++" || echo "C++ version info not available"
+
       - name: Checkout code
         uses: actions/checkout@v3
 
@@ -141,20 +155,60 @@ jobs:
         run: yarn install
       - name: Install DMG maker
         run: yarn add --dev @electron-forge/maker-dmg
+      - name: Clean previous builds
+        run: |
+          rm -rf node_modules/.cache
+          rm -rf out/
+          rm -rf .vite/
+          yarn clean || echo "Clean command not available"
+      - name: Configure npm for C++20
+        run: |
+          npm config set cxxflags "-std=c++20"
+          npm config set target_platform "darwin"
+          npm config set target_arch "x64"
+          echo "npm config list:"
+          npm config list
+      - name: Update native modules to latest versions
+        run: |
+          echo "=== Updating native modules ==="
+          yarn add better-sqlite3@latest sqlite3@latest bufferutil@latest utf-8-validate@latest --exact || echo "Failed to update some modules"
       - name: Download Electron headers
         run: |
-          npx electron-rebuild --force --types prod,dev,optional --module-dir .
+          CXXFLAGS="-std=c++20" npm_config_cxxflags="-std=c++20" npx electron-rebuild --force --types prod,dev,optional --module-dir .
       - name: Rebuild native modules
         run: |
-          npx electron-rebuild
+          CXXFLAGS="-std=c++20" npm_config_cxxflags="-std=c++20" npx electron-rebuild
       - name: Rebuild sqlite3
-        run: yarn rebuild-sqlite3
+        run: |
+          CXXFLAGS="-std=c++20" npm_config_cxxflags="-std=c++20" yarn rebuild-sqlite3
       - name: Rebuild better sqlite
-        run: yarn rebuild-better-sqlite    
+        run: |
+          CXXFLAGS="-std=c++20" npm_config_cxxflags="-std=c++20" yarn rebuild-better-sqlite    
       - name: yarn electron-rebuild
-        run: yarn electron-rebuild   
+        run: |
+          CXXFLAGS="-std=c++20" npm_config_cxxflags="-std=c++20" yarn electron-rebuild
+      - name: Rebuild with verbose output
+        run: |
+          echo "=== Rebuilding with verbose output ==="
+          CXXFLAGS="-std=c++20" npm_config_cxxflags="-std=c++20" DEBUG=* npx electron-rebuild --force --verbose || echo "Verbose rebuild failed, continuing..."
+      - name: Debug - Check native modules
+        run: |
+          echo "=== Checking native modules ==="
+          ls -la node_modules/ | grep -E "(better-sqlite3|sqlite3|bufferutil|utf-8-validate)" || echo "Native modules not found"
+          echo "=== Checking for build artifacts ==="
+          find node_modules/ -name "*.node" -path "*/better-sqlite3/*" -o -path "*/sqlite3/*" -o -path "*/bufferutil/*" -o -path "*/utf-8-validate/*" || echo "No .node files found"
+          echo "=== Searching for volume.cc file ==="
+          find node_modules/ -name "volume.cc" -type f || echo "volume.cc file not found"
       - name: Build application
         run: yarn make-mac:test
+      - name: Fallback build if main build fails
+        if: failure()
+        run: |
+          echo "=== Trying fallback build approach ==="
+          # Try building without some problematic native modules
+          yarn package || echo "Package command failed"
+          # Try building with different flags
+          CXXFLAGS="-std=c++17" npm_config_cxxflags="-std=c++17" yarn make-mac:test || echo "Fallback build also failed"
   
       - name: Debug - List out directory contents
         run: |
