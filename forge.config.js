@@ -117,10 +117,12 @@ module.exports={
         name: process.env.APP_NAME || 'SocialMarketing',
         certificateFile: './cert.pfx',
         certificatePassword: process.env.CERTIFICATE_PASSWORD,
-        iconUrl: './src/assets/images/icon.png',
+        // iconUrl should be a valid HTTP/HTTPS URL, not a local path
+        // iconUrl: './src/assets/images/icon.png',
         setupIcon: './src/assets/images/icon.ico',
         // Custom installer options
-        loadingGif: './src/assets/images/installer-loading.gif', // Optional: Add a loading gif
+        // loadingGif should be a valid HTTP/HTTPS URL, not a local path
+        // loadingGif: './src/assets/images/installer-loading.gif', // Optional: Add a loading gif
         setupExe: 'SocialMarketingSetup.exe',
         // Allow users to choose installation directory
         allowDirectorySelection: true,
@@ -152,6 +154,30 @@ module.exports={
     {
       name: '@electron-forge/maker-zip',
       platforms: ['darwin'],
+    },
+    {
+      name: '@electron-forge/maker-dmg',
+      config: {
+        format: 'ULFO',
+        icon: './src/assets/images/icon.icns',
+        background: './src/assets/images/dmg-background.png',
+        contents: [
+          {
+            x: 130,
+            y: 220
+          },
+          {
+            x: 410,
+            y: 220,
+            type: 'link',
+            path: '/Applications'
+          }
+        ],
+        window: {
+          width: 540,
+          height: 380
+        }
+      }
     },
     {
       name: '@electron-forge/maker-deb',
