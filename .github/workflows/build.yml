@@ -85,13 +85,10 @@ jobs:
       - name: Set up C++20 environment
         run: |
           echo "CXXFLAGS=-std=c++20" >> $GITHUB_ENV
-          echo "npm_config_cxxflags=-std=c++20" >> $GITHUB_ENV
           echo "CXX=clang++" >> $GITHUB_ENV
           echo "CC=clang" >> $GITHUB_ENV
           echo "CFLAGS=-std=c++20" >> $GITHUB_ENV
           echo "LDFLAGS=-std=c++20" >> $GITHUB_ENV
-          echo "export CXXFLAGS=-std=c++20" >> $GITHUB_ENV
-          echo "export npm_config_cxxflags=-std=c++20" >> $GITHUB_ENV
 
       # Make sure to use a recent Xcode version
       - name: List available Xcode versions
@@ -163,7 +160,6 @@ jobs:
           yarn clean || echo "Clean command not available"
       - name: Configure npm for C++20
         run: |
-          npm config set cxxflags "-std=c++20"
           npm config set target_platform "darwin"
           npm config set target_arch "x64"
           echo "npm config list:"
@@ -172,25 +168,37 @@ jobs:
         run: |
           echo "=== Updating native modules ==="
           yarn add better-sqlite3@latest sqlite3@latest bufferutil@latest utf-8-validate@latest --exact || echo "Failed to update some modules"
+      - name: Set C++20 environment for build
+        run: |
+          echo "=== Setting C++20 environment ==="
+          export CXXFLAGS="-std=c++20"
+          export CXX="clang++"
+          export CC="clang"
+          export CFLAGS="-std=c++20"
+          export LDFLAGS="-std=c++20"
+          echo "Environment variables set:"
+          echo "CXXFLAGS: $CXXFLAGS"
+          echo "CXX: $CXX"
+          echo "CC: $CC"
       - name: Download Electron headers
         run: |
-          CXXFLAGS="-std=c++20" npm_config_cxxflags="-std=c++20" npx electron-rebuild --force --types prod,dev,optional --module-dir .
+          CXXFLAGS="-std=c++20" npx electron-rebuild --force --types prod,dev,optional --module-dir .
       - name: Rebuild native modules
         run: |
-          CXXFLAGS="-std=c++20" npm_config_cxxflags="-std=c++20" npx electron-rebuild
+          CXXFLAGS="-std=c++20" npx electron-rebuild
       - name: Rebuild sqlite3
         run: |
-          CXXFLAGS="-std=c++20" npm_config_cxxflags="-std=c++20" yarn rebuild-sqlite3
+          CXXFLAGS="-std=c++20" yarn rebuild-sqlite3
       - name: Rebuild better sqlite
         run: |
-          CXXFLAGS="-std=c++20" npm_config_cxxflags="-std=c++20" yarn rebuild-better-sqlite    
+          CXXFLAGS="-std=c++20" yarn rebuild-better-sqlite    
       - name: yarn electron-rebuild
         run: |
-          CXXFLAGS="-std=c++20" npm_config_cxxflags="-std=c++20" yarn electron-rebuild
+          CXXFLAGS="-std=c++20" yarn electron-rebuild
       - name: Rebuild with verbose output
         run: |
           echo "=== Rebuilding with verbose output ==="
-          CXXFLAGS="-std=c++20" npm_config_cxxflags="-std=c++20" DEBUG=* npx electron-rebuild --force --verbose || echo "Verbose rebuild failed, continuing..."
+          CXXFLAGS="-std=c++20" DEBUG=* npx electron-rebuild --force --verbose || echo "Verbose rebuild failed, continuing..."
       - name: Debug - Check native modules
         run: |
           echo "=== Checking native modules ==="
@@ -208,7 +216,7 @@ jobs:
           # Try building without some problematic native modules
           yarn package || echo "Package command failed"
           # Try building with different flags
-          CXXFLAGS="-std=c++17" npm_config_cxxflags="-std=c++17" yarn make-mac:test || echo "Fallback build also failed"
+          CXXFLAGS="-std=c++17" yarn make-mac:test || echo "Fallback build also failed"
   
       - name: Debug - List out directory contents
         run: |

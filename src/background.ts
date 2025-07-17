@@ -98,9 +98,16 @@ function initialize() {
   }
   makeSingleInstance()
 
+
+
   async function createWindow() {
+    let hiddenMenuBar = true;
+    if(isDevelopment){
+      hiddenMenuBar = false;
+    }
     // Create the browser window.
     win = new BrowserWindow({
+      autoHideMenuBar: hiddenMenuBar,
       icon: path.join(__dirname, '/icon.png'),
       width: 800,
       height: 600,
