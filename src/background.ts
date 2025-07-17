@@ -1,7 +1,7 @@
 'use strict'
 import 'reflect-metadata';
 // import {ipcMain as ipc} from 'electron-better-ipc';
-import { app, BrowserWindow, dialog } from 'electron'
+import { app, BrowserWindow, dialog,autoUpdater } from 'electron'
 // import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 import { registerCommunicationIpcHandlers } from "./main-process/communication/";
@@ -17,6 +17,8 @@ import { TOKENNAME } from '@/config/usersetting';
 import { UserController } from '@/controller/UserController';
 import {NATIVATECOMMAND} from '@/config/channellist'
 import {NativateDatatype} from '@/entityTypes/commonType'
+import { ScheduleManager } from '@/modules/ScheduleManager';
+
 // import { createProtocol } from 'electron';
 const isDevelopment = process.env.NODE_ENV !== 'production'
 declare const MAIN_WINDOW_VITE_DEV_SERVER_URL: string;
@@ -99,6 +101,7 @@ function initialize() {
   async function createWindow() {
     // Create the browser window.
     win = new BrowserWindow({
+      icon: path.join(__dirname, '/icon.png'),
       width: 800,
       height: 600,
       webPreferences: {
@@ -156,6 +159,13 @@ function initialize() {
       await win.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL as string)
       if (!process.env.IS_TEST) win.webContents.openDevTools()
     } else {
+  //check update
+  const server = import.meta.env.UPDATESERVER as string;
+  if(server){
+    const url = `${server}/update/${process.platform}/${app.getVersion()}`
+    autoUpdater.setFeedURL({ url })
+    autoUpdater.checkForUpdates()
+  }
       // console.log('app://./index.html')
       // createProtocol('app')
       // Load the index.html when not in development
@@ -169,6 +179,17 @@ function initialize() {
     // to stay active until the user quits explicitly with Cmd + Q
     if (process.platform !== 'darwin') {
       app.quit()
+    }
+  })
+
+  // Handle application shutdown
+  app.on('before-quit', async () => {
+    try {
+      const scheduleManager = ScheduleManager.getInstance();
+      await scheduleManager.handleAppShutdown();
+      log.info('ScheduleManager shutdown completed');
+    } catch (error) {
+      log.error('Failed to shutdown ScheduleManager:', error);
     }
   })
 
@@ -209,6 +230,7 @@ function initialize() {
 
     const userdataPath = tokenService.getValue(USERSDBPATH)
     if (userdataPath && userdataPath.length > 0) {
+      console.log('userdataPath:', userdataPath)
       // Check if the user data path exists, create it if not
       try {
         if (!fs.existsSync(userdataPath)) {
@@ -224,6 +246,15 @@ function initialize() {
       const appDataSource = SqliteDb.getInstance(userdataPath)
       if (!appDataSource.connection.isInitialized) {
         await appDataSource.connection.initialize()
+      }
+      
+      // Initialize ScheduleManager with auto-start functionality
+      try {
+        const scheduleManager = ScheduleManager.getInstance();
+        await scheduleManager.initializeWithDatabaseStatus();
+        log.info('ScheduleManager initialized with auto-start functionality');
+      } catch (error) {
+        log.error('Failed to initialize ScheduleManager:', error);
       }
     }
     if(win){

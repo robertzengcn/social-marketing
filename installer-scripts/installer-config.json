@@ -1,0 +1,205 @@
+{
+  "installer": {
+    "appName": "SocialMarketing",
+    "appVersion": "1.0.11",
+    "manufacturer": "Robert Zeng",
+    "description": "A module using puppeteer to do social marketing",
+    "homepage": "https://github.com/your-repo/social-marketing",
+    "categories": ["Utility", "Network", "Web", "Office"],
+    "keywords": ["social", "marketing", "automation", "puppeteer"],
+    "platforms": {
+      "windows": {
+        "installer": {
+          "type": "squirrel",
+          "setupExe": "SocialMarketingSetup.exe",
+          "allowDirectorySelection": true,
+          "createDesktopIcon": true,
+          "createStartMenuShortcut": true,
+          "installForAllUsers": false,
+          "defaultInstallLocation": "%LOCALAPPDATA%\\SocialMarketing",
+          "noMsi": true,
+          "loadingGif": "./src/assets/images/installer-loading.gif",
+          "certificateFile": "./cert.pfx",
+          "certificatePassword": "${CERTIFICATE_PASSWORD}",
+          "registry": {
+            "key": "Software\\SocialMarketing",
+            "name": "InstallLocation"
+          }
+        },
+        "wix": {
+          "language": 1033,
+          "chooseDirectory": true,
+          "license": "./LICENSE",
+          "installDir": "C:\\Program Files\\SocialMarketing",
+          "createDesktopShortcut": true,
+          "createStartMenuShortcut": true,
+          "perMachine": false,
+          "features": {
+            "main": {
+              "title": "Social Marketing Application",
+              "description": "Main application files",
+              "level": 1
+            },
+            "desktopShortcut": {
+              "title": "Desktop Shortcut",
+              "description": "Create a shortcut on the desktop",
+              "level": 1
+            },
+            "startMenuShortcut": {
+              "title": "Start Menu Shortcut",
+              "description": "Create a shortcut in the start menu",
+              "level": 1
+            }
+          }
+        }
+      },
+      "macos": {
+        "installer": {
+          "type": "dmg",
+          "installDir": "/Applications",
+          "createDesktopAlias": true,
+          "addToDock": false,
+          "createLaunchAgent": false,
+          "setupSpotlight": true
+        },
+        "scripts": {
+          "postinstall": "./installer-scripts/create-macos-shortcuts.sh"
+        }
+      },
+      "linux": {
+        "deb": {
+          "installDir": "/opt/social-marketing",
+          "maintainer": "Robert Zeng",
+          "section": "utils",
+          "priority": "optional",
+          "depends": [
+            "nodejs",
+            "libgtk-3-0",
+            "libnotify4",
+            "libnss3",
+            "libxss1",
+            "libxtst6",
+            "xdg-utils",
+            "libatspi2.0-0",
+            "libdrm2",
+            "libxkbcommon0",
+            "libxcomposite1",
+            "libxdamage1",
+            "libxfixes3",
+            "libxrandr2",
+            "libgbm1",
+            "libasound2"
+          ],
+          "desktop": {
+            "Name": "Social Marketing",
+            "Comment": "Social Marketing Application",
+            "GenericName": "Social Marketing",
+            "Categories": "Utility;Network;Web;Office;",
+            "Keywords": "social;marketing;automation;"
+          }
+        },
+        "rpm": {
+          "installDir": "/opt/social-marketing",
+          "maintainer": "Robert Zeng",
+          "section": "utils",
+          "priority": "optional",
+          "depends": [
+            "nodejs",
+            "gtk3",
+            "libnotify",
+            "nss",
+            "libXScrnSaver",
+            "libXtst",
+            "xdg-utils",
+            "atk",
+            "libdrm",
+            "libxkbcommon",
+            "libXcomposite",
+            "libXdamage",
+            "libXfixes",
+            "libXrandr",
+            "mesa-libgbm",
+            "alsa-lib"
+          ],
+          "desktop": {
+            "Name": "Social Marketing",
+            "Comment": "Social Marketing Application",
+            "GenericName": "Social Marketing",
+            "Categories": "Utility;Network;Web;Office;",
+            "Keywords": "social;marketing;automation;"
+          }
+        },
+        "scripts": {
+          "postinstall": "./installer-scripts/create-linux-shortcuts.sh"
+        }
+      }
+    },
+    "icons": {
+      "windows": "./src/assets/images/icon.ico",
+      "macos": "./src/assets/images/icon.icns",
+      "linux": "./src/assets/images/icon.png"
+    },
+    "assets": {
+      "banner": "./src/assets/images/installer-banner.png",
+      "dialog": "./src/assets/images/installer-dialog.png",
+      "loadingGif": "./src/assets/images/installer-loading.gif"
+    },
+    "shortcuts": {
+      "desktop": true,
+      "startMenu": true,
+      "dock": false,
+      "autostart": false
+    },
+    "features": {
+      "autoUpdate": true,
+      "protocolHandler": true,
+      "fileAssociations": false,
+      "mimeTypes": false
+    },
+    "uninstall": {
+      "removeUserData": false,
+      "removeRegistry": true,
+      "removeShortcuts": true
+    }
+  },
+  "build": {
+    "asar": true,
+    "unpackDir": "**/node_modules/{better-sqlite3,sqlite3}/**",
+    "prune": true,
+    "overwrite": true,
+    "externalDependencies": [
+      "realm",
+      "electron-squirrel-startup",
+      "better-sqlite3",
+      "puppeteer-cluster",
+      "lodash",
+      "winston",
+      "user-agents",
+      "puppeteer",
+      "puppeteer-extra",
+      "puppeteer-extra-plugin-stealth",
+      "puppeteer-extra-plugin-recaptcha",
+      "@lem0-packages/puppeteer-page-proxy",
+      "nodemailer",
+      "@langchain/ollama",
+      "decamelize",
+      "camelcase",
+      "js-tiktoken",
+      "p-retry",
+      "langsmith",
+      "@cfworker/json-schema",
+      "mustache",
+      "openai",
+      "typeorm",
+      "cheerio"
+    ]
+  },
+  "scripts": {
+    "make": "electron-forge make",
+    "make-win": "cross-env NODE_ENV=production electron-forge make --platform=win32",
+    "make-mac": "cross-env NODE_ENV=production electron-forge make --platform=darwin",
+    "make-linux": "cross-env NODE_ENV=production electron-forge make --platform=linux",
+    "package": "electron-forge package",
+    "publish": "electron-forge publish"
+  }
+} 

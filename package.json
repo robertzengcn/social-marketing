@@ -1,7 +1,7 @@
 {
   "name": "social-marketing",
   "version": "1.0.11",
-  "description": "A module using puppeteer to do social marketing",
+  "description": "A software for social marketing",
   "author": "Robert Zeng",
   "main": ".vite/build/background.js",
   "build": {
@@ -19,13 +19,16 @@
     "builds": "tsc --build",
     "clean": "tsc --build --clean",
     "dev": "vite",
-    "electron:build": "vue-cli-service electron:build",
-    "electron:serve": "vue-cli-service electron:serve",
     "init": "ts-node src/runcli.ts -a sqlinit",
     "login": "ts-node src/runcli.ts -a login -c",
     "make": "electron-forge make",
     "make-mac:test": "cross-env NODE_ENV=test electron-forge make --platform=darwin",
     "make-win:test": "cross-env NODE_ENV=test electron-forge make --platform=win32",
+    "make-linux:test": "cross-env NODE_ENV=test electron-forge make --platform=linux",
+    "make-win:prod": "cross-env NODE_ENV=production electron-forge make --platform=win32",
+    "make-mac:prod": "cross-env NODE_ENV=production electron-forge make --platform=darwin",
+    "make-linux:prod": "cross-env NODE_ENV=production electron-forge make --platform=linux",
+    "make-installer": "yarn make-win:prod && yarn make-mac:prod && yarn make-linux:prod",
     "package": "electron-forge package",
     "start": "electron-forge start",
     "publish": "electron-forge publish",
@@ -64,7 +67,11 @@
     "rebuild-better-sqlite": "electron-rebuild -f -w better-sqlite3",
     "prepackage": "npm run rebuild-sqlite3",
     "rebuild-sqlite3": "electron-rebuild -f -w sqlite3",
-    "type-check": "vue-tsc --noEmit --watch"
+    "type-check": "vue-tsc --noEmit --watch",
+    "test-installer": "node installer-scripts/test-installer.js",
+    "uninstall-win": "node installer-scripts/uninstall-windows.js",
+    "uninstall-mac": "./installer-scripts/uninstall-macos.sh",
+    "uninstall-linux": "./installer-scripts/uninstall-linux.sh"
   },
   "dependencies": {
     "@langchain/core": "^0.3.42",

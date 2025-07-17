@@ -35,7 +35,7 @@ export class ScheduleController {
         this.scheduleTaskModule = new ScheduleTaskModule();
         this.scheduleExecutionLogModule = new ScheduleExecutionLogModule();
         this.scheduleDependencyModule = new ScheduleDependencyModule();
-        this.scheduleManager = new ScheduleManager();
+        this.scheduleManager = ScheduleManager.getInstance();
         this.taskExecutorService = new TaskExecutorService();
         this.scheduleDependencyModule = new ScheduleDependencyModule();
     }
@@ -441,6 +441,7 @@ export class ScheduleController {
     public getSchedulerStatus(): SchedulerStatusResponse {
         try {
             const status = this.scheduleManager.getSchedulerStatus();
+            console.log('Scheduler status:', status);
             return {
                 isRunning: status.isRunning,
                 activeSchedules: status.activeSchedules,
@@ -518,6 +519,23 @@ export class ScheduleController {
         } catch (error) {
             console.error(`Failed to get execution statistics for schedule ${scheduleId}:`, error);
             throw error;
+        }
+    }
+
+    /**
+     * Calculate the next run time for a cron expression
+     * @param cronExpression The cron expression
+     * @returns The next run time
+     */
+    public calculateNextRunTime(cronExpression: string): Date {
+        try {
+            return this.scheduleManager.calculateNextRunTime(cronExpression);
+        } catch (error) {
+            console.error('Failed to calculate next run time:', error);
+            // Return a default time (1 hour from now) if calculation fails
+            const defaultTime = new Date();
+            defaultTime.setHours(defaultTime.getHours() + 1);
+            return defaultTime;
         }
     }
 

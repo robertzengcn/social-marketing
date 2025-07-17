@@ -46,7 +46,8 @@ import {
     SCHEDULER_START,
     SCHEDULER_STOP,
     SCHEDULER_RELOAD,
-    CRON_VALIDATE
+    CRON_VALIDATE,
+    CRON_NEXT_RUN_TIME
 } from '@/config/channellist'
 
 // Schedule Management
@@ -165,6 +166,7 @@ export async function validateDependencies(scheduleId: number): Promise<Dependen
 // Scheduler Management
 export async function getSchedulerStatus(): Promise<SchedulerStatusResponse> {
     const response = await windowInvoke(SCHEDULER_STATUS)
+    console.log('Scheduler status response:', response);
     return response
 }
 
@@ -183,6 +185,11 @@ export async function reloadScheduler(): Promise<void> {
 // Utility Functions
 export async function validateCronExpression(expression: string): Promise<CronValidationResult> {
     const response = await windowInvoke(CRON_VALIDATE, { expression })
+    return response
+}
+
+export async function calculateNextRunTime(expression: string): Promise<Date> {
+    const response = await windowInvoke(CRON_NEXT_RUN_TIME, { expression })
     return response
 }
 

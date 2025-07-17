@@ -1,5 +1,5 @@
 import { ipcMain } from 'electron';
-import {QUERY_USER_INFO,OPENLOGINPAGE} from '@/config/channellist'
+import {QUERY_USER_INFO,OPENLOGINPAGE,GET_LOGIN_URL} from '@/config/channellist'
 import { UserController } from '@/controller/UserController'
 import {UserInfoType} from "@/entityTypes/userType"
 import { CommonMessage } from "@/entityTypes/commonType"
@@ -14,6 +14,27 @@ export function registerUserIpcHandlers() {
                         data: res
                     }
                     return result;
+    })
+    
+    ipcMain.handle(GET_LOGIN_URL, async (event, data) => {
+        try {
+            const userControll = new UserController()
+            const loginUrl = userControll.getLoginPageUrl()
+            const result: CommonMessage<string> = {
+                status: true,
+                msg: "Login URL retrieved successfully",
+                data: loginUrl
+            }
+            return result;
+        } catch (error) {
+            console.error("Error getting login URL:", error)
+            const result: CommonMessage<string> = {
+                status: false,
+                msg: error instanceof Error ? error.message : "Failed to get login URL",
+                data: ""
+            }
+            return result;
+        }
     })
     
     ipcMain.on(OPENLOGINPAGE, async (event, data) => {

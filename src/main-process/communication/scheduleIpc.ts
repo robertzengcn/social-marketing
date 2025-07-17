@@ -25,7 +25,8 @@ import {
     SCHEDULER_START,
     SCHEDULER_STOP,
     SCHEDULER_RELOAD,
-    CRON_VALIDATE
+    CRON_VALIDATE,
+    CRON_NEXT_RUN_TIME
 } from '@/config/channellist';
 import { ScheduleController } from '@/controller/ScheduleController';
 import { CommonResponse, CommonMessage } from "@/entityTypes/commonType";
@@ -608,6 +609,29 @@ export function registerScheduleIpcHandlers(): void {
             return response;
         } catch (error) {
             console.error('Cron validation error:', error);
+            const errorResponse: CommonMessage<null> = {
+                status: false,
+                msg: error instanceof Error ? error.message : "Unknown error occurred",
+                data: null
+            };
+            return errorResponse;
+        }
+    });
+
+    ipcMain.handle(CRON_NEXT_RUN_TIME, async (event, data): Promise<CommonMessage<Date|null>> => {
+        try {
+            const { expression } = JSON.parse(data) as { expression: string };
+            const scheduleCtrl = new ScheduleController();
+            const nextRunTime = scheduleCtrl.calculateNextRunTime(expression);
+            
+            const response: CommonMessage<Date> = {
+                status: true,
+                msg: "cron.next_run_time_calculated",
+                data: nextRunTime
+            };
+            return response;
+        } catch (error) {
+            console.error('Cron next run time calculation error:', error);
             const errorResponse: CommonMessage<null> = {
                 status: false,
                 msg: error instanceof Error ? error.message : "Unknown error occurred",
