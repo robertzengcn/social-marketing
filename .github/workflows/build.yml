@@ -146,9 +146,11 @@ jobs:
             echo "VITE_LOGIN_URL=${{ secrets.VITE_LOGIN_URL_TEST }}" >> .env
             echo "UPDATESERVER=${{ secrets.UPDATESERVER }}" >> .env
             cat .env
-      - name: Install setuptools
+      - name: Install setuptools and lzma dependencies
         run: |
-            brew install python-setuptools           
+            brew install python-setuptools
+            brew install xz
+            brew install lzma           
               
       - name: Install dependencies
         run: yarn install
@@ -190,6 +192,8 @@ jobs:
           export LDFLAGS="-std=c++20"
           export npm_config_target_platform="darwin"
           export npm_config_target_arch="x64"
+          export LZMA_CONFIG="/usr/local/bin/lzma-config"
+          export PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH"
           echo "Environment variables set:"
           echo "CXXFLAGS: $CXXFLAGS"
           echo "CFLAGS: $CFLAGS"
@@ -197,12 +201,14 @@ jobs:
           echo "CC: $CC"
           echo "npm_config_target_platform: $npm_config_target_platform"
           echo "npm_config_target_arch: $npm_config_target_arch"
+          echo "LZMA_CONFIG: $LZMA_CONFIG"
+          echo "PKG_CONFIG_PATH: $PKG_CONFIG_PATH"
       - name: Download Electron headers
         run: |
-          CXXFLAGS="-std=c++20" CFLAGS="-std=c11" npx electron-rebuild --force --types prod,dev,optional --module-dir .
+          CXXFLAGS="-std=c++20" CFLAGS="-std=c11" npx electron-rebuild --force --types prod,dev,optional --module-dir . --only better-sqlite3,sqlite3,bufferutil,utf-8-validate
       - name: Rebuild native modules
         run: |
-          CXXFLAGS="-std=c++20" CFLAGS="-std=c11" npx electron-rebuild
+          CXXFLAGS="-std=c++20" CFLAGS="-std=c11" npx electron-rebuild --only better-sqlite3,sqlite3,bufferutil,utf-8-validate
       - name: Rebuild sqlite3
         run: |
           CXXFLAGS="-std=c++20" CFLAGS="-std=c11" yarn rebuild-sqlite3
@@ -211,11 +217,11 @@ jobs:
           CXXFLAGS="-std=c++20" CFLAGS="-std=c11" yarn rebuild-better-sqlite    
       - name: yarn electron-rebuild
         run: |
-          CXXFLAGS="-std=c++20" CFLAGS="-std=c11" yarn electron-rebuild
+          CXXFLAGS="-std=c++20" CFLAGS="-std=c11" yarn electron-rebuild --only better-sqlite3,sqlite3,bufferutil,utf-8-validate
       - name: Rebuild with verbose output
         run: |
           echo "=== Rebuilding with verbose output ==="
-          CXXFLAGS="-std=c++20" CFLAGS="-std=c11" DEBUG=* npx electron-rebuild --force --verbose || echo "Verbose rebuild failed, continuing..."
+          CXXFLAGS="-std=c++20" CFLAGS="-std=c11" DEBUG=* npx electron-rebuild --force --verbose --only better-sqlite3,sqlite3,bufferutil,utf-8-validate || echo "Verbose rebuild failed, continuing..."
       - name: Rebuild C modules specifically
         run: |
           echo "=== Rebuilding C modules specifically ==="
@@ -243,7 +249,8 @@ jobs:
           echo "=== Trying fallback build approach ==="
           # Try building without some problematic native modules
           yarn package || echo "Package command failed"
-          # Try building with different flags
+          # Try building with different flags and skip problematic modules
+          CXXFLAGS="-std=c++17" CFLAGS="-std=c11" yarn electron-rebuild --only better-sqlite3,sqlite3,bufferutil,utf-8-validate || echo "Fallback rebuild failed"
           CXXFLAGS="-std=c++17" CFLAGS="-std=c11" yarn make-mac:test || echo "Fallback build also failed"
   
       - name: Debug - List out directory contents
