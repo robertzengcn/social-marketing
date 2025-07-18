@@ -85,9 +85,9 @@ jobs:
       - name: Set up C++20 environment
         run: |
           echo "CXXFLAGS=-std=c++20" >> $GITHUB_ENV
+          echo "CFLAGS=-std=c11" >> $GITHUB_ENV
           echo "CXX=clang++" >> $GITHUB_ENV
           echo "CC=clang" >> $GITHUB_ENV
-          echo "CFLAGS=-std=c++20" >> $GITHUB_ENV
           echo "LDFLAGS=-std=c++20" >> $GITHUB_ENV
           echo "npm_config_target_platform=darwin" >> $GITHUB_ENV
           echo "npm_config_target_arch=x64" >> $GITHUB_ENV
@@ -184,37 +184,44 @@ jobs:
         run: |
           echo "=== Setting C++20 environment ==="
           export CXXFLAGS="-std=c++20"
+          export CFLAGS="-std=c11"
           export CXX="clang++"
           export CC="clang"
-          export CFLAGS="-std=c++20"
           export LDFLAGS="-std=c++20"
           export npm_config_target_platform="darwin"
           export npm_config_target_arch="x64"
           echo "Environment variables set:"
           echo "CXXFLAGS: $CXXFLAGS"
+          echo "CFLAGS: $CFLAGS"
           echo "CXX: $CXX"
           echo "CC: $CC"
           echo "npm_config_target_platform: $npm_config_target_platform"
           echo "npm_config_target_arch: $npm_config_target_arch"
       - name: Download Electron headers
         run: |
-          CXXFLAGS="-std=c++20" npx electron-rebuild --force --types prod,dev,optional --module-dir .
+          CXXFLAGS="-std=c++20" CFLAGS="-std=c11" npx electron-rebuild --force --types prod,dev,optional --module-dir .
       - name: Rebuild native modules
         run: |
-          CXXFLAGS="-std=c++20" npx electron-rebuild
+          CXXFLAGS="-std=c++20" CFLAGS="-std=c11" npx electron-rebuild
       - name: Rebuild sqlite3
         run: |
-          CXXFLAGS="-std=c++20" yarn rebuild-sqlite3
+          CXXFLAGS="-std=c++20" CFLAGS="-std=c11" yarn rebuild-sqlite3
       - name: Rebuild better sqlite
         run: |
-          CXXFLAGS="-std=c++20" yarn rebuild-better-sqlite    
+          CXXFLAGS="-std=c++20" CFLAGS="-std=c11" yarn rebuild-better-sqlite    
       - name: yarn electron-rebuild
         run: |
-          CXXFLAGS="-std=c++20" yarn electron-rebuild
+          CXXFLAGS="-std=c++20" CFLAGS="-std=c11" yarn electron-rebuild
       - name: Rebuild with verbose output
         run: |
           echo "=== Rebuilding with verbose output ==="
-          CXXFLAGS="-std=c++20" DEBUG=* npx electron-rebuild --force --verbose || echo "Verbose rebuild failed, continuing..."
+          CXXFLAGS="-std=c++20" CFLAGS="-std=c11" DEBUG=* npx electron-rebuild --force --verbose || echo "Verbose rebuild failed, continuing..."
+      - name: Rebuild C modules specifically
+        run: |
+          echo "=== Rebuilding C modules specifically ==="
+          # Rebuild bufferutil and utf-8-validate which are C modules
+          CFLAGS="-std=c11" yarn electron-rebuild -f -w bufferutil || echo "bufferutil rebuild failed"
+          CFLAGS="-std=c11" yarn electron-rebuild -f -w utf-8-validate || echo "utf-8-validate rebuild failed"
       - name: Debug - Check native modules
         run: |
           echo "=== Checking native modules ==="
@@ -223,6 +230,11 @@ jobs:
           find node_modules/ -name "*.node" -path "*/better-sqlite3/*" -o -path "*/sqlite3/*" -o -path "*/bufferutil/*" -o -path "*/utf-8-validate/*" || echo "No .node files found"
           echo "=== Searching for volume.cc file ==="
           find node_modules/ -name "volume.cc" -type f || echo "volume.cc file not found"
+          echo "=== Identifying C vs C++ modules ==="
+          echo "C modules (should use CFLAGS):"
+          find node_modules/ -name "*.c" -path "*/bufferutil/*" -o -path "*/utf-8-validate/*" || echo "No C files found in C modules"
+          echo "C++ modules (should use CXXFLAGS):"
+          find node_modules/ -name "*.cc" -o -name "*.cpp" -path "*/better-sqlite3/*" -o -path "*/sqlite3/*" || echo "No C++ files found in C++ modules"
       - name: Build application
         run: yarn make-mac:test
       - name: Fallback build if main build fails
@@ -232,7 +244,7 @@ jobs:
           # Try building without some problematic native modules
           yarn package || echo "Package command failed"
           # Try building with different flags
-          CXXFLAGS="-std=c++17" yarn make-mac:test || echo "Fallback build also failed"
+          CXXFLAGS="-std=c++17" CFLAGS="-std=c11" yarn make-mac:test || echo "Fallback build also failed"
   
       - name: Debug - List out directory contents
         run: |
