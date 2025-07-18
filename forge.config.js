@@ -30,7 +30,7 @@ const EXTERNAL_DEPENDENCIES = [
 'openai',
 'typeorm',
 'cheerio',
-'lzma-native'
+// 'lzma-native' // Commented out due to build issues on macOS - not used in source code
 ];
 //import { ForgeConfig } from '@electron-forge/shared-types';
 // import { AutoUnpackNativesPlugin } from "@electron-forge/plugin-auto-unpack-natives";
