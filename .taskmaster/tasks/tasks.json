@@ -1,0 +1,872 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Set up SQLite Database",
+        "description": "Set up the SQLite database with the schema defined in the PRD. This includes creating tables for articles, code blocks, metadata, images, translation memory, publishing results, publishing queue, and article processing logs. Also create indexes for better performance.",
+        "details": "1. Install SQLite and necessary drivers.\n2. Create a new SQLite database file.\n3. Execute the SQL scripts provided in the PRD to create the tables and indexes.\n4. Verify the schema by querying the database metadata.\n5. Implement TypeORM entities corresponding to the database tables.",
+        "testStrategy": "1. Connect to the SQLite database.\n2. Verify that all tables are created with the correct columns and data types.\n3. Verify that all indexes are created.\n4. Insert sample data into each table and verify that the data is stored correctly.\n5. Query the database using TypeORM entities and verify that the data is retrieved correctly.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Install SQLite and TypeORM Dependencies",
+            "description": "Install the necessary SQLite driver and TypeORM packages using npm or yarn.",
+            "dependencies": [],
+            "details": "Use `npm install sqlite3 typeorm reflect-metadata` or `yarn add sqlite3 typeorm reflect-metadata` to install the required dependencies.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Define TypeORM Entities for Database Tables",
+            "description": "Create TypeORM entity classes that map to the database tables (articles, code blocks, metadata, etc.) as defined in the PRD.",
+            "dependencies": [
+              1
+            ],
+            "details": "Define entity classes with appropriate properties and decorators to match the database schema. Ensure proper data types and relationships are defined.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Create SQLite Database and Initial Schema",
+            "description": "Create a new SQLite database file and generate the initial schema using TypeORM migrations or synchronize feature.",
+            "dependencies": [
+              2
+            ],
+            "details": "Configure TypeORM to connect to the SQLite database file. Use migrations or synchronize to create the tables based on the defined entities.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Implement Index Creation for Performance",
+            "description": "Define and create indexes on relevant columns in the database tables to improve query performance.",
+            "dependencies": [
+              3
+            ],
+            "details": "Use TypeORM's `@Index` decorator or create custom migrations to add indexes to the database schema. Consider indexes for frequently queried columns.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Verify Database Schema and Data Integrity",
+            "description": "Verify that the database schema is created correctly and that data can be inserted and retrieved successfully using TypeORM entities.",
+            "dependencies": [
+              4
+            ],
+            "details": "Write unit tests to connect to the database, insert sample data into each table using TypeORM entities, and query the data to verify its integrity.",
+            "status": "done",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Implement Article Scraping Module",
+        "description": "Implement the core scraping interface and strategy pattern for different websites. This involves creating the `ArticleScraper` interface and `ScrapingStrategy` interface, and implementing website-specific scraping strategies using Puppeteer.",
+        "details": "1. Create `ArticleScraper` interface with `scrape`, `validateUrl`, `getSupportedDomains`, `saveToDatabase`, and `checkDuplicate` methods.\n2. Create `ScrapingStrategy` interface with `extractTitle`, `extractContent`, `extractMetadata`, `extractCodeBlocks`, and `extractImages` methods.\n3. Implement concrete `ScrapingStrategy` classes for different websites, using Puppeteer to extract data.\n4. Implement code block detection and extraction logic.\n5. Implement error handling and rate limiting.\n6. Implement proxy support.",
+        "testStrategy": "1. Create mock websites with different structures.\n2. Implement `ScrapingStrategy` classes for the mock websites.\n3. Verify that the `scrape` method extracts the correct data from each website.\n4. Verify that code blocks are correctly detected and extracted.\n5. Test error handling and rate limiting.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Define ArticleScraper and ScrapingStrategy Interfaces",
+            "description": "Define the `ArticleScraper` interface with methods like `scrape`, `validateUrl`, `getSupportedDomains`, `saveToDatabase`, and `checkDuplicate`. Define the `ScrapingStrategy` interface with methods like `extractTitle`, `extractContent`, `extractMetadata`, `extractCodeBlocks`, and `extractImages`.",
+            "dependencies": [],
+            "details": "Specify method signatures and return types for each interface method.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Implement Scraping Strategy for Toutiao",
+            "description": "Implement a concrete `ScrapingStrategy` class specifically for Toutiao, using Puppeteer to extract data based on Toutiao's website structure.",
+            "dependencies": [
+              1
+            ],
+            "details": "Implement `extractTitle`, `extractContent`, `extractMetadata`, `extractCodeBlocks`, and `extractImages` methods tailored to Toutiao's HTML structure.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Implement Scraping Strategy for Baidu",
+            "description": "Implement a concrete `ScrapingStrategy` class specifically for Baidu, using Puppeteer to extract data based on Baidu's website structure.",
+            "dependencies": [
+              1
+            ],
+            "details": "Implement `extractTitle`, `extractContent`, `extractMetadata`, `extractCodeBlocks`, and `extractImages` methods tailored to Baidu's HTML structure.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Implement Code Block Extraction Logic",
+            "description": "Implement the logic to detect and extract code blocks from the scraped content. This may involve identifying specific HTML tags or patterns.",
+            "dependencies": [
+              2,
+              3
+            ],
+            "details": "Consider using regular expressions or HTML parsing libraries to identify code blocks.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Implement Error Handling",
+            "description": "Implement error handling mechanisms to gracefully handle exceptions during the scraping process, such as network errors or unexpected HTML structures.",
+            "dependencies": [
+              2,
+              3
+            ],
+            "details": "Implement try-catch blocks and logging to capture and handle errors.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 6,
+            "title": "Implement Rate Limiting",
+            "description": "Implement rate limiting to avoid overloading the target websites and prevent being blocked. This may involve adding delays between requests.",
+            "dependencies": [
+              5
+            ],
+            "details": "Use libraries or custom logic to control the frequency of requests.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 7,
+            "title": "Implement Proxy Support",
+            "description": "Implement proxy support to rotate IP addresses and further avoid being blocked by target websites.",
+            "dependencies": [
+              6
+            ],
+            "details": "Integrate with a proxy server or service to route requests through different IP addresses.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 8,
+            "title": "Integrate Scraping Strategies into ArticleScraper",
+            "description": "Integrate the implemented scraping strategies for Toutiao and Baidu into the `ArticleScraper` class, allowing it to dynamically select the appropriate strategy based on the URL.",
+            "dependencies": [
+              2,
+              3,
+              7
+            ],
+            "details": "Implement logic to determine the website domain and select the corresponding `ScrapingStrategy`.",
+            "status": "done",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Implement Translation Module",
+        "description": "Extend the existing `TranslateProducer` to handle article content while preserving code blocks and formatting. This involves implementing the `ArticleTranslationService` interface and `ArticleTranslationStrategy` interface, and integrating with existing LLM implementations (OpenAI, DeepSeek, Ollama).",
+        "details": "1. Create `ArticleTranslationService` interface extending `TranslateProducer`.\n2. Implement `translateArticle`, `translateArticleChunk`, `detectLanguage`, `validateTranslation`, `saveTranslationToDatabase`, `getTranslationMemory`, `updateTranslationMemory`, `chunkArticle`, and `preserveCodeBlocks` methods.\n3. Create `ArticleTranslationStrategy` interface with `preprocess`, `translateChunks`, `postprocess`, and `mergeCodeBlocks` methods.\n4. Implement code block detection and isolation during translation.\n5. Implement translation memory for consistency.\n6. Implement quality scoring and validation.\n7. Implement content chunking for large articles.\n8. Integrate with existing `TranslateToolEnum` and configuration system.",
+        "testStrategy": "1. Create sample articles with code blocks and formatting.\n2. Translate the articles using different LLM implementations.\n3. Verify that code blocks are preserved during translation.\n4. Verify that the translated content is accurate and grammatically correct.\n5. Verify that the translation memory is working correctly.\n6. Test quality scoring and validation.",
+        "priority": "high",
+        "dependencies": [
+          1,
+          2
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Define ArticleTranslationService Interface",
+            "description": "Create the `ArticleTranslationService` interface, extending `TranslateProducer`. Define methods: `translateArticle`, `translateArticleChunk`, `detectLanguage`, `validateTranslation`, `saveTranslationToDatabase`, `getTranslationMemory`, `updateTranslationMemory`, `chunkArticle`, and `preserveCodeBlocks`.",
+            "dependencies": [],
+            "details": "Define method signatures and JSDoc comments for each method.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Implement ArticleTranslationStrategy Interface",
+            "description": "Create the `ArticleTranslationStrategy` interface with methods: `preprocess`, `translateChunks`, `postprocess`, and `mergeCodeBlocks`.",
+            "dependencies": [],
+            "details": "Define method signatures and JSDoc comments for each method.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Implement Code Block Detection and Preservation",
+            "description": "Implement the `preserveCodeBlocks` method in `ArticleTranslationService` and related logic in `ScrapingStrategy` to identify and isolate code blocks within the article content.",
+            "dependencies": [
+              2
+            ],
+            "details": "Use regex or parsing libraries to identify code blocks. Store code blocks separately for later merging.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Implement Content Chunking",
+            "description": "Implement the `chunkArticle` method in `ArticleTranslationService` to divide the article content into smaller chunks for translation.",
+            "dependencies": [
+              1,
+              3
+            ],
+            "details": "Consider sentence boundaries and code block locations when chunking. Implement configurable chunk size.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Implement Translation Strategies",
+            "description": "Implement concrete classes that implement the `ArticleTranslationStrategy` interface. Implement the `preprocess`, `translateChunks`, and `postprocess` methods.",
+            "dependencies": [
+              2,
+              4
+            ],
+            "details": "Implement strategies for different LLMs (OpenAI, DeepSeek, Ollama). Handle API calls and error handling.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 6,
+            "title": "Implement Translation Memory",
+            "description": "Implement `getTranslationMemory` and `updateTranslationMemory` methods in `ArticleTranslationService` to store and retrieve previously translated content.",
+            "dependencies": [
+              1
+            ],
+            "details": "Use a database or in-memory store for translation memory. Implement fuzzy matching for similar content.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 7,
+            "title": "Implement Translation Quality Scoring",
+            "description": "Implement the `validateTranslation` method in `ArticleTranslationService` to assess the quality of the translated content.",
+            "dependencies": [
+              5
+            ],
+            "details": "Use metrics like BLEU score or other NLP techniques to evaluate translation quality. Consider human feedback integration.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 8,
+            "title": "Implement LLM Integration",
+            "description": "Integrate the translation strategies with existing LLM implementations (OpenAI, DeepSeek, Ollama).",
+            "dependencies": [
+              5
+            ],
+            "details": "Handle API authentication, rate limiting, and error handling for each LLM.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 9,
+            "title": "Implement Article Translation",
+            "description": "Implement the `translateArticle` and `translateArticleChunk` methods in `ArticleTranslationService` to orchestrate the translation process.",
+            "dependencies": [
+              1,
+              3,
+              4,
+              5,
+              6,
+              8
+            ],
+            "details": "Call the appropriate methods from the translation strategy and LLM implementations.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 10,
+            "title": "Implement Post-processing and Code Block Merging",
+            "description": "Implement the `postprocess` method in `ArticleTranslationStrategy` and `mergeCodeBlocks` to re-integrate the preserved code blocks into the translated content.",
+            "dependencies": [
+              3,
+              5,
+              9
+            ],
+            "details": "Ensure correct placement of code blocks and proper formatting.",
+            "status": "done",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Implement Publishing Module",
+        "description": "Implement the publishing module to publish translated articles to multiple social media platforms. This involves creating the `ArticlePublishStrategy` interface and platform-specific implementations, and integrating with the account management system.",
+        "details": "1. Create `ArticlePublishStrategy` interface with `publish`, `validateContent`, `formatContent`, `savePublishResult`, `addToPublishingQueue`, and `getPublishingHistory` methods.\n2. Implement platform-specific `PlatformStrategy` classes for Toutiao, Baidu, and other platforms.\n3. Integrate with `accountCookiesModule` for authentication.\n4. Implement platform-specific content formatting and optimization.\n5. Implement publishing queue management.\n6. Implement success/failure reporting and logging.",
+        "testStrategy": "1. Create mock social media platforms.\n2. Implement `PlatformStrategy` classes for the mock platforms.\n3. Publish articles to the mock platforms.\n4. Verify that the articles are published correctly.\n5. Verify that the publishing queue is working correctly.\n6. Test success/failure reporting and logging.",
+        "priority": "high",
+        "dependencies": [
+          1,
+          3
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Define ArticlePublishStrategy Interface",
+            "description": "Define the `ArticlePublishStrategy` interface with methods like `publish`, `validateContent`, `formatContent`, `savePublishResult`, `addToPublishingQueue`, and `getPublishingHistory`.",
+            "dependencies": [],
+            "details": "Define the interface in a way that allows for platform-specific implementations.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Implement Toutiao Publishing Strategy",
+            "description": "Implement the `PlatformStrategy` class for Toutiao, including authentication, content formatting, and publishing logic.",
+            "dependencies": [
+              1
+            ],
+            "details": "Implement the `publish`, `validateContent`, and `formatContent` methods specific to Toutiao's API and content guidelines. Handle authentication using `accountCookiesModule`.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Implement Baidu Publishing Strategy",
+            "description": "Implement the `PlatformStrategy` class for Baidu, including authentication, content formatting, and publishing logic.",
+            "dependencies": [
+              1
+            ],
+            "details": "Implement the `publish`, `validateContent`, and `formatContent` methods specific to Baidu's API and content guidelines. Handle authentication using `accountCookiesModule`.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Integrate with Account Management System",
+            "description": "Integrate the publishing module with the `accountCookiesModule` for authentication and account management.",
+            "dependencies": [
+              2,
+              3
+            ],
+            "details": "Implement the necessary logic to retrieve and use account cookies for each platform.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Implement Platform-Specific Content Formatting",
+            "description": "Implement content formatting and optimization logic specific to each platform (Toutiao, Baidu).",
+            "dependencies": [
+              2,
+              3
+            ],
+            "details": "Adjust the content to meet the requirements of each platform, including image sizes, text formatting, and metadata.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 6,
+            "title": "Implement Publishing Queue Management",
+            "description": "Implement a publishing queue to manage the order and rate of article publishing.",
+            "dependencies": [
+              1
+            ],
+            "details": "Design and implement a queueing system to handle publishing requests, including retry mechanisms and error handling.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 7,
+            "title": "Implement Success/Failure Reporting and Logging",
+            "description": "Implement reporting and logging mechanisms to track the success or failure of each publishing attempt.",
+            "dependencies": [
+              2,
+              3,
+              6
+            ],
+            "details": "Log detailed information about each publishing attempt, including timestamps, platform, article ID, and status. Provide a reporting interface to view publishing statistics.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 8,
+            "title": "Implement Data Persistence for Publishing Results",
+            "description": "Implement the `savePublishResult` method to persist the publishing results (success/failure, platform, article ID, etc.) in the database.",
+            "dependencies": [
+              7
+            ],
+            "details": "Design the database schema to store publishing results and implement the necessary CRUD operations.",
+            "status": "done",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Develop Main Dashboard",
+        "description": "Develop the main dashboard with article queue management, local database browser, translation progress, publishing status, configuration panel, and storage statistics.",
+        "details": "1. Use Vue.js 3 and Vuetify to create the UI.\n2. Implement article queue management functionality.\n3. Implement local database browser functionality.\n4. Implement translation progress monitoring.\n5. Implement publishing status tracking.\n6. Implement configuration panel for managing scraping rules, translation settings, and publishing preferences.\n7. Implement storage statistics display.",
+        "testStrategy": "1. Verify that all UI elements are displayed correctly.\n2. Verify that all functionalities are working correctly.\n3. Test the UI with different screen sizes and browsers.\n4. Test the UI with different data sets.",
+        "priority": "medium",
+        "dependencies": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Article Queue Management UI",
+            "description": "Develop the UI for managing the article queue using Vue.js and Vuetify. This includes displaying the queue, filtering, sorting, and actions like prioritizing or removing articles. Data will be fetched from the database via API calls.",
+            "dependencies": [],
+            "details": "Component: ArticleQueueTable, Data Flow: API -> Component",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Implement Local Database Browser UI",
+            "description": "Develop the UI for browsing the local SQLite database using Vue.js and Vuetify. This includes displaying tables, executing queries, and viewing data. Data will be fetched from the database via API calls.",
+            "dependencies": [],
+            "details": "Component: DatabaseBrowser, Data Flow: API -> Component",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Implement Translation Progress UI",
+            "description": "Develop the UI for monitoring translation progress using Vue.js and Vuetify. This includes displaying progress bars, statistics, and details about translated articles. Data will be fetched from the database via API calls.",
+            "dependencies": [],
+            "details": "Component: TranslationProgress, Data Flow: API -> Component",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Implement Publishing Status UI",
+            "description": "Develop the UI for tracking publishing status using Vue.js and Vuetify. This includes displaying status indicators, logs, and details about published articles. Data will be fetched from the database via API calls.",
+            "dependencies": [],
+            "details": "Component: PublishingStatus, Data Flow: API -> Component",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Implement Configuration Panel UI",
+            "description": "Develop the UI for the configuration panel using Vue.js and Vuetify. This includes forms for managing scraping rules, translation settings, and publishing preferences. Data will be sent to the backend via API calls.",
+            "dependencies": [],
+            "details": "Component: ConfigurationPanel, Data Flow: Component <-> API",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 6,
+            "title": "Implement Storage Statistics UI",
+            "description": "Develop the UI for displaying storage statistics using Vue.js and Vuetify. This includes displaying graphs, charts, and details about storage usage. Data will be fetched from the backend via API calls.",
+            "dependencies": [],
+            "details": "Component: StorageStatistics, Data Flow: API -> Component",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 7,
+            "title": "Integrate UI Components into Main Dashboard",
+            "description": "Integrate all the UI components (Article Queue, Database Browser, Translation Progress, Publishing Status, Configuration Panel, Storage Statistics) into the main dashboard layout using Vue.js and Vuetify. Define the overall structure and navigation.",
+            "dependencies": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6
+            ],
+            "details": "Component: MainDashboard, Data Flow: Orchestrates data flow between components",
+            "status": "done",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Develop Configuration Interface",
+        "description": "Develop the configuration interface for website configuration, translation settings, publishing settings, and account management.",
+        "details": "1. Use Vue.js 3 and Vuetify to create the UI.\n2. Implement website configuration functionality.\n3. Implement translation settings configuration.\n4. Implement publishing settings configuration.\n5. Implement account management functionality.",
+        "testStrategy": "1. Verify that all UI elements are displayed correctly.\n2. Verify that all functionalities are working correctly.\n3. Test the UI with different screen sizes and browsers.\n4. Test the UI with different data sets.",
+        "priority": "medium",
+        "dependencies": [
+          5
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Website Configuration UI",
+            "description": "Create the UI elements for website configuration using Vue.js and Vuetify. Include input fields for website URL, name, description, and default language.",
+            "dependencies": [],
+            "details": "Use Vuetify components like `v-text-field`, `v-select`, and `v-textarea` to create the input fields. Implement validation for URL format and required fields.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Translation Settings UI",
+            "description": "Develop the UI for translation settings. Include options for selecting the translation provider (OpenAI, DeepSeek, Ollama), API key input, default target language, and translation quality settings.",
+            "dependencies": [],
+            "details": "Use Vuetify components like `v-select`, `v-text-field`, and `v-slider` to create the input fields. Implement validation for API key format and allowed values for translation quality.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Publishing Settings UI",
+            "description": "Create the UI for publishing settings. Include options for selecting the publishing platform (WordPress, Medium, etc.), API credentials input, default publishing schedule, and content formatting options.",
+            "dependencies": [],
+            "details": "Use Vuetify components like `v-select`, `v-text-field`, `v-textarea`, and `v-switch` to create the input fields. Implement validation for API credentials and allowed values for content formatting.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Account Management UI",
+            "description": "Develop the UI for account management. Include fields for changing password, updating email address, managing API keys, and setting notification preferences.",
+            "dependencies": [],
+            "details": "Use Vuetify components like `v-text-field` (with type password and email), `v-btn`, and `v-switch` to create the input fields. Implement validation for password strength and email format.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Integrate Website Configuration Logic",
+            "description": "Implement the logic to save and retrieve website configuration settings. Connect the UI elements to the backend to persist the data.",
+            "dependencies": [
+              1
+            ],
+            "details": "Use Vuex or Pinia to manage the state of the website configuration. Implement API calls to save and retrieve the configuration data from the backend.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 6,
+            "title": "Integrate Translation, Publishing, and Account Logic",
+            "description": "Implement the logic to save and retrieve translation, publishing, and account settings. Connect the UI elements to the backend to persist the data.",
+            "dependencies": [
+              2,
+              3,
+              4
+            ],
+            "details": "Use Vuex or Pinia to manage the state of the settings. Implement API calls to save and retrieve the configuration data from the backend.",
+            "status": "done",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "Develop Monitoring Interface",
+        "description": "Develop the monitoring interface for real-time status, error reporting, performance metrics, content preview, database health, and processing history.",
+        "details": "1. Use Vue.js 3 and Vuetify to create the UI.\n2. Implement real-time status updates.\n3. Implement error reporting functionality.\n4. Implement performance metrics display.\n5. Implement content preview functionality.\n6. Implement database health monitoring.\n7. Implement processing history display.",
+        "testStrategy": "1. Verify that all UI elements are displayed correctly.\n2. Verify that all functionalities are working correctly.\n3. Test the UI with different screen sizes and browsers.\n4. Test the UI with different data sets.",
+        "priority": "medium",
+        "dependencies": [
+          5
+        ],
+        "status": "in-progress",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Real-time Status Monitoring UI",
+            "description": "Develop the UI component for displaying real-time status updates using Vue.js and Vuetify. Data source: System logs and process status. Display format: List of active processes with status indicators (e.g., running, idle, error).",
+            "dependencies": [],
+            "details": "Use Vuetify's `v-list` and `v-chip` components to display the status of each process. Implement a WebSocket connection to receive real-time updates.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Implement Error Reporting UI",
+            "description": "Develop the UI component for displaying error reports using Vue.js and Vuetify. Data source: Error logs. Display format: Table with error message, timestamp, and severity level.",
+            "dependencies": [],
+            "details": "Use Vuetify's `v-data-table` component to display error reports. Implement filtering and sorting options. Severity levels should be visually distinct (e.g., using different colors).",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Implement Performance Metrics UI",
+            "description": "Develop the UI component for displaying performance metrics using Vue.js and Vuetify. Data source: System metrics (CPU usage, memory usage, network traffic). Display format: Charts and graphs.",
+            "dependencies": [],
+            "details": "Use a charting library like Chart.js or ECharts integrated with Vuetify to display performance metrics. Implement options to select different time ranges and metrics.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Implement Content Preview UI",
+            "description": "Develop the UI component for previewing scraped content using Vue.js and Vuetify. Data source: Scraped article data. Display format: Rendered HTML preview of the article.",
+            "dependencies": [],
+            "details": "Use an `iframe` or a rich text editor component to display the rendered HTML content. Implement options to switch between different content versions.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Implement Database Health Monitoring UI",
+            "description": "Develop the UI component for monitoring database health using Vue.js and Vuetify. Data source: Database server metrics (connection count, query performance, disk usage). Display format: Gauges and status indicators.",
+            "dependencies": [],
+            "details": "Use Vuetify's `v-progress-circular` or custom gauge components to display database health metrics. Implement alerts for critical issues.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 6,
+            "title": "Implement Processing History UI",
+            "description": "Develop the UI component for displaying processing history using Vue.js and Vuetify. Data source: Processing logs. Display format: Timeline or table with processing events and timestamps.",
+            "dependencies": [],
+            "details": "Use Vuetify's `v-timeline` or `v-data-table` component to display processing history. Implement filtering and sorting options.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 7,
+            "title": "Integrate all Monitoring Sections into a Unified Dashboard",
+            "description": "Integrate all the individual monitoring sections (status, errors, performance, content preview, database health, processing history) into a single, cohesive dashboard using Vue.js and Vuetify.",
+            "dependencies": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6
+            ],
+            "details": "Use Vuetify's layout components (e.g., `v-container`, `v-row`, `v-col`) to arrange the monitoring sections. Implement a navigation menu to switch between different sections.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 8,
+        "title": "Implement Unit Tests",
+        "description": "Implement comprehensive unit tests for scraping strategies, translation logic, publishing strategies, and database operations.",
+        "details": "1. Use Jest or Mocha for unit testing.\n2. Write unit tests for each website-specific scraper.\n3. Write unit tests for code preservation and translation quality.\n4. Write unit tests for platform-specific publishing logic.\n5. Write unit tests for CRUD operations for all entities.",
+        "testStrategy": "1. Run all unit tests and verify that all tests pass.\n2. Increase test coverage to 90% or higher.\n3. Use code coverage tools to identify untested code.",
+        "priority": "high",
+        "dependencies": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Unit Test Scraping Strategies",
+            "description": "Implement unit tests for the scraping strategies using Jest or Mocha, focusing on validating URL handling, content extraction, metadata extraction, and code block detection. Aim for 90% code coverage.",
+            "dependencies": [],
+            "details": "Use Jest or Mocha. Test `ArticleScraper` and `ScrapingStrategy` implementations. Verify data extraction accuracy. Check error handling.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Unit Test Translation Logic",
+            "description": "Implement unit tests for the translation logic, ensuring code preservation and translation quality. Use Jest or Mocha and aim for 90% code coverage.",
+            "dependencies": [],
+            "details": "Use Jest or Mocha. Test translation functions and classes. Verify code preservation. Check translation accuracy and fluency.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Unit Test Publishing Strategies",
+            "description": "Implement unit tests for the publishing strategies, focusing on platform-specific publishing logic. Use Jest or Mocha and aim for 90% code coverage.",
+            "dependencies": [],
+            "details": "Use Jest or Mocha. Test `ArticlePublishStrategy` implementations. Verify content formatting and optimization. Check platform-specific logic.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Unit Test Database Operations",
+            "description": "Implement unit tests for CRUD operations for all entities in the database. Use Jest or Mocha and aim for 90% code coverage.",
+            "dependencies": [],
+            "details": "Use Jest or Mocha. Test database access functions and classes. Verify CRUD operations. Check data integrity.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Unit Test UI Components",
+            "description": "Implement unit tests for UI components, ensuring correct rendering and user interaction. Use Jest or Mocha and aim for 90% code coverage.",
+            "dependencies": [],
+            "details": "Use Jest or Mocha. Test UI component rendering. Verify user interaction. Check component state management.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 6,
+            "title": "Unit Test Configuration Settings",
+            "description": "Implement unit tests for configuration settings, ensuring correct loading and validation of settings. Use Jest or Mocha and aim for 90% code coverage.",
+            "dependencies": [],
+            "details": "Use Jest or Mocha. Test configuration loading. Verify settings validation. Check default values.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 9,
+        "title": "Implement Integration Tests",
+        "description": "Implement integration tests for end-to-end workflow, platform integration, LLM integration, and account management.",
+        "details": "1. Use Jest or Mocha for integration testing.\n2. Write integration tests for the complete article processing pipeline.\n3. Write integration tests for publishing to actual platforms.\n4. Write integration tests for translation with real LLM APIs.\n5. Write integration tests for authentication and cookie handling.",
+        "testStrategy": "1. Run all integration tests and verify that all tests pass.\n2. Verify that the system is working correctly from end to end.\n3. Test the system with different data sets.",
+        "priority": "high",
+        "dependencies": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Integration Tests for End-to-End Workflow",
+            "description": "Write integration tests to verify the complete article processing pipeline, from scraping to publishing. Scenarios include successful article processing, handling of invalid URLs, and processing of articles with different content types. Data sets should include a variety of articles from different sources.",
+            "dependencies": [],
+            "details": "Use Jest or Mocha to create tests that simulate the entire workflow. Verify data integrity at each stage.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Implement Integration Tests for Platform Integration",
+            "description": "Write integration tests to verify the integration with different social media platforms. Scenarios include successful publishing to each platform, handling of platform-specific errors, and content formatting. Data sets should include articles with different formatting and content types to test platform compatibility.",
+            "dependencies": [
+              1
+            ],
+            "details": "Use mock social media platforms initially, then integrate with actual platforms. Verify content is correctly formatted and published.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Implement Integration Tests for LLM Integration",
+            "description": "Write integration tests to verify the integration with LLM APIs for translation. Scenarios include successful translation, handling of translation errors, and testing with different languages. Data sets should include articles in various languages and complexities.",
+            "dependencies": [
+              1
+            ],
+            "details": "Use real LLM APIs for translation. Verify translation quality and error handling.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Implement Integration Tests for Account Management",
+            "description": "Write integration tests to verify the account management system, including authentication and cookie handling. Scenarios include successful login, handling of invalid credentials, and cookie persistence. Data sets should include valid and invalid user credentials.",
+            "dependencies": [
+              1
+            ],
+            "details": "Test authentication and cookie handling. Verify user sessions are correctly managed.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Implement Integration Tests for Error Handling",
+            "description": "Write integration tests to verify the system's error handling capabilities. Scenarios include handling of network errors, API errors, and database errors. Data sets should include scenarios that trigger different types of errors.",
+            "dependencies": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "details": "Simulate different error conditions and verify the system handles them gracefully. Log errors and provide informative messages.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 10,
+        "title": "Implement Performance Tests",
+        "description": "Implement performance tests for scraping performance, translation performance, database performance, and memory usage.",
+        "details": "1. Use JMeter or LoadView for performance testing.\n2. Test rate limiting and concurrent scraping.\n3. Test batch processing and API limits.\n4. Test database performance with large datasets.\n5. Monitor memory consumption during processing.",
+        "testStrategy": "1. Run all performance tests and verify that the system meets the performance requirements.\n2. Identify and fix any performance bottlenecks.\n3. Optimize the system for performance.",
+        "priority": "medium",
+        "dependencies": [
+          2,
+          3,
+          4,
+          8,
+          9
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Scraping Performance Tests",
+            "description": "Implement performance tests for the scraping module. Use JMeter or LoadView to simulate concurrent scraping requests. Measure metrics like requests per second, average response time, and error rate. Test different scraping strategies and website structures.",
+            "dependencies": [],
+            "details": "Tool: JMeter/LoadView, Metrics: RPS, Avg. Response Time, Error Rate",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Implement Translation Performance Tests",
+            "description": "Implement performance tests for the translation module. Use JMeter or LoadView to simulate concurrent translation requests. Measure metrics like translation time per article, throughput, and error rate. Test different LLM APIs and article sizes.",
+            "dependencies": [],
+            "details": "Tool: JMeter/LoadView, Metrics: Translation Time, Throughput, Error Rate",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Implement Database Performance Tests",
+            "description": "Implement performance tests for database operations. Use JMeter or LoadView to simulate concurrent database queries and updates. Measure metrics like query execution time, transaction throughput, and connection pool utilization. Test with large datasets.",
+            "dependencies": [],
+            "details": "Tool: JMeter/LoadView, Metrics: Query Time, Throughput, Connection Utilization",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Implement Memory Usage Tests",
+            "description": "Implement memory usage tests to monitor memory consumption during scraping, translation, and publishing processes. Use profiling tools to track memory allocation and identify memory leaks. Measure metrics like peak memory usage and average memory usage.",
+            "dependencies": [],
+            "details": "Tool: Profiling Tools, Metrics: Peak Memory Usage, Avg. Memory Usage",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Implement API Rate Limiting Tests",
+            "description": "Implement tests to verify API rate limiting functionality. Simulate exceeding API rate limits and verify that the system handles rate limiting correctly. Measure metrics like number of requests before rate limiting is triggered and the duration of the rate limit.",
+            "dependencies": [],
+            "details": "Tool: JMeter/LoadView, Metrics: Requests Before Limit, Limit Duration",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      }
+    ],
+    "metadata": {
+      "created": "2025-07-18T03:44:33.068Z",
+      "updated": "2025-07-18T10:17:20.359Z",
+      "description": "Tasks for master context"
+    }
+  }
+}

@@ -389,6 +389,78 @@ export const constantRoutes: RouteRecordRaw[] = [
     ]
   },
   {
+    path: '/article',
+    name: 'Article',
+    meta: {
+      visible: true,
+      title: 'Article Management',
+      icon: 'mdi-file-document-multiple'
+    },
+    component: Layout, 
+    children: [
+      {
+        path: 'list',
+        component: () => import(/* webpackChunkName: "article-list" */ '@/views/pages/article/list.vue'),
+        name: 'ArticleList',
+        meta: {
+          visible: true,
+          title: 'Article List',
+          icon: 'list'
+        }
+      },
+      {
+        path: 'detail/:id(\\d+)',
+        component: () => import(/* webpackChunkName: "article-detail" */ '@/views/pages/article/detail.vue'),
+        name: 'ArticleDetail',
+        meta: {
+          visible: false,
+          title: 'Article Detail',
+          icon: 'view'
+        }
+      },
+      {
+        path: 'scrape',
+        component: () => import(/* webpackChunkName: "article-scrape" */ '@/views/pages/article/scrape.vue'),
+        name: 'ArticleScrape',
+        meta: {
+          visible: true,
+          title: 'Article Scraping',
+          icon: 'scrape'
+        }
+      },
+      {
+        path: 'translate',
+        component: () => import(/* webpackChunkName: "article-translate" */ '@/views/pages/article/translate.vue'),
+        name: 'ArticleTranslate',
+        meta: {
+          visible: true,
+          title: 'Article Translation',
+          icon: 'translate'
+        }
+      },
+      {
+        path: 'publish',
+        component: () => import(/* webpackChunkName: "article-publish" */ '@/views/pages/article/publish.vue'),
+        name: 'ArticlePublish',
+        meta: {
+          visible: true,
+          title: 'Article Publishing',
+          icon: 'publish'
+        }
+      },
+      {
+        path: 'queue',
+        component: () => import(/* webpackChunkName: "article-queue" */ '@/views/pages/article/queue.vue'),
+        name: 'ArticleQueue',
+        meta: {
+          visible: true,
+          title: 'Publishing Queue',
+          icon: 'queue'
+        }
+      }
+    ]
+  },
+  {
     path: '/search',
     name: 'Search',
     meta: {
@@ -610,6 +682,66 @@ export const constantRoutes: RouteRecordRaw[] = [
       },
       
     ]
+  },
+  {
+    path: '/monitoring',
+    name: 'monitoring',
+    meta: {
+      visible: true,
+      title: 'System Monitoring',
+      icon: 'mdi-monitor-dashboard',
+    },
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        name: 'monitoring_index',
+        meta: {
+          title: 'System Monitoring',
+          icon: 'mdi-monitor-dashboard',
+          keepAlive: false,
+          visible: true,
+        },
+        component: () => import('@/views/pages/monitoring/index.vue'),
+        children: [],
+      },
+      {
+        path: 'errors',
+        name: 'monitoring_errors',
+        meta: {
+          title: 'Error Reporting',
+          icon: 'mdi-alert-circle',
+          keepAlive: false,
+          visible: true,
+        },
+        component: () => import('@/views/pages/monitoring/error-reporting.vue'),
+        children: [],
+      },
+      {
+        path: 'performance',
+        name: 'monitoring_performance',
+        meta: {
+          title: 'Performance Metrics',
+          icon: 'mdi-chart-line',
+          keepAlive: false,
+          visible: true,
+        },
+        component: () => import('@/views/pages/monitoring/performance-metrics.vue'),
+        children: [],
+      },
+      {
+        path: 'content-preview',
+        name: 'monitoring_content_preview',
+        meta: {
+          title: 'Content Preview',
+          icon: 'mdi-eye',
+          keepAlive: false,
+          visible: true,
+        },
+        component: () => import('@/views/pages/monitoring/content-preview.vue'),
+        children: [],
+      }
+    ],
   },
   {
     path: '/login',

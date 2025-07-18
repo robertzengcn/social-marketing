@@ -45,6 +45,16 @@ import { ScheduleTaskEntity } from "@/entity/ScheduleTask.entity";
 import { ScheduleExecutionLogEntity } from "@/entity/ScheduleExecutionLog.entity";
 import { ScheduleDependencyEntity } from "@/entity/ScheduleDependency.entity";
 import { SchedulerStatusEntity } from "@/entity/SchedulerStatus.entity";
+
+// Article Scraper, Translator & Publisher System Entities
+import { ArticleEntity } from "@/entity/Article.entity";
+import { ArticleCodeBlockEntity } from "@/entity/ArticleCodeBlock.entity";
+import { ArticleMetadataEntity } from "@/entity/ArticleMetadata.entity";
+import { ArticleImageEntity } from "@/entity/ArticleImage.entity";
+import { TranslationMemoryEntity } from "@/entity/TranslationMemory.entity";
+import { PublishResultEntity } from "@/entity/PublishResult.entity";
+import { PublishingQueueEntity } from "@/entity/PublishingQueue.entity";
+import { ArticleProcessingLogEntity } from "@/entity/ArticleProcessingLog.entity";
 // import sqlite3 from "sqlite3"; 
 
 
@@ -102,6 +112,15 @@ export class SqliteDb {
                 EmailFilterTaskRelationEntity,
                 EmailServiceEntity,
                 EmailServiceTaskRelationEntity,
+                // Article Scraper, Translator & Publisher System Entities
+                ArticleEntity,
+                ArticleCodeBlockEntity,
+                ArticleMetadataEntity,
+                ArticleImageEntity,
+                TranslationMemoryEntity,
+                PublishResultEntity,
+                PublishingQueueEntity,
+                ArticleProcessingLogEntity,
             ],
             synchronize: true, 
             migrations: [],
