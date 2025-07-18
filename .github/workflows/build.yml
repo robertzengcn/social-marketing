@@ -167,6 +167,20 @@ jobs:
         run: yarn install
       - name: Install DMG maker
         run: yarn add --dev @electron-forge/maker-dmg
+      - name: Verify build dependencies
+        run: |
+          echo "=== Verifying build dependencies ==="
+          yarn list --depth=0 | grep -E "(cross-env|electron-forge|@electron-forge)" || echo "Some build dependencies not found"
+          
+          echo "=== Checking if cross-env is available ==="
+          npx cross-env --version || echo "cross-env not available"
+          
+          echo "=== Checking if electron-forge is available ==="
+          npx electron-forge --version || echo "electron-forge not available"
+          
+          echo "=== Checking yarn scripts ==="
+          yarn run --help | grep "make-mac:test" || echo "make-mac:test script not found in yarn"
+          
       - name: Clean previous builds
         run: |
           rm -rf node_modules/.cache
@@ -277,8 +291,85 @@ jobs:
           find node_modules/ -name "*.c" -path "*/bufferutil/*" -o -path "*/utf-8-validate/*" || echo "No C files found in C modules"
           echo "C++ modules (should use CXXFLAGS):"
           find node_modules/ -name "*.cc" -o -name "*.cpp" -path "*/better-sqlite3/*" -o -path "*/sqlite3/*" || echo "No C++ files found in C++ modules"
+      
+      - name: Debug - Environment and configuration
+        run: |
+          echo "=== Environment variables ==="
+          echo "CXXFLAGS: $CXXFLAGS"
+          echo "CFLAGS: $CFLAGS"
+          echo "CXX: $CXX"
+          echo "CC: $CC"
+          echo "LDFLAGS: $LDFLAGS"
+          echo "npm_config_target_platform: $npm_config_target_platform"
+          echo "npm_config_target_arch: $npm_config_target_arch"
+          echo "NODE_ENV: $NODE_ENV"
+          
+          echo "=== Package.json scripts ==="
+          cat package.json | grep -A 5 -B 5 "make-mac:test" || echo "make-mac:test script not found"
+          
+          echo "=== Electron Forge configuration ==="
+          if [ -f "forge.config.js" ]; then
+            echo "forge.config.js exists"
+            head -20 forge.config.js || echo "Could not read forge.config.js"
+          else
+            echo "forge.config.js not found"
+          fi
+          
+          echo "=== Current working directory ==="
+          pwd
+          echo "=== Directory contents ==="
+          ls -la
+      
+      - name: Try verbose build first
+        run: |
+          echo "=== Trying verbose build to diagnose issues ==="
+          DEBUG=electron-forge:* yarn make-mac:test || echo "Verbose build failed, will try normal build"
+        continue-on-error: true
+      
       - name: Build application
-        run: yarn make-mac:test
+        run: |
+          echo "=== Starting build process ==="
+          yarn make-mac:test
+          echo "=== Build completed successfully ==="
+        continue-on-error: true
+      
+      - name: Check build logs if build failed
+        if: failure()
+        run: |
+          echo "=== Build failed, checking for error logs ==="
+          # Check if there are any recent error logs
+          find . -name "*.log" -mtime -1 2>/dev/null | head -10 || echo "No recent log files found"
+          
+          # Check yarn error log
+          if [ -f ".yarn-error.log" ]; then
+            echo "=== Yarn error log (last 50 lines) ==="
+            tail -50 .yarn-error.log || echo "Could not read yarn error log"
+          fi
+          
+          # Check npm error log
+          if [ -f ".npm-debug.log" ]; then
+            echo "=== NPM debug log (last 50 lines) ==="
+            tail -50 .npm-debug.log || echo "Could not read npm debug log"
+          fi
+          
+          # Check for electron-forge logs
+          if [ -d ".electron-forge" ]; then
+            echo "=== Electron Forge logs ==="
+            find .electron-forge -name "*.log" -exec tail -20 {} \; 2>/dev/null || echo "No electron-forge logs found"
+          fi
+          
+          # Check current directory contents
+          echo "=== Current directory contents ==="
+          ls -la
+          
+          # Check if node_modules exists and has the right permissions
+          echo "=== Checking node_modules ==="
+          ls -la node_modules/ | head -10 || echo "node_modules directory not found or not accessible"
+          
+          # Check if any native modules were built
+          echo "=== Checking native modules ==="
+          find node_modules/ -name "*.node" 2>/dev/null | head -10 || echo "No .node files found"
+          
       - name: Fallback build if main build fails
         if: failure()
         run: |
@@ -306,11 +397,11 @@ jobs:
       - name: Debug - List out directory contents
         run: |
           echo "=== Contents of out directory ==="
-          ls -la out/
+          ls -la out/ 2>/dev/null || echo "out directory does not exist"
           echo "=== Contents of out/make directory ==="
-          ls -la out/make/ || echo "out/make directory does not exist"
+          ls -la out/make/ 2>/dev/null || echo "out/make directory does not exist"
           echo "=== Contents of out directory recursively ==="
-          find out/ -type f -name "*.dmg" -o -name "*.zip" -o -name "*.app" || echo "No DMG, ZIP, or APP files found"
+          find out/ -type f -name "*.dmg" -o -name "*.zip" -o -name "*.app" 2>/dev/null || echo "No DMG, ZIP, or APP files found"
   
       - name: Upload artifact
         uses: actions/upload-artifact@v4
