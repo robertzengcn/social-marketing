@@ -151,7 +151,6 @@ jobs:
         run: |
             brew install python-setuptools
             brew install xz
-            brew install lzma
             # Install additional LZMA dependencies
             brew install pkg-config
             brew install autoconf
@@ -159,7 +158,6 @@ jobs:
             brew install libtool
             # Ensure LZMA is properly linked
             brew link xz --force
-            brew link lzma --force
             # Verify LZMA installation
             lzma-config --version || echo "lzma-config not found, trying alternative"
             xz --version || echo "xz not found"
