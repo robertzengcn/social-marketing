@@ -41,6 +41,7 @@ dotenv.config({ path: path.resolve(__dirname, envFile) });
 module.exports={
   packagerConfig: {
     icon: './src/assets/images/icon',
+    name: process.env.APP_NAME || 'social-marketing',
     // asar: {
     //   // This ensures native modules are unpacked
     //   unpack: "**/node_modules/better-sqlite3/**",
@@ -161,11 +162,13 @@ module.exports={
       config: {
         format: 'ULFO',
         icon: './src/assets/images/icon.icns',
-        background: './src/assets/images/dmg-background.png',
+        name: process.env.APP_NAME || 'social-marketing',
         contents: [
           {
             x: 130,
-            y: 220
+            y: 220,
+            type: 'file',
+            path: 'social-marketing.app'
           },
           {
             x: 410,

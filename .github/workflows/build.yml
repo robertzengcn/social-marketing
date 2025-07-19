@@ -53,6 +53,7 @@ jobs:
           echo "VITE_REMOTEADD=${{ secrets.VITE_REMOTEADD_TEST }}" >> .env 
           echo "VITE_LOGIN_URL=${{ secrets.VITE_LOGIN_URL_TEST }}" >> .env
           echo "UPDATESERVER=${{ secrets.UPDATESERVER }}" >> .env
+          echo "APP_NAME=social-marketing" >> .env
           cat .env       
       - name: Install dependencies
         run: yarn install
@@ -152,6 +153,7 @@ jobs:
             echo VITE_REMOTEADD=${{ secrets.VITE_REMOTEADD_TEST }} >> .env
             echo "VITE_LOGIN_URL=${{ secrets.VITE_LOGIN_URL_TEST }}" >> .env
             echo "UPDATESERVER=${{ secrets.UPDATESERVER }}" >> .env
+            echo "APP_NAME=social-marketing" >> .env
             cat .env
       - name: Install setuptools and lzma dependencies
         run: |
@@ -228,6 +230,7 @@ jobs:
           export LDFLAGS="-std=c++20"
           export npm_config_target_platform="darwin"
           export npm_config_target_arch="x64"
+          export APP_NAME="social-marketing"
           
           # Set up LZMA configuration
           if [ -f "/usr/local/bin/lzma-config" ]; then
@@ -309,6 +312,7 @@ jobs:
           echo "npm_config_target_platform: $npm_config_target_platform"
           echo "npm_config_target_arch: $npm_config_target_arch"
           echo "NODE_ENV: $NODE_ENV"
+          echo "APP_NAME: $APP_NAME"
           
           echo "=== Package.json scripts ==="
           cat package.json | grep -A 5 -B 5 "make-mac:test" || echo "make-mac:test script not found"
@@ -409,6 +413,10 @@ jobs:
           ls -la out/make/ 2>/dev/null || echo "out/make directory does not exist"
           echo "=== Contents of out directory recursively ==="
           find out/ -type f -name "*.dmg" -o -name "*.zip" -o -name "*.app" 2>/dev/null || echo "No DMG, ZIP, or APP files found"
+          echo "=== Checking for app bundle ==="
+          find out/ -name "*.app" -type d 2>/dev/null | head -5 || echo "No app bundles found"
+          echo "=== App bundle details ==="
+          find out/ -name "*.app" -type d -exec basename {} \; 2>/dev/null || echo "No app bundles found"
   
       - name: Upload application artifact
         uses: actions/upload-artifact@v4
