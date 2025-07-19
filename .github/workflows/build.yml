@@ -72,11 +72,23 @@ jobs:
       - name: Build application
         run: yarn make-win:test
 
-      - name: Upload artifact
+      - name: Build uninstaller
+        run: yarn build-uninstaller
+
+      - name: Test uninstaller
+        run: yarn test-uninstaller
+
+      - name: Upload application artifact
         uses: actions/upload-artifact@v4
         with:
           name: electron-app-windows-v${{ steps.calculate_version.outputs.version }}
           path: out/make
+
+      - name: Upload uninstaller artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: uninstaller-windows-v${{ steps.calculate_version.outputs.version }}
+          path: dist/uninstaller
 
   build-macos:
     runs-on: macos-latest
@@ -234,6 +246,12 @@ jobs:
           # Try building with different flags
           CXXFLAGS="-std=c++17" yarn make-mac:test || echo "Fallback build also failed"
   
+      - name: Build uninstaller
+        run: yarn build-uninstaller
+
+      - name: Test uninstaller
+        run: yarn test-uninstaller
+
       - name: Debug - List out directory contents
         run: |
           echo "=== Contents of out directory ==="
@@ -243,8 +261,14 @@ jobs:
           echo "=== Contents of out directory recursively ==="
           find out/ -type f -name "*.dmg" -o -name "*.zip" -o -name "*.app" || echo "No DMG, ZIP, or APP files found"
   
-      - name: Upload artifact
+      - name: Upload application artifact
         uses: actions/upload-artifact@v4
         with:
           name: electron-app-macos-v${{ steps.calculate_version.outputs.version }}
           path: out/make
+
+      - name: Upload uninstaller artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: uninstaller-macos-v${{ steps.calculate_version.outputs.version }}
+          path: dist/uninstaller
