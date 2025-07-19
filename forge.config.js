@@ -298,6 +298,16 @@ module.exports={
           }
         ]
       }
+    },
+    // Standalone Uninstaller Makers
+    {
+      name: '@electron-forge/maker-portable',
+      config: {
+        name: 'SocialMarketingUninstaller',
+        icon: './src/assets/images/icon.ico',
+        // This will create a portable executable
+        portable: true
+      }
     }
   ],
   plugins: [
@@ -328,6 +338,11 @@ module.exports={
           {
             entry: 'src/taskCode.ts',
             config: 'vite.taskCode.config.mjs'
+          },
+          // Add uninstaller build
+          {
+            entry: 'src/uninstaller/main.ts',
+            config: 'vite.uninstaller.config.mjs'
           },
           // {
           //   entry: 'src/buckEmail.ts',
