@@ -41,7 +41,7 @@ This guide provides comprehensive information for developers working on the Soci
 3. **Set up development environment**
    ```bash
    # Install uninstaller-specific dependencies
-   yarn add --dev @electron-forge/maker-portable @electron-forge/maker-dmg @electron-forge/maker-deb
+   yarn add --dev @electron-forge/maker-zip @electron-forge/maker-dmg @electron-forge/maker-deb
    
    # Set up development tools
    yarn setup:dev

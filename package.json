@@ -73,7 +73,7 @@
     "uninstall-mac": "./installer-scripts/uninstall-macos.sh",
     "uninstall-linux": "./installer-scripts/uninstall-linux.sh",
     "build-uninstaller": "vite build --config vite.uninstaller.config.mjs",
-    "make-uninstaller-win": "cross-env NODE_ENV=production electron-forge make --platform=win32 --targets=@electron-forge/maker-portable",
+    "make-uninstaller-win": "cross-env NODE_ENV=production electron-forge make --platform=win32 --targets=@electron-forge/maker-zip",
     "make-uninstaller-mac": "cross-env NODE_ENV=production electron-forge make --platform=darwin --targets=@electron-forge/maker-zip",
     "make-uninstaller-linux": "cross-env NODE_ENV=production electron-forge make --platform=linux --targets=@electron-forge/maker-deb",
     "make-uninstaller-all": "yarn make-uninstaller-win && yarn make-uninstaller-mac && yarn make-uninstaller-linux",

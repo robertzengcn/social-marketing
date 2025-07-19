@@ -234,7 +234,8 @@ module.exports={
         }
       },
     },
-    {
+    // WiX maker only works on Windows
+    ...(process.platform === 'win32' ? [{
       name: '@electron-forge/maker-wix',
       config: {
         language: 1033,
@@ -298,17 +299,10 @@ module.exports={
           }
         ]
       }
-    },
-    // Standalone Uninstaller Makers
-    {
-      name: '@electron-forge/maker-portable',
-      config: {
-        name: 'SocialMarketingUninstaller',
-        icon: './src/assets/images/icon.ico',
-        // This will create a portable executable
-        portable: true
-      }
-    }
+    }] : []),
+    // Note: @electron-forge/maker-portable doesn't exist
+    // If you need a portable executable, consider using @electron-forge/maker-zip
+    // or create a custom solution
   ],
   plugins: [
     {

@@ -82,7 +82,7 @@ This document outlines the complete implementation plan for creating a professio
 - [x] Configure uninstaller packaging and distribution
 
 ### 4.2 Create Uninstaller Makers
-- [x] Configure `@electron-forge/maker-portable` for Windows uninstaller
+- [x] Configure `@electron-forge/maker-zip` for Windows uninstaller
 - [ ] Configure `@electron-forge/maker-zip` for macOS uninstaller
 - [ ] Configure `@electron-forge/maker-deb` for Linux uninstaller
 - [x] Set up proper naming conventions for uninstaller executables

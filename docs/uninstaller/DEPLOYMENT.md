@@ -102,7 +102,7 @@ export default {
 module.exports = {
   makers: [
     {
-      name: '@electron-forge/maker-portable',
+      name: '@electron-forge/maker-zip',
       config: {
         name: 'SocialMarketingUninstaller',
         icon: './src/assets/images/icon.ico'
