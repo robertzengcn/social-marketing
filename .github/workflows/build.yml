@@ -342,7 +342,18 @@ jobs:
           echo "=== Starting build process ==="
           yarn make-mac:test
           echo "=== Build completed successfully ==="
+          echo "=== Checking build output ==="
+          ls -la out/ 2>/dev/null || echo "out directory not found"
+          find out/ -name "*.app" -type d 2>/dev/null || echo "No app bundles found"
         continue-on-error: true
+      
+      - name: Debug app bundle location
+        run: |
+          echo "=== Debugging app bundle location ==="
+          echo "Looking for app bundles in out directory:"
+          find out/ -name "*.app" -type d 2>/dev/null || echo "No app bundles found in out directory"
+          echo "Current directory structure:"
+          find out/ -type d 2>/dev/null | head -10 || echo "out directory not found"
       
       - name: Check build logs if build failed
         if: failure()
@@ -417,6 +428,8 @@ jobs:
           find out/ -name "*.app" -type d 2>/dev/null | head -5 || echo "No app bundles found"
           echo "=== App bundle details ==="
           find out/ -name "*.app" -type d -exec basename {} \; 2>/dev/null || echo "No app bundles found"
+          echo "=== Full directory tree ==="
+          find out/ -type d 2>/dev/null | head -20 || echo "out directory not found"
   
       - name: Upload application artifact
         uses: actions/upload-artifact@v4

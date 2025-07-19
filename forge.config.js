@@ -1,8 +1,50 @@
 const path = require('path');
 const dotenv = require('dotenv');
-const { readdirSync, rmdirSync, statSync } = require('node:fs');
+const { readdirSync, rmdirSync, statSync, existsSync } = require('node:fs');
 const { join, normalize } = require('node:path');
 const { Walker, DepType } = require('flora-colossus');
+
+// Function to find the app bundle path
+function findAppBundlePath() {
+  console.log('=== Finding app bundle path ===');
+  const possiblePaths = [
+    'out/social-marketing-darwin-arm64/social-marketing.app',
+    'out/social-marketing-darwin-x64/social-marketing.app',
+    'out/social-marketing-darwin/social-marketing.app'
+  ];
+  
+  for (const appPath of possiblePaths) {
+    console.log(`Checking path: ${appPath}`);
+    if (existsSync(appPath)) {
+      console.log(`Found app bundle at: ${appPath}`);
+      return appPath;
+    }
+  }
+  
+  // If no specific path found, try to find any .app in out directory
+  try {
+    const outDir = 'out';
+    console.log(`Checking out directory: ${outDir}`);
+    if (existsSync(outDir)) {
+      const items = readdirSync(outDir);
+      console.log(`Out directory contents: ${items.join(', ')}`);
+      for (const item of items) {
+        const itemPath = path.join(outDir, item);
+        console.log(`Checking item: ${itemPath}`);
+        if (statSync(itemPath).isDirectory() && item.endsWith('.app')) {
+          console.log(`Found app bundle at: ${itemPath}`);
+          return itemPath;
+        }
+      }
+    }
+  } catch (error) {
+    console.log('Error searching for app bundle:', error.message);
+  }
+  
+  // Fallback to the default path
+  console.log('Using fallback path: social-marketing.app');
+  return 'social-marketing.app';
+}
 let nativeModuleDependenciesToPackage = [];
 const EXTERNAL_DEPENDENCIES = [
   'realm',
@@ -168,7 +210,7 @@ module.exports={
             x: 130,
             y: 220,
             type: 'file',
-            path: 'social-marketing.app'
+            path: findAppBundlePath()
           },
           {
             x: 410,
