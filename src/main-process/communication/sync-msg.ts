@@ -13,7 +13,7 @@ import { User } from '@/modules/user'
 // import { ProxyParseItem } from '@/entityTypes/proxyType'
 import { CommonResponse } from "@/entityTypes/commonType"
 import { campaignEntity } from "@/entityTypes/campaign-type"
-import { OPENDIRECTORY, CHOOSEFILEDIALOG } from "@/config/channellist"
+import { OPENDIRECTORY, CHOOSEFILEDIALOG, USER_CHECK_LOGIN } from "@/config/channellist"
 
 
 export default function SyncMsg(mainWindow: BrowserWindow) {
@@ -53,7 +53,7 @@ export default function SyncMsg(mainWindow: BrowserWindow) {
   });
 
   //check if user login
-  ipcMain.handle("user:checklogin", async (event, data) => {
+  ipcMain.handle(USER_CHECK_LOGIN, async (event, data) => {
     //console.log("handle user:checklogin")
     const userControll = new UserController()
     const checkres: userResponse = await userControll.checklogin().then(function (res) {
