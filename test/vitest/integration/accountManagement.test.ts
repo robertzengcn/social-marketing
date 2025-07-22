@@ -351,15 +351,15 @@ describe('Account Management Integration Tests', () => {
 
       // Test saving cookies
       const saveResult = await manageAccountCookies(1, mockCookies, 'save')
-      expect(saveResult.success).toBe(true)
-      expect(saveResult.action).toBe('saved')
+      expect(saveResult!.success).toBe(true)
+      expect(saveResult!.action).toBe('saved')
       expect(mockSaveCookies).toHaveBeenCalledWith(1, mockCookies)
 
       // Test getting cookies
       const getResult = await manageAccountCookies(1, [], 'get')
-      expect(getResult.success).toBe(true)
-      expect(getResult.action).toBe('retrieved')
-      expect(getResult.cookies).toEqual(mockCookies)
+      expect(getResult!.success).toBe(true)
+      expect(getResult!.action).toBe('retrieved')
+      expect(getResult!.cookies).toEqual(mockCookies)
       expect(mockGetCookies).toHaveBeenCalledWith(1)
     })
 

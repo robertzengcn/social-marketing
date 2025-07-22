@@ -1,5 +1,5 @@
 import { BaseArticlePublishStrategy, ArticlePublishOptions, PublishResult, FormattedContent, ContentLimits, RetryPolicy } from './ArticlePublishStrategy';
-import { TranslatedContent } from '../translation/ArticleTranslationService';
+import { TranslatedContent } from '@/modules/translation/ArticleTranslationService';
 import { AccountCookiesEntity } from '@/entity/AccountCookies.entity';
 
 export class ToutiaoPublishStrategy extends BaseArticlePublishStrategy {

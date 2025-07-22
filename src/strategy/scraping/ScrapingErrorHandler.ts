@@ -162,7 +162,7 @@ export class ScrapingErrorHandler {
   private async handleTimeoutError(page: Page, config: ErrorRecoveryStrategy): Promise<boolean> {
     try {
       // Wait a bit longer and try to reload
-      await page.waitForTimeout(5000);
+      await new Promise(resolve => setTimeout(resolve, 5000));
       await page.reload({ waitUntil: 'networkidle2' });
       return true;
     } catch (error) {
@@ -205,7 +205,7 @@ export class ScrapingErrorHandler {
   private async handleNetworkError(page: Page, config: ErrorRecoveryStrategy): Promise<boolean> {
     try {
       // Wait and retry
-      await page.waitForTimeout(3000);
+      await new Promise(resolve => setTimeout(resolve, 3000));
       await page.reload({ waitUntil: 'domcontentloaded' });
       return true;
     } catch (error) {
@@ -216,7 +216,7 @@ export class ScrapingErrorHandler {
   private async handleRateLimitError(page: Page, config: ErrorRecoveryStrategy): Promise<boolean> {
     try {
       // Wait longer for rate limit
-      await page.waitForTimeout(10000);
+      await new Promise(resolve => setTimeout(resolve, 10000));
       return true;
     } catch (error) {
       return false;

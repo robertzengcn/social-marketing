@@ -48,9 +48,7 @@ export class CodeBlockPreservation {
         'g'
       );
       contentWithPlaceholders = contentWithPlaceholders.replace(codeBlockPattern, placeholder);
-      placeholderMap[placeholder] = `
-
- 0```$${block.language}\n${block.code}` + '```\n';
+      placeholderMap[placeholder] = `\`\`\`${block.language}\n${block.code}\`\`\`\n`;
     });
     return { contentWithPlaceholders, placeholderMap };
   }

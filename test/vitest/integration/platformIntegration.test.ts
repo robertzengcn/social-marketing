@@ -449,7 +449,7 @@ describe('Platform Integration Tests', () => {
       }
 
       const validateContentForPlatform = (content: any, platform: string) => {
-        const validation = { isValid: true, errors: [] }
+        const validation = { isValid: true, errors: [] as string[] }
 
         switch (platform) {
           case 'youtube':
@@ -518,8 +518,8 @@ describe('Platform Integration Tests', () => {
       }
 
       const result = await publishWithRetry(mockVideoEntity, mockPublishOptions, 'youtube')
-      expect(result.publishStatus).toBe('published')
-      expect(result.attempt).toBe(2)
+      expect(result!.publishStatus).toBe('published')
+      expect(result!.attempt).toBe(2)
     })
 
     test('handles platform-specific rate limiting', async () => {
@@ -589,7 +589,7 @@ describe('Platform Integration Tests', () => {
   describe('Platform Integration Validation', () => {
     test('validates platform configuration', () => {
       const validatePlatformConfig = (config: any) => {
-        const errors = []
+        const errors: string[] = []
 
         if (!config.platform) {
           errors.push('Platform is required')
@@ -630,7 +630,7 @@ describe('Platform Integration Tests', () => {
 
     test('validates cross-platform compatibility', () => {
       const validateCrossPlatformCompatibility = (content: any, platforms: string[]) => {
-        const compatibility = { compatible: true, issues: [] }
+        const compatibility = { compatible: true, issues: [] as string[] }
 
         for (const platform of platforms) {
           switch (platform) {

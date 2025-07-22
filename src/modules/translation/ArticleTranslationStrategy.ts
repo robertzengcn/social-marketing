@@ -1,11 +1,12 @@
-import { TranslateProducer } from '../translation/TranslateProducer';
-import { LanguageItem } from '../types/LanguageTypes';
-import { ArticleContent, ArticleChunk, TranslatedContent, ProcessedArticleContent } from '../types/ArticleTypes';
+import { TranslateProducer } from '@/modules/TranslateProducer';
+import { LanguageItem, LanguageName, LanguageCode } from '@/entityTypes/commonType';
+import { ArticleContent } from '@/entityTypes/ArticleScraper';
+import { ArticleChunk, TranslatedContent, ProcessedArticleContent } from '@/entityTypes/ArticleTranslationService';
 import { ContentChunking } from './ContentChunking';
 import { CodeBlockPreservation } from './CodeBlockPreservation';
 import { TranslationQualityControl, QualityCheckResult } from './TranslationQualityControl';
 import { TranslationMemory } from './TranslationMemory';
-import { TranslateToolEnum } from '../types/TranslateToolEnum';
+import { TranslateToolEnum } from '@/config/generate';
 
 /**
  * Interface for article translation strategy configuration
@@ -22,6 +23,7 @@ export interface ArticleTranslationStrategyConfig {
   retryAttempts: number;
   preserveCodeBlocks: boolean;
   preserveFormatting: boolean;
+  retryWithDifferentTool: boolean;
 }
 
 /**
@@ -86,18 +88,18 @@ export class ArticleTranslationStrategy {
       }
 
       // Step 3: Chunk the content for translation
-      const chunks = this.contentChunking.chunkArticle(content, this.config.chunkSize);
+      const chunks = ContentChunking.chunkArticle(content, this.config.chunkSize);
 
       // Step 4: Translate chunks
       const translatedChunks = await this.translateChunks(
         chunks,
-        content.metadata.sourceLanguage || { name: 'English', code: 'en' },
+        { id: 1, name: LanguageName.ENGLISH, code: (typeof content.metadata.sourceLanguage === 'string' ? content.metadata.sourceLanguage as LanguageCode : LanguageCode.EN) },
         targetLanguage,
         toolName
       );
 
       // Step 5: Postprocess and merge
-      const translatedContent = this.postprocess(translatedChunks, content, targetLanguage, toolName);
+      const translatedContent = await this.postprocess(translatedChunks, content, targetLanguage, toolName);
 
       // Step 6: Quality control
       if (this.config.enableQualityControl) {
@@ -116,7 +118,7 @@ export class ArticleTranslationStrategy {
       return translatedContent;
     } catch (error) {
       console.error('Error translating article:', error);
-      throw new Error(`Article translation failed: ${error.message}`);
+      throw new Error(`Article translation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 
@@ -128,13 +130,13 @@ export class ArticleTranslationStrategy {
   private preprocess(content: ArticleContent): ProcessedArticleContent {
     // Extract and preserve code blocks
     const preservedCodeBlocks = this.config.preserveCodeBlocks 
-      ? this.codeBlockPreservation.preserveCodeBlocks(content.codeBlocks || [])
+      ? this.codeBlockPreservation.extractCodeBlocksFromContent(content.content)
       : content.codeBlocks || [];
 
     // Create text chunks (code blocks will be reinserted later)
-    const textContent = this.codeBlockPreservation.removeCodeBlocksFromText(content.content);
-    const textChunks = this.contentChunking.chunkArticle(
-      { ...content, content: textContent, codeBlocks: [] },
+    const preserved = this.codeBlockPreservation.preserveDuringTranslation(content.content);
+    const textChunks = ContentChunking.chunkArticle(
+      { ...content, content: preserved.contentForTranslation, codeBlocks: [] },
       this.config.chunkSize
     );
 
@@ -161,7 +163,7 @@ export class ArticleTranslationStrategy {
     try {
       const cachedTranslation = await this.translationMemory.getTranslation(
         content.content,
-        content.metadata.sourceLanguage?.code || 'en',
+        (typeof content.metadata.sourceLanguage === 'string' ? content.metadata.sourceLanguage as LanguageCode : LanguageCode.EN),
         targetLanguage.code,
         toolName
       );
@@ -172,12 +174,12 @@ export class ArticleTranslationStrategy {
           content: cachedTranslation,
           codeBlocks: content.codeBlocks || [],
           metadata: content.metadata,
-          sourceLanguage: content.metadata.sourceLanguage || { name: 'English', code: 'en' },
+          sourceLanguage: { id: 1, name: LanguageName.ENGLISH, code: (typeof content.metadata.sourceLanguage === 'string' ? content.metadata.sourceLanguage as LanguageCode : LanguageCode.EN) },
           targetLanguage,
           translatedAt: new Date(),
           qualityScore: 0.8, // Default score for cached translations
           version: 1,
-          articleId: content.id || 0,
+          articleId: 0,
           translationTool: toolName
         };
       }
@@ -254,34 +256,34 @@ export class ArticleTranslationStrategy {
    * @param toolName Translation tool
    * @returns Complete translated content
    */
-  private postprocess(
+  private async postprocess(
     translatedChunks: ArticleChunk[],
     originalContent: ArticleContent,
     targetLanguage: LanguageItem,
     toolName: TranslateToolEnum
-  ): TranslatedContent {
+  ): Promise<TranslatedContent> {
     // Merge chunks back into complete content
-    const mergedContent = this.contentChunking.mergeChunks(translatedChunks, originalContent);
+    const mergedContent = ContentChunking.mergeChunks(translatedChunks, originalContent);
 
     // Reinsert code blocks if preservation is enabled
     const finalContent = this.config.preserveCodeBlocks
-      ? this.codeBlockPreservation.mergeCodeBlocks(mergedContent, originalContent.codeBlocks || [])
+      ? this.codeBlockPreservation.restoreCodeBlocksFromPlaceholders(mergedContent, {})
       : mergedContent;
 
     // Translate title separately
-    const translatedTitle = this.translateTitle(originalContent.title, targetLanguage, toolName);
+    const translatedTitle = await this.translateTitle(originalContent.title, targetLanguage, toolName);
 
     return {
       title: translatedTitle,
       content: finalContent,
       codeBlocks: this.config.preserveCodeBlocks ? originalContent.codeBlocks || [] : [],
       metadata: originalContent.metadata,
-      sourceLanguage: originalContent.metadata.sourceLanguage || { name: 'English', code: 'en' },
+      sourceLanguage: { id: 1, name: LanguageName.ENGLISH, code: (typeof originalContent.metadata.sourceLanguage === 'string' ? originalContent.metadata.sourceLanguage as LanguageCode : LanguageCode.EN) },
       targetLanguage,
       translatedAt: new Date(),
       qualityScore: 0.8, // Will be updated by quality control
       version: 1,
-      articleId: originalContent.id || 0,
+      articleId: 0,
       translationTool: toolName
     };
   }
@@ -301,7 +303,7 @@ export class ArticleTranslationStrategy {
     try {
       return await this.translateProducer.translate(
         title,
-        { name: 'English', code: 'en' }, // Assume English titles
+        { id: 1, name: LanguageName.ENGLISH, code: LanguageCode.EN },
         targetLanguage,
         toolName
       );
@@ -326,7 +328,7 @@ export class ArticleTranslationStrategy {
     return await this.qualityControl.checkQuality(
       originalContent.content,
       translatedContent.content,
-      originalContent.metadata.sourceLanguage || { name: 'English', code: 'en' },
+      { id: 1, name: LanguageName.ENGLISH, code: (typeof originalContent.metadata.sourceLanguage === 'string' ? originalContent.metadata.sourceLanguage as LanguageCode : LanguageCode.EN) },
       translatedContent.targetLanguage,
       toolName
     );
@@ -362,12 +364,12 @@ export class ArticleTranslationStrategy {
       content: content.content, // Return original content
       codeBlocks: content.codeBlocks || [],
       metadata: content.metadata,
-      sourceLanguage: content.metadata.sourceLanguage || { name: 'English', code: 'en' },
+      sourceLanguage: { id: 1, name: LanguageName.ENGLISH, code: (typeof content.metadata.sourceLanguage === 'string' ? content.metadata.sourceLanguage as LanguageCode : LanguageCode.EN) },
       targetLanguage,
       translatedAt: new Date(),
       qualityScore: 0.0,
       version: 1,
-      articleId: content.id || 0,
+      articleId: 0,
       translationTool: originalTool
     };
   }
@@ -387,7 +389,7 @@ export class ArticleTranslationStrategy {
       await this.translationMemory.saveTranslation(
         originalContent.content,
         translatedContent.content,
-        originalContent.metadata.sourceLanguage?.code || 'en',
+        (typeof originalContent.metadata.sourceLanguage === 'string' ? originalContent.metadata.sourceLanguage as LanguageCode : LanguageCode.EN),
         translatedContent.targetLanguage.code,
         translatedContent.qualityScore,
         toolName

@@ -356,11 +356,11 @@ export class ArticleScraperImpl implements ArticleScraper {
   }
 
   // Additional utility methods
-  async addStrategy(domain: string, strategy: ScrapingStrategy): void {
+  async addStrategy(domain: string, strategy: ScrapingStrategy): Promise<void> {
     this.strategies.set(domain, strategy);
   }
 
-  async removeStrategy(domain: string): void {
+  async removeStrategy(domain: string): Promise<void> {
     this.strategies.delete(domain);
   }
 

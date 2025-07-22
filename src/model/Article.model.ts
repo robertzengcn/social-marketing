@@ -219,3 +219,64 @@ export class ArticleModel extends BaseDb {
     });
   }
 } 
+
+// ArticleModule: a higher-level wrapper over ArticleModel
+// export class ArticleModule {
+//   private articleModel: ArticleModel;
+
+//   constructor(articleModel: ArticleModel) {
+//     this.articleModel = articleModel;
+//   }
+
+//   async saveArticle(article: Partial<ArticleEntity>): Promise<number> {
+//     return this.articleModel.saveArticle(article);
+//   }
+
+//   async getArticleById(id: number): Promise<ArticleEntity | null> {
+//     return this.articleModel.getArticleById(id);
+//   }
+
+//   async getArticleByUrl(sourceUrl: string): Promise<ArticleEntity | null> {
+//     return this.articleModel.getArticleByUrl(sourceUrl);
+//   }
+
+//   async checkDuplicateByHash(contentHash: string): Promise<boolean> {
+//     return this.articleModel.checkDuplicateByHash(contentHash);
+//   }
+
+//   async getArticlesByStatus(status: ArticleStatus, limit = 50, offset = 0): Promise<ArticleEntity[]> {
+//     return this.articleModel.getArticlesByStatus(status, limit, offset);
+//   }
+
+//   async getAllArticles(limit = 50, offset = 0): Promise<ArticleEntity[]> {
+//     return this.articleModel.getAllArticles(limit, offset);
+//   }
+
+//   async searchArticles(searchTerm: string, limit = 50, offset = 0): Promise<ArticleEntity[]> {
+//     return this.articleModel.searchArticles(searchTerm, limit, offset);
+//   }
+
+//   async updateArticleStatus(id: number, status: ArticleStatus): Promise<boolean> {
+//     return this.articleModel.updateArticleStatus(id, status);
+//   }
+
+//   async updateTranslatedContent(id: number, translatedContent: string, targetLanguage: string): Promise<boolean> {
+//     return this.articleModel.updateTranslatedContent(id, translatedContent, targetLanguage);
+//   }
+
+//   async deleteArticle(id: number): Promise<boolean> {
+//     return this.articleModel.deleteArticle(id);
+//   }
+
+//   async getArticleStatistics() {
+//     return this.articleModel.getArticleStatistics();
+//   }
+
+//   async getArticlesByDateRange(startDate: Date, endDate: Date, limit = 50, offset = 0): Promise<ArticleEntity[]> {
+//     return this.articleModel.getArticlesByDateRange(startDate, endDate, limit, offset);
+//   }
+
+//   async getArticlesByLanguage(language: string, limit = 50, offset = 0): Promise<ArticleEntity[]> {
+//     return this.articleModel.getArticlesByLanguage(language, limit, offset);
+//   }
+// } 

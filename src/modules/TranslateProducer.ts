@@ -65,4 +65,16 @@ export class TranslateProducer {
         
     }
 
+    public async translate(
+      text: string,
+      sourceLanguage: LanguageItem,
+      targetLanguage: LanguageItem,
+      toolName: string
+    ): Promise<string> {
+      const result = await this.translateText(toolName, sourceLanguage, targetLanguage, text);
+      if (typeof result === 'string') {
+        return result;
+      }
+      throw new Error('Translation failed or returned undefined');
+    }
 }

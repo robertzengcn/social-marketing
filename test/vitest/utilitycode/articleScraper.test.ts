@@ -7,7 +7,7 @@ import { Page } from 'puppeteer';
 function createMockPage({ title = 'Test Title', content = 'Test Content', author = 'Test Author', publishDate = '2024-01-01', tags = ['tag1', 'tag2'], codeBlocks = [{ language: 'js', code: 'console.log(1);', position: 0, id: 'cb1', version: 1 }], images = [{ originalUrl: 'http://img.com/1.png', localPath: '/tmp/1.png', fileName: '1.png', fileSize: 123, mimeType: 'image/png' }] } = {}) {
   const page: Partial<Page> = {
     waitForSelector: vi.fn().mockResolvedValue(undefined),
-    $eval: vi.fn((selector, fn) => {
+    $eval: vi.fn().mockImplementation(async (selector, fn) => {
       switch (selector) {
         case 'h1.article-title, .article-title, h1.title, .title':
         case 'h1.title, .title, h1.article-title, .article-title, .post-title, h1.post-title':
@@ -25,7 +25,7 @@ function createMockPage({ title = 'Test Title', content = 'Test Content', author
           return '';
       }
     }),
-    $$eval: vi.fn((selector, fn) => {
+    $$eval: vi.fn().mockImplementation(async (selector, fn) => {
       if (selector.includes('tag')) return tags;
       if (selector === 'meta') return [];
       return [];

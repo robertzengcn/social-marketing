@@ -1,5 +1,5 @@
 import { getRepository } from 'typeorm';
-import { TranslationMemory as TranslationMemoryEntity } from '../entity/TranslationMemory';
+import { TranslationMemoryEntity } from '@/entity/TranslationMemory.entity';
 
 /**
  * Interface for translation memory entry
@@ -254,7 +254,14 @@ export class TranslationMemory {
         const similarity = this.calculateSimilarity(sourceText, entry.sourceText);
         if (similarity >= similarityThreshold) {
           similarEntries.push({
-            ...entry,
+            sourceText: entry.sourceText,
+            translatedText: entry.translatedText,
+            sourceLanguage: entry.sourceLanguage,
+            targetLanguage: entry.targetLanguage,
+            qualityScore: entry.qualityScore,
+            usageCount: entry.usageCount,
+            lastUsedAt: entry.lastUsedAt,
+            toolUsed: entry.toolUsed,
             similarity
           });
         }

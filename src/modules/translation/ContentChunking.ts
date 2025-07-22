@@ -1,4 +1,5 @@
-import { ArticleContent, ArticleChunk, CodeBlock } from '../types/ArticleTypes';
+import { ArticleContent, CodeBlock } from '@/entityTypes/ArticleScraper';
+import { ArticleChunk } from '@/entityTypes/ArticleTranslationService';
 
 /**
  * Utility class for chunking article content into manageable pieces for translation

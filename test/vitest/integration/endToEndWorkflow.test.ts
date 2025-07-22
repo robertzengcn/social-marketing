@@ -482,7 +482,7 @@ describe('End-to-End Workflow Integration Tests', () => {
 
       // Simulate workflow execution
       const executeWorkflow = async () => {
-        const results = []
+        const results: Array<{ step: string; result: any }> = []
 
         // Execute search
         results.push({ step: 'search', result: searchResult })
@@ -514,35 +514,35 @@ describe('End-to-End Workflow Integration Tests', () => {
 
     test('simulates workflow with error handling', async () => {
       const executeWorkflowWithErrors = async () => {
-        const results = []
-        const errors = []
+        const results: Array<{ step: string; result: any }> = []
+        const errors: Array<{ step: string; error: string }> = []
 
         try {
           // Simulate search failure
           throw new Error('Search failed')
         } catch (error) {
-          errors.push({ step: 'search', error: error.message })
+          errors.push({ step: 'search', error: (error as Error).message })
         }
 
         try {
           // Simulate download failure
           throw new Error('Download failed')
         } catch (error) {
-          errors.push({ step: 'download', error: error.message })
+          errors.push({ step: 'download', error: (error as Error).message })
         }
 
         try {
           // Simulate translation failure
           throw new Error('Translation failed')
         } catch (error) {
-          errors.push({ step: 'translate', error: error.message })
+          errors.push({ step: 'translate', error: (error as Error).message })
         }
 
         try {
           // Simulate publishing failure
           throw new Error('Publishing failed')
         } catch (error) {
-          errors.push({ step: 'publish', error: error.message })
+          errors.push({ step: 'publish', error: (error as Error).message })
         }
 
         return { results, errors }
@@ -565,7 +565,7 @@ describe('End-to-End Workflow Integration Tests', () => {
   describe('Workflow Configuration Validation', () => {
     test('validates workflow configuration parameters', () => {
       const validateConfiguration = (config: any) => {
-        const errors = []
+        const errors: string[] = []
 
         // Validate search configuration
         if (!config.search || !config.search.engine || !config.search.keywords) {
@@ -627,7 +627,7 @@ describe('End-to-End Workflow Integration Tests', () => {
 
     test('validates workflow data flow', () => {
       const validateDataFlow = (dataFlow: any) => {
-        const errors = []
+        const errors: string[] = []
 
         // Check if search results are passed to download
         if (!dataFlow.searchToDownload) {

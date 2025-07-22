@@ -5,6 +5,7 @@ import { TranslatedContent } from '../translation/ArticleTranslationService';
 import { AccountCookiesEntity } from '@/entity/AccountCookies.entity';
 import { AccountCookiesModule } from '@/modules/accountCookiesModule';
 import { BaseModule } from '@/modules/baseModule';
+import { LanguageCode, LanguageName } from '@/entityTypes/commonType';
 
 export interface ArticlePublishRequest {
   articleId: number;
@@ -97,8 +98,8 @@ export class ArticlePublishService extends BaseModule {
       content: 'Sample article content...',
       codeBlocks: [],
       metadata: {},
-      sourceLanguage: { code: 'en', name: 'English' },
-      targetLanguage: { code: 'zh', name: 'Chinese' },
+      sourceLanguage: { id: 0, code: LanguageCode.EN, name: LanguageName.ENGLISH },
+      targetLanguage: { id: 0, code: LanguageCode.ZH, name: LanguageName.CHINESE },
       translatedAt: new Date(),
       qualityScore: 0.9,
       version: 1,
@@ -172,8 +173,8 @@ export class ArticlePublishService extends BaseModule {
         content: 'Sample article content...',
         codeBlocks: [],
         metadata: {},
-        sourceLanguage: { code: 'en', name: 'English' },
-        targetLanguage: { code: 'zh', name: 'Chinese' },
+        sourceLanguage: { id: 0, code: LanguageCode.EN, name: LanguageName.ENGLISH },
+        targetLanguage: { id: 0, code: LanguageCode.ZH, name: LanguageName.CHINESE },
         translatedAt: new Date(),
         qualityScore: 0.9,
         version: 1,

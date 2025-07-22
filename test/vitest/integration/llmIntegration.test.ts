@@ -63,9 +63,9 @@ describe('LLM Integration Tests', () => {
       }
 
       const ollamaInstance = createLlmInstance('deepseek_local', ollamaConfig)
-      expect(ollamaInstance.type).toBe('OllamaLlm')
-      expect(ollamaInstance.model).toBe('deepseek-coder')
-      expect(ollamaInstance.url).toBe('http://localhost:11434')
+      expect(ollamaInstance!.type).toBe('OllamaLlm')
+      expect(ollamaInstance!.model).toBe('deepseek-coder')
+      expect(ollamaInstance!.url).toBe('http://localhost:11434')
     })
 
     test('creates DeepSeek API LLM instance correctly', () => {
@@ -111,9 +111,9 @@ describe('LLM Integration Tests', () => {
       }
 
       const deepseekInstance = createLlmInstance('deepseek_api', deepseekConfig)
-      expect(deepseekInstance.type).toBe('ChatDeepSeekLlm')
-      expect(deepseekInstance.model).toBe('deepseek-chat')
-      expect(deepseekInstance.apikey).toBe('test-api-key')
+      expect(deepseekInstance!.type).toBe('ChatDeepSeekLlm')
+      expect(deepseekInstance!.model).toBe('deepseek-chat')
+      expect(deepseekInstance!.apikey).toBe('test-api-key')
     })
 
     test('throws error for missing API key', () => {
@@ -433,7 +433,7 @@ describe('LLM Integration Tests', () => {
   describe('LLM Configuration and Setup', () => {
     test('validates LLM configuration', () => {
       const validateLlmConfig = (config: any) => {
-        const errors = []
+        const errors: string[] = []
 
         if (!config.model) {
           errors.push('Model is required')
@@ -541,7 +541,9 @@ describe('LLM Integration Tests', () => {
         if (translationMemory.size >= maxSize) {
           // Remove oldest entry (first key)
           const firstKey = translationMemory.keys().next().value
-          translationMemory.delete(firstKey)
+          if (firstKey) {
+            translationMemory.delete(firstKey)
+          }
         }
         translationMemory.set(key, value)
       }

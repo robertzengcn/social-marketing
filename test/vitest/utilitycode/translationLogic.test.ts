@@ -8,7 +8,7 @@ import { ContentChunking } from '@/modules/translation/ContentChunking';
 import { TranslationMemory } from '@/modules/translation/TranslationMemory';
 import { LlmFactory } from '@/modules/llm/LlmFactory';
 import { TranslateToolEnum } from '@/config/generate';
-import { LanguageItem } from '@/entityTypes/commonType';
+import { LanguageItem, LanguageName, LanguageCode } from '@/entityTypes/commonType';
 
 // Mock the LLM implementations
 vi.mock('@/modules/llm/OllamaLlm');
@@ -137,8 +137,8 @@ describe('ContentChunking', () => {
 
   test('getChunkStatistics returns correct statistics', () => {
     const chunks = [
-      { id: '1', content: 'text', type: 'text', position: 0 },
-      { id: '2', content: '```js\ncode\n```', type: 'code', position: 1 }
+      { id: '1', content: 'text', type: 'text' as const, position: 0 },
+      { id: '2', content: '```js\ncode\n```', type: 'code' as const, position: 1 }
     ];
     
     const stats = ContentChunking.getChunkStatistics(chunks);
@@ -167,8 +167,8 @@ describe('TranslationQualityControl', () => {
     const result = await qualityControl.checkQuality(
       'Hello world',
       'Hola mundo',
-      { name: 'English', code: 'en' },
-      { name: 'Spanish', code: 'es' },
+      { id: 1, name: LanguageName.ENGLISH, code: LanguageCode.EN },
+      { id: 2, name: LanguageName.SPANISH, code: LanguageCode.ES },
       'deepseek_local'
     );
 
@@ -192,8 +192,8 @@ describe('TranslationQualityControl', () => {
     const result = await disabledQC.checkQuality(
       'Hello world',
       'Hola mundo',
-      { name: 'English', code: 'en' },
-      { name: 'Spanish', code: 'es' },
+      { id: 1, name: LanguageName.ENGLISH, code: LanguageCode.EN },
+      { id: 2, name: LanguageName.SPANISH, code: LanguageCode.ES },
       'deepseek_local'
     );
 
@@ -257,10 +257,11 @@ describe('ArticleTranslationStrategy', () => {
       batchSize: 5,
       enableQualityControl: true,
       enableTranslationMemory: true,
-      fallbackTools: ['deepseek_local'],
+      fallbackTools: [TranslateToolEnum.DEEPSEEK_LOCAL],
       retryAttempts: 3,
       preserveCodeBlocks: true,
-      preserveFormatting: true
+      preserveFormatting: true,
+      retryWithDifferentTool: true
     });
   });
 
@@ -291,10 +292,11 @@ describe('ArticleTranslationService', () => {
       batchSize: 5,
       enableQualityControl: true,
       enableTranslationMemory: true,
-      fallbackTools: ['deepseek_local'],
+      fallbackTools: [TranslateToolEnum.DEEPSEEK_LOCAL],
       retryAttempts: 3,
       preserveCodeBlocks: true,
       preserveFormatting: true,
+      retryWithDifferentTool: true,
       databaseEnabled: false,
       loggingEnabled: false,
       autoSave: false,

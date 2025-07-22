@@ -1,4 +1,4 @@
-import { LanguageItem } from '../types/LanguageTypes';
+import { LanguageItem } from '@/entityTypes/commonType';
 
 /**
  * Interface for translation quality metrics

@@ -1,8 +1,10 @@
 import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
-import { Article } from '@/model/Article.model';
-import { VideoDownloadTask } from '@/model/VideoDownloadTask.model';
-import { TaskResult } from '@/model/TaskResult.model';
+import { ArticleModel } from '@/model/Article.model';
+import { VideoDownloadTaskModel } from '@/model/VideoDownloadTask.model';
+import { TaskResultModel } from '@/model/TaskResult.model'; 
 import { ScheduleTaskModule } from '@/modules/ScheduleTaskModule';
+import { TaskType } from '@/entity/ScheduleTask.entity';
+import { VideoDownloadTaskEntity } from '@/entity/VideoDownloadTask.entity';
 
 // Mock DB setup/teardown if needed (replace with real in-memory DB setup if available)
 const clearDb = async () => {
@@ -21,28 +23,35 @@ describe('Database CRUD Operations', () => {
     let articleId: number;
     test('Create, Read, Update, Delete', async () => {
       // Create
-      const article = await Article.create({
+      const articleModel = new ArticleModel(':memory:');
+      const articleId = await articleModel.saveArticle({
         title: 'Test Article',
-        content: 'Test content',
-        author: 'Tester',
-        language: 'en',
+        originalContent: 'Test content',
+        sourceUrl: 'http://test.com',
+        contentHash: 'test-hash',
+        sourceLanguage: 'en',
       });
-      articleId = article.id;
       expect(articleId).toBeGreaterThan(0);
 
       // Read
-      const found = await Article.findById(articleId);
+      const found = await articleModel.getArticleById(articleId);
       expect(found).not.toBeNull();
       expect(found?.title).toBe('Test Article');
 
       // Update
-      await Article.update(articleId, { title: 'Updated Title' });
-      const updated = await Article.findById(articleId);
+      await articleModel.saveArticle({
+        id: articleId,
+        title: 'Updated Title',
+        originalContent: 'Test content',
+        sourceUrl: 'http://test.com',
+        contentHash: 'test-hash',
+      });
+      const updated = await articleModel.getArticleById(articleId);
       expect(updated?.title).toBe('Updated Title');
 
       // Delete
-      await Article.delete(articleId);
-      const deleted = await Article.findById(articleId);
+      await articleModel.deleteArticle(articleId);
+      const deleted = await articleModel.getArticleById(articleId);
       expect(deleted).toBeNull();
     });
   });
@@ -51,28 +60,27 @@ describe('Database CRUD Operations', () => {
     let taskId: number;
     test('Create, Read, Update, Delete', async () => {
       // Create
-      const task = await VideoDownloadTask.create({
-        name: 'Test Video',
-        url: 'http://test.com/video.mp4',
-        status: 'pending',
-      });
-      taskId = task.id;
+      const videoDownloadTaskModel = new VideoDownloadTaskModel(':memory:');
+      const task = new VideoDownloadTaskEntity();
+      task.task_name = 'Test Video';
+      task.platform = 'youtube';
+      task.savepath = '/tmp';
+      task.status = 0;
+      const taskId = await videoDownloadTaskModel.saveVideoDownloadTask(task);
       expect(taskId).toBeGreaterThan(0);
 
       // Read
-      const found = await VideoDownloadTask.findById(taskId);
+      const found = await videoDownloadTaskModel.getVideoDownloadTask(taskId);
       expect(found).not.toBeNull();
-      expect(found?.name).toBe('Test Video');
+      expect(found?.task_name).toBe('Test Video');
 
       // Update
-      await VideoDownloadTask.update(taskId, { status: 'complete' });
-      const updated = await VideoDownloadTask.findById(taskId);
-      expect(updated?.status).toBe('complete');
+      await videoDownloadTaskModel.updateVideoDownloadTaskStatus(taskId, 1);
+      const updated = await videoDownloadTaskModel.getVideoDownloadTask(taskId);
+      expect(updated?.status).toBe(1);
 
-      // Delete
-      await VideoDownloadTask.delete(taskId);
-      const deleted = await VideoDownloadTask.findById(taskId);
-      expect(deleted).toBeNull();
+      // Note: No delete method available in VideoDownloadTaskModel
+      // The model doesn't provide a delete method
     });
   });
 
@@ -80,28 +88,25 @@ describe('Database CRUD Operations', () => {
     let resultId: number;
     test('Create, Read, Update, Delete', async () => {
       // Create
-      const result = await TaskResult.create({
-        task_id: 1,
-        result: 'success',
-        details: 'All good',
+      const taskResultModel = new TaskResultModel(':memory:');
+      const resultId = await taskResultModel.saveTaskresult({
+        taskrun_id: 1,
+        url: 'http://test.com',
+        title: 'Test Result',
+        content: 'success',
+        lang: 'en',
       });
-      resultId = result.id;
       expect(resultId).toBeGreaterThan(0);
 
       // Read
-      const found = await TaskResult.findById(resultId);
-      expect(found).not.toBeNull();
-      expect(found?.result).toBe('success');
-
-      // Update
-      await TaskResult.update(resultId, { result: 'failed' });
-      const updated = await TaskResult.findById(resultId);
-      expect(updated?.result).toBe('failed');
+      const found = await taskResultModel.getTaskresultlist(1, 0, 10);
+      expect(found.Records.length).toBeGreaterThan(0);
+      expect(found.Records[0].content).toBe('success');
 
       // Delete
-      await TaskResult.delete(resultId);
-      const deleted = await TaskResult.findById(resultId);
-      expect(deleted).toBeNull();
+      await taskResultModel.deleteTaskResults(1);
+      const deleted = await taskResultModel.getTaskresultlist(1, 0, 10);
+      expect(deleted.Records.length).toBe(0);
     });
   });
 
@@ -114,7 +119,7 @@ describe('Database CRUD Operations', () => {
       // Create
       const id = await scheduleTaskModule.createSchedule({
         name: 'Test Schedule',
-        task_type: 1,
+        task_type: TaskType.SEARCH,
         task_id: 1,
         cron_expression: '0 0 * * *',
         is_active: true,
