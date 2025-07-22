@@ -740,6 +740,30 @@ export const constantRoutes: RouteRecordRaw[] = [
         },
         component: () => import('@/views/pages/monitoring/content-preview.vue'),
         children: [],
+      },
+      {
+        path: 'database-health',
+        name: 'monitoring_database_health',
+        meta: {
+          title: 'Database Health',
+          icon: 'mdi-database',
+          keepAlive: false,
+          visible: true,
+        },
+        component: () => import('@/views/pages/monitoring/database-health.vue'),
+        children: [],
+      },
+      {
+        path: 'processing-history',
+        name: 'monitoring_processing_history',
+        meta: {
+          title: 'Processing History',
+          icon: 'mdi-history',
+          keepAlive: false,
+          visible: true,
+        },
+        component: () => import('@/views/pages/monitoring/processing-history.vue'),
+        children: [],
       }
     ],
   },
