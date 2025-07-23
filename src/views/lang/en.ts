@@ -161,6 +161,7 @@ export default {
         login:"Login",
         login_out:"Login Out",
         system_setting:"System Setting",
+        platform_subtitle:"Social Marketing Platform",
     },
     extramodule:{
         extramoduleName:"Extra Module Name",

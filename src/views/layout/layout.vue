@@ -8,7 +8,7 @@
             <v-list class="py-4 mx-2 logo" nav>
                 <v-list-item :prepend-avatar="logo" class="mx-1" @click="gotodashborad()">
                     <v-list-item-title class="title">{{ appName }}</v-list-item-title>
-                    <v-list-item-subtitle>vue-material-admin</v-list-item-subtitle>
+                    <v-list-item-subtitle>{{ t('layout.platform_subtitle') }}</v-list-item-subtitle>
                 </v-list-item>
             </v-list>
             <v-divider></v-divider>

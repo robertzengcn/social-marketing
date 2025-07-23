@@ -153,6 +153,7 @@ export default {
         login:"登录",
         login_out:"退出登录",
         system_setting:"系统设置",
+        platform_subtitle:"社交营销平台",
     },
     extramodule:{
         extramoduleName:"额外模块名称",
