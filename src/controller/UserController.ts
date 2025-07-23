@@ -62,7 +62,7 @@ export class UserController {
                 tokenService.setValue(USERNAME, res.name)
                 tokenService.setValue(USERSDBPATH, userdataPath)
                 tokenService.setValue(USERLOGPATH, logPath)
-                tokenService.setValue(USERROLES, JSON.stringify(res.roles))
+                //tokenService.setValue(USERROLES, JSON.stringify(res.roles))
                 //const scraperModel = Scraperdb.getInstance(userdataPath);
                 //const dbdatapath=scraperModel.getdbpath(userdataPath)
                 // console.log(dbdatapath)
@@ -199,11 +199,13 @@ export class UserController {
         const tokenService = new Token()
         const email = tokenService.getValue(USEREMAIL)
         const name = tokenService.getValue(USERNAME)
-        const roles = JSON.parse(tokenService.getValue(USERROLES) || '[]')
+        // const listroles = tokenService.getValue(USERROLES)
+        // console.log(listroles)
+        // const roles = JSON.parse(tokenService.getValue(USERROLES)) || []
         const data:UserInfoType={
             name:name,
             email:email,
-            roles:roles
+            //roles:roles
 
         }
         return data;

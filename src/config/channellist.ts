@@ -138,3 +138,6 @@ export const SCHEDULER_RELOAD = 'scheduler:reload'
 export const CRON_VALIDATE = 'cron:validate'
 export const CRON_NEXT_RUN_TIME = 'cron:next_run_time'
 export const USER_CHECK_LOGIN='user:checklogin'
+
+// App Information Channels
+export const GET_APP_INFO='app:info'

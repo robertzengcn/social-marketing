@@ -7,13 +7,14 @@ import { SocialTaskResponse, SocialTaskInfoResponse, SocialTaskTypeResponse, Tag
 import { SocialTaskRun } from "@/modules/socialtaskrun"
 import { SocialTaskResult } from '@/modules/socialtaskResult'
 import { User } from '@/modules/user'
+import { MainProcessAppInfoModule } from '@/modules/MainProcessAppInfoModule'
 
 // import { ProxyApi } from '@/modules/proxy_api'
 // import { ProxyController } from '@/controller/proxy-controller'
 // import { ProxyParseItem } from '@/entityTypes/proxyType'
 import { CommonResponse } from "@/entityTypes/commonType"
 import { campaignEntity } from "@/entityTypes/campaign-type"
-import { OPENDIRECTORY, CHOOSEFILEDIALOG } from "@/config/channellist"
+import { OPENDIRECTORY, CHOOSEFILEDIALOG, GET_APP_INFO } from "@/config/channellist"
 
 
 export default function SyncMsg(mainWindow: BrowserWindow) {
@@ -268,8 +269,11 @@ export default function SyncMsg(mainWindow: BrowserWindow) {
     return res;
   })
 
-
-
+  ipcMain.handle(GET_APP_INFO, async () => {
+    const appInfo = new MainProcessAppInfoModule()
+    const res = await appInfo.getAppInfo()
+    return res
+  })
 
 
   ipcMain.handle(OPENDIRECTORY, async () => {

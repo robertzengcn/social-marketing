@@ -41,23 +41,23 @@ router.beforeEach(async (to, from, next: any) => {
     } else {
       // console.log(UserModule.roles)
       // Check whether the user has obtained his permission roles
-      try {
-        if (UserModule.roles.length === 0) {
-          UserModule.ResetToken()
-          console.log('user role empty, login failure')
-          next(`/login?redirect=${to.path}`)
-        } else {
+      // try {
+      //   if (UserModule.roles.length === 0) {
+      //     UserModule.ResetToken()
+      //     console.log('user role empty, login failure')
+      //     next(`/login?redirect=${to.path}`)
+      //   } else {
           
           next()
-        }
-      } catch (err) {
-        console.error(err)
-        // Remove token and redirect to login page
-        UserModule.ResetToken()
-        // Message.error('Has Error')
-        next(`/login?redirect=${to.path}`)
-        NProgress.done()
-      }
+      //   }
+      // } catch (err) {
+      //   console.error(err)
+      //   // Remove token and redirect to login page
+      //   UserModule.ResetToken()
+      //   // Message.error('Has Error')
+      //   next(`/login?redirect=${to.path}`)
+      //   NProgress.done()
+      // }
       // } else {
       //   next()
       // }

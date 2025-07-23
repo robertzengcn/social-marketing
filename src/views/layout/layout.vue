@@ -7,7 +7,7 @@
             @update:rail="navigationRail" :permanent="permanent" v-model="navState.menuVisible" style="position: fixed">
             <v-list class="py-4 mx-2 logo" nav>
                 <v-list-item :prepend-avatar="logo" class="mx-1" @click="gotodashborad()">
-                    <v-list-item-title class="title">Material UI</v-list-item-title>
+                    <v-list-item-title class="title">{{ appName }}</v-list-item-title>
                     <v-list-item-subtitle>vue-material-admin</v-list-item-subtitle>
                 </v-list-item>
             </v-list>
@@ -78,9 +78,9 @@
                         </v-badge>
                     </v-btn>
                     <v-btn variant="text" append-icon="mdi-chevron-down" class="mr-2">
-                        <v-avatar size="x-small" class="avatar mr-2">
+                        <!-- <v-avatar size="x-small" class="avatar mr-2">
                             <v-img :src="wxtx" alt="{{userName}}"></v-img>
-                        </v-avatar>
+                        </v-avatar> -->
                         <span v-if="!mainStore.isMobile">{{userName}}</span>
                         <v-menu activator="parent">
                             <v-list nav class="h_a_menu">
@@ -128,7 +128,7 @@
    
 </template>
 <script setup lang="ts">
-import logo from '@/assets/admin-logo.png';
+import logo from '@/assets/images/icon.png';
 import wxtx from '@/assets/wx.png';
 import { RouterView, useRouter } from 'vue-router';
 import Breadcrumbs from '@/views/components/breadcrumbs/breadcrumbs.vue';
@@ -142,6 +142,7 @@ import {receiveSystemMessage} from '@/views/api/layout'
 import {CommonDialogMsg} from "@/entityTypes/commonType"
 import NoticeSnackbar from '@/views/components/widgets/noticeSnackbar.vue';
 import {GetloginUserInfo} from '@/views/api/users'
+import { getAppName } from '@/views/api/app'
 
 
 // import {ref, watchEffect} from "vue";
@@ -150,6 +151,7 @@ const dialogStatus=ref(false)
 const noticeMessage=ref('')
 const noticeType=ref<NoticeType>('info')
 const userName=ref('')
+const appName=ref('Social Marketing')
 const snaptimeout=ref<number>(10000)
 // const dialogTitle=ref('')
 // const dialogContent=ref('')
@@ -220,6 +222,16 @@ onMounted(async () => {
         console.log(res)
         userName.value=res.name
     })
+    
+    // Load app name from backend
+    try {
+        const name = await getAppName()
+        appName.value = name
+    } catch (error) {
+        console.error('Failed to load app name:', error)
+        // Keep default value if loading fails
+    }
+    
     receiveSystemMessage((res:CommonDialogMsg)=>{
        
         //revice system message
