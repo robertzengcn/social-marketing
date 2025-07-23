@@ -10,7 +10,7 @@ export const constantRoutes: RouteRecordRaw[] = [
     name: 'Dashboard',
     meta: {
       visible: false,
-      title: 'Dashboard',
+      title: 'route.dashboard',
       icon: 'mdi-gauge',
     },
     component: Layout,
@@ -20,7 +20,7 @@ export const constantRoutes: RouteRecordRaw[] = [
         path: '/dashboard/home',
         name: 'home',
           meta: {
-              title: 'Home',
+              title: 'route.home',
               icon: 'mdi-alpha-s',
               keepAlive: false,
               visible: false,
@@ -35,7 +35,7 @@ export const constantRoutes: RouteRecordRaw[] = [
     name: 'system_setting',
     meta: {
       visible: false,
-      title: 'System Setting',
+      title: 'route.system_setting',
       icon: 'mdi-gauge',
     },
     component: Layout,
@@ -44,7 +44,7 @@ export const constantRoutes: RouteRecordRaw[] = [
         path: 'index',
         name: 'system_setting_index',
           meta: {
-              title: 'System Setting',
+              title: 'route.system_setting',
               icon: 'mdi-alpha-s',
               keepAlive: false,
               visible: true,
@@ -60,7 +60,7 @@ export const constantRoutes: RouteRecordRaw[] = [
     name: 'campaign',
     meta: {
       visible: true,
-      title: 'Campaign',
+      title: 'route.campaign',
       icon: 'mdi-cube-scan',
     },
     component: Layout,
@@ -70,7 +70,7 @@ export const constantRoutes: RouteRecordRaw[] = [
         component: () => import(/* webpackChunkName: "staff-edit" */ '@/views/pages/campaign/campaign.vue'),
         name: 'EditCampaign',
         meta: {
-          title: 'editCampaign',
+          title: 'route.edit_campaign',
           noCache: true,
           activeMenu: '/campaign/list',
           // hidden: true
@@ -82,7 +82,7 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: 'CampaignList',
         meta: {
           visible: true,
-          title: 'campaignList',
+          title: 'route.campaign_list',
           icon: 'list'
         }
       }
@@ -93,7 +93,7 @@ export const constantRoutes: RouteRecordRaw[] = [
     name: 'socialtask',
     meta: {
       // visible: true,
-      title: 'Social Task',
+      title: 'route.social_task',
       icon: 'mdi-cube-scan',
     },
     component: Layout,
@@ -103,7 +103,7 @@ export const constantRoutes: RouteRecordRaw[] = [
         component: () => import(/* webpackChunkName: "staff-edit" */ '@/views/pages/socialtask/socialtaskdetail.vue'),
         name: 'EditSocialtask',
         meta: {
-          title: 'Edit Socialtask',
+          title: 'route.edit_socialtask',
           noCache: true,
           activeMenu: '/socialtask/edit',
           // hidden: true
@@ -115,7 +115,7 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: 'CreateSocialtask',
         meta: {
 
-          title: 'Create Socialtask',
+          title: 'route.create_socialtask',
           noCache: true,
           activeMenu: '/socialtask/create',
           //   hidden: true
@@ -126,7 +126,7 @@ export const constantRoutes: RouteRecordRaw[] = [
         component: () => import(/* webpackChunkName: "staff-list" */ '@/views/pages/socialtask/socialtask.vue'),
         name: 'SocialtaskList',
         meta: {
-          title: 'socialtaskList',
+          title: 'route.socialtask_list',
           icon: 'list'
         }
       },
@@ -135,7 +135,7 @@ export const constantRoutes: RouteRecordRaw[] = [
         component: () => import(/* webpackChunkName: "staff-list" */ '@/views/pages/socialtask/socialtaskrun.vue'),
         name: 'Runtask',
         meta: {
-          title: 'Socialtask Run',
+          title: 'route.run_task',
           icon: 'list'
         }
       }, {
@@ -143,7 +143,7 @@ export const constantRoutes: RouteRecordRaw[] = [
         component: () => import(/* webpackChunkName: "staff-list" */ '@/views/pages/socialtask/socialtaskrunlist.vue'),
         name: 'Task-run-list',
         meta: {
-          title: 'Social task Run List',
+          title: 'route.task_run_list',
           icon: 'list'
         }
       },
@@ -152,7 +152,7 @@ export const constantRoutes: RouteRecordRaw[] = [
         component: () => import(/* webpackChunkName: "staff-list" */ '@/views/pages/socialtask/socialtaskresultlist.vue'),
         name: 'Task-result-list',
         meta: {
-          title: 'Social task Result List',
+          title: 'route.task_result_list',
           icon: 'list'
         }
       }
@@ -163,7 +163,7 @@ export const constantRoutes: RouteRecordRaw[] = [
     name: 'Socialaccount',
     meta: {
       visible: true,
-      title: 'Social Account',
+      title: 'route.social_account',
       icon: 'mdi-paw-off'
     },
     component: Layout,
@@ -174,7 +174,7 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: 'SocialAccount',
         meta: {
           visible: true,
-          title: 'Account List',
+          title: 'route.account_list',
           icon: 'list'
         }
       },
@@ -184,7 +184,7 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: 'editSocialAccount',
         meta: {
           visible: false,
-          title: 'Edit Account',
+          title: 'route.edit_account',
           icon: 'list'
         }
       },
@@ -194,7 +194,7 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: 'CreateSocialAccount',
         meta: {
           visible: false,
-          title: 'Add Account',
+          title: 'route.add_account',
           icon: 'list'
         }
       },
@@ -205,7 +205,7 @@ export const constantRoutes: RouteRecordRaw[] = [
     name: 'schedule',
     meta: {
       visible: true,
-      title: 'Schedule',
+      title: 'route.schedule',
       icon: 'mdi-clock-outline'
     },
     component: Layout,
@@ -216,7 +216,7 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: 'ScheduleList',
         meta: {
           visible: true,
-          title: 'Schedule List',
+          title: 'route.schedule_list',
           icon: 'list'
         }
       },
@@ -226,7 +226,7 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: 'CreateSchedule',
         meta: {
           visible: false,
-          title: 'Create Schedule',
+          title: 'route.create_schedule',
           icon: 'add'
         }
       },
@@ -236,7 +236,7 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: 'EditSchedule',
         meta: {
           visible: false,
-          title: 'Edit Schedule',
+          title: 'route.edit_schedule',
           icon: 'edit'
         }
       },
@@ -246,7 +246,7 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: 'ScheduleDetail',
         meta: {
           visible: false,
-          title: 'Schedule Detail',
+          title: 'route.schedule_detail',
           icon: 'view'
         }
       }
@@ -257,7 +257,7 @@ export const constantRoutes: RouteRecordRaw[] = [
     name: 'Proxy',
     meta: {
       visible: true,
-      title: 'Proxy',
+      title: 'route.proxy',
       icon: 'mdi-paw-off'
     },
     component: Layout, 
@@ -268,7 +268,7 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: 'Proxylist',
         meta: {
           visible: true,
-          title: 'Proxy List',
+          title: 'route.proxy_list',
           icon: 'list'
         }
       },
@@ -278,7 +278,7 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: 'editProxy',
         meta: {
           visible: false,
-          title: 'Edit Proxy',
+          title: 'route.edit_proxy',
           icon: 'list'
         }
       },
@@ -288,7 +288,7 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: 'AddProxy',
         meta: {
           visible: false,
-          title: 'Add Proxy',
+          title: 'route.add_proxy',
           icon: 'list'
         }
       },
@@ -298,7 +298,7 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: 'ParseProxy',
         meta: {
           visible: true,
-          title: 'Parse Proxy',
+          title: 'route.parse_proxy',
           icon: 'list'
         }
       }
@@ -309,7 +309,7 @@ export const constantRoutes: RouteRecordRaw[] = [
     name: 'Modules',
     meta: {
       visible: true,
-      title: 'Modules',
+      title: 'route.modules',
       icon: 'mdi-paw-off'
     },
     component: Layout, 
@@ -320,7 +320,7 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: 'Moduleslist',
         meta: {
           visible: true,
-          title: 'Modules List',
+          title: 'route.modules_list',
           icon: 'list'
         }
       }
@@ -331,7 +331,7 @@ export const constantRoutes: RouteRecordRaw[] = [
     name: 'Video',
     meta: {
       visible: true,
-      title: 'Video',
+      title: 'route.video',
       icon: 'mdi-paw-off'
     },
     component: Layout, 
@@ -342,7 +342,7 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: 'Videodownload',
         meta: {
           visible: true,
-          title: 'Video Download',
+          title: 'route.video_download',
           icon: 'list'
         }
       },
@@ -352,7 +352,7 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: 'VideodownloadTasklist',
         meta: {
           visible: true,
-          title: 'Video Download Task List',
+          title: 'route.video_download_task_list',
           icon: 'list'
         }
       },
@@ -362,7 +362,7 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: 'VideoList',
         meta: {
           visible: false,
-          title: 'Video List',
+          title: 'route.video_list',
           icon: 'list'
         }
       },
@@ -372,7 +372,7 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: 'VideoDetail',
         meta: {
           visible: false,
-          title: 'Video Detail',
+          title: 'route.video_detail',
           icon: 'list'
         }
       },
@@ -382,7 +382,7 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: 'VideoPublishList',
         meta: {
           visible: true,
-          title: 'Video Publish Records',
+          title: 'route.video_publish_records',
           icon: 'list'
         }
       }
@@ -393,7 +393,7 @@ export const constantRoutes: RouteRecordRaw[] = [
     name: 'Search',
     meta: {
       visible: true,
-      title: 'Search',
+      title: 'route.search',
       icon: 'mdi-paw-off'
     },
     component: Layout, 
@@ -404,7 +404,7 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: 'Searchform',
         meta: {
           visible: true,
-          title: 'Search Scraper',
+          title: 'route.search_scraper',
           icon: 'list'
         }
       },
@@ -414,7 +414,7 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: 'Searchtasklist',
         meta: {
           visible: true,
-          title: 'Search Task list',
+          title: 'route.search_task_list',
           icon: 'list'
         }
       },
@@ -424,7 +424,7 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: 'Searchtaskdetail',
         meta: {
           visible: false,
-          title: 'Search Task Detail',
+          title: 'route.search_task_detail',
           icon: 'list'
         }
       }
@@ -435,7 +435,7 @@ export const constantRoutes: RouteRecordRaw[] = [
     name: 'Email_Extraction',
     meta: {
       visible: true,
-      title: 'Email Extraction',
+      title: 'route.email_extraction',
       icon: 'mdi-paw-off'
     },
     component: Layout, 
@@ -446,7 +446,7 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: 'Email_Extraction_Form',
         meta: {
           visible: true,
-          title: 'Email Extraction',
+          title: 'route.email_extraction_form',
           icon: 'list'
         }
       },
@@ -456,7 +456,7 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: 'Email_Extraction_list',
         meta: {
           visible: true,
-          title: 'Email Extraction Task list',
+          title: 'route.email_extraction_task_list',
           icon: 'list'
         }
       },
@@ -466,7 +466,7 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: 'Email_Extraction_Task_Detail',
         meta: {
           visible: false,
-          title: 'Email Extraction Detail',
+          title: 'route.email_extraction_detail',
           icon: 'list'
         }
       }
@@ -477,7 +477,7 @@ export const constantRoutes: RouteRecordRaw[] = [
     name: 'Email_Marketing',
     meta: {
       visible: true,
-      title: 'Email Marketing',
+      title: 'route.email_marketing',
       icon: 'mdi-paw-off'
     },
     component: Layout, 
@@ -488,7 +488,7 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: 'BUCK_Email_TASK_LIST',
         meta:   {
           visible: true,
-          title: 'Bulk email task list',
+          title: 'route.bulk_email_task_list',
           icon: 'list'
         }
       },
@@ -498,7 +498,7 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: 'BUCK_Email_TASK_LOG_LIST',
         meta:   {
           visible: false,
-          title: 'email send log',
+          title: 'route.email_send_log',
           icon: 'list'
         }
       },
@@ -508,7 +508,7 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: 'Email_BUCK_SEND',
         meta: {
           visible: false,
-          title: 'Sending bulk emails',
+          title: 'route.sending_bulk_emails',
           icon: 'list'
         }
       },
@@ -518,7 +518,7 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: 'Email_Marketing_Template_List',
         meta: {
           visible: true,
-          title: 'Email Template',
+          title: 'route.email_template',
           icon: 'list'
         }
       },
@@ -528,7 +528,7 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: 'Email_Marketing_Template_Detail',
         meta: {
           visible: false,
-          title: 'Email Template',
+          title: 'route.email_template_detail',
           icon: 'list'
         }
       },
@@ -538,7 +538,7 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: 'Email_Marketing_Template_Create',
         meta: {
           visible: false,
-          title: 'Create Email Template',
+          title: 'route.create_email_template',
           icon: 'list'
         }
       },
@@ -547,7 +547,7 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: 'Email_Marketing_Filter_LIST',
         meta: {
           visible: true,
-          title: 'Email Filter',
+          title: 'route.email_filter',
           icon: 'list'
         },
         component: () => import(/* webpackChunkName: "staff-list" */ '@/views/pages/emailfilter/list.vue'),
@@ -558,7 +558,7 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: 'Email_Marketing_Filter_Create',
         meta: {
           visible: false,
-          title: 'Email Filter Create',
+          title: 'route.email_filter_create',
           icon: 'list'
         },
         component: () => import(/* webpackChunkName: "staff-list" */ '@/views/pages/emailfilter/filterdetail.vue'),
@@ -569,7 +569,7 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: 'Email_Marketing_Filter_Detail',
         meta: {
           visible: false,
-          title: 'Email Filter Edit',
+          title: 'route.email_filter_edit',
           icon: 'list'
         },
         component: () => import(/* webpackChunkName: "staff-list" */ '@/views/pages/emailfilter/filterdetail.vue'),
@@ -580,7 +580,7 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: 'Email_Marketing_Service_LIST',
         meta: {
           visible: true,
-          title: 'Email Service',
+          title: 'route.email_service',
           icon: 'list'
         },
         component: () => import(/* webpackChunkName: "staff-list" */ '@/views/pages/emailservice/list.vue'),
@@ -591,7 +591,7 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: 'Email_Marketing_Service_Create',
         meta: {
           visible: false,
-          title: 'Email Service Create',
+          title: 'route.email_service_create',
           icon: 'list'
         },
         component: () => import(/* webpackChunkName: "staff-list" */ '@/views/pages/emailservice/servicedetail.vue'),
@@ -602,7 +602,7 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: 'Email_Marketing_Service_Detail',
         meta: {
           visible: false,
-          title: 'Email Service Edit',
+          title: 'route.email_service_edit',
           icon: 'list'
         },
         component: () => import(/* webpackChunkName: "staff-list" */ '@/views/pages/emailservice/servicedetail.vue'),
@@ -615,7 +615,7 @@ export const constantRoutes: RouteRecordRaw[] = [
     path: '/login',
     name: 'login',
     meta: {
-      title: 'Login',
+      title: 'route.login',
       icon: 'mdi-shield-account',
       visible: false,
     },
@@ -625,14 +625,14 @@ export const constantRoutes: RouteRecordRaw[] = [
   {
     path: '/404',
     name: '404',
-    meta: { keepAlive: false, title: 'Not found', icon: 'mdi-paw-off', visible: false },
+    meta: { keepAlive: false, title: 'route.not_found', icon: 'mdi-paw-off', visible: false },
     component: Layout,
     children: [
       {
         path: '',
         name: 'd404',
         meta: {
-          title: 'Not found',
+          title: 'route.not_found',
           visible: false,
         },
         component: () => import('@/views/feedback/no.vue'),

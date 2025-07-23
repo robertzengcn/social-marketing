@@ -14,18 +14,18 @@
             <v-divider></v-divider>
 
             <v-list nav class="mx-2">
-                <v-list-subheader>Dashboard</v-list-subheader>
+                <v-list-subheader>{{ t('route.dashboard') }}</v-list-subheader>
                 <template v-for="(item, key) in navState.routes" :key="key">
                     <v-list-item v-if="item.meta?.visible && !item.children" :prepend-icon="(item.meta?.icon as any)"
-                        :title="(item.meta?.title as any)" :to="{ name: item.name }" class="mx-1"
+                        :title="getTranslatedTitle(item.meta?.title as string)" :to="{ name: item.name }" class="mx-1"
                         active-class="nav_active"></v-list-item>
 
                     <v-list-group v-if="item.meta?.visible && item.children && item.children.length > 0" class="mx-1">
                         <template v-slot:activator="{ props }">
-                            <v-list-item v-bind="props" :prepend-icon="item.meta.icon" :title="item.meta.title as string" />
+                            <v-list-item v-bind="props" :prepend-icon="item.meta.icon" :title="getTranslatedTitle(item.meta.title as string)" />
                         </template>
                         <template v-for="(row, i) in item.children">
-                            <v-list-item v-if="(row.meta?.visible as any)" :title="(row.meta?.title as any)"
+                            <v-list-item v-if="(row.meta?.visible as any)" :title="getTranslatedTitle(row.meta?.title as string)"
                                 :prepend-icon="navState.isMini ? (row.meta?.icon as any) : ''" :key="i"
                                 :to="{ name: row.name }" />
                         </template>
@@ -216,6 +216,13 @@ const Usersignout = async () => {
     console.log("signout")
     await Signout()
     router.push('/login')
+}
+
+const getTranslatedTitle = (title: string): string => {
+    if (title && title.startsWith('route.')) {
+        return t(title);
+    }
+    return title;
 }
 onMounted(async () => {
     await GetloginUserInfo().then(res=>{
