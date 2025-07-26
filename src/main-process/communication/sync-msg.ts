@@ -12,9 +12,10 @@ import { MainProcessAppInfoModule } from '@/modules/MainProcessAppInfoModule'
 // import { ProxyApi } from '@/modules/proxy_api'
 // import { ProxyController } from '@/controller/proxy-controller'
 // import { ProxyParseItem } from '@/entityTypes/proxyType'
-import { CommonResponse } from "@/entityTypes/commonType"
+import { CommonMessage, CommonResponse } from "@/entityTypes/commonType"
 import { campaignEntity } from "@/entityTypes/campaign-type"
 import { OPENDIRECTORY, CHOOSEFILEDIALOG, GET_APP_INFO } from "@/config/channellist"
+import { AppInfo } from '@/modules/AppInfoModule'
 
 
 export default function SyncMsg(mainWindow: BrowserWindow) {
@@ -272,7 +273,12 @@ export default function SyncMsg(mainWindow: BrowserWindow) {
   ipcMain.handle(GET_APP_INFO, async () => {
     const appInfo = new MainProcessAppInfoModule()
     const res = await appInfo.getAppInfo()
-    return res
+    const result:CommonMessage<AppInfo> = {
+      status: true,
+      msg: "get app info success",
+      data: res
+    }
+    return result
   })
 
 

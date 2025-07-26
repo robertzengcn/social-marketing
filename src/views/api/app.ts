@@ -2,6 +2,7 @@ import { windowInvoke } from '@/views/utils/apirequest'
 import { GET_APP_INFO } from "@/config/channellist"
 import { AppInfo } from '@/modules/AppInfoModule'
 
+
 export async function getAppInfo(): Promise<AppInfo> {
   const result = await windowInvoke(GET_APP_INFO)
   return result
