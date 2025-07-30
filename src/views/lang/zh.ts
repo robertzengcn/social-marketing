@@ -46,6 +46,12 @@ export default {
         upgrading:"升级中",
         log_content:"日志内容",
         optional:"可选",
+        clear_filters:"清除筛选",
+        view:"查看",
+        delete:"删除",
+        create:"创建",
+        required:"此字段为必填项",
+        invalid_url:"请输入有效的URL"
     },
     home:{
         search:"搜索提取",
@@ -463,5 +469,80 @@ export default {
         on_success:"成功时",
         on_completion:"完成时",
         on_failure:"失败时"
+    },
+    article:{
+        list:{
+            title:"文章列表",
+            create_new:"创建新文章",
+            search_placeholder:"搜索文章...",
+            status:"状态",
+            language:"语言",
+            date_range:"日期范围",
+            translate:"翻译",
+            publish:"发布",
+            source_url:"源URL",
+            // title:"标题",
+            description:"描述",
+            delete_confirm_title:"确认删除",
+            delete_confirm_message:"您确定要删除这篇文章吗？此操作无法撤销。",
+            headers:{
+                id:"ID",
+                title:"标题",
+                status:"状态",
+                source_language:"源语言",
+                target_language:"目标语言",
+                created_at:"创建时间"
+            },
+            stats:{
+                total:"总计",
+                scraped:"已抓取",
+                translated:"已翻译",
+                published:"已发布"
+            }
+        },
+        status:{
+            scraped:"已抓取",
+            translating:"翻译中",
+            translated:"已翻译",
+            publishing:"发布中",
+            published:"已发布"
+        },
+        scrape:{
+            title:"文章抓取",
+            url_label:"文章URL",
+            url_placeholder:"输入要抓取的文章URL",
+            scrape_button:"开始抓取",
+            configuration:"配置选项",
+            target_language:"目标语言",
+            strategy:"抓取策略",
+            extract_code_blocks:"提取代码块",
+            extract_images:"提取图片",
+            extract_metadata:"提取元数据",
+            timeout:"超时时间",
+            batch_title:"批量抓取",
+            batch_urls_label:"批量URL",
+            batch_urls_placeholder:"输入多个URL，每行一个",
+            batch_scrape_button:"批量抓取",
+            recent_results:"最近抓取结果",
+            view_article:"查看文章",
+            statistics:"抓取统计",
+            progress_title:"抓取进度",
+            progress_initiating:"正在初始化...",
+            progress_scraping:"正在抓取文章...",
+            progress_completed:"抓取完成",
+            progress_error:"抓取失败",
+            progress_batch_initiating:"正在初始化批量抓取...",
+            progress_batch_scraping:"正在抓取 {url} ({current}/{total})",
+            progress_batch_completed:"批量抓取完成",
+            progress_batch_error:"批量抓取失败",
+            strategy_auto:"自动检测",
+            strategy_generic:"通用策略",
+            stats:{
+                total_scraped:"总抓取数",
+                success_rate:"成功率",
+                failed:"失败数",
+                today:"今日抓取"
+            }
+        }
     }
 }

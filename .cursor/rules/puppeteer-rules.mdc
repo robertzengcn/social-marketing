@@ -1,0 +1,81 @@
+---
+description: Enforces the use of browserManager for puppeteer browser management to ensure automatic browser installation and consistent browser handling across the application.
+globs: **/*.{ts,js,tsx,jsx}
+alwaysApply: true
+---
+
+- **Browser Management Integration:**
+  - **Always import browserManager** when using puppeteer for browser operations
+  - Use `browserManager.createLaunchOptions()` instead of manually creating launch options
+  - This ensures automatic browser installation and consistent fallback strategies
+
+- **Required Import Pattern:**
+  ```typescript
+  // ✅ DO: Import browserManager with puppeteer
+  import { Browser, Page, LaunchOptions } from 'puppeteer';
+  import * as puppeteer from 'puppeteer';
+  import { browserManager } from '@/modules/browserManager';
+  ```
+
+- **Browser Launch Pattern:**
+  ```typescript
+  // ✅ DO: Use browserManager for launch options
+  const launchOptions = await browserManager.createLaunchOptions({
+    headless: true,
+    args: [
+      '--disable-accelerated-2d-canvas',
+      '--disable-gpu',
+      '--start-maximized'
+    ]
+  });
+  
+  const browser = await puppeteer.launch(launchOptions);
+  ```
+
+- **❌ DON'T: Direct puppeteer launch without browserManager**
+  ```typescript
+  // ❌ DON'T: Manual launch options without browser management
+  const browser = await puppeteer.launch({
+    headless: true,
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage'
+    ]
+  });
+  ```
+
+- **BrowserManager Benefits:**
+  - **Automatic Installation**: Automatically installs Chrome if not available
+  - **Fallback Strategy**: Implements comprehensive fallback (local → cached → install → system → bundled)
+  - **Consistent Configuration**: Provides consistent launch options across the application
+  - **Error Handling**: Gracefully handles browser installation errors
+
+- **Integration Examples:**
+  - **Article Scraping**: See [ArticleScraperImpl.ts](mdc:src/strategy/scraping/ArticleScraperImpl.ts)
+  - **Video Publishing**: See [VideoPublishStrategy.ts](mdc:src/strategy/VideoPublishStrategy.ts)
+  - **Proxy Management**: See [ProxyManager.ts](mdc:src/strategy/scraping/ProxyManager.ts)
+
+- **BrowserManager Configuration:**
+  - Default Chrome build ID: `136.0.7103.94`
+  - Cache directory: `~/.cache/puppeteer`
+  - Environment variable: `LOCAL_BROWSER_EXCUTE_PATH` for custom browser path
+  - See [browserManager.ts](mdc:src/modules/browserManager.ts) for full configuration options
+
+- **When to Use BrowserManager:**
+  - **Always** when launching puppeteer browsers
+  - **Always** when creating browser instances for scraping
+  - **Always** when setting up browser automation
+  - **Always** when configuring proxy browsers
+
+- **Exception Handling:**
+  - BrowserManager handles installation failures gracefully
+  - Falls back to system Chrome if installation fails
+  - Uses Puppeteer bundled Chrome as last resort
+  - Logs detailed information about browser detection and installation
+
+- **Performance Considerations:**
+  - BrowserManager caches installed browsers for faster subsequent launches
+  - Health checks ensure browser availability
+  - Automatic cleanup of failed installations
+  - Optimized for both development and production environments

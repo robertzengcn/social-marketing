@@ -1,5 +1,6 @@
 import { VideoCaptionImpl } from '@/modules/interface/VideoCaptionImpl';
 import { Whisper } from '@/modules/videoCaption/Whisper';
+import { WhisperCpp } from '@/modules/videoCaption/WhisperCpp';
 import { ExtraModuleController } from '@/controller/extramoduleController'
 import { CustomError } from '@/modules/customError'
 export class VideoCaptionFactory {
@@ -11,9 +12,10 @@ export class VideoCaptionFactory {
         switch (toolName) {
             case 'whisper':
                 return new Whisper();
+            case 'whisper-cpp':
+                return new WhisperCpp();
             // Add more cases for other tools as needed
             default:
-
                 return new Whisper();
         }
     }

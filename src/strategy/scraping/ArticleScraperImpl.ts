@@ -15,6 +15,7 @@ import { CodeBlockExtractor } from './CodeBlockExtractor';
 import { ScrapingErrorHandler, ScrapingErrorType } from './ScrapingErrorHandler';
 import { RateLimiter } from './RateLimiter';
 import { ProxyManager, ProxyConfig } from './ProxyManager';
+import { browserManager } from '@/modules/browserManager';
 
 export interface ScrapingOptions {
   useProxy?: boolean;
@@ -241,18 +242,18 @@ export class ArticleScraperImpl implements ArticleScraper {
           }
         );
       } else {
-        this.browser = await puppeteer.launch({
+        // Use browserManager to handle browser installation and launch
+        const launchOptions = await browserManager.createLaunchOptions({
           headless: true,
           args: [
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-            '--disable-dev-shm-usage',
             '--disable-accelerated-2d-canvas',
             '--disable-gpu',
             '--start-maximized',
             '--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
           ]
         });
+        
+        this.browser = await puppeteer.launch(launchOptions);
       }
 
       this.page = await this.browser.newPage();

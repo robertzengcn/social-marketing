@@ -357,43 +357,59 @@ const scrapeArticle = async () => {
       }
     }, 200);
 
-    // TODO: Implement actual scraping API call
-    // const result = await articleScraperApi.scrapeArticle({
-    //   url: form.url,
-    //   targetLanguage: form.targetLanguage,
-    //   strategy: form.strategy,
-    //   extractCodeBlocks: form.extractCodeBlocks,
-    //   extractImages: form.extractImages,
-    //   extractMetadata: form.extractMetadata,
-    //   timeout: form.timeout
-    // });
-
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 2000));
-
-    clearInterval(progressInterval);
-    progressValue.value = 100;
-    progressMessage.value = t('article.scrape.progress_completed');
-
-    // Mock result
-    const result = {
-      id: Date.now(),
-      success: true,
-      title: 'Sample Article Title',
+    // Send scraping request to backend
+    const request = {
       url: form.url,
-      articleId: Math.floor(Math.random() * 1000) + 1,
-      timestamp: new Date()
+      targetLanguage: form.targetLanguage,
+      strategy: form.strategy,
+      extractCodeBlocks: form.extractCodeBlocks,
+      extractImages: form.extractImages,
+      extractMetadata: form.extractMetadata,
+      timeout: form.timeout
     };
 
-    recentResults.value.unshift(result);
+    // Use the API to send the request
+    window.api.send('article:scrape:api', JSON.stringify(request));
 
-    // Reset form
-    form.url = '';
+    // Listen for the response
+    window.api.receive('article:scrape:message', (message) => {
+      clearInterval(progressInterval);
+      progressValue.value = 100;
+      progressMessage.value = t('article.scrape.progress_completed');
 
-    setTimeout(() => {
-      showProgress.value = false;
-      progressValue.value = 0;
-    }, 1000);
+      const response = JSON.parse(message);
+      
+      if (response.status) {
+        const result = response.data.result;
+        recentResults.value.unshift({
+          id: result.id,
+          success: result.success,
+          title: result.title || form.url,
+          url: form.url,
+          articleId: result.articleId,
+          timestamp: new Date()
+        });
+
+        // Reset form
+        form.url = '';
+      } else {
+        // Handle error
+        const errorResult = {
+          id: Date.now(),
+          success: false,
+          url: form.url,
+          error: response.data.content || 'Unknown error',
+          timestamp: new Date()
+        };
+        
+        recentResults.value.unshift(errorResult);
+      }
+
+      setTimeout(() => {
+        showProgress.value = false;
+        progressValue.value = 0;
+      }, 1000);
+    });
 
   } catch (error) {
     console.error('Scraping failed:', error);
@@ -434,45 +450,60 @@ const scrapeBatch = async () => {
   progressMessage.value = t('article.scrape.progress_batch_initiating');
   
   try {
-    for (let i = 0; i < urls.length; i++) {
-      const url = urls[i];
-      progressValue.value = Math.round((i / urls.length) * 100);
-      progressMessage.value = t('article.scrape.progress_batch_scraping', { url, current: i + 1, total: urls.length });
+    // Send batch scraping request to backend
+    const request = {
+      urls: urls,
+      options: {
+        targetLanguage: form.targetLanguage,
+        strategy: form.strategy,
+        extractCodeBlocks: form.extractCodeBlocks,
+        extractImages: form.extractImages,
+        extractMetadata: form.extractMetadata,
+        timeout: form.timeout
+      }
+    };
+
+    // Use the API to send the batch request
+    window.api.send('article:batch:scrape', JSON.stringify(request));
+
+    // Listen for the response
+    window.api.receive('article:scrape:message', (message) => {
+      progressValue.value = 100;
+      progressMessage.value = t('article.scrape.progress_batch_completed');
+
+      const response = JSON.parse(message);
       
-      // TODO: Implement batch scraping
-      // const result = await articleScraperApi.scrapeArticle({
-      //   url,
-      //   targetLanguage: form.targetLanguage,
-      //   strategy: form.strategy,
-      //   extractCodeBlocks: form.extractCodeBlocks,
-      //   extractImages: form.extractImages,
-      //   extractMetadata: form.extractMetadata,
-      //   timeout: form.timeout
-      // });
-      
-      // Simulate processing time
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Mock result
-      const result = {
-        id: Date.now() + i,
-        success: Math.random() > 0.2, // 80% success rate
-        title: `Article ${i + 1}`,
-        url,
-        articleId: Math.floor(Math.random() * 1000) + 1,
-        timestamp: new Date()
-      };
-      
-      recentResults.value.unshift(result);
-    }
-    
-    progressValue.value = 100;
-    progressMessage.value = t('article.scrape.progress_batch_completed');
-    
-    setTimeout(() => {
-      showProgress.value = false;
-      progressValue.value = 0;
-    }, 1000);
+      if (response.status) {
+        const results = response.data.results;
+        results.forEach((result: any) => {
+          recentResults.value.unshift({
+            id: result.id,
+            success: result.success,
+            title: result.title || result.url,
+            url: result.url,
+            articleId: result.articleId,
+            error: result.error,
+            timestamp: new Date()
+          });
+        });
+      } else {
+        // Handle batch error
+        const errorResult = {
+          id: Date.now(),
+          success: false,
+          url: 'Batch processing',
+          error: response.data.content || 'Batch processing failed',
+          timestamp: new Date()
+        };
+        
+        recentResults.value.unshift(errorResult);
+      }
+
+      setTimeout(() => {
+        showProgress.value = false;
+        progressValue.value = 0;
+      }, 1000);
+    });
     
   } catch (error) {
     console.error('Batch scraping failed:', error);

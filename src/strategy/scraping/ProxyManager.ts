@@ -1,4 +1,5 @@
 import { Browser, LaunchOptions } from 'puppeteer';
+import { browserManager } from '@/modules/browserManager';
 
 export interface ProxyConfig {
   host: string;
@@ -97,18 +98,16 @@ export class ProxyManager {
   async createBrowserWithProxy(proxy: ProxyConfig, options?: LaunchOptions): Promise<Browser> {
     const puppeteer = await import('puppeteer');
     
-    const launchOptions: LaunchOptions = {
+    // Use browserManager to handle browser installation and launch
+    const launchOptions = await browserManager.createLaunchOptions({
       headless: true,
       args: [
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-        '--disable-dev-shm-usage',
         '--disable-accelerated-2d-canvas',
         '--disable-gpu',
         '--start-maximized'
       ],
       ...options
-    };
+    });
 
     // Add proxy configuration
     const proxyArg = this.formatProxyArg(proxy);

@@ -15,6 +15,8 @@ import {registerEmailTemplateIpcHandlers} from "@/main-process/communication/ema
 import {registerSocialAccountIpcHandlers} from "@/main-process/communication/socialaccount-ipc";
 import {registerSystemSettingIpcHandlers} from "@/main-process/communication/systemSettingIpc";
 import {registerUserIpcHandlers} from "@/main-process/communication/userIpc";
+import {registerArticleIpcHandlers} from "@/main-process/communication/article-ipc";
+
 export function registerCommunicationIpcHandlers(win: BrowserWindow) {
     try{
     SyncMsg(win)
@@ -30,6 +32,7 @@ export function registerCommunicationIpcHandlers(win: BrowserWindow) {
     registerSocialAccountIpcHandlers(win)
     registerSystemSettingIpcHandlers()
     registerUserIpcHandlers()
+    registerArticleIpcHandlers()
     AsyncMsg()
     }catch(e){
         console.log("registerCommunicationIpcHandlers error:")

@@ -98,6 +98,15 @@ export const VIDEO_PUBLISH_RECORD_DELETE='video:publish:record:delete'
 export const VIDEO_PUBLISH_RECORD_LIST='video:publish:record:list'
 export const EMAILSEARCHTASK_ERROR_LOG_DOWNLOAD='email:search:task:error:log:download'
 export const SYSTEM_MESSAGE='system:message'
+
+// Article scraping channels
+export const ARTICLE_SCRAPE_API='article:scrape:api'
+export const ARTICLE_SCRAPE_MESSAGE='article:scrape:message'
+export const ARTICLE_LIST='article:list'
+export const ARTICLE_DETAIL='article:detail'
+export const ARTICLE_DELETE='article:delete'
+export const ARTICLE_BATCH_SCRAPE='article:batch:scrape'
+export const ARTICLE_SCRAPE_STATS='article:scrape:stats'
 export const RETRYSEARCHTASK='search:retry_task'
 export const CHOOSEFILEDIALOG='choose:file:dialog'
 

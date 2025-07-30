@@ -3,6 +3,7 @@ import * as puppeteer from 'puppeteer';
 //import { VideoPublishRecordEntity } from '@/entity/VideoPublishRecord.entity';
 import { VideoDownloadEntity } from '@/entity/VideoDownload.entity';
 import {VideoPublishResultType} from "@/entityTypes/videoPublishType"
+import { browserManager } from '@/modules/browserManager';
 
 export interface PublishOptions {
     title?: string;
@@ -31,17 +32,15 @@ export interface VideoPublishStrategy {
 
 export class BrowserFactory {
     static async createBrowser(options: PublishOptions): Promise<Browser> {
-        const launchOptions: LaunchOptions = {
+        // Use browserManager to handle browser installation and launch
+        const launchOptions = await browserManager.createLaunchOptions({
             headless: options.headless === false ? false : true,
             args: [
-                '--no-sandbox',
-                '--disable-setuid-sandbox',
-                '--disable-dev-shm-usage',
                 '--disable-accelerated-2d-canvas',
                 '--disable-gpu',
                 '--start-maximized' 
             ]
-        };
+        });
 
         return await puppeteer.launch(launchOptions);
     }

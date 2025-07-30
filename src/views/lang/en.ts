@@ -54,6 +54,12 @@ export default {
        upgrading:"upgrading",
        log_content:"log content",
        optional:"optional",
+       clear_filters:"Clear Filters",
+       view:"View",
+       delete:"Delete",
+       create:"Create",
+       required:"This field is required",
+       invalid_url:"Please enter a valid URL"
     },
     home:{
         search:"Search Extraction",
@@ -473,6 +479,82 @@ export default {
         on_success:"On Success",
         on_completion:"On Completion",
         on_failure:"On Failure"
+    },
+    article:{
+        list:{
+            title:"Article List",
+            create_new:"Create New Article",
+            search_placeholder:"Search articles...",
+            status:"Status",
+            language:"Language",
+            date_range:"Date Range",
+            translate:"Translate",
+            publish:"Publish",
+            source_url:"Source URL",
+            // title:"Title",
+            description:"Description",
+            delete_confirm_title:"Confirm Delete",
+            delete_confirm_message:"Are you sure you want to delete this article? This action cannot be undone.",
+            headers:{
+                id:"ID",
+                title:"Title",
+                status:"Status",
+                source_language:"Source Language",
+                target_language:"Target Language",
+                created_at:"Created At"
+            },
+            stats:{
+                total:"Total",
+                scraped:"Scraped",
+                translated:"Translated",
+                published:"Published"
+            }
+        },
+        status:{
+            scraped:"Scraped",
+            translating:"Translating",
+            translated:"Translated",
+            publishing:"Publishing",
+            published:"Published"
+        },
+        scrape:{
+            title:"Article Scraping",
+            url_label:"Article URL",
+            url_placeholder:"Enter the URL of the article to scrape",
+            scrape_button:"Start Scraping",
+            configuration:"Configuration Options",
+            target_language:"Target Language",
+            strategy:"Scraping Strategy",
+            extract_code_blocks:"Extract Code Blocks",
+            extract_images:"Extract Images",
+            extract_metadata:"Extract Metadata",
+            timeout:"Timeout",
+            batch_title:"Batch Scraping",
+            batch_urls_label:"Batch URLs",
+            batch_urls_placeholder:"Enter multiple URLs, one per line",
+            batch_scrape_button:"Batch Scrape",
+            recent_results:"Recent Scraping Results",
+            view_article:"View Article",
+            statistics:"Scraping Statistics",
+            progress_title:"Scraping Progress",
+            progress_initiating:"Initializing...",
+            progress_scraping:"Scraping article...",
+            progress_completed:"Scraping completed",
+            progress_error:"Scraping failed",
+            progress_batch_initiating:"Initializing batch scraping...",
+            progress_batch_scraping:"Scraping {url} ({current}/{total})",
+            progress_batch_completed:"Batch scraping completed",
+            progress_batch_error:"Batch scraping failed",
+            strategy_auto:"Auto Detect",
+            strategy_generic:"Generic Strategy",
+            stats:{
+                total_scraped:"Total Scraped",
+                success_rate:"Success Rate",
+                failed:"Failed",
+                today:"Today"
+            }
+        }
     }
+   
 
 }
