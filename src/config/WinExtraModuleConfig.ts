@@ -5,8 +5,8 @@ export const WinExtraModuleConfig:ExtraModule[]=[
         name:"youtube-dl",
         // description:"video download is a module that can download video from tiktok, Instagram and other platforms",
         packagename:"yt-dlp.exe",
-        version:"2025.09.23",
-        link:"https://github.com/yt-dlp/yt-dlp/releases/download/2025.09.23/yt-dlp.exe",
+        version:"2025.11.12",
+        link:"https://github.com/yt-dlp/yhttps://github.com/yt-dlp/yt-dlp/releases/download/2025.11.12/yt-dlp.exe",
         requirePy:false,
         ispip:false,
         requireFfmpeg:true
