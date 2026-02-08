@@ -16,17 +16,25 @@
 <script lang="ts" setup>
 import { ref, computed, watch } from 'vue';
 import { useRoute } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 
 const $route = useRoute();
+const { t } = useI18n();
 const routes = ref();
-const pageTitle = computed(() => $route.meta.title);
+const pageTitle = computed(() => {
+    const title = $route.meta.title as string;
+    if (title && title.startsWith('route.')) {
+        return t(title);
+    }
+    return title;
+});
 
 function init() {
     const { matched } = $route;
     if (matched[0].path === '/dashboard') {
         routes.value = [
             {
-                title: 'Dashboard',
+                title: t('route.dashboard'),
                 disabled: false,
                 href: '/dashboard',
             },
@@ -41,7 +49,7 @@ function init() {
                 href: '/dashboard',
             },
             {
-                title: matched[0].meta.title,
+                title: getTranslatedTitle(matched[0].meta.title as string),
                 disabled: true,
                 href: matched[0].path,
             },
@@ -52,14 +60,14 @@ function init() {
     matched.forEach((route, index) => {
         if (index === matched.length - 1) {
             routes.value.push({
-                title: route.meta.title,
+                title: getTranslatedTitle(route.meta.title as string),
                 exact: true,
                 disabled: false,
                 href: $route.path,
             });
         } else {
             routes.value.push({
-                title: route.meta.title,
+                title: getTranslatedTitle(route.meta.title as string),
                 exact: false,
                 disabled: true,
                 href: route.path,
@@ -68,8 +76,15 @@ function init() {
     });
     console.log(routes.value);
 }
+
+function getTranslatedTitle(title: string): string {
+    if (title && title.startsWith('route.')) {
+        return t(title);
+    }
+    return title;
+}
+
 init();
-watch($route, init);
 </script>
 <style lang="scss">
 .v-breadcrumbs__prepend {

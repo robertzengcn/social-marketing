@@ -1,8 +1,50 @@
 const path = require('path');
 const dotenv = require('dotenv');
-const { readdirSync, rmdirSync, statSync } = require('node:fs');
+const { readdirSync, rmdirSync, statSync, existsSync } = require('node:fs');
 const { join, normalize } = require('node:path');
 const { Walker, DepType } = require('flora-colossus');
+
+// Function to find the app bundle path
+function findAppBundlePath() {
+  console.log('=== Finding app bundle path ===');
+  const possiblePaths = [
+    'out/social-marketing-darwin-arm64/social-marketing.app',
+    'out/social-marketing-darwin-x64/social-marketing.app',
+    'out/social-marketing-darwin/social-marketing.app'
+  ];
+  
+  for (const appPath of possiblePaths) {
+    console.log(`Checking path: ${appPath}`);
+    if (existsSync(appPath)) {
+      console.log(`Found app bundle at: ${appPath}`);
+      return appPath;
+    }
+  }
+  
+  // If no specific path found, try to find any .app in out directory
+  try {
+    const outDir = 'out';
+    console.log(`Checking out directory: ${outDir}`);
+    if (existsSync(outDir)) {
+      const items = readdirSync(outDir);
+      console.log(`Out directory contents: ${items.join(', ')}`);
+      for (const item of items) {
+        const itemPath = path.join(outDir, item);
+        console.log(`Checking item: ${itemPath}`);
+        if (statSync(itemPath).isDirectory() && item.endsWith('.app')) {
+          console.log(`Found app bundle at: ${itemPath}`);
+          return itemPath;
+        }
+      }
+    }
+  } catch (error) {
+    console.log('Error searching for app bundle:', error.message);
+  }
+  
+  // Fallback to the default path
+  console.log('Using fallback path: social-marketing.app');
+  return 'social-marketing.app';
+}
 let nativeModuleDependenciesToPackage = [];
 const EXTERNAL_DEPENDENCIES = [
   'realm',
@@ -29,7 +71,8 @@ const EXTERNAL_DEPENDENCIES = [
 'mustache',
 'openai',
 'typeorm',
-'cheerio'
+'cheerio',
+// 'lzma-native' // Commented out due to build issues on macOS - not used in source code
 ];
 //import { ForgeConfig } from '@electron-forge/shared-types';
 // import { AutoUnpackNativesPlugin } from "@electron-forge/plugin-auto-unpack-natives";
@@ -40,6 +83,7 @@ dotenv.config({ path: path.resolve(__dirname, envFile) });
 module.exports={
   packagerConfig: {
     icon: './src/assets/images/icon',
+    name: process.env.APP_NAME || 'social-marketing',
     // asar: {
     //   // This ensures native modules are unpacked
     //   unpack: "**/node_modules/better-sqlite3/**",
@@ -160,11 +204,13 @@ module.exports={
       config: {
         format: 'ULFO',
         icon: './src/assets/images/icon.icns',
-        background: './src/assets/images/dmg-background.png',
+        name: process.env.APP_NAME || 'social-marketing',
         contents: [
           {
             x: 130,
-            y: 220
+            y: 220,
+            type: 'file',
+            path: findAppBundlePath()
           },
           {
             x: 410,
@@ -233,7 +279,8 @@ module.exports={
         }
       },
     },
-    {
+    // WiX maker only works on Windows
+    ...(process.platform === 'win32' ? [{
       name: '@electron-forge/maker-wix',
       config: {
         language: 1033,
@@ -297,7 +344,10 @@ module.exports={
           }
         ]
       }
-    }
+    }] : []),
+    // Note: @electron-forge/maker-portable doesn't exist
+    // If you need a portable executable, consider using @electron-forge/maker-zip
+    // or create a custom solution
   ],
   plugins: [
     {
@@ -327,6 +377,11 @@ module.exports={
           {
             entry: 'src/taskCode.ts',
             config: 'vite.taskCode.config.mjs'
+          },
+          // Add uninstaller build
+          {
+            entry: 'src/uninstaller/main.ts',
+            config: 'vite.uninstaller.config.mjs'
           },
           // {
           //   entry: 'src/buckEmail.ts',

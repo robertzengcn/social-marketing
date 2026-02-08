@@ -8,6 +8,7 @@ export const windowInvoke=async(channel:string,data?:object)=>{
     // console.log(data)
     // campaign:list
     const result =await window.api.invoke(channel, JSON.stringify(data)); 
+    
     if(!result){
         throw new Error("unknow error")
     }

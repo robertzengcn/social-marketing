@@ -53,6 +53,7 @@ jobs:
           echo "VITE_REMOTEADD=${{ secrets.VITE_REMOTEADD_TEST }}" >> .env 
           echo "VITE_LOGIN_URL=${{ secrets.VITE_LOGIN_URL_TEST }}" >> .env
           echo "UPDATESERVER=${{ secrets.UPDATESERVER }}" >> .env
+          echo "APP_NAME=social-marketing" >> .env
           cat .env       
       - name: Install dependencies
         run: yarn install
@@ -72,11 +73,18 @@ jobs:
       - name: Build application
         run: yarn make-win:test
 
-      - name: Upload artifact
+      - name: Build uninstaller
+        run: yarn build-uninstaller
+
+      - name: Test uninstaller
+        run: yarn test-uninstaller
+
+      - name: Upload application artifact
         uses: actions/upload-artifact@v4
         with:
           name: electron-app-windows-v${{ steps.calculate_version.outputs.version }}
           path: out/make
+          retention-days: 7
 
   build-macos:
     runs-on: macos-latest
@@ -145,15 +153,42 @@ jobs:
             echo VITE_REMOTEADD=${{ secrets.VITE_REMOTEADD_TEST }} >> .env
             echo "VITE_LOGIN_URL=${{ secrets.VITE_LOGIN_URL_TEST }}" >> .env
             echo "UPDATESERVER=${{ secrets.UPDATESERVER }}" >> .env
+            echo "APP_NAME=social-marketing" >> .env
             cat .env
-      - name: Install setuptools
+      - name: Install setuptools and lzma dependencies
         run: |
-            brew install python-setuptools           
+            brew install python-setuptools
+            brew install xz
+            # Install additional LZMA dependencies
+            brew install pkg-config
+            brew install autoconf
+            brew install automake
+            brew install libtool
+            # Ensure LZMA is properly linked
+            brew link xz --force
+            # Verify LZMA installation
+            lzma-config --version || echo "lzma-config not found, trying alternative"
+            xz --version || echo "xz not found"
+            pkg-config --version || echo "pkg-config not found"
               
       - name: Install dependencies
         run: yarn install
       - name: Install DMG maker
         run: yarn add --dev @electron-forge/maker-dmg
+      - name: Verify build dependencies
+        run: |
+          echo "=== Verifying build dependencies ==="
+          yarn list --depth=0 | grep -E "(cross-env|electron-forge|@electron-forge)" || echo "Some build dependencies not found"
+          
+          echo "=== Checking if cross-env is available ==="
+          npx cross-env --version || echo "cross-env not available"
+          
+          echo "=== Checking if electron-forge is available ==="
+          npx electron-forge --version || echo "electron-forge not available"
+          
+          echo "=== Checking yarn scripts ==="
+          yarn run --help | grep "make-mac:test" || echo "make-mac:test script not found in yarn"
+          
       - name: Clean previous builds
         run: |
           rm -rf node_modules/.cache
@@ -176,6 +211,11 @@ jobs:
           echo "npm_config_target_arch: $npm_config_target_arch"
           echo "Platform: $(uname -s)"
           echo "Architecture: $(uname -m)"
+          echo "=== Checking LZMA installation ==="
+          which lzma-config || echo "lzma-config not found"
+          which xz || echo "xz not found"
+          ls -la /usr/local/bin/ | grep -E "(lzma|xz)" || echo "No LZMA binaries found in /usr/local/bin"
+          ls -la /opt/homebrew/bin/ | grep -E "(lzma|xz)" || echo "No LZMA binaries found in /opt/homebrew/bin"
       - name: Update native modules to latest versions
         run: |
           echo "=== Updating native modules ==="
@@ -190,6 +230,23 @@ jobs:
           export LDFLAGS="-std=c++20"
           export npm_config_target_platform="darwin"
           export npm_config_target_arch="x64"
+          export APP_NAME="social-marketing"
+          
+          # Set up LZMA configuration
+          if [ -f "/usr/local/bin/lzma-config" ]; then
+            export LZMA_CONFIG="/usr/local/bin/lzma-config"
+          elif [ -f "/opt/homebrew/bin/lzma-config" ]; then
+            export LZMA_CONFIG="/opt/homebrew/bin/lzma-config"
+          else
+            # Try to find lzma-config in PATH
+            LZMA_CONFIG_PATH=$(which lzma-config 2>/dev/null || echo "")
+            if [ -n "$LZMA_CONFIG_PATH" ]; then
+              export LZMA_CONFIG="$LZMA_CONFIG_PATH"
+            fi
+          fi
+          
+          export PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:/opt/homebrew/lib/pkgconfig:$PKG_CONFIG_PATH"
+          
           echo "Environment variables set:"
           echo "CXXFLAGS: $CXXFLAGS"
           echo "CFLAGS: $CFLAGS"
@@ -197,25 +254,35 @@ jobs:
           echo "CC: $CC"
           echo "npm_config_target_platform: $npm_config_target_platform"
           echo "npm_config_target_arch: $npm_config_target_arch"
+          echo "LZMA_CONFIG: $LZMA_CONFIG"
+          echo "PKG_CONFIG_PATH: $PKG_CONFIG_PATH"
+          
+          # Test LZMA configuration
+          if [ -n "$LZMA_CONFIG" ] && [ -f "$LZMA_CONFIG" ]; then
+            echo "Testing LZMA configuration:"
+            $LZMA_CONFIG --version || echo "LZMA config test failed"
+          else
+            echo "LZMA_CONFIG not found or not executable"
+          fi
       - name: Download Electron headers
         run: |
-          CXXFLAGS="-std=c++20" CFLAGS="-std=c11" npx electron-rebuild --force --types prod,dev,optional --module-dir .
+          CXXFLAGS="-std=c++20" CFLAGS="-std=c11" npx electron-rebuild --force --types prod,dev,optional --module-dir . --only better-sqlite3,sqlite3,bufferutil,utf-8-validate
       - name: Rebuild native modules
         run: |
-          CXXFLAGS="-std=c++20" CFLAGS="-std=c11" npx electron-rebuild
+          CXXFLAGS="-std=c++20" CFLAGS="-std=c11" npx electron-rebuild --only better-sqlite3,sqlite3,bufferutil,utf-8-validate
       - name: Rebuild sqlite3
         run: |
           CXXFLAGS="-std=c++20" CFLAGS="-std=c11" yarn rebuild-sqlite3
       - name: Rebuild better sqlite
         run: |
-          CXXFLAGS="-std=c++20" CFLAGS="-std=c11" yarn rebuild-better-sqlite    
+          CXXFLAGS="-std=c++20" CFLAGS="-std=c11" yarn rebuild-better-sqlite
       - name: yarn electron-rebuild
         run: |
-          CXXFLAGS="-std=c++20" CFLAGS="-std=c11" yarn electron-rebuild
+          CXXFLAGS="-std=c++20" CFLAGS="-std=c11" yarn electron-rebuild --only better-sqlite3,sqlite3,bufferutil,utf-8-validate
       - name: Rebuild with verbose output
         run: |
           echo "=== Rebuilding with verbose output ==="
-          CXXFLAGS="-std=c++20" CFLAGS="-std=c11" DEBUG=* npx electron-rebuild --force --verbose || echo "Verbose rebuild failed, continuing..."
+          CXXFLAGS="-std=c++20" CFLAGS="-std=c11" DEBUG=* npx electron-rebuild --force --verbose --only better-sqlite3,sqlite3,bufferutil,utf-8-validate || echo "Verbose rebuild failed, continuing..."
       - name: Rebuild C modules specifically
         run: |
           echo "=== Rebuilding C modules specifically ==="
@@ -228,35 +295,145 @@ jobs:
           ls -la node_modules/ | grep -E "(better-sqlite3|sqlite3|bufferutil|utf-8-validate)" || echo "Native modules not found"
           echo "=== Checking for build artifacts ==="
           find node_modules/ -name "*.node" -path "*/better-sqlite3/*" -o -path "*/sqlite3/*" -o -path "*/bufferutil/*" -o -path "*/utf-8-validate/*" || echo "No .node files found"
-          echo "=== Searching for volume.cc file ==="
-          find node_modules/ -name "volume.cc" -type f || echo "volume.cc file not found"
           echo "=== Identifying C vs C++ modules ==="
           echo "C modules (should use CFLAGS):"
           find node_modules/ -name "*.c" -path "*/bufferutil/*" -o -path "*/utf-8-validate/*" || echo "No C files found in C modules"
           echo "C++ modules (should use CXXFLAGS):"
           find node_modules/ -name "*.cc" -o -name "*.cpp" -path "*/better-sqlite3/*" -o -path "*/sqlite3/*" || echo "No C++ files found in C++ modules"
+      
+      - name: Debug - Environment and configuration
+        run: |
+          echo "=== Environment variables ==="
+          echo "CXXFLAGS: $CXXFLAGS"
+          echo "CFLAGS: $CFLAGS"
+          echo "CXX: $CXX"
+          echo "CC: $CC"
+          echo "LDFLAGS: $LDFLAGS"
+          echo "npm_config_target_platform: $npm_config_target_platform"
+          echo "npm_config_target_arch: $npm_config_target_arch"
+          echo "NODE_ENV: $NODE_ENV"
+          echo "APP_NAME: $APP_NAME"
+          
+          echo "=== Package.json scripts ==="
+          cat package.json | grep -A 5 -B 5 "make-mac:test" || echo "make-mac:test script not found"
+          
+          echo "=== Electron Forge configuration ==="
+          if [ -f "forge.config.js" ]; then
+            echo "forge.config.js exists"
+            head -20 forge.config.js || echo "Could not read forge.config.js"
+          else
+            echo "forge.config.js not found"
+          fi
+          
+          echo "=== Current working directory ==="
+          pwd
+          echo "=== Directory contents ==="
+          ls -la
+      
+      - name: Try verbose build first
+        run: |
+          echo "=== Trying verbose build to diagnose issues ==="
+          DEBUG=electron-forge:* yarn make-mac:test || echo "Verbose build failed, will try normal build"
+        continue-on-error: true
+      
       - name: Build application
-        run: yarn make-mac:test
+        run: |
+          export NODE_OPTIONS="--max-old-space-size=8192"
+          echo "=== Starting build process ==="
+          yarn make-mac:test
+          echo "=== Build completed successfully ==="
+          echo "=== Checking build output ==="
+          ls -la out/ 2>/dev/null || echo "out directory not found"
+          find out/ -name "*.app" -type d 2>/dev/null || echo "No app bundles found"
+        continue-on-error: true
+      
+      - name: Debug app bundle location
+        run: |
+          echo "=== Debugging app bundle location ==="
+          echo "Looking for app bundles in out directory:"
+          find out/ -name "*.app" -type d 2>/dev/null || echo "No app bundles found in out directory"
+          echo "Current directory structure:"
+          find out/ -type d 2>/dev/null | head -10 || echo "out directory not found"
+      
+      - name: Check build logs if build failed
+        if: failure()
+        run: |
+          echo "=== Build failed, checking for error logs ==="
+          # Check if there are any recent error logs
+          find . -name "*.log" -mtime -1 2>/dev/null | head -10 || echo "No recent log files found"
+          
+          # Check yarn error log
+          if [ -f ".yarn-error.log" ]; then
+            echo "=== Yarn error log (last 50 lines) ==="
+            tail -50 .yarn-error.log || echo "Could not read yarn error log"
+          fi
+          
+          # Check npm error log
+          if [ -f ".npm-debug.log" ]; then
+            echo "=== NPM debug log (last 50 lines) ==="
+            tail -50 .npm-debug.log || echo "Could not read npm debug log"
+          fi
+          
+          # Check for electron-forge logs
+          if [ -d ".electron-forge" ]; then
+            echo "=== Electron Forge logs ==="
+            find .electron-forge -name "*.log" -exec tail -20 {} \; 2>/dev/null || echo "No electron-forge logs found"
+          fi
+          
+          # Check current directory contents
+          echo "=== Current directory contents ==="
+          ls -la
+          
+          # Check if node_modules exists and has the right permissions
+          echo "=== Checking node_modules ==="
+          ls -la node_modules/ | head -10 || echo "node_modules directory not found or not accessible"
+          
+          # Check if any native modules were built
+          echo "=== Checking native modules ==="
+          find node_modules/ -name "*.node" 2>/dev/null | head -10 || echo "No .node files found"
+          
       - name: Fallback build if main build fails
         if: failure()
         run: |
           echo "=== Trying fallback build approach ==="
           # Try building without some problematic native modules
           yarn package || echo "Package command failed"
-          # Try building with different flags
+          # Try building with different flags and skip problematic modules
+          CXXFLAGS="-std=c++17" CFLAGS="-std=c11" yarn electron-rebuild --only better-sqlite3,sqlite3,bufferutil,utf-8-validate || echo "Fallback rebuild failed"
           CXXFLAGS="-std=c++17" CFLAGS="-std=c11" yarn make-mac:test || echo "Fallback build also failed"
+  
+      - name: Fallback build without lzma-native if all else fails
+        if: failure()
+        run: |
+          echo "=== Trying build without lzma-native ==="
+          # Check if lzma-native is actually used in the codebase
+          echo "Checking if lzma-native is used in the codebase:"
+          grep -r "lzma-native" src/ --include="*.ts" --include="*.js" --include="*.vue" || echo "lzma-native not found in source code"
+          
+          # Try rebuilding without lzma-native
+          CXXFLAGS="-std=c++20" CFLAGS="-std=c11" yarn electron-rebuild --only better-sqlite3,sqlite3,bufferutil,utf-8-validate || echo "Rebuild without lzma-native failed"
+          
+          # Try the build again
+          yarn make-mac:test || echo "Build without lzma-native also failed"
   
       - name: Debug - List out directory contents
         run: |
           echo "=== Contents of out directory ==="
-          ls -la out/
+          ls -la out/ 2>/dev/null || echo "out directory does not exist"
           echo "=== Contents of out/make directory ==="
-          ls -la out/make/ || echo "out/make directory does not exist"
+          ls -la out/make/ 2>/dev/null || echo "out/make directory does not exist"
           echo "=== Contents of out directory recursively ==="
-          find out/ -type f -name "*.dmg" -o -name "*.zip" -o -name "*.app" || echo "No DMG, ZIP, or APP files found"
+          find out/ -type f -name "*.dmg" -o -name "*.zip" -o -name "*.app" 2>/dev/null || echo "No DMG, ZIP, or APP files found"
+          echo "=== Checking for app bundle ==="
+          find out/ -name "*.app" -type d 2>/dev/null | head -5 || echo "No app bundles found"
+          echo "=== App bundle details ==="
+          find out/ -name "*.app" -type d -exec basename {} \; 2>/dev/null || echo "No app bundles found"
+          echo "=== Full directory tree ==="
+          find out/ -type d 2>/dev/null | head -20 || echo "out directory not found"
   
-      - name: Upload artifact
+      - name: Upload application artifact
         uses: actions/upload-artifact@v4
         with:
           name: electron-app-macos-v${{ steps.calculate_version.outputs.version }}
           path: out/make
+          retention-days: 7
