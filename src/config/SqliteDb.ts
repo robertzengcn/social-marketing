@@ -45,6 +45,11 @@ import { ScheduleTaskEntity } from "@/entity/ScheduleTask.entity";
 import { ScheduleExecutionLogEntity } from "@/entity/ScheduleExecutionLog.entity";
 import { ScheduleDependencyEntity } from "@/entity/ScheduleDependency.entity";
 import { SchedulerStatusEntity } from "@/entity/SchedulerStatus.entity";
+import { OutreachTaskEntity } from "@/entity/OutreachTask.entity";
+import { OutContactEntity } from "@/entity/OutContact.entity";
+import { OutreachMessageEntity } from "@/entity/OutreachMessage.entity";
+import { OutreachCampaignEntity } from "@/entity/OutreachCampaign.entity";
+import { ScrapingLogEntity } from "@/entity/ScrapingLog.entity";
 // import sqlite3 from "sqlite3"; 
 
 
@@ -102,6 +107,11 @@ export class SqliteDb {
                 EmailFilterTaskRelationEntity,
                 EmailServiceEntity,
                 EmailServiceTaskRelationEntity,
+                OutreachTaskEntity,
+                OutContactEntity,
+                OutreachMessageEntity,
+                OutreachCampaignEntity,
+                ScrapingLogEntity,
             ],
             synchronize: true, 
             migrations: [],
@@ -135,7 +145,13 @@ export class SqliteDb {
         }
     }
 
-    
-
-
 }
+
+// Export a global AppDataSource instance for outreach module
+// Note: This needs to be initialized with proper path before use
+export let AppDataSource: DataSource;
+
+export function setAppDataSource(ds: DataSource) {
+    AppDataSource = ds;
+}
+

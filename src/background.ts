@@ -8,7 +8,7 @@ import { registerCommunicationIpcHandlers } from "./main-process/communication/"
 import * as path from 'path';
 import { Token } from "@/modules/token"
 import { USERSDBPATH} from '@/config/usersetting';
-import { SqliteDb } from "@/config/SqliteDb"
+import { SqliteDb, setAppDataSource } from "@/config/SqliteDb"
 import log from 'electron-log/main';
 import fs from 'fs';
 import ProtocolRegistry from 'protocol-registry'
@@ -254,7 +254,8 @@ function initialize() {
       if (!appDataSource.connection.isInitialized) {
         await appDataSource.connection.initialize()
       }
-      
+      setAppDataSource(appDataSource.connection)
+
       // Initialize ScheduleManager with auto-start functionality
       try {
         const scheduleManager = ScheduleManager.getInstance();

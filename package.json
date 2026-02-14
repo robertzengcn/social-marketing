@@ -64,6 +64,7 @@
     "make-file-back": "vitest --config vite.utilityCode.config.mjs -t make-file-back",
     "vitest-video": "vitest --config vite.main.config.mjs -t video-download",
     "tsc": "tsc --noEmit --watch",
+    "tsc-result": "tsc --noEmit",
     "rebuild-better-sqlite": "electron-rebuild -f -w better-sqlite3",
     "prepackage": "npm run rebuild-sqlite3",
     "rebuild-sqlite3": "electron-rebuild -f -w sqlite3",

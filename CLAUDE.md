@@ -317,3 +317,9 @@ export default {
 4. **New Worker Task**: Add action handler to `src/taskCode.ts` with corresponding message type
 5. **New Social Platform**: Implement strategy in `src/strategy/`, register in factory
 6. **UI Text Changes**: Always update both `src/views/lang/en.ts` and `src/views/lang/zh.ts` - never hardcode user-facing text in components
+
+## Active Technologies
+- TypeScript 5.x with Node.js >=20.18.3 (001-ai-outreach)
+
+## Recent Changes
+- 001-ai-outreach: Added TypeScript 5.x with Node.js >=20.18.3
