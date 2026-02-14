@@ -1,7 +1,7 @@
 import { app } from 'electron'
 import * as fs from 'fs'
 import * as path from 'path'
-// import * as archiver from 'archiver' // TODO: install archiver package if needed
+import * as archiver from 'archiver'
 import extract from 'extract-zip'
 import { promisify } from 'util'
 

@@ -65,6 +65,6 @@ export class OutreachStrategyFactory {
      * Get all available strategies
      */
     static getAvailableMethods(): OutreachMethod[] {
-        return Array.from(this.strategies.keys());
+        return Array.from(this.strategies.keys()) as OutreachMethod[];
     }
 }

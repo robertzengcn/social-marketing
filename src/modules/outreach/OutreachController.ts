@@ -64,7 +64,7 @@ export class OutreachController {
     async generateMessageForContact(
         contactId: number,
         message: string,
-        aiMetadata: string | null
+        aiMetadata: string | undefined
     ): Promise<OutreachMessageEntity> {
         return await this.module.generateMessageForContact(contactId, message, aiMetadata);
     }
