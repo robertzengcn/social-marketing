@@ -1,0 +1,49 @@
+# Mocha configuration file
+# See https://mochajs.org/docs/config-mocha
+
+# Require files before tests
+require:
+  - ts-node/register
+  - test/helpers/setup.ts
+
+# Timeout in milliseconds (10s default for async operations)
+timeout: 10000
+
+# Test reporter (spec outputs hierarchical view)
+reporter: spec
+
+# Recursive test directory search
+recursive: true
+
+# Test files to include (glob patterns)
+spec: test/modules/**/*.test.ts
+
+# NYC/Istanbul coverage configuration
+coverage: true
+coverage-reporter:
+  - text
+  - html
+  - lcov
+coverage-dir: test/coverage/mocha
+
+# Coverage output directories
+reporter-option:
+  - outputDir=test/coverage/mocha
+
+# Files to exclude from coverage
+exclude:
+  - node_modules/**
+  - test/**
+  - dist/**
+  - src/views/**
+  - '**/*.test.ts'
+  - '**/*.spec.ts'
+  - '**/entityTypes/**'
+
+# Check coverage thresholds
+check-coverage: true
+# Note: Set these thresholds based on your goals
+# branches: 80
+# functions: 80
+# lines: 80
+# statements: 80

@@ -142,6 +142,20 @@ export default ({ mode }) => {
         },
         test: {
             include: ['test/vitest/taskCode/*.test.ts'],
+            coverage: {
+                provider: 'v8',
+                reporter: ['text', 'json', 'html', 'lcov'],
+                exclude: [
+                    'node_modules/**',
+                    'test/**',
+                    'dist/**',
+                    'src/views/**',
+                    '**/*.test.ts',
+                    '**/*.spec.ts',
+                    '**/entityTypes/**',
+                ],
+                all: true,
+            },
         }
 
     })
