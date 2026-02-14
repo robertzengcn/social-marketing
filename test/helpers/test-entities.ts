@@ -4,67 +4,84 @@
  */
 
 // System settings
-export { SystemSettingGroupEntity } from "@/entity/SystemSettingGroup.entity";
-export { SystemSettingEntity } from "@/entity/SystemSetting.entity";
-export { SystemSettingOptionEntity } from "@/entity/SystemSettingOption.entity";
+import { SystemSettingGroupEntity } from "@/entity/SystemSettingGroup.entity";
+import { SystemSettingEntity } from "@/entity/SystemSetting.entity";
+import { SystemSettingOptionEntity } from "@/entity/SystemSettingOption.entity";
 
 // Account & Authentication
-export { AccountCookiesEntity } from "@/entity/AccountCookies.entity";
+import { AccountCookiesEntity } from "@/entity/AccountCookies.entity";
 
 // Email Marketing
-export { BuckemailTaskEntity } from "@/entity/BuckemailTask.entity";
-export { EmailTemplateEntity } from "@/entity/EmailTemplate.entity";
-export { EmailFilterEntity } from "@/entity/EmailFilter.entity";
-export { EmailFilterDetailEntity } from "@/entity/EmailFilterDetail.entity";
-export { EmailTemplateTaskRelationEntity } from "@/entity/EmailTemplateTaskRelation.entity";
-export { EmailFilterTaskRelationEntity } from "@/entity/EmailFilterTaskRelation.entity";
-export { EmailServiceEntity } from "@/entity/EmailService.entity";
-export { EmailServiceTaskRelationEntity } from "@/entity/EmailServiceTaskRelation.entity";
-export { EmailMarketingTaskEntity } from "@/entity/EmailMarketingTask.entity";
-export { EmailMarketingTaskDetailEntity } from "@/entity/EmailMarketingTaskDetail.entity";
-export { EmailSearchResultEntity } from "@/entity/EmailSearchResult.entity";
-export { EmailSearchResultDetailEntity } from "@/entity/EmailSearchResultDetail.entity";
-export { EmailSearchTaskEntity } from "@/entity/EmailSearchTask.entity";
-export { EmailSearchTaskUrlEntity } from "@/entity/EmailSearchTaskUrl.entity";
-export { EmailSearchTaskProxyEntity } from "@/entity/EmailSearchTaskProxy.entity";
-export { EmailMarketingSendLogEntity } from "@/entity/EmailMarketingSendLog.entity";
+import { BuckemailTaskEntity } from "@/entity/BuckemailTask.entity";
+import { EmailTemplateEntity } from "@/entity/EmailTemplate.entity";
+import { EmailFilterEntity } from "@/entity/EmailFilter.entity";
+import { EmailFilterDetailEntity } from "@/entity/EmailFilterDetail.entity";
+import { EmailTemplateTaskRelationEntity } from "@/entity/EmailTemplateTaskRelation.entity";
+import { EmailFilterTaskRelationEntity } from "@/entity/EmailFilterTaskRelation.entity";
+import { EmailServiceEntity } from "@/entity/EmailService.entity";
+import { EmailServiceTaskRelationEntity } from "@/entity/EmailServiceTaskRelation.entity";
+import { EmailMarketingTaskEntity } from "@/entity/EmailMarketingTask.entity";
+import { EmailMarketingTaskDetailEntity } from "@/entity/EmailMarketingTaskDetail.entity";
+import { EmailSearchResultEntity } from "@/entity/EmailSearchResult.entity";
+import { EmailSearchResultDetailEntity } from "@/entity/EmailSearchResultDetail.entity";
+import { EmailSearchTaskEntity } from "@/entity/EmailSearchTask.entity";
+import { EmailSearchTaskUrlEntity } from "@/entity/EmailSearchTaskUrl.entity";
+import { EmailSearchTaskProxyEntity } from "@/entity/EmailSearchTaskProxy.entity";
+import { EmailMarketingSendLogEntity } from "@/entity/EmailMarketingSendLog.entity";
 
 // Video Processing
-export { VideoCaptionEntity } from "@/entity/VideoCaption.entity";
-export { VideoDescriptionEntity } from "@/entity/VideoDescription.entity";
-export { VideoDownloadEntity } from "@/entity/VideoDownload.entity";
-export { VideoDownloadTaskEntity } from "@/entity/VideoDownloadTask.entity";
-export { VideoDownloadTaskAccountsEntity } from "@/entity/VideoDownloadTaskAccounts.entity";
-export { VideoDownloadTaskDetailEntity } from "@/entity/VideoDownloadTaskDetail.entity";
-export { VideoDownloadTaskProxyEntity } from "@/entity/VideoDownloadTaskProxy.entity";
-export { VideoDownloadTaskUrlsEntity } from "@/entity/VideoDownloadTaskUrls.entity";
-export { VideoDownloadTagEntity } from "@/entity/VideoDownloadTag.entity";
-export { VideoPublishRecordEntity } from "@/entity/VideoPublishRecord.entity";
+import { VideoCaptionEntity } from "@/entity/VideoCaption.entity";
+import { VideoDescriptionEntity } from "@/entity/VideoDescription.entity";
+import { VideoDownloadEntity } from "@/entity/VideoDownload.entity";
+import { VideoDownloadTaskEntity } from "@/entity/VideoDownloadTask.entity";
+import { VideoDownloadTaskAccountsEntity } from "@/entity/VideoDownloadTaskAccounts.entity";
+import { VideoDownloadTaskDetailEntity } from "@/entity/VideoDownloadTaskDetail.entity";
+import { VideoDownloadTaskProxyEntity } from "@/entity/VideoDownloadTaskProxy.entity";
+import { VideoDownloadTaskUrlsEntity } from "@/entity/VideoDownloadTaskUrls.entity";
+import { VideoDownloadTagEntity } from "@/entity/VideoDownloadTag.entity";
+import { VideoPublishRecordEntity } from "@/entity/VideoPublishRecord.entity";
 
 // Search & Scraping
-export { ExtraModuleEntity } from "@/entity/ExtraModule.entity";
-export { ProxyCheckEntity } from "@/entity/ProxyCheck.entity";
-export { ProxyEntity } from "@/entity/Proxy.entity";
-export { SearchKeywordEntity } from "@/entity/SearchKeyword.entity";
-export { SearchResultEntity } from "@/entity/SearchResult.entity";
-export { TaskRunEntity } from "@/entity/TaskRun.entity";
-export { VideoDownloadTaskKeywordEntity } from "@/entity/VideoDownloadTaskKeyword.entity";
-export { SearchTaskEntity } from "@/entity/SearchTask.entity";
-export { SearchTaskProxyEntity } from "@/entity/SearchTaskProxy.entity";
-export { SearchAccountEntity } from "@/entity/SearchAccount.entity";
+import { ExtraModuleEntity } from "@/entity/ExtraModule.entity";
+import { ProxyCheckEntity } from "@/entity/ProxyCheck.entity";
+import { ProxyEntity } from "@/entity/Proxy.entity";
+import { SearchKeywordEntity } from "@/entity/SearchKeyword.entity";
+import { SearchResultEntity } from "@/entity/SearchResult.entity";
+import { TaskRunEntity } from "@/entity/TaskRun.entity";
+import { VideoDownloadTaskKeywordEntity } from "@/entity/VideoDownloadTaskKeyword.entity";
+import { SearchTaskEntity } from "@/entity/SearchTask.entity";
+import { SearchTaskProxyEntity } from "@/entity/SearchTaskProxy.entity";
+import { SearchAccountEntity } from "@/entity/SearchAccount.entity";
 
 // Scheduling
-export { ScheduleTaskEntity } from "@/entity/ScheduleTask.entity";
-export { ScheduleExecutionLogEntity } from "@/entity/ScheduleExecutionLog.entity";
-export { ScheduleDependencyEntity } from "@/entity/ScheduleDependency.entity";
-export { SchedulerStatusEntity } from "@/entity/SchedulerStatus.entity";
+import { ScheduleTaskEntity } from "@/entity/ScheduleTask.entity";
+import { ScheduleExecutionLogEntity } from "@/entity/ScheduleExecutionLog.entity";
+import { ScheduleDependencyEntity } from "@/entity/ScheduleDependency.entity";
+import { SchedulerStatusEntity } from "@/entity/SchedulerStatus.entity";
 
 // Outreach Automation
-export { OutreachTaskEntity } from "@/entity/OutreachTask.entity";
-export { OutContactEntity } from "@/entity/OutContact.entity";
-export { OutreachMessageEntity } from "@/entity/OutreachMessage.entity";
-export { OutreachCampaignEntity } from "@/entity/OutreachCampaign.entity";
-export { ScrapingLogEntity } from "@/entity/ScrapingLog.entity";
+import { OutreachTaskEntity } from "@/entity/OutreachTask.entity";
+import { OutContactEntity } from "@/entity/OutContact.entity";
+import { OutreachMessageEntity } from "@/entity/OutreachMessage.entity";
+import { OutreachCampaignEntity } from "@/entity/OutreachCampaign.entity";
+import { ScrapingLogEntity } from "@/entity/ScrapingLog.entity";
+
+// Re-export all entities for convenience
+export { SystemSettingGroupEntity, SystemSettingEntity, SystemSettingOptionEntity };
+export { AccountCookiesEntity };
+export { BuckemailTaskEntity, EmailTemplateEntity, EmailFilterEntity, EmailFilterDetailEntity };
+export { EmailTemplateTaskRelationEntity, EmailFilterTaskRelationEntity, EmailServiceEntity };
+export { EmailServiceTaskRelationEntity, EmailMarketingTaskEntity, EmailMarketingTaskDetailEntity };
+export { EmailSearchResultEntity, EmailSearchResultDetailEntity, EmailSearchTaskEntity };
+export { EmailSearchTaskUrlEntity, EmailSearchTaskProxyEntity, EmailMarketingSendLogEntity };
+export { VideoCaptionEntity, VideoDescriptionEntity, VideoDownloadEntity, VideoDownloadTaskEntity };
+export { VideoDownloadTaskAccountsEntity, VideoDownloadTaskDetailEntity, VideoDownloadTaskProxyEntity };
+export { VideoDownloadTaskUrlsEntity, VideoDownloadTagEntity, VideoPublishRecordEntity };
+export { ExtraModuleEntity, ProxyCheckEntity, ProxyEntity, SearchKeywordEntity };
+export { SearchResultEntity, TaskRunEntity, VideoDownloadTaskKeywordEntity };
+export { SearchTaskEntity, SearchTaskProxyEntity, SearchAccountEntity };
+export { ScheduleTaskEntity, ScheduleExecutionLogEntity, ScheduleDependencyEntity, SchedulerStatusEntity };
+export { OutreachTaskEntity, OutContactEntity, OutreachMessageEntity, OutreachCampaignEntity, ScrapingLogEntity };
 
 /**
  * Array of all entities for database setup

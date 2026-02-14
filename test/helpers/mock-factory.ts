@@ -4,17 +4,37 @@
  */
 
 /**
+ * Helper function to create a mock function
+ * Compatible with Vitest and Mocha testing frameworks
+ */
+function createMockFn(implementation?: Function | any): any {
+    const fn = (...args: any[]) => {
+        if (typeof implementation === 'function') {
+            return implementation(...args);
+        }
+        return implementation;
+    };
+    fn.mockImplementation = (impl: Function) => { implementation = impl; return fn; };
+    fn.mockResolvedValue = (val: any) => { implementation = () => Promise.resolve(val); return fn; };
+    fn.mockRejectedValue = (val: any) => { implementation = () => Promise.reject(val); return fn; };
+    fn.mockReturnValue = (val: any) => { implementation = () => val; return fn; };
+    fn.mockClear = () => {};
+    fn.mockReset = () => {};
+    return fn;
+}
+
+/**
  * Create a mock Puppeteer Browser object
  */
 export function mockBrowser(): any {
     return {
-        close: jest.fn(),
-        newPage: jest.fn(),
-        pages: jest.fn(() => Promise.resolve([])),
-        on: jest.fn(),
-        removeAllListeners: jest.fn(),
-        wsEndpoint: jest.fn(() => 'ws://mockendpoint'),
-        isConnected: jest.fn(() => true),
+        close: createMockFn(),
+        newPage: createMockFn(),
+        pages: createMockFn(() => Promise.resolve([])),
+        on: createMockFn(),
+        removeAllListeners: createMockFn(),
+        wsEndpoint: createMockFn(() => 'ws://mockendpoint'),
+        isConnected: createMockFn(() => true),
     };
 }
 
@@ -23,22 +43,22 @@ export function mockBrowser(): any {
  */
 export function mockPage(): any {
     return {
-        goto: jest.fn(),
-        evaluate: jest.fn(),
-        screenshot: jest.fn(),
-        waitForSelector: jest.fn(),
-        waitForNavigation: jest.fn(),
-        click: jest.fn(),
-        type: jest.fn(),
-        close: jest.fn(),
-        content: jest.fn(() => Promise.resolve('<html><body>Mock content</body></html>')),
-        url: jest.fn(() => 'https://example.com'),
-        title: jest.fn(() => 'Mock Page'),
-        waitFor: jest.fn(),
-        $: jest.fn(() => null),
-        $$: jest.fn(() => []),
-        evaluateHandle: jest.fn(),
-        waitForFunction: jest.fn(),
+        goto: createMockFn(),
+        evaluate: createMockFn(),
+        screenshot: createMockFn(),
+        waitForSelector: createMockFn(),
+        waitForNavigation: createMockFn(),
+        click: createMockFn(),
+        type: createMockFn(),
+        close: createMockFn(),
+        content: createMockFn(() => Promise.resolve('<html><body>Mock content</body></html>')),
+        url: createMockFn(() => 'https://example.com'),
+        title: createMockFn(() => 'Mock Page'),
+        waitFor: createMockFn(),
+        $: createMockFn(() => null),
+        $$: createMockFn(() => []),
+        evaluateHandle: createMockFn(),
+        waitForFunction: createMockFn(),
     };
 }
 
@@ -47,11 +67,11 @@ export function mockPage(): any {
  */
 export function mockHttpClient(): any {
     return {
-        get: jest.fn(),
-        post: jest.fn(),
-        put: jest.fn(),
-        delete: jest.fn(),
-        patch: jest.fn(),
+        get: createMockFn(),
+        post: createMockFn(),
+        put: createMockFn(),
+        delete: createMockFn(),
+        patch: createMockFn(),
     };
 }
 
@@ -60,10 +80,10 @@ export function mockHttpClient(): any {
  */
 export function mockLLMService(): any {
     return {
-        generate: jest.fn(),
-        translate: jest.fn(),
-        chat: jest.fn(),
-        complete: jest.fn(),
+        generate: createMockFn(),
+        translate: createMockFn(),
+        chat: createMockFn(),
+        complete: createMockFn(),
     };
 }
 
@@ -72,11 +92,11 @@ export function mockLLMService(): any {
  */
 export function mockEmailService(): any {
     return {
-        sendEmail: jest.fn(),
-        getEmails: jest.fn(),
-        deleteEmail: jest.fn(),
-        getEmailTemplate: jest.fn(),
-        sendBulk: jest.fn(),
+        sendEmail: createMockFn(),
+        getEmails: createMockFn(),
+        deleteEmail: createMockFn(),
+        getEmailTemplate: createMockFn(),
+        sendBulk: createMockFn(),
     };
 }
 
@@ -85,10 +105,10 @@ export function mockEmailService(): any {
  */
 export function mockVideoDownloadService(): any {
     return {
-        downloadVideo: jest.fn(),
-        getVideoInfo: jest.fn(),
-        getProgress: jest.fn(() => ({ percent: 0, speed: 0 })),
-        cancel: jest.fn(),
+        downloadVideo: createMockFn(),
+        getVideoInfo: createMockFn(),
+        getProgress: createMockFn(() => ({ percent: 0, speed: 0 })),
+        cancel: createMockFn(),
     };
 }
 
@@ -97,10 +117,10 @@ export function mockVideoDownloadService(): any {
  */
 export function mockScrapingService(): any {
     return {
-        scrape: jest.fn(),
-        scrapeMultiple: jest.fn(),
-        getProgress: jest.fn(() => ({ pages: 0, contacts: 0 })),
-        stop: jest.fn(),
+        scrape: createMockFn(),
+        scrapeMultiple: createMockFn(),
+        getProgress: createMockFn(() => ({ pages: 0, contacts: 0 })),
+        stop: createMockFn(),
     };
 }
 
@@ -121,13 +141,13 @@ export function mockProcessMessage(): any {
  */
 export function mockFileSystem(): any {
     return {
-        existsSync: jest.fn(() => true),
-        readFileSync: jest.fn(() => 'mock file content'),
-        writeFileSync: jest.fn(),
-        unlinkSync: jest.fn(),
-        mkdirSync: jest.fn(),
-        rmSync: jest.fn(),
-        mkdtempSync: jest.fn(() => '/tmp/mock-dir'),
+        existsSync: createMockFn(() => true),
+        readFileSync: createMockFn(() => 'mock file content'),
+        writeFileSync: createMockFn(),
+        unlinkSync: createMockFn(),
+        mkdirSync: createMockFn(),
+        rmSync: createMockFn(),
+        mkdtempSync: createMockFn(() => '/tmp/mock-dir'),
     };
 }
 
@@ -136,14 +156,14 @@ export function mockFileSystem(): any {
  */
 export function mockTokenService(): any {
     return {
-        setValue: jest.fn(),
-        getValue: jest.fn((key: string) => {
+        setValue: createMockFn(),
+        getValue: createMockFn((key: string) => {
             // Mock common token values
             if (key === 'user:dbpath') return '/tmp/test.db';
             if (key === 'proxy:config') return '[]';
             return null;
         }),
-        deleteValue: jest.fn(),
+        deleteValue: createMockFn(),
     };
 }
 
@@ -292,18 +312,11 @@ export function mockOutreachCampaign(overrides: any = {}): any {
  * Note: Prefer importing { vi } from 'vitest' when possible
  */
 export const vi = {
-    fn: (() => {
-        const fn = (...args: any[]) => {};
-        fn.mockImplementation = (impl: Function) => impl;
-        fn.mockResolvedValue = (val: any) => val;
-        fn.mockRejectedValue = (val: any) => { throw val; };
-        fn.mockReturnValue = (val: any) => val;
-        return fn;
-    }) as any,
-    clearAllMocks: jest.fn(),
-    restoreAllMocks: jest.fn(),
-    mock: jest.fn(),
-    spyOn: jest.fn(),
+    fn: createMockFn,
+    clearAllMocks: createMockFn(),
+    restoreAllMocks: createMockFn(),
+    mock: createMockFn(),
+    spyOn: createMockFn(),
 };
 
 /**
