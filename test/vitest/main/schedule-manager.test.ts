@@ -16,7 +16,7 @@ vi.mock('@/modules/ScheduleTaskModule')
 vi.mock('@/modules/ScheduleExecutionLogModule')
 vi.mock('@/modules/ScheduleDependencyModule')
 vi.mock('@/modules/TaskExecutorService')
-vi.mock('@/model/SchedulerStatusModel')
+vi.mock('@/model/SchedulerStatus.model')
 vi.mock('@/modules/token')
 
 describe('ScheduleManager', () => {
@@ -86,10 +86,10 @@ describe('ScheduleManager', () => {
 
         // Import modules after mocks are set up
         const ScheduleTaskModule = (await import('@/modules/ScheduleTaskModule')).ScheduleTaskModule
-        const ScheduleExecutionLogModule = (await import('@/modules/scheduleExecutionLogModule')).ScheduleExecutionLogModule
-        const ScheduleDependencyModule = (await import('@/modules/scheduleDependencyModule')).ScheduleDependencyModule
+        const ScheduleExecutionLogModule = (await import('@/modules/ScheduleExecutionLogModule')).ScheduleExecutionLogModule
+        const ScheduleDependencyModule = (await import('@/modules/ScheduleDependencyModule')).ScheduleDependencyModule
         const TaskExecutorService = (await import('@/modules/TaskExecutorService')).TaskExecutorService
-        const SchedulerStatusModel = (await import('@/model/schedulerStatus.model')).SchedulerStatusModel
+        const SchedulerStatusModel = (await import('@/model/SchedulerStatus.model')).SchedulerStatusModel
 
         // Create schedule manager instance
         scheduleManager = new (ScheduleManager as any).constructor()
@@ -277,7 +277,7 @@ describe('ScheduleManager', () => {
                 return Promise.resolve(null)
             })
 
-            await scheduleManager.executeDependentJobs(1, 100, ExecutionStatus.SUCCESS)
+            await scheduleManager.executeDependentJobs(1, ExecutionStatus.SUCCESS)
 
             // Should have loaded and executed child schedule
             expect(mockScheduleTaskModule.getScheduleById).toHaveBeenCalledWith(2)
@@ -344,7 +344,7 @@ function createMockSchedule(overrides: any = {}): ScheduleTaskEntity {
         trigger_type: TriggerType.CRON,
         cron_expression: '0 0 * * *',
         is_active: true,
-        status: ScheduleStatus.PENDING,
+        status: ScheduleStatus.ACTIVE,
         next_run_time: new Date(),
         created_at: new Date(),
         updated_at: new Date(),

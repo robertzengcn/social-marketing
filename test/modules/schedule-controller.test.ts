@@ -7,25 +7,27 @@
 
 import { expect } from 'chai'
 import { describe, it, beforeEach } from 'mocha'
-
-// Mock the modules
-const mockScheduleTaskModule = {
-    createSchedule: () => Promise.resolve(1),
-    updateSchedule: () => Promise.resolve(),
-    deleteSchedule: () => Promise.resolve(),
-    getScheduleById: () => Promise.resolve({ id: 1, name: 'Test Schedule' }),
-    listSchedules: () => Promise.resolve({ records: [], total: 0 }),
-    enableSchedule: () => Promise.resolve(),
-    disableSchedule: () => Promise.resolve(),
-    pauseSchedule: () => Promise.resolve(),
-    resumeSchedule: () => Promise.resolve(),
-    validateSchedule: () => Promise.resolve({ isValid: true, errors: [] })
-}
+import * as sinon from 'sinon'
 
 describe('ScheduleController', () => {
     let controller: any
+    let mockScheduleTaskModule: any
 
     beforeEach(() => {
+        // Create Sinon spies for mocking
+        mockScheduleTaskModule = {
+            createSchedule: sinon.stub().resolves(1),
+            updateSchedule: sinon.stub().resolves(),
+            deleteSchedule: sinon.stub().resolves(),
+            getScheduleById: sinon.stub().resolves({ id: 1, name: 'Test Schedule' }),
+            listSchedules: sinon.stub().resolves({ records: [], total: 0 }),
+            enableSchedule: sinon.stub().resolves(),
+            disableSchedule: sinon.stub().resolves(),
+            pauseSchedule: sinon.stub().resolves(),
+            resumeSchedule: sinon.stub().resolves(),
+            validateSchedule: sinon.stub().resolves({ isValid: true, errors: [] })
+        }
+
         // Import controller after mocks are set up
         const ScheduleController = require('@/controller/ScheduleController').ScheduleController
         controller = new ScheduleController()
@@ -44,7 +46,7 @@ describe('ScheduleController', () => {
             const id = await controller.createSchedule(scheduleData)
 
             expect(id).to.be.a('number')
-            expect(mockScheduleTaskModule.createSchedule).toHaveBeenCalledWith(scheduleData)
+            sinon.assert.calledWith(mockScheduleTaskModule.createSchedule, scheduleData)
         })
 
         it('should update existing schedule', async () => {
@@ -54,20 +56,20 @@ describe('ScheduleController', () => {
 
             await controller.updateSchedule(1, updateData)
 
-            expect(mockScheduleTaskModule.updateSchedule).toHaveBeenCalledWith(1, updateData)
+            sinon.assert.calledWith(mockScheduleTaskModule.updateSchedule, 1, updateData)
         })
 
         it('should delete a schedule', async () => {
             await controller.deleteSchedule(1)
 
-            expect(mockScheduleTaskModule.deleteSchedule).toHaveBeenCalledWith(1)
+            sinon.assert.calledWith(mockScheduleTaskModule.deleteSchedule, 1)
         })
 
         it('should get schedule by ID', async () => {
             const schedule = await controller.getSchedule(1)
 
             expect(schedule).to.deep.equal({ id: 1, name: 'Test Schedule' })
-            expect(mockScheduleTaskModule.getScheduleById).toHaveBeenCalledWith(1)
+            sinon.assert.calledWith(mockScheduleTaskModule.getScheduleById, 1)
         })
     })
 
@@ -77,11 +79,11 @@ describe('ScheduleController', () => {
 
             expect(result).to.have.property('schedules')
             expect(result).to.have.property('total')
-            expect(mockScheduleTaskModule.listSchedules).toHaveBeenCalledWith(0, 10)
+            sinon.assert.calledWith(mockScheduleTaskModule.listSchedules, 0, 10)
         })
 
         it('should handle empty list', async () => {
-            mockScheduleTaskModule.listSchedules = () => Promise.resolve({
+            mockScheduleTaskModule.listSchedules = sinon.stub().resolves({
                 records: [],
                 total: 0
             })
@@ -97,25 +99,25 @@ describe('ScheduleController', () => {
         it('should enable a schedule', async () => {
             await controller.enableSchedule(1)
 
-            expect(mockScheduleTaskModule.enableSchedule).toHaveBeenCalledWith(1)
+            sinon.assert.calledWith(mockScheduleTaskModule.enableSchedule, 1)
         })
 
         it('should disable a schedule', async () => {
             await controller.disableSchedule(1)
 
-            expect(mockScheduleTaskModule.disableSchedule).toHaveBeenCalledWith(1)
+            sinon.assert.calledWith(mockScheduleTaskModule.disableSchedule, 1)
         })
 
         it('should pause a schedule', async () => {
             await controller.pauseSchedule(1)
 
-            expect(mockScheduleTaskModule.pauseSchedule).toHaveBeenCalledWith(1)
+            sinon.assert.calledWith(mockScheduleTaskModule.pauseSchedule, 1)
         })
 
         it('should resume a schedule', async () => {
             await controller.resumeSchedule(1)
 
-            expect(mockScheduleTaskModule.resumeSchedule).toHaveBeenCalledWith(1)
+            sinon.assert.calledWith(mockScheduleTaskModule.resumeSchedule, 1)
         })
     })
 
@@ -132,7 +134,7 @@ describe('ScheduleController', () => {
 
             expect(result.isValid).to.be.true
             expect(result.errors).to.have.length(0)
-            expect(mockScheduleTaskModule.validateSchedule).toHaveBeenCalledWith(scheduleData)
+            sinon.assert.calledWith(mockScheduleTaskModule.validateSchedule, scheduleData)
         })
 
         it('should return validation errors for invalid cron', async () => {
@@ -144,7 +146,7 @@ describe('ScheduleController', () => {
             }
 
             // Mock validation to return error
-            mockScheduleTaskModule.validateSchedule = () => Promise.resolve({
+            mockScheduleTaskModule.validateSchedule = sinon.stub().resolves({
                 isValid: false,
                 errors: ['Invalid cron expression']
             })

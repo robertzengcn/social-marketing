@@ -12,7 +12,7 @@ import { ScheduleTaskEntity, TaskType, ScheduleStatus } from '@/entity/ScheduleT
 // Mock the dependencies
 vi.mock('@/modules/SearchTaskModule')
 vi.mock('@/modules/EmailSearchTaskModule')
-vi.mock('@/modules/BuckEmailTaskModule')
+vi.mock('@/modules/buckEmailTaskModule')
 vi.mock('@/modules/VideoDownloadTaskModule')
 vi.mock('@/modules/searchModule')
 vi.mock('@/modules/EmailMarketingTaskModule')
@@ -71,7 +71,7 @@ describe('TaskExecutorService', () => {
         // Import modules after mocks are set up
         const SearchTaskModule = (await import('@/modules/SearchTaskModule')).SearchTaskModule
         const EmailSearchTaskModule = (await import('@/modules/EmailSearchTaskModule')).EmailSearchTaskModule
-        const BuckEmailTaskModule = (await import('@/modules/BuckEmailTaskModule')).BuckEmailTaskModule
+        const BuckEmailTaskModule = (await import('@/modules/buckEmailTaskModule')).BuckEmailTaskModule
         const VideoDownloadTaskModule = (await import('@/modules/VideoDownloadTaskModule')).VideoDownloadTaskModule
         const SearchModule = (await import('@/modules/searchModule')).SearchModule
 
@@ -197,7 +197,7 @@ function createMockSchedule(overrides: any = {}): ScheduleTaskEntity {
         trigger_type: 'cron' as any,
         cron_expression: '0 0 * * *',
         is_active: true,
-        status: ScheduleStatus.PENDING,
+        status: ScheduleStatus.ACTIVE,
         next_run_time: new Date(),
         created_at: new Date(),
         updated_at: new Date(),
