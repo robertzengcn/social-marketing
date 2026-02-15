@@ -6,7 +6,7 @@
 import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest'
 import { BaseOutreachStrategy } from '@/strategy/BaseOutreachStrategy'
 import { OutreachTarget, OutreachOptions, OutreachResult, OutreachErrorType } from '@/strategy/OutreachStrategy'
-import { mockBrowser, mockPage } from '@/test/helpers/mock-factory'
+import { mockBrowser, mockPage } from '../../helpers/mock-factory'
 
 describe('BaseOutreachStrategy', () => {
     class TestStrategy extends BaseOutreachStrategy {

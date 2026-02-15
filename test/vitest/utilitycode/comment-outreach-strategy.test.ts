@@ -6,7 +6,7 @@
 import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest'
 import { CommentOutreachStrategy } from '@/strategy/CommentOutreachStrategy'
 import { OutreachTarget } from '@/strategy/OutreachStrategy'
-import { mockPage, mockBrowser } from '@/test/helpers/mock-factory'
+import { mockPage, mockBrowser } from '../../helpers/mock-factory'
 
 describe('CommentOutreachStrategy', () => {
     let strategy: CommentOutreachStrategy

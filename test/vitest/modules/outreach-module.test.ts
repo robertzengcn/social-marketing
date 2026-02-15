@@ -5,8 +5,8 @@
 
 import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest'
 import { OutreachModule } from '@/modules/outreach/OutreachModule'
-import { DatabaseTestHelper } from '@/test/helpers/database-helper'
-import { TEST_ENTITIES } from '@/test/helpers/test-entities'
+import { DatabaseTestHelper } from '../../helpers/database-helper'
+import { TEST_ENTITIES } from '../../helpers/test-entities'
 import { OutreachTaskEntity, OutContactEntity, OutreachMessageEntity, OutreachCampaignEntity } from '@/entity'
 
 // Mock child process worker
