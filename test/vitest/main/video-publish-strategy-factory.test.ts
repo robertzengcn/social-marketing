@@ -8,7 +8,7 @@ import { VideoPublishStrategyFactory } from '@/strategy/VideoPublishStrategyFact
 import { YouTubePublishStrategy } from '@/strategy/YouTubePublishStrategy'
 import { BilibiliPublishStrategy } from '@/strategy/BilibiliPublishStrategy'
 import { BaiduVideoPublishStrategy } from '@/strategy/BaiduVideoPublishStrategy'
-import { PublishPlatform } from '@/entityTypes/videoType'
+import { PublishPlatform } from '@/entityTypes/videoPublishType'
 import { mockBrowser, mockPage } from '../../helpers/mock-factory'
 
 describe('VideoPublishStrategyFactory', () => {

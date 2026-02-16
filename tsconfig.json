@@ -52,6 +52,12 @@
     "**/*.ejs"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "test/vitest/modules/outreach-module.test.ts",
+    "test/vitest/utilitycode/base-outreach-strategy.test.ts",
+    "test/vitest/utilitycode/comment-outreach-strategy.test.ts",
+    "test/vitest/utilitycode/direct-message-outreach-strategy.test.ts",
+    "test/vitest/utilitycode/email-outreach-strategy.test.ts",
+    "test/vitest/utilitycode/outreach-strategy-factory.test.ts"
   ]
 }

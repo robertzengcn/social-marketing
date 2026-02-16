@@ -9,6 +9,7 @@ import { TEST_ENTITIES } from '../../helpers/test-entities'
 import { SearchResultdb } from '@/model/searchResultdb'
 import { ScheduleTaskModel } from '@/model/ScheduleTask.model'
 import { OutreachModel } from '@/model/outreach.model'
+import { TaskType } from '@/entity/ScheduleTask.entity'
 
 describe('Database Models', () => {
     describe('SearchResultModel', () => {
@@ -52,7 +53,7 @@ describe('Database Models', () => {
             const scheduleId = await model.createSchedule({
                 name: 'Test Schedule',
                 cron_expression: '0 0 * * *',
-                task_type: 'search',
+                task_type: TaskType.SEARCH,
                 task_id: 1,
                 is_active: true
             })
@@ -67,8 +68,8 @@ describe('Database Models', () => {
         })
 
         test('should get active schedules', async () => {
-            await model.createSchedule({ name: 'Active Schedule', cron_expression: '0 0 * * *', task_type: 'search', task_id: 1, is_active: true })
-            await model.createSchedule({ name: 'Inactive Schedule', cron_expression: '0 0 * * *', task_type: 'search', task_id: 1, is_active: false })
+            await model.createSchedule({ name: 'Active Schedule', cron_expression: '0 0 * * *', task_type: TaskType.SEARCH, task_id: 1, is_active: true })
+            await model.createSchedule({ name: 'Inactive Schedule', cron_expression: '0 0 * * *', task_type: TaskType.SEARCH, task_id: 1, is_active: false })
 
             const activeSchedules = await model.getActiveSchedules()
 
