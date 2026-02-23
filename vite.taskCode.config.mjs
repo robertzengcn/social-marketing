@@ -3,7 +3,7 @@ import alias from "@rollup/plugin-alias";
 import * as path from 'path';
 
 import ClosePlugin from './vite-plugin-close.js'
-
+import { viteDebugFsResolvePlugin } from './vite-debug-fs-resolve.mjs'
 import checker from 'vite-plugin-checker'
 
 //import commonjs from '@rollup/plugin-commonjs';
@@ -50,7 +50,8 @@ export default ({ mode }) => {
     // });
     return defineConfig({
         //include: ['node_modules/@puppeteer/browsers/node_modules/yargs/build/*.cjs'],
-        plugins: [alias(),
+        plugins: [viteDebugFsResolvePlugin('taskCode'),
+            alias(),
         // nodePolyfills(
         //     {globals: { global: true, process: true }}
         // ),

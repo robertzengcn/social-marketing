@@ -8,6 +8,7 @@ import fs from 'fs';
 import ClosePlugin from './vite-plugin-close'
 import checker from 'vite-plugin-checker'
 import sourcemaps from 'rollup-plugin-sourcemaps';
+import { viteDebugFsResolvePlugin } from './vite-debug-fs-resolve.mjs';
 // import { compile } from "ejs";
 // import {ViteEjsPlugin} from "vite-plugin-ejs";
 // import commonjs from '@rollup/plugin-commonjs';
@@ -233,6 +234,7 @@ export default ({ mode }) => {
 
     return defineConfig({
         plugins: [
+            viteDebugFsResolvePlugin('main'),
             // vuetify({
             //     autoImport: true,
             //   }),

@@ -2,11 +2,13 @@
 import { defineConfig,loadEnv} from 'vite';
 import checker from 'vite-plugin-checker'
 import * as path from 'path';
+import { viteDebugFsResolvePlugin } from './vite-debug-fs-resolve.mjs'
 export default ({ mode }) => {
   process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
 
   return defineConfig({
     plugins: [
+      viteDebugFsResolvePlugin('preload'),
       checker({
         // e.g. use TypeScript check
         typescript: true,
