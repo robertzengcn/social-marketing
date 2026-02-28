@@ -1,5 +1,6 @@
 /// <reference types="vitest" />
 import { defineConfig, loadEnv } from 'vite';
+import { builtinModules } from 'module';
 import alias from "@rollup/plugin-alias";
 import * as path from 'path';
 import copy from 'rollup-plugin-copy'
@@ -234,6 +235,14 @@ export default ({ mode }) => {
 
     return defineConfig({
         plugins: [
+            {
+                name: 'force-exclude-electron-fs',
+                config(config) {
+                    const od = config.optimizeDeps || {};
+                    const exclude = new Set(['electron', 'fs', 'node:fs', ...(od.exclude || [])]);
+                    return { optimizeDeps: { ...od, exclude: [...exclude] } };
+                }
+            },
             viteDebugFsResolvePlugin('main'),
             // vuetify({
             //     autoImport: true,
@@ -252,6 +261,28 @@ export default ({ mode }) => {
             // ejsTemplateProcessorPlugin(),
 
         ],
+        optimizeDeps: {
+            exclude: [
+                'electron',
+                'fs',
+                'node:fs',
+                ...builtinModules,
+                ...builtinModules.map((m) => `node:${m}`),
+            ],
+            noDiscovery: true,
+            include: [],
+            esbuildOptions: {
+                platform: 'node',
+                plugins: [{
+                    name: 'external-node-builtins',
+                    setup(build) {
+                        build.onResolve({ filter: /^(node:)?(fs|path|os|crypto|stream|util|buffer|events|child_process|http|https|net|tls|url|assert|constants|zlib|module|process)$/ }, (args) => {
+                            return { path: args.path, external: true };
+                        });
+                    }
+                }]
+            }
+        },
         resolve: {
             alias: {
                 "@": path.resolve(__dirname, "./src"),
@@ -279,6 +310,7 @@ export default ({ mode }) => {
         build: {
             rollupOptions: {
                 external: [
+                    'electron',
                     'sqlite3',  // Mark sqlite3 as external
                     'better-sqlite3',
                     'bindings',

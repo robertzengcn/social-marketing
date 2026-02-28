@@ -6,7 +6,12 @@ import vuetify from 'vite-plugin-vuetify'
 import ClosePlugin from './vite-plugin-close.ts'
 import checker from 'vite-plugin-checker'
 import { viteDebugFsResolvePlugin } from './vite-debug-fs-resolve.mjs'
+import { VITE_DEV_SERVER_PORT } from './dev-server-port.mjs'
+
 export default defineConfig({
+  server: {
+    port: VITE_DEV_SERVER_PORT,
+  },
   build: {
     sourcemap: true},
   plugins: [

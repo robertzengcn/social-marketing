@@ -128,13 +128,15 @@ export function registerOutreachIpcHandlers(win: BrowserWindow): void {
         }));
     });
 
-    // Progress event listener (from child process)
-    process.parentPort.on('message', async (e) => {
-        const pme = JSON.parse(e.data) as ProcessMessage<any>;
+    // Progress event listener (from child process). parentPort exists only in worker threads, not in main process.
+    if (process.parentPort) {
+        process.parentPort.on('message', async (e) => {
+            const pme = JSON.parse(e.data) as ProcessMessage<any>;
 
-        if (pme.action === OUTREACH_SCRAPER_PROGRESS) {
-            // Broadcast progress to renderer
-            win?.webContents.send(OUTREACH_SCRAPER_PROGRESS, JSON.stringify(pme.data));
-        }
-    });
+            if (pme.action === OUTREACH_SCRAPER_PROGRESS) {
+                // Broadcast progress to renderer
+                win?.webContents.send(OUTREACH_SCRAPER_PROGRESS, JSON.stringify(pme.data));
+            }
+        });
+    }
 }

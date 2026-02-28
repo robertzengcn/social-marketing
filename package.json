@@ -83,7 +83,8 @@
     "distribute-uninstaller": "node scripts/distribute-uninstaller.js",
     "install-uninstaller": "node scripts/install-uninstaller.js",
     "test-uninstaller": "node scripts/test-uninstaller.js",
-    "cleanup-uninstaller": "node scripts/cleanup-uninstaller.js"
+    "cleanup-uninstaller": "node scripts/cleanup-uninstaller.js",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@langchain/core": "^0.3.42",
@@ -222,6 +223,7 @@
     "mock-aws-s3": "^4.0.2",
     "nock": "^14.0.1",
     "nyc": "^17.1.0",
+    "patch-package": "^8.0.1",
     "prettier": "^2.8.4",
     "rollup-plugin-copy": "^3.5.0",
     "rollup-plugin-sourcemaps": "^0.6.3",

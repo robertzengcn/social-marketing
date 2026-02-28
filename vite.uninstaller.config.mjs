@@ -5,6 +5,16 @@ import { resolve } from 'path'
 export default defineConfig({
   mode: process.env.MODE,
   root: __dirname,
+  plugins: [
+    {
+      name: 'force-exclude-electron-fs',
+      config(config) {
+        const od = config.optimizeDeps || {};
+        const exclude = new Set(['electron', 'fs', 'node:fs', ...(od.exclude || [])]);
+        return { optimizeDeps: { ...od, exclude: [...exclude] } };
+      }
+    }
+  ],
   build: {
     outDir: 'dist/uninstaller',
     emptyOutDir: true,
@@ -122,10 +132,13 @@ export default defineConfig({
       '@': resolve(__dirname, 'src')
     }
   },
-  // Optimize for uninstaller-specific needs
+  // Optimize for uninstaller-specific needs; avoid pre-bundling electron (uses require('fs'))
   optimizeDeps: {
+    noDiscovery: true,
+    include: [],
     exclude: [
       'electron',
+      'fs',
       'better-sqlite3',
       'sqlite3',
       'puppeteer',

@@ -1,0 +1,13 @@
+diff --git a/node_modules/vite/dist/node/chunks/dep-ByPKlqZ5.js b/node_modules/vite/dist/node/chunks/dep-ByPKlqZ5.js
+index 23b6748..de90e43 100644
+--- a/node_modules/vite/dist/node/chunks/dep-ByPKlqZ5.js
++++ b/node_modules/vite/dist/node/chunks/dep-ByPKlqZ5.js
+@@ -19161,7 +19161,7 @@ async function prepareEsbuildOptimizerRun(environment, depsInfo, processingCache
+   // when the platform is 'node' or 'browser' that can't be emulated by using mainFields
+   // and conditions
+   (environment.config.consumer === "client" || environment.config.ssr.target === "webworker" ? "browser" : "node");
+-  const external = [...optimizeDeps2.exclude ?? []];
++  const external = [...new Set(["fs", "node:fs", ...(optimizeDeps2.exclude ?? [])])];
+   const plugins = [...pluginsFromConfig];
+   if (external.length) {
+     plugins.push(esbuildCjsExternalPlugin(external, platform));

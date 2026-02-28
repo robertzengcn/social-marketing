@@ -100,8 +100,9 @@ class UninstallerApp {
 
     // Load the uninstaller UI
     if (process.env.NODE_ENV === 'development') {
-      // In development, load from dev server
-      await this.mainWindow.loadURL('http://localhost:5173/uninstaller')
+      // In development, load from dev server (port must match vite.render.config)
+      const port = process.env.VITE_DEV_SERVER_PORT || '5174'
+      await this.mainWindow.loadURL(`http://localhost:${port}/uninstaller`)
     } else {
       // In production, load from built files
       await this.mainWindow.loadFile(path.join(__dirname, '../renderer/uninstaller/index.html'))

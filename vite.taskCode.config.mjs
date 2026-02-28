@@ -50,7 +50,16 @@ export default ({ mode }) => {
     // });
     return defineConfig({
         //include: ['node_modules/@puppeteer/browsers/node_modules/yargs/build/*.cjs'],
-        plugins: [viteDebugFsResolvePlugin('taskCode'),
+        plugins: [
+            {
+                name: 'force-exclude-electron-fs',
+                config(config) {
+                    const od = config.optimizeDeps || {};
+                    const exclude = new Set(['electron', 'fs', 'node:fs', ...(od.exclude || [])]);
+                    return { optimizeDeps: { ...od, exclude: [...exclude] } };
+                }
+            },
+            viteDebugFsResolvePlugin('taskCode'),
             alias(),
         // nodePolyfills(
         //     {globals: { global: true, process: true }}
@@ -110,7 +119,8 @@ export default ({ mode }) => {
             conditions: ['node'],
         },
         optimizeDeps: {
-            // disabled:false,
+            exclude: ['electron', 'fs'],
+            noDiscovery: true,
             include: ['winston-transport', 'bufferutil', 'utf-8-validate', 'puppeteer-cluster']
         },
         build: {

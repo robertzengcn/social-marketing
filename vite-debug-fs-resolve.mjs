@@ -45,6 +45,8 @@ export function viteDebugFsResolvePlugin(configName) {
           importer: importer || '(no importer)',
           isEntry: options?.isEntry,
         });
+        // Mark Node built-in as external so Vite dep-pre-bundle does not try to resolve it as an npm package
+        return { id: source, external: true };
       }
       // #endregion
       return null;
