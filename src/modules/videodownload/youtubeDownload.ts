@@ -1,6 +1,6 @@
 import { VideoDownloadImpl } from "@/modules/interface/videoDownloadImpl"
 import { CustomError } from "@/modules/customError"
-import { exec } from "child_process";
+import { exec, execSync } from "child_process";
 import { promisify } from "util";
 import { CookiesProxy,VideodoanloadSuccessCall,YoutubedlStrout } from "@/entityTypes/videoType"
 import { Proxy, ProxyParseItem } from "@/entityTypes/proxyType"
@@ -14,6 +14,18 @@ import { browserManager } from "@/modules/browserManager"
 // import * as fs from 'fs';
 import * as path from 'path';
 const execAsync = promisify(exec);
+
+/** Resolve path to Node.js binary for yt-dlp --js-runtimes (YouTube n challenge). */
+function resolveNodeForYtDlp(): string | undefined {
+    try {
+        const isWin = process.platform === 'win32';
+        const cmd = isWin ? 'where node' : 'command -v node || which node';
+        return execSync(cmd, { encoding: 'utf-8', env: process.env }).trim().split(/\r?\n/)[0] || undefined;
+    } catch {
+        return undefined;
+    }
+}
+
 export class YoutubeDownload implements VideoDownloadImpl {
     private playerlisttype="/playlist?"
     // private signalplaytype="/watch?"
@@ -23,6 +35,13 @@ export class YoutubeDownload implements VideoDownloadImpl {
         }
         let execcommand = '';
         let command = `"${execPath}" -P "${savePath}"`;
+        // YouTube requires a JS runtime (Node/Deno/Bun) for "n challenge" since yt-dlp 2025.11.12
+        const nodePath = resolveNodeForYtDlp();
+        if (nodePath) {
+            command += ` --js-runtimes "node:${nodePath}"`;
+        } else {
+            command += ' --js-runtimes node';
+        }
         let cookiesFilePath = '';
         if(useBrowserCookies){
             command+=' --cookies-from-browser '+useBrowserCookies
@@ -87,7 +106,8 @@ export class YoutubeDownload implements VideoDownloadImpl {
         // command+=' --print after_move:filepath'
         execcommand=execcommand+' "'+url+'"'
         console.log(execcommand)
-        const { stdout, stderr } = await execAsync(execcommand);
+        const execOptions = { env: process.env };
+        const { stdout, stderr } = await execAsync(execcommand, execOptions);
         if (stroutCall) {
             console.log("start strout call")
             console.log(stdout)
@@ -183,7 +203,7 @@ export class YoutubeDownload implements VideoDownloadImpl {
     //get video title and description
     async getVideodesc(command:string,url:string):Promise<YoutubedlStrout|undefined>{
         const finalcommand=command+' --dump-single-json "'+url+'"'
-        const { stdout, stderr } = await execAsync(finalcommand);
+        const { stdout, stderr } = await execAsync(finalcommand, { env: process.env });
         if (stderr) {
             throw new CustomError(stderr)
         }

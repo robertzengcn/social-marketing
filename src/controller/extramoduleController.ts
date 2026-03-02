@@ -301,19 +301,22 @@ export class ExtraModuleController {
         return this.extramodules.find((module) => module.name === name)
     }
 
-    //check whether python installed
+    //check whether python installed (tries 'python' then 'python3')
     public checkPython(): boolean {
-        try {
-            // Try to execute the 'python --version' command
-            const output = execSync('python --version', { stdio: 'pipe' }).toString();
-            console.log(`Python version: ${output.trim()}`);
-            return true;
-        } catch (error) {
-            if (error instanceof Error) {
-                console.error('Python is not installed:', error.message);
+        const commands = ['python --version', 'python3 --version'] as const
+        for (const cmd of commands) {
+            try {
+                const output = execSync(cmd, { stdio: 'pipe' }).toString()
+                console.log(`Python version: ${output.trim()}`)
+                return true
+            } catch (error) {
+                if (error instanceof Error) {
+                    console.error(`Python check failed (${cmd}):`, error.message)
+                }
             }
-            return false;
         }
+        console.error('Python is not installed (neither python nor python3 found)')
+        return false
     }
     //check whether pip modules installed
     public async isPipModuleInstalled(moduleName: string): Promise<boolean> {

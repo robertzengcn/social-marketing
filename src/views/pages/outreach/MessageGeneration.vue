@@ -158,7 +158,6 @@ const length = ref('medium');
 const generating = ref(false);
 const generatedMessages = ref<any[]>([]);
 const generatedCount = ref(0);
-const generationProgress = ref(0);
 const messageDialog = ref(false);
 const editingMessage = ref('');
 const currentMessageId = ref<number | null>(null);

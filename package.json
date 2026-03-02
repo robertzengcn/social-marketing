@@ -30,7 +30,7 @@
     "make-linux:prod": "cross-env NODE_ENV=production electron-forge make --platform=linux",
     "make-installer": "yarn make-win:prod && yarn make-mac:prod && yarn make-linux:prod",
     "package": "electron-forge package",
-    "start": "electron-forge start",
+    "start": "cross-env NODE_OPTIONS=--disable-warning=DEP0040 electron-forge start",
     "publish": "electron-forge publish",
     "task": "ts-node src/runcli.ts -a task -t",
     "runtask": "ts-node src/utilityCode.ts -a runtask -t 69:73a5795d-ad47-4bf5-a2da-75d733df30cf",

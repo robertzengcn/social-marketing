@@ -3,16 +3,16 @@
         <v-card-title>{{ t('outreach.scraping_task_title') }}</v-card-title>
 
         <v-card-text>
-            <v-form ref="form" v-model="form">
+            <v-form ref="formRef" v-model="formValid">
                 <v-text-field
-                    v-model="form.name"
+                    v-model="formData.name"
                     :label="t('outreach.task_name')"
                     required
                     :rules="[requiredRule]"
                 ></v-text-field>
 
                 <v-textarea
-                    v-model="form.target_urls"
+                    v-model="formData.target_urls"
                     :label="t('outreach.target_urls')"
                     required
                     :rules="[requiredRule]"
@@ -24,17 +24,17 @@
                         <v-expansion-panel-title>{{ t('outreach.options') }}</v-expansion-panel-title>
                         <v-card-text>
                             <v-checkbox
-                                v-model="form.options.aggressive_mode"
+                                v-model="formData.options.aggressive_mode"
                                 :label="t('outreach.aggressive_mode')"
                             ></v-checkbox>
                             <v-slider
-                                v-model="form.options.max_concurrency"
+                                v-model="formData.options.max_concurrency"
                                 :label="t('outreach.max_concurrency')"
                                 min="1"
                                 max="10"
                             ></v-slider>
                             <v-checkbox
-                                v-model="form.options.use_proxy"
+                                v-model="formData.options.use_proxy"
                                 :label="t('outreach.use_proxy')"
                             ></v-checkbox>
                         </v-card-text>
@@ -73,12 +73,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
 
-const form = reactive({
+const formRef = ref<any>(null);
+const formValid = ref(false);
+
+const formData = reactive({
     name: '',
     target_urls: '',
     options: {
@@ -98,13 +101,13 @@ async function createTask() {
     loading.value = true;
 
     try {
-        const urls = form.target_urls.split('\n').filter(url => url.trim()).map(url => url.trim());
+        const urls = formData.target_urls.split('\n').filter(url => url.trim()).map(url => url.trim());
 
         const response = await window.api.outreach.createScrapingTask({
-            name: form.name,
+            name: formData.name,
             description: '',
             targetUrls: urls,
-            options: form.options
+            options: formData.options
         });
 
         if (response.success) {
