@@ -55,6 +55,10 @@ jobs:
           echo "UPDATESERVER=${{ secrets.UPDATESERVER }}" >> .env
           echo "APP_NAME=social-marketing" >> .env
           cat .env       
+      - name: Set up Python setuptools
+        run: pip install setuptools
+        shell: cmd
+
       - name: Install dependencies
         run: yarn install
       - name: Rebuild electron
