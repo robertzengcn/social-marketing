@@ -19,6 +19,39 @@
                     rows="3"
                 ></v-textarea>
 
+                <v-select
+                    v-model="formData.scraper_type"
+                    :items="scraperOptions"
+                    :label="t('outreach.scraper_type')"
+                    :hint="t('outreach.scraper_type_hint')"
+                    persistent-hint
+                    required
+                    :rules="[requiredRule]"
+                >
+                    <template v-slot:item="{ item, props }">
+                        <v-list-item v-bind="props">
+                            <template v-slot:prepend>
+                                <v-icon :icon="item.props.icon"></v-icon>
+                            </template>
+                        </v-list-item>
+                    </template>
+                    <template v-slot:selection="{ item }">
+                        <v-chip size="small">
+                            <v-icon start :icon="item.raw.icon"></v-icon>
+                            {{ item.title }}
+                        </v-chip>
+                    </template>
+                </v-select>
+
+                <v-alert
+                    v-if="formData.scraper_type === 'linkedin'"
+                    type="warning"
+                    density="compact"
+                    class="mb-4"
+                >
+                    {{ t('outreach.linkedin_warning') }}
+                </v-alert>
+
                 <v-expansion-panels>
                     <v-expansion-panel>
                         <v-expansion-panel-title>{{ t('outreach.options') }}</v-expansion-panel-title>
@@ -73,7 +106,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue';
+import { ref, reactive, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
@@ -84,18 +117,63 @@ const formValid = ref(false);
 const formData = reactive({
     name: '',
     target_urls: '',
+    scraper_type: 'generic',
     options: {
         aggressive_mode: false,
         max_concurrency: 5,
-        use_proxy: false
+        use_proxy: false,
+        delay_ms: 1000,
+        timeout: 30000
     }
 });
+
+// Available scraper types with their configurations
+const scraperOptions = computed(() => [
+    {
+        title: t('outreach.scraper_generic'),
+        value: 'generic',
+        icon: 'mdi-web',
+        description: t('outreach.scraper_generic_desc'),
+        defaultOptions: {
+            aggressive_mode: false,
+            max_concurrency: 5,
+            use_proxy: false,
+            delay_ms: 1000,
+            timeout: 30000
+        }
+    },
+    {
+        title: t('outreach.scraper_linkedin'),
+        value: 'linkedin',
+        icon: 'mdi-linkedin',
+        description: t('outreach.scraper_linkedin_desc'),
+        defaultOptions: {
+            aggressive_mode: false,
+            max_concurrency: 1,
+            use_proxy: false,
+            delay_ms: 2000,
+            timeout: 30000
+        }
+    }
+]);
 
 const task = ref<any>(null);
 const progress = ref<any>(null);
 const loading = ref(false);
 
 const requiredRule = (value: any) => !!value || t('common.fill_require_field');
+
+// Update options when scraper type changes
+function updateOptionsForScraper() {
+    const selectedScraper = scraperOptions.value.find(s => s.value === formData.scraper_type);
+    if (selectedScraper) {
+        // Preserve user's proxy choice, update other options
+        formData.options = {
+            ...selectedScraper.defaultOptions,
+            use_proxy: formData.options.use_proxy
+        };
+    }
+}
 
 async function createTask() {
     loading.value = true;
@@ -107,6 +185,7 @@ async function createTask() {
             name: formData.name,
             description: '',
             targetUrls: urls,
+            scraperType: formData.scraper_type,
             options: formData.options
         });
 
