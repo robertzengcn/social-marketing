@@ -120,6 +120,10 @@ export class UserController {
         const loginUrl = import.meta.env.VITE_LOGIN_URL as string;
         const appName = app.getName() || "";
         const finalapp = appName.replace(/-/g, '');
+
+        if(!loginUrl){
+            throw new Error("Login URL is not defined in environment variables");
+        }
         
         // Build the login URL with app name
         const finalloginUrl = loginUrl.replace(/\/$/, '') + '/login?app=' + finalapp;
