@@ -554,6 +554,10 @@ export default {
     target_urls: "Target URLs",
     scraper_type: "Scraper Type",
     scraper_type_hint: "Select the type of scraper to use for this task",
+    select_account: "Select Account",
+    select_account_hint:
+      "Choose an account with saved cookies for authenticated scraping",
+    no_accounts_available: "No accounts with cookies available",
     scraper_generic: "Generic Web Scraper",
     scraper_generic_desc:
       "Works with any website. Good for blogs, contact pages, and general web scraping.",

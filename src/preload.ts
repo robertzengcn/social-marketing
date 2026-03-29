@@ -36,6 +36,7 @@ import {
   OUTREACH_CAMPAIGN_SEND,
   OUTREACH_CAMPAIGN_STATUS,
   OUTREACH_CAMPAIGN_LIST,
+  OUTREACH_ACCOUNT_LIST,
   LISTEMAILSEARCHTASK,
   EMAILSEARCHTASKRESULT,
   EMAILMARKETINGTEMPLIST,
@@ -323,6 +324,7 @@ contextBridge.exposeInMainWorld("api", {
       OUTREACH_CAMPAIGN_SEND,
       OUTREACH_CAMPAIGN_STATUS,
       OUTREACH_CAMPAIGN_LIST,
+      OUTREACH_ACCOUNT_LIST,
       // Utility Channels
       CRON_VALIDATE,
       CRON_NEXT_RUN_TIME,
@@ -363,6 +365,8 @@ contextBridge.exposeInMainWorld("api", {
       ipcRenderer.invoke(OUTREACH_CAMPAIGN_STATUS, JSON.stringify(campaignId)),
     listCampaigns: () =>
       ipcRenderer.invoke(OUTREACH_CAMPAIGN_LIST, JSON.stringify({})),
+    listAccounts: () =>
+      ipcRenderer.invoke(OUTREACH_ACCOUNT_LIST, JSON.stringify({})),
     onScrapingProgress: (callback: (data: any) => void) => {
       ipcRenderer.on(OUTREACH_SCRAPER_PROGRESS, (event, data) =>
         callback(JSON.parse(data))

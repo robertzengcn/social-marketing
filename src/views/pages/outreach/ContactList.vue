@@ -114,7 +114,7 @@ async function loadContacts() {
 }
 
 function getStatusText(status: number): string {
-    const statusMap: {
+    const statusMap: Record<number, string> = {
         0: t('outreach.pending'),
         1: t('outreach.message_generated'),
         2: t('outreach.sent'),
@@ -124,7 +124,7 @@ function getStatusText(status: number): string {
 }
 
 function getStatusColor(status: number): string {
-    const colorMap: {
+    const colorMap: Record<number, string> = {
         0: 'grey',
         1: 'blue',
         2: 'green',

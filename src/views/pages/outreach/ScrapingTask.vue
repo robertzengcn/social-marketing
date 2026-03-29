@@ -43,6 +43,21 @@
                     </template>
                 </v-select>
 
+                <v-select
+                    v-model="formData.account_id"
+                    :items="accountOptions"
+                    :label="t('outreach.select_account')"
+                    :hint="t('outreach.select_account_hint')"
+                    persistent-hint
+                    clearable
+                    :loading="accountsLoading"
+                    :no-data-text="t('outreach.no_accounts_available')"
+                >
+                    <template v-slot:prepend>
+                        <v-icon icon="mdi-account-key"></v-icon>
+                    </template>
+                </v-select>
+
                 <v-alert
                     v-if="formData.scraper_type === 'linkedin'"
                     type="warning"
@@ -106,7 +121,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed } from 'vue';
+import { ref, reactive, computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
@@ -118,6 +133,7 @@ const formData = reactive({
     name: '',
     target_urls: '',
     scraper_type: 'generic',
+    account_id: null as number | null,
     options: {
         aggressive_mode: false,
         max_concurrency: 5,
@@ -126,6 +142,35 @@ const formData = reactive({
         timeout: 30000
     }
 });
+
+// Account list for cookie-based authentication
+const accounts = ref<Array<{ id: number; user: string; social_type: string }>>([]);
+const accountsLoading = ref(false);
+
+async function fetchAccounts() {
+    accountsLoading.value = true;
+    try {
+        const response = await window.api.outreach.listAccounts();
+        if (response.success) {
+            accounts.value = response.accounts;
+        }
+    } catch (error) {
+        console.error('Error fetching accounts:', error);
+    } finally {
+        accountsLoading.value = false;
+    }
+}
+
+onMounted(() => {
+    fetchAccounts();
+});
+
+const accountOptions = computed(() =>
+    accounts.value.map((account) => ({
+        title: `${account.user} (${account.social_type})`,
+        value: account.id
+    }))
+);
 
 // Available scraper types with their configurations
 const scraperOptions = computed(() => [
@@ -186,6 +231,7 @@ async function createTask() {
             description: '',
             targetUrls: urls,
             scraperType: formData.scraper_type,
+            accountId: formData.account_id,
             options: formData.options
         });
 
