@@ -61,12 +61,12 @@ jobs:
 
       - name: Install dependencies
         run: yarn install
-      - name: Rebuild electron
-        run: yarn electron-rebuild --force --types prod,dev,optional --module-dir .         
-      - name: Rebuild sqlite3
-        run: yarn rebuild-sqlite3
-      - name: Rebuild better sqlite
-        run: yarn rebuild-better-sqlite
+      - name: Set up Visual Studio build environment
+        uses: ilammy/msvc-dev-cmd@v1
+      - name: Configure node-gyp for Visual Studio
+        run: npm config set msvs_version 2022
+      - name: Rebuild native modules for Electron
+        run: yarn electron-rebuild --force --only better-sqlite3,sqlite3
       - name: Install WiX Toolset
         run: |
           Invoke-WebRequest -Uri https://github.com/wixtoolset/wix3/releases/download/wix3112rtm/wix311-binaries.zip -OutFile wix.zip
